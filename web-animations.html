@@ -1,0 +1,3146 @@
+<!DOCTYPE html>
+<!-- vim: set expandtab ts=2 sw=2 tw=80: -->
+<html>
+  <head>
+    <title>Web Animations 1.0</title>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <script src='http://dev.w3.org/2009/dap/ReSpec.js/js/respec.js'
+      class='remove'></script>
+    <script
+      src='http://dev.w3.org/2009/dap/ReSpec.js/js/lang/sh_javascript.min.js'
+      class='remove'></script>
+    <script class='remove'>
+      var respecConfig = {
+        // specification status (e.g. WD, LCWD, NOTE, etc.). If in doubt use
+        // ED.
+        specStatus: "ED",
+
+        // the specification's short name, as in
+        // http://www.w3.org/TR/short-name/
+        // shortName:            "web-anim",
+
+        // if your specification has a subtitle that goes below the main
+        // formal title, define it here
+        // subtitle   :  "an excellent document",
+
+        // if you wish the publication date to be other than today, set this
+        // publishDate:  "2009-08-06",
+
+        // if the specification's copyright date is a range of years, specify
+        // the start date here:
+        // copyrightStart: "2005"
+
+        // if there is a previously published draft, uncomment this and set
+        // its YYYY-MM-DD date and its maturity status
+        // previousPublishDate: "1977-03-15",
+        // previousMaturity: "WD",
+
+        // if there a publicly available Editor's Draft, this is the link
+        // edDraftURI:
+        // "http://dev.w3.org/2009/dap/ReSpec.js/documentation.html",
+
+        // if this is a LCWD, uncomment and set the end of its review period
+        // lcEnd: "2009-08-05",
+
+        // if you want to have extra CSS, append them to this list
+        // it is recommended that the respec.css stylesheet be kept
+        extraCSS: ["http://dev.w3.org/2009/dap/ReSpec.js/css/respec.css",
+                   "web-animations.css"],
+
+        // Turning off inlineCSS for now since if extraCSS points to
+        // a relative URL your testing from a file URL the XHR will fail.
+        // Probably should turn this back on once this is hosted on a server
+        // somewhere.
+        inlineCSS: false,
+
+        // editors, add as many as you like
+        // only "name" is required
+        editors:  [
+            { name: "Brian Birtles", mailto: "bbirtles@mozilla.com",
+              company: "Mozilla Japan", companyURL: "http://mozilla.jp/" },
+            { name: "Shane Stephens", mailto: "shans@google.com",
+              company: "Google, Inc", companyURL: "http://www.google.com/" },
+            { name: "Rik Cabanier", mailto: "cabanier@adobe.com",
+              company: "Adobe Systems", companyURL: "http://www.adobe.com/" },
+            { name: "Alex Danilo", mailto: "adanilo@google.com",
+              company: "Google, Inc", companyURL: "http://www.google.com/" },
+            { name: "Dmitry Baranovskiy", mailto: "baranovs@adobe.com",
+              company: "Adobe Systems", companyURL: "http://www.adobe.com/" },
+            { name: "Tab Atkins", mailto: "jackalmage@gmail.com",
+              company: "Google, Inc", companyURL: "http://www.google.com/" },
+        ],
+
+        // authors, add as many as you like.
+        // This is optional, uncomment if you have authors as well as editors.
+        // only "name" is required. Same format as editors.
+
+        //authors:  [
+        //    { name: "Your Name", url: "http://example.org/",
+        //      company: "Your Company", companyURL: "http://example.com/" },
+        //],
+
+        // XXX If we continue using ReSpec then we need to tweak it to support
+        // multiple working groups. It includes updating the patent section
+        // prose to say "groups" instead of "group" etc.
+        // name of the WG
+        wg: "CSS Working Group (part of the Style Activity) and the SVG " +
+            "Working Group (part of the Graphics Activity)",
+
+        // URI of the public WG page
+        // wgURI: "http://www.w3.org/Graphics/fx/",
+
+        // name (without the @w3c.org) of the public mailing to which comments
+        // are due
+        wgPublicList: "public-fx",
+
+        // URI of the patent status for this WG, for Rec-track documents
+        // !!!! IMPORTANT !!!!
+        // This is important for Rec-track documents, do not copy a patent URI
+        // from a random document unless you know what you're doing. If in
+        // doubt ask your friendly neighbourhood Team Contact.
+        wgPatentURI:  "",
+
+        noIDLSorting: true,
+        noIDLIn: true
+      };
+    </script>
+    <!--
+      ReSpec.js wishlist:
+
+      Add here any issues you find with ReSpec including missing features. It
+      will help us decide if we should continue using it and work out what we
+      need to fix.
+
+      * Need ability to cross-reference members of interfaces (e.g. constants
+        etc.)
+      * Get rid of the description section next to parameters? It seems more
+        natural to describe the parameters in the description of the method?
+      * Allow making cross-references to specific methods and members.
+      * Don't make unofficial drafts use the Creative Commons Attribution
+        license.
+      * Support enums in WebIDL
+      * Support NamedConstructors (including where the parameters use angle
+        brackets like sequence<TimedTemplate>)
+    -->
+  </head>
+  <body>
+    <section id='abstract'>
+      This is the abstract for your specification.
+    </section>
+
+    <section class="informative">
+      <h2>Introduction</h2>
+      <p>
+        Web Animations defines features for supporting animation and
+        synchronization on the Web platform by means of a programming interface.
+        This interface is intended to be used both directly to easily produce
+        animations using script, as well as a foundation for other
+        specifications whose behavior can be defined in terms of these features.
+      </p>
+      <section>
+        <h3>Relationship to other specifications</h3>
+        <p>
+          CSS Transitions [[CSS3-TRANSITIONS]], CSS Animations 
+          [[CSS3-ANIMATIONS]], and SVG [[SVG112]] all provide mechanisms that
+          generate animated content on a web page.
+          Although the three specifications provide similar functionality,
+          the syntaxes are incompatible and the animations cannot be
+          interchanged.
+          Furthermore, the interfaces available for interacting with animations
+          from script are largely general-purpose interfaces with few features
+          tuned specifically to the creation and manipulation of animations.
+        </p>
+        <p>
+          This specification proposes an abstract animations model that
+          encompasses the abilities of both CSS and SVG, and additionally
+          provides a programming interface to expose these features to script.
+        </p>
+        <p>
+          This specification is accompanied by a CSS embedding specification,
+          which describes how CSS features can be implemented in terms of Web 
+          Animations primitives, and an SVG embedding specification, which
+          describes how SVG features can be implemented in terms of Web
+          Animations primitives.
+        </p>
+        <p>
+          As a result, this specification does not directly alter the behavior
+          of CSS Transitions, CSS Animations, or SVG.
+          However, Web Animations is intended to replace the SMIL Animation
+          [[SMIL-ANIMATION]] specification where it is currently used to define
+          the behavior of SVG's animation features.
+        </p>
+        <p>
+          This specifications makes some additions to some interfaces defined in
+          HTML5 [[HTML5]].
+        </p>
+      </section>
+    </section>
+
+    <section class="informative">
+      <h2>Web Animations overview</h2>
+      <p>
+        At a glance, Web Animations can be considered in two largely independent
+        pieces, a <em>timing model</em> and an <em>animation model</em>.
+        The role of these pieces is as follows:
+      </p>
+      <dl>
+        <dt>Timing model</dt>
+        <dd>
+          Takes a moment in time and converts it to a proportional distance
+          within a single iteration of an animation called the <em>time
+          fraction</em>.
+        </dd>
+        <dt>Animation model</dt>
+        <dd>
+          Takes the <em>time fractions</em> produced by the timing model and
+          converts them into a series of values to apply to the target
+          properties and attributes.
+        </dd>
+      </dl>
+      <p>
+        Graphically, this flow can be represented as follows:
+      </p>
+      <div class="figure">
+        <object data="img/timing-and-animation-models.svg" width="700"></object>
+      </div>
+      <p class="caption">
+        Overview of the operation of Web Animations.<br>
+        The current time is input to the timing model which produces a distance
+        within an iteration.<br>
+        This distance is used as input to the animation model which produces the
+        values to apply.
+      </p>
+      <p>
+        For example, consider an animation that:
+      </p>
+      <ul>
+        <li>starts after 3 seconds,</li>
+        <li>runs twice,</li>
+        <li>takes 2 seconds every time, and</li>
+        <li>changes the width of a rectangle from 50 pixels to 100 pixels.</li>
+      </ul>
+      <p>
+        The first three points apply to the timing model.
+        At a time of 6 seconds, it will calculate that the animation should be
+        half-way through its second iteration and produces the result 0.5.
+        The animation model then uses that information to calculate a width for
+        the rectangle of 75.
+      </p>
+      <p>
+        This specification begins with the timing model and then proceeds to the
+        animation model.
+      </p>
+    </section>
+
+    <section class="informative">
+      <h2>The animation timeline</h2>
+      <p>
+        Each document contains a timeline to which animations may be added.
+        Each animation has an interval during which it is scheduled to animate.
+      </p>
+      <div class="figure">
+        <object data="img/timeline.svg" width="600"></object>
+      </div>
+      <p class="caption">
+        At time <em>t</em> animations A and B are animating.
+        Animation C has finished animating.
+        Animation D has yet to begin and is not animating.
+      </p>
+      <section>
+        <h3>Start of the timeline</h3>
+        <p class="todo">
+          Define when the timeline starts&mdash;is it document load, or can it
+          start beforehand?<br>
+          Time moments are defined in <a
+          href="http://test.w3.org/webperf/specs/NavigationTiming/#processing-model">Navigation
+          Timing spec</a>. We should re-use one of those definitions here.
+        </p>
+      </section>
+    </section>
+
+    <section>
+      <h2>Animations in the timeline</h2>
+      <p>
+        Animations in the timeline are represented by
+        <code>AnimInstance</code> objects.
+      </p>
+      <section>
+        <h3>The <code>AnimInstance</code> interface</h3>
+        <dl title="interface AnimInstance : TimedItem" class="idl">
+          <dt>attribute AnimFunction function</dt>
+          <dd>
+            The animation function to apply (see <a href="#animation-values"
+            class="sectionRef"></a>).
+          </dd>
+          <dt>readonly attribute Anim? template</dt>
+          <dd>
+            For live animation instances (see <a href="#creating-animations"
+            class="sectionRef"></a>), the <code>Anim</code> object from
+            which this object was minted. For independent animation instances,
+            this property is <code>null</code>.
+          </dd>
+          <dt>readonly attribute Element targetElement</dt>
+          <dd>
+            The element being animated by this object.
+          </dd>
+          <dt>bool makeIndependent()</dt>
+          <dd>
+            <p>
+              Makes this object independent of the template from which it was
+              created.
+              See <a href="#creating-animations" class="sectionRef"></a>.
+            </p>
+            <p>
+              After this method returns, the <code>template</code>
+              property will be <code>null</code>.
+            </p>
+            <p>
+              Returns <code>true</code> if this object was previously a live
+              animation instance, <code>false</code> if this object was already
+              an independent animation instance.
+            </p>
+          </dd>
+        </dl>
+      </section>
+    </section>
+
+    <section>
+      <h2>Creating animations</h2>
+      <p>
+        <code>AnimInstance</code> objects are not created directly, but
+        via a separate <code>Anim</code> object. The
+        <code>Anim</code> object acts a template allowing the same set
+        of animation parameters to be used multiple times with multiple target
+        elements.
+      </p>
+      <p>
+        An <code>AnimInstance</code> can be in one of two states with
+        regards to the relationship between it and the <code>Anim</code>
+        that produced it.
+      </p>
+      <dl>
+        <dt>Live animation instance</dt>
+        <dd>
+          Changes made to the <code>Anim</code> object are reflected in
+          the <code>AnimInstance</code> object.
+        </dd>
+        <dt>Independent animation instance</dt>
+        <dd>
+          Changes made to the <code>Anim</code> object have no effect on
+          the <code>AnimInstance</code> object.
+        </dd>
+      </dl>
+      <p class="todo">
+        Add a diagram which shows a live animation instance and an independent
+        one.
+      </p>
+      <p>
+        Live animation instances can be converted to independent animation
+        instances by one of two means:
+      </p>
+      <ol>
+        <li>
+          Modifying any of the members of the <code>function</code> or
+          <code>timing</code> properties of the
+          <code>AnimInstance</code> object. This includes redundant
+          modifications, that is, setting a property to its current value.
+          <!--
+           The redundant modification condition is an attempt to eliminate an
+           area where interop might fail subtley.
+
+           If, internally, implementation A filters out redundant changes whilst
+           implementation B blindly accepts all changes we still want the same
+           behaviour with regards to becoming independent. It's easier, more
+           convenient and, I think, more intuitive for authors to define it this
+           way.
+
+           The alternative, requiring redundant changes to be ignored, is more
+           complex as we need to specify what consitutes a redundant change and
+           that's not always easy as the data types become complex. For example,
+           what constitutues a redundant change to an SVGLength is not always
+           obvious.
+           -->
+        </li>
+        <li>
+          Calling the <code>makeIndependent</code> method of the
+          <code>AnimInstance</code> object.
+        </li>
+      </ol>
+      <p>
+        Once independent, animation instances cannot be made live again.
+      </p>
+      <p class="note">
+        One implication of the fact that a live instance can be converted to an
+        independent instance is that when a live instance is created, the object
+        identity of its <code>function</code> and <code>timing</code> properties
+        must differ from those of the animation from which it was created. This
+        is because, for example, modifying the <code>timing.duration</code>
+        property of a live animation instance and hence converting it to an
+        independent animation instance, cannot at the same time change the
+        object identity of the <code>timing</code> property.
+      </p>
+      <pre class="example sh_javascript">
+        // Create a new animation
+        var anim = new Anim();
+        anim.timing.duration = 1;
+
+        // Create a live instance
+        var instance = anim.animateLive(document.getElementById('a'));
+        alert(instance.timing.iterationDuration); // Displays "1"
+
+        // Modify the animation
+        anim.timing.duration = 2;
+        alert(instance.timing.iterationDuration); // Displays "2"
+
+        // Modify both the animation and instance
+        instance.timing.iterationDuration = 3;    // instance is now independent
+        anim.timing.iterationDuration = 4;
+        alert(instance.timing.iterationDuration); // Displays "3"
+      </pre>
+      <section>
+        <h3>The <code>Anim</code> interface</h3>
+        <p>
+          <dl title="[Constructor] interface Anim : TimedTemplate"
+            class="idl">
+            <dt>attribute AnimFunction function</dt>
+            <dd>
+              The animation function to apply.
+            </dd>
+          </dl>
+        </p>
+      </section>
+      <section>
+        <h3>The <code>TimedTemplate</code> interface</h3>
+        <p>
+          Both the timing of an <code>Anim</code> and the methods for
+          creating an <code>AnimInstance</code> from
+          an <code>Anim</code> are specified on the
+          <code>TimedTemplate</code> since this behaviour is shared with
+          animation groups
+          (see <a href="#grouping-and-synchronization" class="sectionRef"></a>).
+        </p>
+        <dl title="interface TimedTemplate" class="idl">
+          <dt>attribute Timing timing</dt>
+          <dd>
+            The timing parameters to use for generated timed items.
+          </dd>
+          <dt>TimedItem animate ()</dt>
+          <dd>
+            <p>
+              Creates an independent <code>TimedItem</code> and appends it
+              to <code>element.ownerDocument.animationTimeline</code>.
+            </p>
+            <p>
+              This allows the following sort of usage:
+            </p>
+            <pre class="example sh_javascript">
+              anim.animate(document.getElementById("a"));
+            </pre>
+            <p>
+              The specific steps for instantiating a
+              <code>TimedTemplate</code> depends on its concrete type and is
+              described in <a href="#instantiating-an-anim"
+              class="sectionRef"></a> and <a
+              href="#instantiating-an-animgroup"
+              class="sectionRef"></a>.
+            </p>
+            <dl class="parameters">
+              <dt>Element target</dt>
+              <dd>
+                The <code>Element</code> to be targetted.
+              </dd>
+              <dt>optional float startTime</dt>
+              <dd>
+                <p>
+                  The start time for the generated animation instances
+                  expressed in seconds in the iteration time space of the
+                  <code>AnimGroupInstance</code> to which it is
+                  appended (see <a href="#iteration-time-and-animation-time"
+                    class="sectionRef"></a>).
+                </p>
+                <p>
+                  If this parameter is not specified it will default to the
+                  current iteration time of the
+                  <code>AnimGroupInstance</code> to which it is
+                  appended if it is not <code>null</code>, otherwise it will
+                  default to zero.
+                </p>
+              </dd>
+            </dl>
+          </dd>
+          <dt>sequence&lt;TimedItem&gt; animate ()</dt>
+          <dd>
+            <p>
+              Creates a series of independent <code>TimedItem</code>
+              objects, one for each element in <code>target</code>.
+              As with <code>animate(Element target, float startTime)</code>
+              each such <code>TimedItem</code> object is appended
+              to <code>element.ownerDocument.animationTimeline</code>.
+            </p>
+            <p>
+              This allows the following sort of usage:
+            </p>
+            <pre class="example sh_javascript">
+  anim.animate([document.getElementById("a"), document.getElementById("b")]);
+  anim.animate(document.querySelectorAll("div.warning"));
+  anim.animate(document.getElementsByTagName("button"));
+  anim.animate(document.getElementById("group").childNodes);
+            </pre>
+            <p>
+              The specific steps for instantiating a
+              <code>TimedTemplate</code> depends on its concrete type and is
+              described in <a href="#instantiating-an-anim"
+              class="sectionRef"></a> and <a
+              href="#instantiating-an-animgroup"
+              class="sectionRef"></a>.
+            </p>
+            <dl class="parameters">
+              <dt>sequence&lt;Node&gt; targets</dt>
+              <dd>
+                An sequence of <code>Node</code>s to be animated.
+                Any nodes in the sequence that are not of type
+                <code>ELEMENT_NODE</code> will be ignored.
+              </dd>
+              <dt>optional float startTime</dt>
+              <dd>
+                As with <code>animate(Element target, optional float
+                  startTime)</code>.
+              </dd>
+            </dl>
+          </dd>
+          <dt>TimedItem animateWithParent ()</dt>
+          <dd>
+            <p>
+              Similar to <code>animate</code>, this method creates
+              independent <code>TimedItem</code> object(s) for the
+              elements in <code>target</code>.
+              However, the resulting items are appended to the given
+              <code>parentGroup</code>, if provided.
+              If <code>parentGroup</code> is <code>null</code>, the
+              <code>TimedItem</code> objects will not be added to any
+              group.
+            </p>
+            <dl class="parameters">
+              <dt>Element target</dt>
+              <dd>
+                As with <code>animate</code>.
+              </dd>
+              <dt>AnimGroupInstance? parentGroup</dt>
+              <dd>
+                The animation group instance to which animation instances
+                should be appended.
+              </dd>
+              <dt>optional float startTime</dt>
+              <dd>
+                <p>
+                  The start time for the generated animation instances
+                  expressed in seconds in the iteration time space of the
+                  <code>AnimGroupInstance</code> to which it is
+                  appended (see <a href="#iteration-time-and-animation-time"
+                    class="sectionRef"></a>).
+                </p>
+                <p>
+                  If this parameter is not specified it will default to the
+                  current iteration time of <code>parentGroup</code>.
+                  If <code>parentGroup</code> is <code>null</code>,
+                  this parameter will default to zero.
+                </p>
+              </dd>
+            </dl>
+          </dd>
+          <dt>sequence&lt;TimedItem&gt; animateWithParent (
+            sequence&lt;Node&gt; targets,
+            AnimGroupInstance? parentGroup,
+            optional float startTime)</dt>
+          <dd>
+            As with <code>animateWithParent(Element target,
+              AnimGroupInstance? parentGroup,
+              optional float startTime)</code> except
+            one <code>TimedItem</code> is created for each
+            <code>Node</code> in <code>target</code> that is of type
+            <code>ELEMENT_NODE</code>.
+          </dd>
+          <dt>TimedItem animateLive (Element target,
+            optional float startTime)</dt>
+          <dd>
+            As with <code>animate</code> with the exception that the
+            <code>TimedItem</code> objects generated by this method are
+            live.
+          </dd>
+          <dt>sequence&lt;TimedItem&gt; animateLive (
+            sequence&lt;Node&gt; targets, optional float startTime)</dt>
+          <dd>
+            As with <code>animate</code> with the exception that the
+            <code>TimedItem</code> objects generated by this method are
+            live.
+          </dd>
+          <dt>TimedItem animateLiveWithParent
+            (Element target, AnimGroupInstance? parentGroup,
+             optional float startTime)</dt>
+          <dd>
+            As with <code>animateWithParent</code> with the exception that the
+            animation instances generated by this method are live.
+          </dd>
+          <dt>sequence&lt;TimedItem&gt; animateLiveWithParent
+            (sequence&lt;Node&gt; targets, AnimGroupInstance? parentGroup,
+             optional float startTime)</dt>
+          <dd>
+            As with <code>animateWithParent</code> with the exception that the
+            animation instances generated by this method are live.
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Instantiating an <code>Anim</code></h3>
+        <p>
+          The procedure for instantiating an <code>Anim</code>,
+          <var>template</var>, given a list of target elements and an optional
+          <var>parent group</var>, is as follows:
+        </p>
+        <ol>
+          <li>
+            Create an empty sequence of <code>AnimInstance</code>
+            objects.
+          </li>
+          <li>
+            For each <var>element</var> in the list of target elements:
+            <ol>
+              <li>
+                Create a new <code>AnimInstance</code> object,
+                <var>instance</var>.
+              </li>
+              <li>
+                Set the <code>timing</code> and <code>function</code> properties
+                of <var>instance</var> to copies <code>template.timing</code>
+                and <code>template.function</code>.
+              </li>
+              <li>
+                If <var>parentGroup</var> is not specified, let
+                <var>parentGroup</var> be
+                <code><var>element</var>.ownerDocument.animationTimeline</code>.
+              </li>
+              <li>
+                Append <var>group</var> to <var>parentGroup</var>.
+              </li>
+              <li>
+                Append <var>group</var> to the sequence of
+                <code>AnimInstance</code> objects.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Return the sequence of <code>AnimInstance</code> objects.
+          </li>
+        </ol>
+      </section>
+    </section>
+
+    <section>
+      <h2>Timing animations</h2>
+      <section class="informative">
+        <h3>Animation states</h3>
+        <p>
+          An individual animation instance can be in one of three possible
+          states:
+        </p>
+        <dl>
+          <dt>Animating (active)</dt>
+          <dd>
+            The animation instance is executing, and will apply its effect to
+            its target.
+          </dd>
+          <dt>Filling (active)</dt>
+          <dd>
+            The animation instance has yet to start executing or has already
+            finished but is still effecting its target due to the fill mode
+            specified (see <a href="#animation-fill-behavior"
+              class="sectionRef"></a>).
+          </dd>
+          <dt>Inactive</dt>
+          <dd>
+            The animation instance has yet to start executing or has already
+            finished and is not effecting its target. Animations that do not
+            belong to a group and consequently have no notion of time are also
+            considered inactive (see <a href="#grouping-and-synchronization"
+            class="sectionRef"></a>).
+          </dd>
+        </dl>
+        <p>
+          An animation instance is considered <em>active</em> if it is in either
+          the <em>animating</em> or <em>filling</em> state.
+        </p>
+        <p>
+          An animation may not enter all of these states depending on when it
+          starts, its duration, and the fill behavior defined (see <a
+          href="#animation-fill-behavior" class="sectionRef"></a>). An example
+          sequence of states is illustrated below.
+        </p>
+        <div class="figure">
+          <object data="img/animation-states.svg" width="600"></object>
+        </div>
+        <p class="caption">
+          An example of the animation states for an animation with a forwards
+          fill.<br>
+          The animation is initially inactive. This may be due to a positive
+          delay or positive start time (see <a href="#the-animation-interval"
+          class="sectionRef"></a>).<br>
+          Then the animation begins executing and enters the animating
+          state.<br>
+          When the animation has completed, a forwards fill is applied and the
+          animation enters the filling state.
+        </p>
+        <section>
+          <h3>The animation interval</h3>
+          <p>
+            The period that an animation instance is animating is called the
+            <em>animation interval</em>.
+            Each animation instance has only one such interval.
+          </p>
+          <p>
+            The start of the interval is determined by the <var>start
+            time</var> of the animation instance but may be shifted by
+            a <var>start delay</var> on the animation instance.
+          </p>
+          <p>
+            The end of the interval is determined by the <var>animation
+            duration</var> (see <a href="#calculating-the-animation-duration"
+            class="sectionRef"></a>).
+          </p>
+          <p>
+            Some examples are illustrated below.
+          </p>
+          <div class="figure">
+            <object data="img/animation-interval-examples.svg"
+              width="600"></object>
+          </div>
+          <p class="caption">
+            Examples of the effect of the start delay on endpoints of the
+            animation interval.<br>
+            (a) An animation instance with no delay; the start time and start of
+            animation are coincident.<br>
+            (b) An animation instance with a positive delay; the start of
+            animation is deferred by the delay.<br>
+            (c) An animation instance with a negative delay; the start of
+            animation is brought forward by the delay.
+          </p>
+        </section>
+      </section>
+      <section class="informative">
+        <h3>Animation fill behavior</h3>
+        <p>
+          Outside of the animation interval, an animation instance may still
+          effect its target depending on its fill mode. The different modes are
+          as follows:
+        </p>
+        <dl>
+          <dt>none</dt>
+          <dd>
+            The animation instance does not effect its target outside the active
+            interval.
+          </dd>
+          <dt>forwards</dt>
+          <dd>
+            For times that occur later than the animation interval, the
+            animation instance will continue to apply to its target the
+            animation value that was used at the end of the animation interval.
+
+            For times that occur before the animation interval, the animation
+            instance will not effect its target.
+          </dd>
+          <dt>backwards</dt>
+          <dd>
+            For times that occur before the animation interval, the animation
+            instance will apply the same animation value that will be used at
+            the start of the animation interval.
+
+            For times that occur later than the animation interval, the
+            animation instance will not effect its target.
+          </dd>
+          <dt>both</dt>
+          <dd>
+            For times that occur before the animation interval, the backwards
+            fill behavior is used.
+
+            For times that occur after the animation interval, the forwards fill
+            behavior is used.
+          </dd>
+        </dl>
+        <p>
+          Some examples of the these fill modes and the corresponding animation
+          states are illustrated below.
+        </p>
+        <div class="figure">
+          <object data="img/animation-state-and-fill-behavior.svg"
+            width="600"></object>
+        </div>
+        <p class="caption">
+          Examples of various fill modes and the animation states produced.<br>
+          (a) fill mode &lsquo;none&rsquo;. The animation instance never enters
+          the filling state.<br>
+          (b) fill mode &lsquo;forwards&rsquo;. The animation instance enters
+          the filling state after the animation interval has complete.<br>
+          (c) fill mode &lsquo;backwards&rsquo;. The animation instance enter
+          the filling state until the start of the animation interval.<br>
+          (d) fill mode &lsquo;both&rsquo;. Outside of the animation interval
+          the animation instance is in the filling state.
+        </p>
+        <p>
+          The normative definition of fill behavior is incorporated in the
+          calculation of the animation time in <a
+          href="#calculating-the-animation-time" class="sectionRef"></a> and the
+          calculation of the iteration time in <a
+          href="#calculating-the-iteration-time" class="sectionRef"></a>.
+        </p>
+      </section>
+      <section class="informative">
+        <h3>Iteration time and animation time</h3>
+        <p>
+          Times in Web Animations are relative to some point of reference. These
+          different points of reference produce different time spaces.
+        </p>
+        <p>
+          This can be compared to coordinate spaces as used in computer
+          graphics.
+          The zero time of a time space is analogous to the origin of
+          a coordinate space.
+        </p>
+        <p>
+          Within Web Animations, some of the common time spaces are:
+        </p>
+        <dl>
+          <dt>Document time space</dt>
+          <dd>
+            A time space whose zero time is the start time of the document
+            timeline as defined in <a href="#start-of-the-timeline"
+            class="sectionRef"></a>.
+          </dd>
+          <dt>Item time space</dt>
+          <dd>
+            A time space whose zero time is the timed item's (e.g. an animation
+            instance) start time.
+          </dd>
+          <dt>Animation time space</dt>
+          <dd>
+            A time space whose zero time is the beginning of a timed item's
+            animation interval.
+          </dd>
+          <dt>Iteration time space</dt>
+          <dd>
+            A time space whose zero time is the beginning of the current
+            iteration.
+            When the animation instance is inactive it is set to the iteration
+            time that will produce the appropriate fill value regardless of the
+            setting of the fill mode.
+          </dd>
+        </dl>
+        <p>
+          In addition to these time spaces, when animation groups are used (see
+          <a href="#grouping-and-synchronization" class="sectionRef"></a>) we
+          can talk about the <em>parent iteration time space</em>. The zero time
+          of <em>parent iteration time space</em> is the beginning of the parent
+          animation group's current iteration. When animation groups are not
+          used, this is equivalent to <em>document time space</em>.
+        </p>
+        <p>
+          Some of these time spaces are illustrated below.
+        </p>
+        <div class="figure">
+          <object data="img/time-spaces.svg" width="600"></object>
+        </div>
+        <p class="caption">
+          A comparison of item time, animation time, and iteration time for an
+          animation with a iteration duration of 1s and an iteration count of
+          2.5.
+        </p>
+        <p>
+          Note that while the time spaces themselves are not bounded, Web
+          Animations defines <var>animation time</var> and <var>iteration
+          time</var> such that they are clamped to a set range as shown in the
+          diagram.
+          For example, whilst a time of -1 second is a valid time in
+          <em>animation time space</em>, querying the <var>animation time</var>
+          of an animation instance will never return a negative value due to the
+          clamping performed when this value is calculated (see <a
+          href="#calculating-the-animation-time" class="sectionRef"></a>).
+        </p>
+        <section>
+          <h4>Iteration duration and animation duration</h4>
+          <p>
+            These time spaces can also be used to describe intervals and
+            durations. The distinction between iteration duration and active
+            duration is particularly common. The definition of these terms falls
+            out of the definition of the time spaces and is summarized as
+            follows:
+          </p>
+          <dl>
+            <dt>Iteration duration</dt>
+            <dd>
+              The time taken for a single iteration of the item to complete.
+            </dd>
+            <dt>Animation duration</dt>
+            <dd>
+              The time taken for the animation phase of the item to complete.
+              This may be longer or shorter than the iteration duration.
+            </dd>
+          </dl>
+          <p>
+            This may be visualized as follows:
+          </p>
+          <div class="figure">
+            <object data="img/iteration-and-animation-duration.svg"
+                width="600"></object>
+          </div>
+          <p class="caption">
+            A comparison of the iteration and animation durations for an
+            animation with an iteration count of 2.5.<br>
+            Note that the iteration duration for the final iteration does not
+            change, it is simply cut-off by the animation duration.
+          </p>
+        </section>
+        <section>
+          <h4>Interval timing</h4>
+          <p>
+            For intervals of time, Web Animations uses an endpoint-exclusive
+            timing model. This means that whilst the begin time of an interval
+            is included in the interval, the end time time is not. In interval
+            notation this can written <code>[begin,end)</code>. This model
+            provides sensible behavior when intervals are repeated and sequenced
+            since there is no overlap between intervals.
+          </p>
+          <p>
+            In the examples below, for the repeated animation, at animation time
+            1s, the iteration time is 0.
+            For the sequenced animation, at parent iteration time 1s, animation
+            A has become inactive, and animation B is now active; there is no
+            overlap.
+          </p>
+          <div class="figure">
+            <object data="img/endpoint-exclusive-timing.svg"
+                width="600"></object>
+          </div>
+          <p class="caption">
+            Illustration of end-point exclusive timing. For both repeated and
+            sequenced animations there is no overlap at the boundaries between
+            intervals.
+          </p>
+          <p>
+            An exception to this behavior is that when performing a fill, if
+            the fill begins at an interval endpoint, the endpoint is used. This
+            behavior falls out of the algorithm given in <a
+            href="#calculating-the-unscaled-iteration-time"
+            class="sectionRef"></a> and is demonstrated below.
+          </p>
+          <div class="figure">
+            <object data="img/endpoint-exclusive-timing-and-fill.svg"
+                width="600"></object>
+          </div>
+          <p class="caption">
+            After one iteration, the first frame of the animation is shown, but
+            after two iterations (and thereonwards), the last frame is shown due
+            to the special behavior defined when an animation fills.
+          </p>
+        </section>
+      </section>
+      <section>
+        <h3>Specifying timing properties</h3>
+        <p>
+          Timing properties are collected under the <code>Timing</code>
+          interface.
+          All properties have a default value associated with them with is the
+          value used when a new <code>Timing</code> object is constructed.
+        </p>
+        <section>
+          <h3>The <code>Timing</code> interface</h3>
+          <dl title="interface Timing" class="idl">
+            <dt>const unsigned short WEBA_FILL_NONE = 0</dt>
+            <dd>
+              No fill.
+            </dd>
+            <dt>const unsigned short WEBA_FILL_FORWARDS = 1</dt>
+            <dd>
+              Fill forwards (=<code>fill="freeze"</code> in SVG speak).
+            </dd>
+            <dt>const unsigned short WEBA_FILL_BACKWARDS = 2</dt>
+            <dd>
+              Fill backwards.
+            </dd>
+            <dt>const unsigned short WEBA_FILL_BOTH = 3</dt>
+            <dd>
+              Fill backwards and forwards.
+            </dd>
+            <dt>const unsigned short WEBA_DIRECTION_NORMAL = 0</dt>
+            <dd>
+              All iterations are played as specified.
+            </dd>
+            <dt>const unsigned short WEBA_DIRECTION_REVERSE = 1</dt>
+            <dd>
+              All iterations are played in the reverse direction from the way
+              they were specified.
+            </dd>
+            <dt>const unsigned short WEBA_DIRECTION_ALTERNATE = 2</dt>
+            <dd>
+              Even iterations are played as specified, odd iterations are played
+              in the reverse direction from the way they were specified.
+            </dd>
+            <dt>const unsigned short WEBA_DIRECTION_ALTERNATE_REVERSE = 3</dt>
+            <dd>
+              Even iterations are played in the reverse direction from the way
+              they were specified, odd iterations are played as specified.
+            </dd>
+            <dt>attribute float startDelay</dt>
+            <dd>
+              <p>
+                The number of seconds from the timed item's
+                <code>startTime</code> until the timed item should begin
+                executing.
+              </p>
+              <p>
+                The <var>default value</var> is 0.
+              </p>
+            </dd>
+            <dt>attribute unrestricted float? iterationDuration</dt>
+            <dd>
+              <p>
+                The duration specified for a single iteration.
+                This may be <code>null</code> in which case the intrinsic
+                duration will be used.
+                If set, it must be greater than or equal to zero (including
+                positive infinity).
+              </p>
+              <p>
+                The <var>default value</var> is <code>null</code>.
+              </p>
+            </dd>
+            <dt>attribute unrestricted float iterationCount</dt>
+            <dd>
+              <p>
+                A real number greater than or equal to zero (including positive
+                infinity) representing the number of times to repeat the
+                animation.
+              </p>
+              <p>
+                The <var>default value</var> is 1.
+              </p>
+            </dd>
+            <dt>attribute float speed</dt>
+            <dd>
+              <p>
+                A real number that acts as a multiplier on the item's rate of
+                play. For example, a value of 2.0 will cause the item to run at
+                twice its usual speed. A value of -1.0 will cause the item to
+                play backwards.
+              </p>
+              <p>
+                Setting this attribute will affect the item's active duration as
+                described in <a href="#calculating-the-animation-duration"
+                class="sectionRef"></a>.
+              </p>
+              <p>
+                The <var>default value</var> is 1.
+              </p>
+            </dd>
+            <dt>attribute unsigned short direction</dt>
+            <dd>
+              <p>
+                Direction behavior as specified by one of the
+                <code>WEBA_DIRECTION_*</code> constants defined in this
+                interface.
+              </p>
+              <p>
+                The <var>default value</var> is
+                <code>WEBA_DIRECTION_NORMAL</code>.
+              </p>
+            </dd>
+            <dt>attribute TimingFunction timingFunction</dt>
+            <dd class="todo">
+              TBD.
+            </dd>
+            <dt>attribute unsigned short fill</dt>
+            <dd>
+              <p>
+                Fill mode as specified by one of the <code>WEBA_FILL_*</code>
+                constants defined in this interface.
+              </p>
+              <p>
+                The <var>default value</var> is <code>WEBA_FILL_NONE</code>.
+              </p>
+            </dd>
+          </dl>
+        </section>
+      </section>
+      <section>
+        <h3>The <code>TimedItem</code> interface</h3>
+        <p>
+          The application of the timing properties specified in
+          a <code>Timing</code> object to an actor in the animation timeline
+          is represented by the <code>TimedItem</code> interface.
+        </p>
+        <dl title="interface TimedItem" class="idl">
+          <dt>readonly attribute Timing timing</dt>
+          <dd>
+            The timing parameters for this item.
+          </dd>
+          <dt>readonly attribute unrestricted float iterationDuration</dt>
+          <dd>
+            The iteration duration calculated for this item.
+            If <code>timing.iterationDuration</code> is set and greater than or
+            equal to zero, this will match
+            <code>timing.iterationDuration</code>.
+            Otherwise, this will reflect the calculated intrinsic duration of
+            the item as described in <a
+            href="#calculating-the-iteration-duration"
+            class="sectionRef"></a>.
+          </dd>
+          <dt>readonly attribute float animationDuration</dt>
+          <dd>
+            The amount of time in seconds the animation is scheduled to animate
+            as described in <a href="#calculating-the-animation-duration"
+              class="sectionRef"></a>.
+          </dd>
+          <dt>readonly attribute unsigned long? currentIteration</dt>
+          <dd>
+            The number of iterations that have completed as described in <a
+              href="#calculating-the-current-iteration" class="sectionRef"></a>.
+          </dd>
+          <dt>readonly attribute float startTime</dt>
+          <dd>
+            <p>
+              The start of the animation interval before applying
+              <code>startDelay</code> expressed in seconds in the iteration time
+              space of <code>parentGroup</code>.
+            </p>
+            <p>
+              The value returned may not correspond to the value specified when
+              creating the item (e.g. using <code>Anim.animate</code>).
+              For example, when the parent animation group instance is
+              a sequence group, the value will be determined by the procedure
+              defined in <a
+              href="#calculating-the-start-time-of-children-of-a-sequence-group"
+              class="sectionRef"></a>.
+            </p>
+            <p class="todo">
+              As with <code>endTime</code> and the proposed <code>stop()</code>
+              method below, add <code>start()</code> to set this here?
+              Throws exception for children of a sequence container?
+            </p>
+          </dd>
+          <dt>readonly attribute float endTime</dt>
+          <dd>
+            <p>
+              The time at which the animation ceases to be active expressed in
+              seconds relative to the parent animation group.
+            </p>
+            <p class="todo">
+              I think we need a means to change this while leaving the animation
+              in the tree, e.g. <code>stop(optional timeFromNow = 0)</code>.
+              For most interactive animations though <code>cancel()</code>
+              (which removes the item from the tree) should be suitable.
+            </p>
+          </dd>
+          <dt>readonly attribute unrestricted float? iterationTime</dt>
+          <dd>
+            The time in seconds representing the offset into the iteration
+            duration using the steps described in <a
+            href="#calculating-the-iteration-time" class="sectionRef"></a>.
+            As a result of that definition, this property will be
+            non-<code>null</code> only when the item is in active state (see <a
+            href="#animation-states" class="sectionRef"></a>.
+          </dd>
+          <dt>readonly attribute float? animationTime</dt>
+          <dd>
+            The time in seconds representing the offset into the animation
+            phase.
+            It is calculated using the steps described in <a
+            href="#calculating-the-animation-time" class="sectionRef"></a>.
+            As a result of that definition, this property will be
+            non-<code>null</code> if and only if the animation is in the
+            active state (see <a href="#animation-states"
+            class="sectionRef"></a>).
+          </dd>
+          <dt>readonly attribute AnimGroupInstance parentGroup</dt>
+          <dd>
+            The parent animation group instance.
+          </dd>
+          <dt>readonly attribute float startOffset</dt>
+          <dd>
+            The number of seconds that the actual item time of this item
+            lags behind the time given by <code><var>parent iteration time</var>
+            - <var>start time</var></code> as a result of pausing and seeking
+            this item.
+          </dd>
+          <dt>void setPauseState (bool pauseState)</dt>
+          <dd>
+            Sets the pause state of this timed item.
+          </dd>
+          <dt>bool getPauseState ()</dt>
+          <dd>
+            Returns the pause state of this timed item. Note that even if this
+            returns false, the timed item might still be effectively paused by
+            an ancestor animation group.
+          </dd>
+          <dt>bool isPaused ()</dt>
+          <dd>
+            Returns <code>true</code> if the pause state of this
+            object <em>or one of its ancestor animation groups</em> is
+            <code>true</code>.
+          </dd>
+          <dt>void seek (unsigned long itemTime)</dt>
+          <dd>
+            Performs a seek operation on this timed item according to the steps
+            described in <a href="#seeking-a-timed-item"
+            class="sectionRef"></a>.
+            <code>itemTime</code> is a time in seconds in <em>item time</em>
+            space (see <a href="#iteration-time-and-animation-time"
+            class="sectionRef"></a>).
+          </dd>
+          <dt>void changeSpeed (float speed)</dt>
+          <dd>
+            Updates the <code>timing.speed</code> property to match the
+            <code>speed</code> parameter and performs a compensatory seek such
+            that the <var>animation time</var> does not change. <span
+            class="todo">Need to write out the algorithm for this and clarify
+            the meaning <code>speed</code>.</span>
+          </dd>
+          <dt>void cancel ()</dt>
+          <dd>
+            Removes the timed item from its parent group. As a result, the
+            timed item will no longer affect its target.
+          </dd>
+        </dl>
+        <div class="feedbackWanted">
+          How about a <code>reverse</code> method? What it does is call
+          <code>cancel</code> on the timed item.
+          Then it generates a clone with the <code>startTime</code> set to the
+          current time (actually, we probably want to use the delay so the
+          reverse animation has the same priority).
+          Then it sets the <code>direction</code> to its opposite (i.e.
+          normal&#x2194;reverse, alternate&#x2194;alternate-reverse) and returns
+          the new timed item? (Need to make sure we avoid object-slicing here.)
+        </div>
+        <div class="todo">
+          <p>
+            Do we need a means for getting the startTime etc. in document
+            time (i.e. in terms of the root time container)?
+          </p>
+        </div>
+      </section>
+      <section>
+        <h3>Calculating the iteration duration</h3>
+        <p>
+          The <var>iteration duration</var> is calculated according to the
+          following steps:
+        </p>
+        <dl class="switch">
+          <dt>
+            If the <var>duration</var> timing property is set to a numerical
+            value greater than or equal to zero (including positive infinity),
+          </dt>
+          <dd>
+            return <var>duration</var>.
+          </dd>
+          <dt>
+            Otherwise,
+          </dt>
+          <dd>
+            return the item's <var>intrinsic duration</var>.
+          </dd>
+        </dl>
+        <p>
+          The value of an item's <var>intrinsic duration</var> depends on
+          the type of the item. For animation instances the <var>intrinsic
+          duration</var> is <code>Infinity</code>.
+        </p>
+        <p>
+          The intrinsic duration for animation group instances and media items
+          is described under <a
+          href="#calculating-the-intrinsic-duration-of-an-animation-group-instance"
+          class="sectionRef"></a> and <a
+          href="#the-intrinsic-duration-of-a-media-item"
+          class="sectionRef"></a> respectively.
+        </p>
+      </section>
+      <section>
+        <h3>Calculating the animation duration</h3>
+        <p>
+          The <var>animation duration</var> is calculated according to the
+          following steps:
+        </p>
+        <ol>
+          <li>
+            Let the <var>repeated duration</var> be <code><var>iteration
+            duration</var> * <var>iteration count</var></code>.
+          </li>
+          <li>
+            If <var>speed</var> is zero, return <code>Infinity</code>.
+          </li>
+          <li>
+            Otherwise, return <code><var>repeated duration</var>
+            / abs(<var>speed</var>)</code>.
+          </li>
+        </ol>
+      </section>
+      <section>
+        <h3>Calculating the item time</h3>
+        <p>
+          The <var>item time</var> is calculated according to the following
+          equation:
+        </p>
+        <blockquote>
+          <code><var>item time</var> = <var>parent iteration time</var>
+            - <var>start time</var> - <var>start offset</var></code>
+        </blockquote>
+        <p>where:</p>
+        <ul>
+          <li>
+            <var>parent iteration time</var> is the iteration time of the parent
+            animation group instance.
+          </li>
+          <li>
+            <var>start time</var> is the item's start time.
+          </li>
+          <li>
+            <var>start offset</var> is the accumulated drift from the start
+            time as described in <a href="#pausing-a-timed-item"
+            class="sectionRef"></a>.
+          </li>
+        </ul>
+        <p>
+          If the timed item is not the child of a parent animation group
+          instance, the <var>item time</var> is <code>null</code>.
+        </p>
+        <p class="todo">
+          Need to define this for the document timeline.
+        </p>
+      </section>
+      <section>
+        <h3>Calculating the animation time</h3>
+        <p>
+          The <var>animation time</var> is based on the <var>item time</var> and
+          <var>start delay</var>.
+          It is defined only when the timed item is active and calculated
+          according to the following steps:
+        </p>
+        <ol>
+          <li>
+            If <var>item time</var> is <code>null</code>, return
+            <code>null</code>.
+          </li>
+          <li>
+            If <code><var>item time</var> &lt; <var>start delay</var></code>,
+            the result depends on the <var>fill mode</var> as follows,
+            <dl class="switch">
+              <dt>
+                If the <var>fill mode</var> is <em>backwards</em> or
+                <em>both</em>,
+              </dt>
+              <dd>
+                return zero.
+              <dd>
+              <dt>
+                Otherwise,
+              </dt>
+              <dd>
+                return <code>null</code>.
+              </dd>
+            </dl>
+          </li>
+          <li>
+            If <code><var>item time</var> &lt; <var>animation
+            duration</var></code>, return <code><var>item
+            time</var> - <var>start delay</var></code>.
+          </li>
+          <li>
+            Otherwise, the result depends on the <var>fill mode</var> as
+            follows,
+            <dl class="switch">
+              <dt>
+                If the <var>fill mode</var> is <em>forwards</em> or
+                <em>both</em>,
+              </dt>
+              <dd>
+                return <var>animation duration</var>.
+              <dd>
+              <dt>
+                Otherwise,
+              </dt>
+              <dd>
+                return <code>null</code>.
+              </dd>
+            </dl>
+          </li>
+        </ol>
+      </section>
+      <section>
+        <h3>Calculating the iteration time</h3>
+        <p>
+          The iteration time is calculated by first dividing the <var>animation
+          time</var> into intervals. This is called the <var>unscaled iteration
+          time</var>. Following this, timing manipulations specified on the
+          timed item are applied to the <var>unscaled iteration time</var> to
+          produce the <var>iteration time</var>.
+        </p>
+        <section>
+          <h4>Calculating the unscaled iteration time</h4>
+          <p>
+            The <var>unscaled iteration time</var> is calculated according to
+            the following steps:
+          </p>
+          <ol>
+            <li>
+              If the <var>item time</var> is <code>null</code> (i.e. the
+              animation's start time is not defined), return <code>null</code>.
+            </li>
+            <li>
+              If the <var>iteration duration</var> is zero, return zero.
+            </li>
+            <li>
+              If the <var>animation time</var> equals the
+              <var>animation duration</var> and the <var>animation
+              duration</var> is a positive (non-zero) multiple of <var>iteration
+              duration</var>, return the <var>iteration duration</var>.
+            </li>
+            <li>
+              Otherwise, return <code><var>animation time</var>
+              % <var>iteration duration</var></code>.
+            </li>
+          </ol>
+        </section>
+        <section>
+          <h4>Applying time manipulations</h4>
+          <p>
+            The <var>unscaled iteration time</var> is converted into the
+            <var>iteration time</var> using the following steps:
+          <ol>
+            <li>
+              If the <var>unscaled iteration time</var> is <code>null</code>,
+              return <code>null</code>.
+            </li>
+            <li>
+              Let <var>scaled iteration time</var> be the result of applying any
+              timing function defined for this timed element to the
+              <var>unscaled iteration time</var>. <span class="todo">(Need more
+              detail here, or a link to where this is defined.)</span>
+            </li>
+            <li>
+              Calculate the <var>current direction</var> using the first
+              matching condition from the following list:
+              <dl class="switch">
+                <dt>
+                  If the direction is normal,
+                </dt>
+                <dd>Let the <var>current direction</var> be forwards.</dd>
+                <dt>
+                  If the direction is reverse,
+                </dt>
+                <dd>Let the <var>current direction</var> be reverse.</dd>
+                <dt>
+                  Otherwise,
+                </dt>
+                <dd>
+                  <ol>
+                    <li>
+                      Let <var>d</var> be the <var>current iteration</var> (see
+                      <a href="#calculating-the-current-iteration"
+                        class="sectionRef"></a>).
+                    </li>
+                    <li>
+                      If the direction is alternate-reverse increment
+                      <var>d</var> by 1.
+                    </li>
+                    <li>
+                      If the animation is not animating, and the
+                      <var>animation duration</var> is a positive multiple of
+                      the <var>iteration duration</var> increment <var>d</var>
+                      by 1.
+                    </li>
+                    <li>
+                      If <code><var>d</var> % 2 != 0</code>, let the
+                      <var>current direction</var> be forwards, otherwise let
+                      the <var>current direction</var> be reverse.
+                    </li>
+                  </ol>
+                </dd>
+              </dl>
+            </li>
+            <li>
+              If the <var>speed</var> timing property is negative, reverse the
+              <var>current direction</var>.
+            </li>
+            <li>
+              If the <var>current direction</var> is forwards then return
+              the <var>scaled iteration time</var>.
+              <p>
+                Otherwise, return the <var>iteration duration</var>
+                - <var>scaled iteration time</var>.
+              </p>
+            </li>
+          </ol>
+          <p class="note">
+            Applying the reverse behavior after applying the timing function
+            means that ease-in becomes ease-out on reverse, however it avoids
+            jumps in values when reversing part-way.
+          </p>
+        </section>
+        <section>
+          <h4>Calculating the current iteration</h4>
+          <p>
+            The <var>current iteration</var> can be calculated from the
+            following steps:
+          </p>
+          <ol>
+            <li>
+              If the <var>item time</var> is <code>null</code>, return
+              <code>null</code>.
+            </li>
+            <li>
+              If the <var>animation time</var> is zero, return zero.
+            </li>
+            <li>
+              If the <var>iteration duration</var> is zero, return
+              <code>floor(<var>iteration count</var>)</code>.
+            </li>
+            <li>
+              Return <code>floor(<var>animation time</var> /
+              <var>iteration duration</var>)</code>.
+              <p class="note">
+                If the <var>iteration duration</var> is infinite, the
+                result of <code>floor(<var>animation time</var> /
+                <var>iteration duration</var>)</code> will be zero as defined by
+                IEEE 754-2008.
+              </p>
+            </li>
+          </ol>
+        </section>
+      </section>
+      <section class="informative">
+        <h3>Pausing a timed item</h3>
+        <p>
+          Timed items may be paused and resumed independently of the parent
+          animation group instance they belong to.
+          The effect is that the time of the item drifts from that of its
+          parent.
+          This drift is called the <var>start offset</var> since it acts as an
+          additional delay added to the <var>start time</var> of the item.
+        </p>
+        <p>
+          Timed elements that do not have a parent animation group may still be
+          paused and resumed.
+          However, except for the case of the document timeline, there will be
+          no observable effect until the element is attached to a parent
+          animation group instance.
+        </p>
+        <p>
+          The <var>start offset</var> produced by pausing can be calculated as
+          follows:
+        </p>
+        <ol>
+          <li>
+            Let <var>start offset</var> be initially zero.
+          </li>
+          <li>
+            When the pause state is newly true, record the <var>parent iteration
+            time</var> as <var>pause start time</var>.
+          </li>
+          <li>
+            On the next sample, increment <var>start offset</var> by
+            <code><var>parent iteration time</var> - <var>pause start
+            time</var></code>.
+          </li>
+          <li>
+            Update <var>pause start time</var> to <var>parent iteration
+            time</var>.
+          </li>
+          <li>
+            Repeat steps 3 and 4 for each sample while paused and when the pause
+            state is newly false.
+          </li>
+        </ol>
+        <p>
+          An important characteristic of the above procedure is that the
+          <var>start offset</var> continues to accumulate while the
+          item is paused. As a result, the <var>start offset</var> must be
+          calculated prior to calculating the <var>item time</var>.
+        </p>
+      </section>
+      <section>
+        <h3>Seeking a timed item</h3>
+        <p>
+          Seeking, like pausing, has the effect of causing a timed item's
+          time to drift from that of its parent animation group instance.
+        </p>
+        <p>
+          When a seek operation is performed, the <var>start offset</var> is set
+          according to the following formula:
+        </p>
+        <blockquote>
+          <code><var>start offset</var> = <var>parent iteration time</var>
+            - <var>start time</var> - <var>seek time</var></code>
+        </blockquote>
+        <p>where:</p>
+        <ul>
+          <li>
+            <var>parent iteration time</var> - is the iteration time of the
+            parent animation group instance if there is one, otherwise it is
+            zero.
+          </li>
+          <li>
+            <var>start time</var> - is the start time of the item being
+            seeked.
+          </li>
+          <li>
+            <var>seek time</var> - is the time to seek to expressed in the
+            item time space.
+          </li>
+        </ul>
+        <p>
+          The animation events dispatched when a seek is performed are described
+          in <a href="#animation-events" class="sectionRef"></a>.
+        </p>
+        <p class="informative">
+          Note that seeking a timed item does not reset the state of the timed
+          item or its children.
+          For example, if an application is configured to produce new animations
+          in response to animation end events, seeking the document timeline
+          backwards will not remove the created animations. As a result, a naive
+          application may create overlapping animations on subsequent replays.
+          It is the application's responsibility to restore the original state
+          of the document in such situations.
+        </p>
+        <p class="feedbackWanted">
+          Is it worth adding "seek" events for this? Or the ability to mark
+          animations as "remove-on-seek" (or something of that ilk).
+        </p>
+        <p class="feedbackWanted">
+          I wonder if it makes sense to clear accumulated start offsets in some
+          states. If you rewind a document to the start, then it's perhaps
+          counter-intuitive if, on replay, the accumulated start offset due to
+          pauses still takes effect. Or maybe it's ok? Bear in mind, that if we
+          do add some feature here, it should ideally work the same when the
+          document is played in reverse.
+        </p>
+      </section>
+    </section>
+
+    <section>
+      <h2>Controlling animation playback rate</h2>
+      <p class="todo">
+        TBD.
+        Need to define timing functions and the ability to provide custom
+        functions to scale a time.
+        Not even sure what this section should be called or if it should be
+        subsection of the previous section.
+        &ldquo;Scaling the time&rdquo;?
+      </p>
+      <h3>The <code>TimingFunction</code> interface</h3>
+      <p class="todo">
+        TBD.
+      </p>
+      <dl title="interface TimingFunction" class="idl">
+      </dl>
+    </section>
+
+    <section class="informative">
+      <h2>Grouping and synchronization</h2>
+      <p>
+        While it is possible to set the timing properties of animations and
+        their instances individually, it is often useful to bundle animations
+        together and control their timing as a group.
+      </p>
+      <p>
+        This can be used to share common timing properties as illustrated below:
+      </p>
+      <div class="figure">
+        <object data="img/grouping-delay.svg" width="800"></object>
+      </div>
+      <p class="caption">
+        Using groups to share common timing properties.<br>
+        (a) Shows setting a delay of 5 seconds on individual animations.<br>
+        (b) Produces the same effect by setting the delay on the group.
+      </p>
+      <p>
+        As well as sharing timing information, by grouping animations together
+        they can be seeked, paused, and stopped as a unit.
+      </p>
+      <section class="informative">
+        <h3>Relationship of group time to child time</h3>
+        <p>
+          The timing of the children of a group is based on the timing of the
+          group. Specifically, times for the children are based on the parent's
+          <em>iteration time</em>. That is, the children animate <em>inside</em>
+          an iteration of the parent.
+        </p>
+        <p>
+          As an example, consider repetition. If a group has an iteration count
+          of 3, then the children of of the group will all play three times
+          since they effectively play <em>inside</em> the group's iterations.
+        </p>
+        <div class="figure">
+          <object data="img/grouping-repetition.svg" width="600"></object>
+        </div>
+        <p class="caption">
+          Since children of an animation group base their timing on the group's
+          <var>iteration time</var>, when the group repeats, the children play
+          again.
+        </p>
+        <p>
+          If an iteration count is specified for the children of a group as well
+          as for the group the effect is as if the iteration count of the group
+          was multiplied with the iteration count of the children.
+        </p>
+        <div class="figure">
+          <object data="img/grouping-repetition-and-animation-repetition.svg"
+            width="600"></object>
+        </div>
+        <p class="caption">
+          Specifying an iteration count of 2 on an animation group and an
+          iteration count of 3 on one of its children results in that child
+          playing 6 times.
+        </p>
+        <p>
+          A further result of the children of a group basing their timing on the
+          group's <var>iteration time</var> is that they cannot animate outside
+          of the group's active interval. This is because the <var>iteration
+          time</var> of a group will not change outside its active interval.
+          This allows groups to clip the playback of their children.
+        </p>
+        <div class="figure">
+          <object data="img/grouping-clipping.svg" width="600"></object>
+        </div>
+        <p class="caption">
+          In the first instance, an animation has a negative delay and an
+          infinite iteration count.<br>
+          However, when a similar animation is placed inside a group with
+          a specified duration it has the effect of clipping the animation's
+          duration.
+        </p>
+        <p>
+          Some further consequences of group children basing their timing on
+          their parent group's <var>iteration time</var> are:
+        </p>
+        <ul>
+          <li>
+            Setting the speed of an animation group will speed up or slow down
+            all children.
+          </li>
+          <li>
+            Changing the playback direction of an animation group will change
+            the direction of all children.
+          </li>
+          <li>
+            Applying a timing function to an animation group will affect the
+            playback rate of all children.
+          </li>
+        </p>
+      </section>
+      <section class="informative">
+        <h3>Types of groups</h3>
+        <p>
+          Groups can be used to provide synchronization behavior for its
+          children.
+          For example, one type of group runs its children in parallel, whilst
+          another type runs the children in sequence.
+        </p>
+        <p>
+          Compare the two arrangements illustrated below:
+        </p>
+        <div class="figure">
+          <object data="img/grouping-types.svg" width="600"></object>
+        </div>
+        <p class="caption">
+          Two types of animation groups.<br>
+          (a) is a parallel group where all the children run simultaneously.<br>
+          (b) is a sequence group where the children run in turn.
+        </p>
+        <p>
+          Groups can also contain other groups which allows for more
+          sophisticated synchronization.
+        </p>
+        <div class="figure">
+          <object data="img/grouping-nesting.svg" width="600"></object>
+        </div>
+        <p class="caption">
+          A sequence animation group that contains a parallel animation group as
+          a child.<br>
+          The parallel group waits for the previous child of the sequence
+          group to finish, and then the children of the parallel group play
+          simultaneously.
+          After they have finished the next child of the sequence group plays.
+        </p>
+        <p>
+          Web Animations defines two types of animation groups.
+        </p>
+        <dl>
+          <dt>Parallel groups</dt>
+          <dd>
+            Children of the group play simultaneously.
+            The start time of children is taken as relative to the start of the
+            current iteration of the group, that is, it is in the group's
+            <em>iteration time space</em>.
+          </dd>
+          <dt>Sequence groups</dt>
+          <dd>
+            Children of the group play in turn beginning with the first child
+            and proceeding to the last.
+            Any start time specified on children is ignored and replaced with
+            the time calculated using the procedure in <a
+              href="#calculating-the-start-time-of-children-of-a-sequence-group"
+              class="sectionRef"></a>.
+          </dd>
+        </dl>
+        <p class="todo">
+          Need to explain (with diagrams) that by using negative start delays
+          on children of a sequence group you make the animation intervals of
+          the children overlap.
+        </p>
+      </section>
+      <section>
+        <h3>The document timeline</h3>
+        <p>
+          We have previously referred to the document timeline as the context in
+          which animation takes places. Likewise we have referred to the
+          <em>document time space</em> as the master time space which contains
+          other time spaces. The document timeline is, in fact, a parallel
+          animation group instance with the following special properties:
+        </p>
+        <ul>
+          <li>
+            It cannot be appended as a child of another group. As a result the
+            <code>parentGroup</code> property returns <code>null</code>.
+          </li>
+          <li>
+            Attempting to set the <code>type</code> property will result in a
+            DOMException (code: NO_MODIFICATION_ALLOWED_ERR) being thrown.
+          </li>
+          <li>
+            Calls to <code>cancel()</code> will result in a DOMException (code:
+            HIERARCHY_REQUEST_ERR) being thrown.
+          </li>
+          <li>
+            For properties that represent times in <em>parent iteration time
+            space</em> a time space whose zero time is 00:00:00 UTC on 1 January
+            1970 is used instead.
+            For example, the <code>startTime</code> property of the document
+            timeline represents the number of seconds between 00:00:00 UTC on
+            1 January 1970 and when the timeline started (see <a
+              href="#start-of-the-timeline" class="sectionRef"></a>).
+          </li>
+        </ul>
+        <p class="todo">
+          Move/copy exception behavior to the relevant properties / methods.
+        </p>
+      </section>
+      <section>
+        <h3>Groups and liveness</h3>
+        <p>
+          As with animations, animation groups act as templates that can be
+          instantiated (see <a href="#creating-animations"
+          class="sectionRef"></a>).
+          The resulting groups can likewise be <em>live</em> or
+          <em>independent</em>.
+        </p>
+        <p>
+          Live animation group instances can be made independent by the
+          following means:
+        </p>
+        <ul>
+          <li>
+            Modifying any of the members of the <code>timing</code> property or
+            modifying the <code>type</code> property of the
+            <code>AnimGroupInstance</code> object.
+            This includes redundant modifications, that is, setting a property
+            to its current value.
+          </li>
+          <li>
+            Calling any of the methods that affect the list of child items
+            (<code>clear</code>, <code>append</code>, <code>insertBefore</code>,
+            or <code>remove</code>).
+          </li>
+          <li>
+            Calling the <code>makeIndependent</code> method of the
+            <code>AnimGroupInstance</code> object.
+          </li>
+        </ul>
+        <p>
+          Note that making an animation group instance independent does
+          <em>NOT</em> cause its child <code>TimedTemplate</code> objects
+          to become independent.
+        </p>
+        <p>
+          Similarly, making a child of an animation group instance independent
+          does <em>NOT</em> cause the animation group instance itself
+          to become independent.
+        </p>
+      </section>
+      <section>
+        <h3>The <code>AnimGroupInstance</code> interface</h3>
+        <p>
+          Represents a list of timed items which may be animation instances or
+          nested animation group instances. Order is significant only when
+          <code>type</code> is <code>WEBA_SYNC_SEQ</code>.
+        </p>
+        <div class="feedbackWanted">
+          <p>
+            For adding and removing items this interface relies on passing in
+            actual <a>TimedItem</a> objects. This is similar to the Element
+            interface but differs from many SVG interfaces which use numeric
+            indices instead.
+          </p>
+          <p>
+            Using objects instead of indices is generally more useful since,
+            even if you only know the index you can easily convert it to an
+            object (e.g. <code>remove(group.getItem(2))</code>) but the reverse
+            conversion is more difficult. However, there are performance costs
+            associated with creating these objects in situations where indices
+            are sufficient.
+          </p>
+          <p>
+            With the interface defined below, it's really hard to (a) remove and
+            re-add an item in the same place, (b) move an item forward one
+            place. DOM doesn't have this problem because it has
+            <code>nextSibling</code> and co. The SVG interfaces also don't have
+            this problem because they use indexes but they <em>do</em> have
+            the problem that working with a passed in object is very difficult
+            (because you don't know its index). Maybe we need nextSibling? Or
+            something to take an item and find its index?
+          </p>
+          <p>
+            Also, the use of exceptions below is perhaps a little inconsistent.
+            I've used exceptions for cases which are exceptional. For
+            <code>item</code> I think it's reasonable to return null (like
+            <code>NodeList</code>). Likewise, for <code>remove</code> I think
+            it's useful to just return <code>null</code> rather than throwing
+            an exception (e.g. if it has already been removed / not yet added).
+            Maybe you really want to return null if it has no parent and throw
+            an exception if it belongs to another group?
+          </p>
+        </div>
+        <dl title="interface AnimGroupInstance : TimedItem"
+          class="idl">
+          <dt>readonly attribute unsigned long length</dt>
+          <dd>
+            The number of timed items in the group.
+          </dd>
+          <dt>attribute unsigned short type</dt>
+          <dd>
+            <p>
+              The type of synchronization provided by this animation group
+              instance as specified by one of the <code>WEBA_SYNC_*</code>
+              constants defined on the AnimGroup interface.
+            </p>
+            <p>
+              Setting this value has the following effect:
+            </p>
+            <ol>
+              <li>
+                If <code>type</code> is set to the same value as the previous
+                value return.
+              </li>
+              <li>
+                Record the current container time.
+              </li>
+              <li>
+                For each child in the group, call <code>cancel</code>.
+              </li>
+              <li>
+                Seek the container time to zero.
+              </li>
+              <li>
+                Calculate effective start time of each child in the
+                animation group instance using the new synchronization type.
+              </li>
+              <li>
+                Seek the container time to the previously recorded time.
+              </li>
+            </ol>
+            <div class="feedbackWanted">
+              <p>
+                Note that a consequence of the above is that, for example, if
+                you change a container from type <code>par</code> to
+                <code>seq</code> you could potentially generate a lot of end
+                events followed by a lot of begin events despite the fact that
+                the animation might not produce any different visual result. We
+                could change the behavior so that it effectively records the
+                play state of each item before and then after the "seek"
+                dispatches the appropriate events.
+              </p>
+              <p>
+                Actually, I think we're just going to end up subclassing groups
+                based on type. It solves lots of problems
+              </p>
+            </div>
+          </dd>
+          <dt>readonly attribute AnimGroup? template</dt>
+          <dd>
+            For live animation group instances (see <a
+            href="#creating-animations" class="sectionRef"></a>), the
+            <code>AnimGroup</code> object from which this object was
+            minted.
+            For independent animation group instances, this property is
+            <code>null</code>.
+          </dd>
+          <dt>void clear ()</dt>
+          <dd>
+            Removes all child timed items from the group.
+          </dd>
+          <dt>TimedItem append (TimedItem newItem)</dt>
+          <dd>
+            Add <code>newItem</code> as the last item in the group. If
+            <code>newItem</code> already belongs to a group (including this
+            group) it will first be removed from that group before being added
+            to this group. Returns <code>newItem</code>.
+          </dd>
+          <dt>TimedItem insertBefore (TimedItem newItem,
+            TimedItem? refItem)</dt>
+          <dd>
+            <p>
+              Inserts <code>newItem</code> before the existing
+              <code>refItem</code>. If <code>refItem</code> is null,
+              <code>newChild</code> is added to the end of the list. If
+              <code>newItem</code> already belongs to a group (including this
+              group) it will first be removed from that group before being added
+              to this group. If <code>newItem</code> and <code>refItem</code>
+              are the same object then no change is made. Returns
+              <code>newItem</code>.
+            </p>
+            <p class="feedbackWanted">
+              What events are fired? If <code>newChild</code> is removed from
+              a group then fire end event?
+            </p>
+            <p>Exceptions:</p>
+            <ul>
+              <li>HIERARCHY_REQUEST_ERR: Raised if <code>newItem</code> is
+              the document timeline for a document (see <a
+                href="#the-document-timeline" class="sectionRef"></a>).</li>
+              <li>NOT_FOUND_ERR: Raised if <code>refItem</code> is not a child
+              of this group.</li>
+            </ul>
+          </dd>
+          <dt>TimedItem? item (unsigned long index)</dt>
+          <dd>
+            Returns the item at <code>index</code>. If <code>index</code> is
+            greater than or equal to <code>length</code> returns
+            <code>null</code>. Equivalent to
+            <code>AnimGroupInstance[index]</code>.
+            <span class="todo">(Need to work out how to define this
+              behavior&mdash;i.e. that you can use the subscript
+              operator)</span>
+          </dd>
+          <dt>unsigned long indexOf (TimedItem item)</dt>
+          <dd>
+            Opposite to <code>item()</code> method, returns index of the
+            <code>item</code>. If <code>item</code> is not in the group,
+            returns <code>-1</code>.
+          </dd>
+          <dt>
+            array splice (unsigned long start, unsigned long deleteCount,
+            TimedItem item1?, TimedItem item2?, )
+          </dt>
+          <dd>
+            <!-- pretty much copied from ECMAScript description of splice method
+            for array: Array.prototype.splice -->
+            When the <code>splice</code> method is called with two or more
+            arguments <code>start</code>, <code>deleteCount</code> and
+            (optionally) <code>item1</code>, <code>item2</code>, etc., the
+            <code>deleteCount</code> elements of the group starting at group
+            index <code>start</code> are replaced by the arguments
+            <code>item1</code>, <code>item2</code>, etc. An Array object
+            containing the deleted elements (if any) is returned.
+          </dd>
+          <dt>TimedItem? remove (TimedItem removedItem)</dt>
+          <dd>
+            Removes <code>removedItem</code> from the group and returns it. If
+            <code>removedItem</code> is not part of this group, returns
+            <code>null</code>.
+          </dd>
+          <dt>bool makeIndependent()</dt>
+          <dd>
+            <p>
+              Makes this object independent of the template from which it was
+              created.
+              See <a href="#creating-animations" class="sectionRef"></a>.
+            </p>
+            <p>
+              After this method returns, the <code>template</code>
+              property will be <code>null</code>.
+            </p>
+            <p>
+              Returns <code>true</code> if this object was previously a live
+              animation group instance, <code>false</code> if this object was
+              already an independent animation group instance.
+            </p>
+          </dd>
+          <dt>sequence&lt;AnimInstance&gt; getActiveAnimations ()</dt>
+          <dd>
+            Returns all descendent <code>AnimInstance</code> objects
+            that are active.
+            The returned sequence is a snapshot (i.e. not live) representing the
+            state of animations that corresponds to the time returned by the
+            <code>iterationTime</code> property of this
+            <code>AnimGroupInstance</code> object when this method was
+            called.
+          </dd>
+          <dt>sequence&lt;AnimInstance&gt; getAnimationsForElement
+            (Element elem)</dt>
+          <dd>
+            Returns all descendent <code>AnimInstance</code> objects
+            whose <code>targetElement</code> is <code>elem</code>.
+            As with <code>getActiveAnimations</code>, the returned sequence is
+            a snapshot (i.e. not live) representing the state of animation
+            when this method was called.
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Calculating the intrinsic duration of an animation group instance
+        </h3>
+        <p>
+          TBD, but basically:
+        </p>
+        <dl class="switch">
+          <dt>If the type is parallel,</dt>
+          <dd>
+            Calc the endTime for each child and take the max
+          </dd>
+          <dt>If the type is sequence</dt>
+          <dd>
+            Sum all the animation durations + start delays (including
+            negatives)
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Calculating the start time of children of a sequence group</h3>
+        <p>
+          The start time for the children of a sequence animation group instance
+          is calculated according to the following procedure:
+        </p>
+        <ol>
+          <li>Let the <var>accumulated start time</var> be zero.
+          <li>
+            Iterate over each child in the group beginning with the first item
+            in the group and proceeding to the last.
+            For each child perform the following steps:
+            <ol>
+              <li>
+                Let the start time of the child be <var>accumulated start
+                time</var>
+              </li>
+              <li>
+                Increment <var>accumulated start time</var> by
+                <code><var>start delay</var> + <var>animation
+                duration</var></code>
+              </li>
+            </ol>
+          </li>
+        </ol>
+        <p class="note">
+          When <var>animation duration</var> is positive infinity the behavior
+          is defined by IEEE 754-2008.
+          In effect, if any of the children of a sequence animation group
+          instance has an infinite animation duration, any children that occur
+          later in the sequence will not play.
+        </p>
+      </section>
+      <section>
+        <h3>The <code>AnimGroup</code> interface</h3>
+        <p>
+          <code>AnimGroupInstance</code> objects are not created
+          directly, but rather via a <code>AnimGroup</code> object that
+          acts as a template for creating animation group instances that target
+          different elements.
+        </p>
+        <dl title="[Constructor] interface AnimGroup : TimedTemplate"
+          class="idl">
+          <dt>const unsigned short WEBA_SYNC_PAR = 0</dt>
+          <dd>
+            Parallel synchronization.
+          </dd>
+          <dt>const unsigned short WEBA_SYNC_SEQ = 1</dt>
+          <dd>
+            Sequence synchronization.
+          </dd>
+          <dt>attribute unsigned short type</dt>
+          <dd>
+            <p>
+              The type of synchronization provided by instances of this
+              animation group as specified by one of the
+              <code>WEBA_SYNC_*</code> constants defined in this interface.
+            </p>
+          <dt>void clear ()</dt>
+          <dd>
+            Removes all child templates from the group.
+          </dd>
+          <dt>TemplateItem append (TemplateItem newItem)</dt>
+          <dd>
+            Add <code>newItem</code> as the last item in the group. If
+            <code>newItem</code> already belongs to a group (including this
+            group) it will first be removed from that group before being added
+            to this group. Returns <code>newItem</code>.
+            <span class="todo">Is that necessary? For templates you could just
+              make them share-able? But better to be consistent?</span>
+          </dd>
+          <dt>TemplateItem insertBefore (TemplateItem newItem,
+            TemplateItem? refItem)</dt>
+          <dd>
+            <p>
+              Inserts <code>newItem</code> before the existing
+              <code>refItem</code>. If <code>refItem</code> is null,
+              <code>newChild</code> is added to the end of the list. If
+              <code>newItem</code> already belongs to a group (including this
+              group) it will first be removed from that group before being added
+              to this group. If <code>newItem</code> and <code>refItem</code>
+              are the same object then no change is made. Returns
+              <code>newItem</code>.
+            </p>
+            <p>Exceptions:</p>
+            <ul>
+              <li>NOT_FOUND_ERR: Raised if <code>refItem</code> is not a child
+              of this group.</li>
+            </ul>
+          </dd>
+          <dt>TemplateItem? item (unsigned long index)</dt>
+          <dd>
+            Returns the item at <code>index</code>. If <code>index</code> is
+            greater than or equal to <code>length</code> returns
+            <code>null</code>. Equivalent to
+            <code>AnimGroup[index]</code>.
+            <span class="todo">(Need to work out how to define this
+              behavior&mdash;i.e. that you can use the subscript
+              operator)</span>
+          </dd>
+          <dt>TemplateItem? remove (TemplateItem removedItem)</dt>
+          <dd>
+            Removes <code>removedItem</code> from the group and returns it. If
+            <code>removedItem</code> is not part of this group, returns
+            <code>null</code>.
+          </dd>
+        </dl>
+        <p class="todo">
+          Need to think about the constructors for this. You really want to be
+          able to just do something like <code>var group = new par(anim1,
+          anim2)</code>.
+        </p>
+      </section>
+      <section>
+        <h3>Instantiating an <code>AnimGroup</code></h3>
+        <p>
+          The procedure for instantiating an <code>AnimGroup</code>,
+          <var>template</var>, given a list of target elements, and optionally
+          given a <var>parent group</var>, is as follows:
+        </p>
+        <ol>
+          <li>
+            Create an empty sequence of <code>AnimGroupInstance</code>
+            objects.
+          </li>
+          <li>
+            For each <var>element</var> in the list of target elements:
+            <ol>
+              <li>
+                Create a new <code>AnimGroupInstance</code> object,
+                <var>group</var>.
+              </li>
+              <li>
+                Set the <code>timing</code> property of <var>group</var> to
+                a copy of <code>template.timing</code>.
+              </li>
+              <li>
+                For each <var>child</var> in <var>template</var>, call
+                <code><var>child</var>.animateWithParent(<var>element</var>,
+                <var>group</var>, <code>startTime</code>)</code>
+              </li>
+              <li>
+                If <var>parentGroup</var> is not specified, let
+                <var>parentGroup</var> be
+                <code><var>element</var>.ownerDocument.animationTimeline</code>.
+              </li>
+              <li>
+                Append <var>group</var> to <var>parentGroup</var>.
+              </li>
+              <li>
+                Append <var>group</var> to the sequence of
+                <code>AnimGroupInstance</code> objects.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Return the sequence of <code>AnimGroupInstance</code>
+            objects.
+          </li>
+        </ol>
+      </section>
+    </section>
+
+    <section>
+      <h2>Animation values</h2>
+
+      <section class="informative">
+      <p>
+        Each <code>Anim</code> object contains an object which
+        subclasses <code>AnimFunction</code>. These objects describe
+        how animation values should be calculated for the
+        <code>Anim</code> for any given time.
+      </p>
+      </section>
+      <section>
+        <h3>The <code>AnimFunction</code> interface</h3>
+        <dl title="[Constructor] interface AnimFunction" class="idl">
+          <dt>const unsigned short WEBA_OPERATION_REPLACE = 0</dt>
+          <dd>
+            This animation should replace the value it is composited with.
+          </dd>
+          <dt>const unsigned short WEBA_OPERATION_ACCUMULATE = 1</dt>
+          <dd>
+            This animation should add to the value it is composited with.
+            The meaning of addition is dependent on the type of animation.
+          </dd>
+          <dt>const unsigned short WEBA_OPERATION_MERGE = 2</dt>
+          <dd>
+            This animation should merge with the value it is composited with.
+            The meaning of merge is dependent on the type of animation.
+            The duration of the merge is the calculated animation duration
+            of the <code>Anim</code> containing this <code>AnimFunction</code>.
+          </dd>
+          <dt>attribute unsigned short operation</dt>
+          <dd>
+            <p>
+              The operation used to composite this animation with the stack, as 
+              specified by one of the <code>WEBA_OPERATION_*</code> constants 
+              defined in this interface.
+            </p>
+            <p>
+              This value defaults to <code>WEBA_OPERATION_REPLACE</code>
+            </p>
+          </dd>
+          <dt>attribute unsigned short accumulateOperation</dt>
+          <dd>
+            <p>
+              The operation used to composite each iteration of this animation
+              with the result of compositing the previous animation, as specified
+              by one of the <code>WEBA_OPERATION_*</code> constants defined in
+              this interface.
+            </p>
+            <p>
+              This value defaults to <code>WEBA_OPERATION_REPLACE</code>.
+            </p>
+          </dd>
+          <dt>attribute DOMString? pace</dt>
+          <dd>
+            This is just a placeholder for some kind of
+            <i>whole-animation-function</i> timing control.
+            For example, SVG has <code>calcMode="paced"</code> which looks at
+            all the frames in the animation and adjusts the timing so the pace
+            of change is constant (this is especially useful for motion on
+            a path).<br>
+            The example here could take values <code>null</code> (default),
+            "auto", or something like "1px/s" (not sure what the datatype
+            should be here).
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>KeyframesAnimFunction</code> interface</h3>
+        <div class="todo">
+          <p>
+            It seems like it might even be
+            useful to allow script to provide its own function. I'm not sure how
+            that works exactly, but if we were to support that, then the
+            interface would be something like:
+          </p>
+          <ul>
+            <li>
+              <code>Sample(float iterationProgress, Element target, any
+              underlyingValue)</code> (where <code>iterationProgress</code> is
+              the ratio of <var>iteration time</var> to <var>iteration
+              duration</var>)
+            </li>
+          </ul>
+          <p>
+            Implementations of the function would be expected to produce the
+            same result given the same parameters so the implementation could
+            cache the result and not call the function when the parameters were
+            the same.
+          </p>
+          <p>
+            That would potentially let you animate anything. Anything! (And,
+            that could be bad. The callback could rewrite the entire document
+            every sample. After returning from the callback you'd have to do
+            a lot of checks regarding the state of the world before continuing.)
+          </p>
+        </div>
+        <p>
+          I think most of the members of the interface, perhaps all, should be
+          readonly when this object is returned from
+          an <code>AnimInstance</code> object. Objects returned from
+          an <code>Anim</code>, however, are live.
+        </p>
+        <p>
+          <dl title="[Constructor] interface KeyframesAnimFunction : AnimFunction" class="idl">
+            <dt>attribute DOMString property</dt>
+            <dd>
+              The target attribute / property. <code>property</code> is probably
+              a reserved word we should avoid though.
+            </dd>
+            <dt>attribute AnimFrameList frames</dt>
+            <dd>
+              The series of values that make up this function sorted by their
+              offset within the iteration duration of the animation.
+            </dd>
+          </dl>
+        </p>
+      </section>
+      <section>
+        <h3>The <code>AnimFrame</code> interface</h3>
+        <p>
+          <dl title="[Constructor] interface AnimFrame" class="idl">
+            <dt>attribute any value</dt>
+            <dd>
+              The attribute / property value for the given frame
+            </dd>
+            <dt>attribute float offset</dt>
+            <dd>
+              A value between 0 and 1 (inclusive) representing the offset within
+              the iteration duration of the animation where this value should
+              appear. Ignored if we're using paced timing?<br>
+              What happens if you change it? The array returned by the
+              <code>AnimFunction</code> is updated? I guess that's fine
+              if it's just an array. Any already-returned arrays wouldn't need
+              to be updated.<br>
+              What happens if you have two values with the same offset? It would
+              be nice if the result was deterministic rather than just left up
+              in the air (since the more you leave undefined, the more you let
+              the Web define it for you).
+            </dd>
+            <dt>attribute TimingFunction timingFunction</dt>
+            <dd>
+              The function to use for this segment. Would a string do here? E.g.
+              "ease" or "cubic-bezier(1 0 0.3 1)"? Probably not. It's a little
+              too CSS-specific for a start, and we want to allow this to
+              potentially be a function pointer.<br>
+              Ignored if we're using paced timing
+            </dd>
+          </dl>
+        </p>
+      </section>
+      <section>
+        <h3>The <code>AnimFrameList</code> interface</h3>
+        <dl title="interface AnimFrameList" class="idl">
+          <dt>readonly attribute unsigned long length</dt>
+          <dd>
+            The number of frames in the list.
+          </dd>
+          <dt>AnimFrameList? item(unsigned long index)</dt>
+          <dd>
+            Returns the frame at <code>index</code> if it exists or null.
+          </dd>
+          <dt>AnimFrameList? add(AnimFrame frame)</dt>
+          <dd>
+            Adds <code>frame</code> to the list such that the list is sorted
+            by the offset of the frames. If there's already a frame with the
+            same offset? This one comes after?
+          </dd>
+          <dt>AnimFrameList? remove(unsigned long index)</dt>
+          <dd>
+            Adds <code>frame</code> to the list such that the list is sorted
+            by the offset of the frames. If there's already a frame with the
+            same offset? This one comes after?
+          </dd>
+        </dl>
+        <p>
+          Not sure about the <code>remove</code> method. Do we want:
+          <ul>
+            <li><code>remove(AnimFrame frame)</code>?</li>
+            <li><code>removeAtOffset(unsigned long offset)</code>?</li>
+            <li><code>itemAtOffset(unsigned long offset)</code>?</li>
+          </ul>
+        </p>
+      </section>
+      <section>
+        <h3>The <code>PathAnimFunction</code> interface</h3>
+        <dl title="[Constructor] interface PathAnimFunction : AnimFunction" class="idl">
+          <dt>attribute SVGPathSegList segments</dt>
+          <dd>
+            The list of segments that make up this path.
+          </dd>
+          <dt>attribute boolean rotate</dt>
+          <dd>
+            True if objects animating along this path should be rotated
+            such that their positive x axis is aligned with the direction of
+            movement along the path.
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>GroupedAnimFunction</code> interface</h3>
+        <p>
+          The <code>GroupedAnimFunction</code> interface represents a
+          set of animation functions that share the same
+          <code>Anim</code> parent.
+        </p>
+        <dl title="[Constructor] interface GroupedAnimFunction : AnimFunction" class="idl">
+          <dt>readonly attribute unsigned long length</dt>
+          <dd>
+            The number of animation functions in the group.
+          </dd>
+          <dt>AnimFunction? item(unsigned long index)</dt>
+          <dd>
+            Returns the function at <code>index</code> if it exists, or null.
+          </dd>
+          <dt>void add(AnimFunction function)</dt>
+          <dd>
+            Adds <code>function</code> to the group.
+          </dd>
+          <dt>void remove(unsigned long index)</dt>
+          <dd>
+            Removes the function at <code>index</code> if it exists.
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Calculating the current time fraction</h3>
+        <div class="todo">
+          <p>
+            This is just <var>iteration time</var> (as defined in <a
+              href="#calculating-the-iteration-time" class="sectionRef"></a>)
+            divided by <var>iteration duration</var> (as defined in <a
+              href="#calculating-the-iteration-duration"
+              class="sectionRef"></a>).
+            This isn't the job of the animation model to calculate, this is the
+            output of the timing model.
+            I've called this the iteration distance elsewhere.
+          </p>
+          <p>
+            To be more specific, the two pieces of output needed from the timing
+            model are the iteration distance (<code>iteration time / iteration
+              duration</code>) and the current iteration (needed for accumulate
+            behavior etc., see definition in <a
+              href="#calculating-the-current-iteration"
+              class="sectionRef"></a>).
+          </p>
+        </div>
+      </section>
+      <section>
+        <h3>Calculating animation values</h3>
+          <section>
+            <h4>Calculating the animation value from an iteration value</h4>
+            <p>
+              If the <var>current iteration</var> is zero, or the 
+              <var>accumulateOperation</var> is
+               <code>WEBA_OPERATION_REPLACE</code>, then the 
+               <var>animation value</var> is simply the iteration value, as
+              defined below.
+            </p>
+            <p>
+              When the animation time equals the iteration duration for the 
+              first time for an animation, the current 
+              <var>animation value</var> should be retained as the
+              <var>end value</var> for the animation.
+            </p>
+            <p>
+              If the <var>current iteration</var> is not zero and the
+              <var>accumulateOperation</var> is
+              <code>WEBA_OPERATION_ACCUMULATE</code> then the 
+              <var>animation value</var> is the <var>end value</var> accumulated 
+              <var>current iteration</var> times, with the 
+              <var>iteration value</var> accumulated on top.
+            </p>
+            <p>
+              If the <var>current iteration</var> is not zero and the
+              <var>accumulateOperation</var> is
+              <code>WEBA_OPERATION_MERGE</code> then the
+              <var>animation balue</var> is the <var>end value</var> merged
+              with the <var>iteration value</var>, with an interpolation
+              parameter equal to the current <var>time fraction</var>
+            </p>
+          </section>
+          <section>              
+            <h4>Calculating the iteration value for a 
+              <code>KeyframesAnimFunction</code></h4>
+            <p>
+              When an <code>Anim</code> contains a pointer to a
+              <code>KeyframesAnimFunction</code>, the <var>animation
+              value</var> for that animation at given current time 
+              <var>t</var> is calculated according to the following steps:
+            </p>
+            <ol>
+              <li>
+                Convert <var>t</var> to the <var>current time fraction</var>.
+              </li>
+              <li>
+                Generate a <var>sorted frame list</var> by sorting the list of
+                <code>AnimFrame</code> objects contained within the
+                <code>AnimFrameList</code> object by their 
+                <var>offset</var>.
+                If there are no frames in the <var>sorted frame list</var>
+                then no animation occurs and the <var>animation value</var> is
+                just the <var>baseVal</var> of the property being animated.
+                <p class="todo">
+                  Need to define the "<code>AnimFrame</code> objects
+                  contained within the <code>AnimFrameList</code>
+                  object" better.
+                </p>
+              </li>
+              <li>
+                Find the <var>after frame</var> by iterating through the 
+                <var>sorted frame list</var> until the last
+                <code>AnimFrame</code> with an <var>offset</var>
+                larger than the <var>current time fraction</var> is
+                encountered.
+              </li>
+              <li>
+                If the <var>after frame</var> is the first frame in the
+                <var>sorted frame list</var>, then construct a 
+                <var>before frame</var> with an <var>offset</var> of 0 and a
+                value equal to the <var>baseVal</var> of the property being
+                animated.
+                <p class="todo">
+                  Need to define baseVal and animVal somewhere.
+                </p>
+              </li>
+              <li>
+                If the <var>after frame</var> does not exist (i.e. all frames
+                have an <var>offset</var> less than the <var>current time 
+                fraction</var>) then construct an <var>after frame</var> with
+                an <var>offset</var> of 1 and a value equal to the
+                <var>baseVal</var> of the property being animated, and
+                Set the <var>before frame</var> to the last frame in the 
+                <var>sorted frame list</var>.
+              </li> 
+              <li>
+                Otherwise (the <var>after frame</var> exists and is not the
+                first frame in the <var>sorted frame list</var>) ste the 
+                <var>before frame</var> to the frame immediately prior to the
+                <var>after frame</var> in the <var>sorted frame list</var>.
+              </li>
+              <li>
+                The <var>local time function</var> is the
+                <var>timingFunction</var> of the <var>before frame</var>, if 
+                it exists; otherwise the <var>timingFunction</var> of the
+                <code>AnimInstance</code> interface's
+                <var>timing</var> attribute.
+              </li>
+              <li>
+                Find the <var>local time fraction</var> by subtracting
+                the <var>offset</var> of the <var>before frame</var> from
+                the <var>current time fraction</var>, then dividing the result
+                by the difference between the <var>offset</var> of the
+                <var>after frame</var> and the <var>offset</var> of the
+                <var>before frame</var>.
+              <li>
+                Calculate the <var>effective time fraction</var> by applying
+                the <var>local time function</var> to the <var>local time
+                fraction</var>.
+              <li>
+                Calculate the <var>animation value</var> by linearly 
+                interpolating the values of the <var>before frame</var> and
+                <var>after frame</var>, using the 
+                <var>effective time fraction</var> as interpolation parameter.
+                <p class="todo">
+                  Need a rigorous definition of linear interpolation - could
+                  just reference the relevant specifications.
+                </p>
+              </li>
+            </ol>
+          </section>
+          <section>
+            <h4>Calculating the iteration value for a 
+              <code>PathAnimFunction</code></h4>
+            <p>
+              When an <code>Anim</code> contains a pointer to a
+              <code>PathAnimFunction</code> and <var>rotate</var> is set
+              to false, the <var>animation value</var> for that animation at
+              given current time <var>t</var> is the transform defined by a
+              translation equal to the location on the path at <var>t</var>.
+            </p>
+            <p>
+              When <var>rotate</var> is set to true, the
+              <var>animation value</var> is the transform defined by the above
+              translation followed by a rotation defined by the following
+              process:
+            </p>
+            <ol>
+              <li>
+                Calculate the <var>normal</var> to the path at <var>t</var>.
+              </li>
+              <p class="todo">define how to calculate the normal</p>
+              <li>
+                Determine the <var>normal rotation</var>, which is given by 
+                <var>atan2(normal.y, normal.x).
+              </li>
+              <li>
+                The <var>rotation</var> is the transform that rotates by
+                the <var>normal rotation</var>.
+              </li>
+            </ol>
+
+          </section>
+          <section>
+            <h4>Calculating the iteration value for a 
+              <code>GroupedAnimFunction</code></h4>
+            <p>
+              When an <code>Anim</code> contains a pointer to a
+              <code>GroupedAnimFunction</code>, the <var>animation
+              value</var> for that animation at given current time <var>t</var> 
+              is calculated by following the procedure outlined in
+              <a href="#resolving-animation-stacks" class="sectionRef"></a>, 
+              treating the list of <code>AnimFunction</code> objects 
+              contained within the <code>GroupedAnimFunction</code> as 
+              the animation stack and using an initial animation value 
+              of 0 for all simple properties and id for transform.
+            </p>
+          </section>
+        </section>
+      <p>
+        Need to add:
+        <ul>
+          <li>Pre-defined timing functions, spline-based timing functions etc.
+          (want to allow a series of splines, not just four points)</li>
+          <li>Custom easing functions</li>
+          <li>Pace control (e.g. <code>pace="10px/s"</code>?)</li>
+          <li>General functional syntax</li>
+          <li>&lsquo;to&rsquo; animation</li>
+        </ul>
+      </p>
+      <p>
+        Somewhere we need to describe how animated values get stored in the DOM.
+        i.e. can you access them at all? what's the interaction with various
+        override stylesheets etc.
+      </p>
+      <p>
+        Need to add a way for getting animation values of motion-on-a-path
+        animations
+      </p>
+    </section>
+
+    <section>
+      <h2>Combining animations</h2>
+      <section>
+        <h3>The Global Animation Stack</h3>
+        <p>
+          When multiple active animations target the same element, the
+          animations are ordered into a stack which resolves how those 
+          animations combine. This stack is sorted by animation start time.
+          Where multiple animations have the same start time, those animations
+          are sorted in document order (for animations from the DOM) and script
+          order (for animations from the API). Script animations are always
+          sorted after DOM animations.
+        </p>
+        <p>
+          Other operations also generate animation stacks - for example, 
+          grouping multiple animations using a 
+          <code>GroupedAnimFunction</code>.
+        </p>
+        <p>
+          An animation stack may be thought of as a single stack with all
+          animations sorted into it, or a stack per animating element, as
+          animations on one element cannot effect the course of animations on 
+          another element.
+        </p>
+        <p class="note">
+          The start time of an animation refers to the recorded or 
+          calculated start time (i.e. the point where an animation changes 
+          phase from <code>Inactive</code> to <code>Delayed</code>), not the
+          point at which the animation actually starts (i.e. the point where
+          an animation changes phase from <code>Delayed</code> to 
+          <code>Animating</code>). 
+        </p>
+        <p class="note">
+          The stacking order of animations is independent of the
+          current play direction of individual animations and animation
+          groups.
+        </p>
+      </section>
+      <section>
+        <h3>Resolving Animation Stacks</h3>
+        <p>
+          In order to resolve an animation stack, an initial animation
+          value is required for each element and property animated by the
+          stack.
+          To calculate a current animation value for elements and properties
+          from an animation stack, an animation value is generated for each
+          animation in the stack 
+          (see <a href="#calculating-animation-values" class="sectionRef"></a>).
+          The cumulative animation result for each element and property is first
+          initialised to the relevant initial animation value.
+          Starting at the bottom of the stack (i.e. earliest start time) and
+          working up, as animation results are encountered for an element
+          and property, these are merged into the cumulative animation result
+          using the animation combinator stored in the 
+          <code>AnimFunction</code> that generated the result.
+          Once all animation results in the stack are processed, the resulting
+          cumulative animation values are the current animation values for
+          each property of each element that is animated.
+        </p>
+      </section>
+      <section>
+        <h3>Animation combinators</h3>
+        <p>
+          When an animation applies to a target and property that animations
+          earlier in the animation stack have already applied to, the
+          cumulative animation result from the stack is composited with the new
+          animation to produce a new cumulative animation result.
+          The possible combinators are defined as <code>WEBA_OPERATION_*</code>
+          constants in the <code>AnimFunction</code> interface.
+        </p>
+        <section>
+          <h4>The REPLACE combinator</h4>
+          <p>
+            When an animation <code>a</code> is composited over a cumulative
+            animation result <code>c</code> using the REPLACE combinator, the
+            new cumulative animation result is always <code>a</code>.
+          </p>
+        </section>
+        <section>
+          <h4>The ACCUMULATE combinator</h4>
+          <p>
+            When a path animation <code>a</code> is composited over a
+            cumulative animation result <code>c</code> using the ACCUMULATE
+            combinator, the effective transform of <code>a</code> is calculated.
+            This transform is then post-multiplied to the cumulative animation
+            result to generate a new cumulative animation result.
+          </p>
+          <p>
+            When a transform animation <code>a</code> is composited over a
+            cumulative animation result <code>c</code> using the ACCUMULATE
+            combinator, <code>a</code> is post-multiplied to the cumulative
+            animation result to generate a new cumulative animation result.
+          </p>
+          <p>
+            When a simple animation (i.e. an animation which is not a path
+            animation nor a transform animation) <code>a</code> is composited
+            over a cumulative animation result <code>c</code> using the
+            ACCUMULATE combinator, the new cumulative animation result is the
+            sum of <code>a</code> and <code>c</code>, clipped if necessary to
+            the appropriate domain.
+          </p>
+        </section>
+        <section>
+          <h4>The MERGE combinator</h4>
+          <p>
+            All MERGE operators are governed by an interpolation parameter
+            <code>p</code> that is calculated as the ratio of
+            <code>(currentTime - parent.startTime) / parent.animationDuration</code>,
+            where <code>parent</code> is the <code>Anim</code> which
+            references the <code>AnimFunction</code> that is being
+            composited.
+          </p>
+          <p>
+            When a path animation <code>a</code> is composited over a
+            cumulative animation result <code>c</code> using the MERGE
+            combinator, the effective transform of <code>a</code> is
+            calculated.
+            This transform is then interpolated with <code>c</code> using the
+            rules provided in [[!CSS3-2D-TRANSFORMS]] to provide the new
+            cumulative animation result.
+          </p>
+          <p>
+            When a transform animation <code>a</code> is composited over a
+            cumulative animation result <code>c</code> using the MERGE
+            combinator, <code>a</code> is interpolated with <code>c</code>
+            using the rules provide in [[!CSS3-2D-TRANSFORMS]] to provide the 
+            new cumulative animation result.
+          </p>
+          <p>
+            When a simple animation <code>a</code> is composited over a
+            cumulative animation result <code>c</code> using the MERGE
+            combinator, the new cumulative animation result is calculated as
+            the weighted sum of <code>a</code> and <code>c</code>, with weights
+            of <code>(1-p)</code> and <code>p</code> respectively.
+          </p>
+        </section>
+      </section>
+      <section>
+        <h3>Computing the override stylesheet</h3>
+        <p>
+          The override stylesheet contains output animation values and
+          acts with a higher priority than all other stylesheets. However,
+          !important rules from all other stylesheets act with a higher priority
+          than the override stylesheet.
+          The override stylesheet is regenerated for each timepoint in a
+          document using the following process:
+        </p>
+        <ol>
+          <li>
+            A global animation stack is generated as described in 
+            <a href="#the-global-animation-stack" class="sectionRef"></a>.
+          </li>
+          <li>
+            An initial animation value is generated by taking the current
+            style for each object (ignoring the override stylesheet) and
+            extracting a value for each animated property.
+          </li>
+          <li>
+            The global animation stack is resolved using the initial animation
+            value and the process in 
+            <a class="sectionRef" href="#resolving-animation-stacks"></a>.
+          </li>
+          <li>
+            The current animation values generated by this process are inserted
+            into the override stylesheet.
+          </li>
+          <p class="todo">
+            Do we need to work out how to use the override stylesheet for
+            elements that don't have an id but are targetted for animations?
+          </p>
+        </ol>
+      </section>
+    </section>
+
+    <section>
+      <h2>Synchronizing with media</h2>
+      <div class="feedbackWanted">
+        <p>
+          We want to model synchronizing with media as forcing the pause/play 
+          and current time state of content to be synchronized to match the 
+          state of the media. There are two basic possibilities here:
+        </p>
+        <ol>
+          <li>
+            <p>
+              Create a container type that causes all contained items to have
+              synchronized pause/play and current time state. The pause state
+              of such containers would be the union of pause states of children,
+              and calls to set the current time of any child would be diverted
+              to modify the current time of the parent instead.
+            </p>
+            <p>
+              Note that this could be a completely new container type 
+              (e.g. a "synchronized" or "media" container) or an optional
+              parameter modifying existing container types.
+          </li>
+          <li>
+            <p>
+              Add an option to the children that, when set, causes them to be
+              synchronized to the parent state. The pause state of the parent 
+              would need to take the pause state of synchronized children into 
+              account. Calls to set the current time of synchronized children 
+              would be diverted to modify the current time of the parent
+              instead.
+            </p>
+              <p>
+                If this model is adopted, media can be synchronized to the 
+                parent state, causing network-derived delays to propagate to the
+                parent container and hence all children of that container;
+                however other children of the container could still be
+                independently played/paused/seeked.
+              </p>
+          </li>
+        </ol>
+        <p>
+          Which model is better? Are there alternatives we should consider too?
+        </p>
+      </div>
+      <section>
+        <h3>The intrinsic duration of a media item</h3>
+        <p class="todo">
+          Basically just take the <code>HTMLMediaElement.duration</code>
+          property. Possibly convert <code>NaN</code> values to positive
+          infinity.
+        </p>
+      </section>
+      <section>
+        <h3>The <code>MediaItem</code> interface</h3>
+        <dl title="interface MediaItem : TimedItem" class="idl">
+          <dt>attribute HTMLMediaElement element</dt>
+          <dd>
+            A pointer to the element?
+          </dd>
+        </dl>
+      </section>
+    </section>
+
+    <section>
+      <h2>Animation events</h2>
+      <p>
+        Need to consider how to align with existing
+        <code>TransitionEvent</code>s, <code>AnimationEvent</code>s and
+        <code>TimeEvent</code>s. It might make sense to have our events inherit
+        from one or more of these interfaces or have implementations dispatch
+        both (especially if their synchronization properties differ).
+      </p>
+      <p>
+        I think we might also want a seek event? It seems like a lot of
+        applications will want to do bookkeeping when there's
+        a seek&mdash;especially a backwards seek. It might also be necessary for
+        the SVG bindings so you can clear certain events on a backwards seek as
+        required by SMIL.
+      </p>
+      <p>
+        Talk about what events are dispatched on a seek.
+      </p>
+      <section>
+        <h3>Synchronizing event handlers</h3>
+        <div class="todo">
+          <p>
+            The proposal to-date is as follows.
+            Requirements for dispatch of animation events:
+          </p>
+          <ol>
+            <li>
+              Animations triggered by an event handler appear to have started at
+              the time the event was scheduled to be triggered.
+            </li>
+            <li>
+              No effect of an animation for any time 't' can be reflected in
+              style, DOM or animation object until any animation event handlers
+              associated with dispatch times at or before 't' have returned from
+              execution.
+            </li>
+          </ol>
+          <p>In effect this is roughly the same as saying:</p>
+          <blockquote>
+            When event handlers due to  animation events run, the state of the
+            world (DOM properties etc.) so  far as it is influenced by
+            animation, is as if the current time was the time when the event was
+            scheduled to be triggered.
+          </blockquote>
+          <p>
+            There may be many ways to realise this, including:
+          </p>
+          <ul>
+            <li>
+              dispatching animation events synchronously
+            </li>
+            <li>
+              careful updating of the animation time (after waiting for
+              corresponding animation events to return)
+            </li>
+            <li>
+              pausing the world
+            </li>
+          </ul>
+          <p>
+            Shane and Tab feel that this approach is not very webby, and might
+            be going to too much effort in order to support a programming
+            model that should be discouraged.
+          </p>
+          <p>
+            In the current model, the animation timeline is essentially
+            static unless modified by script, which means that interrogating
+            this timeline for information should be safe even in the absence
+            of enforced synchronization.
+            So if correct handling of an event requires precise knowledge
+            about which animations have started or finished, then the timeline
+            can be inspected at the time given in the event. 
+          </p>
+          <p>
+            Furthermore, triggering animations off complex functions involving
+            current animation state is probably not the right way to go - 
+            instead some kind of model of the state should be used and the
+            animations derived from that.
+          </p>
+          <p>
+            In short, in the absence of strong use cases for synchronous events
+            we feel we should go with a simpler model.
+          </p>
+          <p>
+            Some alternative approaches are:
+          </p>
+          <ul>
+            <li>
+              Standard asynchronous events with no guarantees about the
+              state of the world when event handlers are called.
+            </li>
+            <li>
+              Event logs like those proposed to replace DOM events.
+            </li>
+        </div>
+      </section>
+    </section>
+
+    <section>
+      <h2>Extensions to Document interfaces</h2>
+      <p>
+        Since the document acts as a root animation group user agents MUST add
+        an <code>animationTimeline</code> member to the document interface for
+        each document type where animation is supported.
+        For example, HTMLDocument and SVGDocument.
+      </p>
+      <p>
+        The definition of this member is given below.
+      </p>
+      <dl title="partial interface HTMLDocument" class="idl">
+        <dt>readonly attribute AnimGroupInstance animationTimeline</dt>
+        <dd>
+          The animation group instance corresponding to the root of the
+          document.
+          This group instance exhibits the special behavior described for the
+          root animation group in <a href="#the-document-timeline"
+          class="sectionRef"></a>.
+        </dd>
+      </dl>
+    </section>
+
+    <section>
+      <h2>Animation of common data types</h2>
+      <p>
+        Need to describe how to interpolate/add both:
+        <ol>
+          <li>Integers, floats, strings etc.</li>
+          <li>CSS and SVG types (colors etc.)</li>
+          <ul><li>Support for HSL (if the colors are specified in HSL we should
+            interpolate in that notation; but it should also be possible to
+            do so regardless of how the colors are specified)</li></ul>
+        </ol>
+      </p>
+      <p>
+        For transforms I think it's defined elsewhere so we can either just
+        point to that spec, or just refer to the fact that other specs should
+        define how their types should be supported (or not) for animation.
+      </p>
+      <p>
+        Need to provide facility for smooth interpolation of arbitrary paths.
+      </p>
+    </section>
+
+    <section>
+      <h2>Implementation requirements</h2>
+      <section>
+        <h3>Discarding past animations</h3>
+        <p>
+          If implementations are required to preserve all state associated with
+          animations then the resources required by an animation could continue
+          to increase without limit over time. For long-running animations, and
+          particularly those where animations are added dynamically, this could
+          lead to degraded performance and eventual failure.
+        </p>
+        <div class="issue">
+          <p>
+            I'm not sure how to define this. We could say all animations with
+            <code><var>end time converted to document time</var> &lt;
+            <var>current document time</var> - 5min</code> can be discarded.
+          </p>
+          <p>
+            That's fine, but what about crazy documents that put 1 million
+            animations in a 5min span? Just leave that up to the browser.
+            Also, what about mobile clients, is 5 min too long? Is this too
+            prescriptive?
+          </p>
+          <p>
+            Maybe, just make some suggestions (e.g. 1 min for mobile clients,
+            5 min for desktop?) and then define an exception to throw if there
+            is a seek to some time outside that window.
+          </p>
+          <p>
+            Also, note that defining this in terms of past intervals is
+            direction-specific but that's probably ok since most long-running
+            animations will run forwards.
+          </p>
+        </div>
+      </section>
+    </section>
+
+    <section>
+      <h2>Making animation accessible</h2>
+      <p class="todo">
+        TBD. Describe how to integrate with the <a
+          href="http://www.whatwg.org/specs/web-apps/current-work/#timed-text-tracks">Timed
+          Text API</a> and give examples of how to author content so it is
+        accessible.
+      </p>
+    </section>
+    <section class='appendix'>
+      <h2>Acknowledgements</h2>
+    </section>
+  </body>
+</html>
