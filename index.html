@@ -1482,6 +1482,12 @@
           </p>
         </section>
         <section>
+          <h4>Calculating the time fraction</h4>
+          <p>
+            The <var>time fraction</var> is given by dividing the <var>iteration time</var> by the <var>iteration duration</var>.
+          </p>
+        </section>
+        <section>
           <h4>Calculating the current iteration</h4>
           <p>
             The <var>current iteration</var> can be calculated from the
@@ -2497,29 +2503,6 @@
         </dl>
       </section>
       <section>
-        <h3>Calculating the current time fraction</h3>
-        <div class="todo">
-          <p>
-            This is just <var>iteration time</var> (as defined in <a
-              href="#calculating-the-iteration-time" class="sectionRef"></a>)
-            divided by <var>iteration duration</var> (as defined in <a
-              href="#calculating-the-iteration-duration"
-              class="sectionRef"></a>).
-            This isn't the job of the animation model to calculate, this is the
-            output of the timing model.
-            I've called this the iteration distance elsewhere.
-          </p>
-          <p>
-            To be more specific, the two pieces of output needed from the timing
-            model are the iteration distance (<code>iteration time / iteration
-              duration</code>) and the current iteration (needed for accumulate
-            behavior etc., see definition in <a
-              href="#calculating-the-current-iteration"
-              class="sectionRef"></a>).
-          </p>
-        </div>
-      </section>
-      <section>
         <h3>Calculating animation values</h3>
           <section>
             <h4>Calculating the animation value from an iteration value</h4>
@@ -2558,57 +2541,50 @@
               <code>KeyframesAnimFunction</code></h4>
             <p>
               When an <code>Anim</code> contains a pointer to a
-              <code>KeyframesAnimFunction</code>, the <var>animation
+              <code>KeyframesAnimFunction</code> <var>keyframes</var>, the <var>animation
               value</var> for that animation at given current time 
               <var>t</var> is calculated according to the following steps:
             </p>
             <ol>
               <li>
-                Convert <var>t</var> to the <var>current time fraction</var>.
+                Convert <var>t</var> to the <var>time fraction</var> 
+                (see <a href="#calculating-the-time-fraction" class="sectionRef"></a>).
               </li>
               <li>
                 Generate a <var>sorted frame list</var> by sorting the list of
                 <code>AnimFrame</code> objects contained within the
-                <code>AnimFrameList</code> object by their 
-                <var>offset</var>.
+                <code>AnimFrameList</code> object stored in <var>keyframes.frames</var> 
+                by their <var>offset</var>.
                 If there are no frames in the <var>sorted frame list</var>
-                then no animation occurs and the <var>animation value</var> is
-                just the <var>baseVal</var> of the property being animated.
-                <p class="todo">
-                  Need to define the "<code>AnimFrame</code> objects
-                  contained within the <code>AnimFrameList</code>
-                  object" better.
-                </p>
+                then no animation occurs and the <var>iteration value</var> is
+                just the <var>base value</var> of the property being animated.
               </li>
               <li>
-                Find the <var>after frame</var> by iterating through the 
-                <var>sorted frame list</var> until the last
+                Otherwise, find the <var>after frame</var> by iterating through
+                the <var>sorted frame list</var> until the last
                 <code>AnimFrame</code> with an <var>offset</var>
-                larger than the <var>current time fraction</var> is
+                larger than the <var>time fraction</var> is
                 encountered.
               </li>
               <li>
                 If the <var>after frame</var> is the first frame in the
                 <var>sorted frame list</var>, then construct a 
                 <var>before frame</var> with an <var>offset</var> of 0 and a
-                value equal to the <var>baseVal</var> of the property being
+                value equal to the <var>base value</var> of the property being
                 animated.
-                <p class="todo">
-                  Need to define baseVal and animVal somewhere.
-                </p>
               </li>
               <li>
                 If the <var>after frame</var> does not exist (i.e. all frames
-                have an <var>offset</var> less than the <var>current time 
+                have an <var>offset</var> less than the <var>time 
                 fraction</var>) then construct an <var>after frame</var> with
                 an <var>offset</var> of 1 and a value equal to the
-                <var>baseVal</var> of the property being animated, and
+                <var>base value</var> of the property being animated, and
                 Set the <var>before frame</var> to the last frame in the 
                 <var>sorted frame list</var>.
               </li> 
               <li>
                 Otherwise (the <var>after frame</var> exists and is not the
-                first frame in the <var>sorted frame list</var>) ste the 
+                first frame in the <var>sorted frame list</var>) set the 
                 <var>before frame</var> to the frame immediately prior to the
                 <var>after frame</var> in the <var>sorted frame list</var>.
               </li>
@@ -2622,7 +2598,7 @@
               <li>
                 Find the <var>local time fraction</var> by subtracting
                 the <var>offset</var> of the <var>before frame</var> from
-                the <var>current time fraction</var>, then dividing the result
+                the <var>time fraction</var>, then dividing the result
                 by the difference between the <var>offset</var> of the
                 <var>after frame</var> and the <var>offset</var> of the
                 <var>before frame</var>.
@@ -2634,11 +2610,7 @@
                 Calculate the <var>animation value</var> by linearly 
                 interpolating the values of the <var>before frame</var> and
                 <var>after frame</var>, using the 
-                <var>effective time fraction</var> as interpolation parameter.
-                <p class="todo">
-                  Need a rigorous definition of linear interpolation - could
-                  just reference the relevant specifications.
-                </p>
+                <var>effective time fraction</var> as interpolation parameter (see <a href="#linear-interpolation" class="sectionRef"></a>).
               </li>
             </ol>
           </section>
@@ -2660,9 +2632,8 @@
             </p>
             <ol>
               <li>
-                Calculate the <var>normal</var> to the path at <var>t</var>.
+                Calculate the <var>normal</var> to the path at <var>t</var> (see <a href="#calculating-the-normal-to-a-path" class="sectionRef"></a>).
               </li>
-              <p class="todo">define how to calculate the normal</p>
               <li>
                 Determine the <var>normal rotation</var>, which is given by 
                 <var>atan2(normal.y, normal.x).
@@ -2711,6 +2682,28 @@
         animations
       </p>
     </section>
+
+    <section>
+      <h2>Primitive animation operations</h2>
+      <section>
+        <h3>Linear interpolation</h3>
+        <section>
+          <h4>Linear interpolation of paths</h4>
+          <p class="todo">Write me</p>
+        </section>
+        <section>
+          <h4>Linear interpolation of transforms</h4>
+          <p class="todo">Write me</p>        
+        </section>
+        <section>
+          <h4>Linear interpolation of primitive values</h4>
+          <p class="todo">Write me</p>
+        </section>
+      </section>
+      <section>
+        <h3>Calculating the normal to a path</h3>
+        <p class="todo">Write me</p>
+      </section>
 
     <section>
       <h2>Combining animations</h2>
@@ -2850,39 +2843,59 @@
         </section>
       </section>
       <section>
-        <h3>Computing the override stylesheet</h3>
-        <p>
-          The override stylesheet contains output animation values and
-          acts with a higher priority than all other stylesheets. However,
-          !important rules from all other stylesheets act with a higher priority
-          than the override stylesheet.
-          The override stylesheet is regenerated for each timepoint in a
-          document using the following process:
-        </p>
-        <ol>
-          <li>
-            A global animation stack is generated as described in 
-            <a href="#the-global-animation-stack" class="sectionRef"></a>.
-          </li>
-          <li>
-            An initial animation value is generated by taking the current
-            style for each object (ignoring the override stylesheet) and
-            extracting a value for each animated property.
-          </li>
-          <li>
-            The global animation stack is resolved using the initial animation
-            value and the process in 
-            <a class="sectionRef" href="#resolving-animation-stacks"></a>.
-          </li>
-          <li>
-            The current animation values generated by this process are inserted
-            into the override stylesheet.
-          </li>
-          <p class="todo">
-            Do we need to work out how to use the override stylesheet for
-            elements that don't have an id but are targetted for animations?
+        <h3>Current values, animation values, and the override stylesheet</h3>
+        <section>
+          <h4>Current values</h4>
+          <p>
+            The <var>current value</var> of a given property and object is the
+            value generated for that property by computing a current style for
+            that object without taking the override stylesheet into account.
           </p>
-        </ol>
+        </section>
+        <section>
+          <h4>The override stylesheet</h4>
+          <p>
+            The override stylesheet contains output animation values and
+            acts with a higher priority than all other stylesheets. However,
+            !important rules from all other stylesheets act with a higher priority
+            than the override stylesheet.
+
+            The override stylesheet is regenerated for each timepoint in a
+            document using the process described below.
+          </p>
+        </section>
+        <section>
+          <h4>Animation values</h4>
+          <p>
+            Animation values for all animated properties are generated at
+            each time point according to the following process, then inserted
+            into the override stylesheet.
+          </p>
+          <ol>
+            <li>
+              A global animation stack is generated as described in 
+              <a href="#the-global-animation-stack" class="sectionRef"></a>.
+            </li>
+            <li>
+              An initial animation value is generated by taking the current
+              style for each object (ignoring the override stylesheet) and
+              extracting a value for each animated property.
+            </li>
+            <li>
+              The global animation stack is resolved using the initial animation
+              value and the process in 
+              <a class="sectionRef" href="#resolving-animation-stacks"></a>.
+            </li>
+            <li>
+              The current animation values generated by this process are inserted
+              into the override stylesheet.
+            </li>
+            <p class="todo">
+              Do we need to work out how to use the override stylesheet for
+              elements that don't have an id but are targetted for animations?
+            </p>
+          </ol>
+        </section>
       </section>
     </section>
 
