@@ -91,16 +91,6 @@
         noIDLIn: true
       };
     </script>
-    <!--
-      ReSpec.js wishlist:
-
-      Add here any issues you find with ReSpec including missing features. It
-      will help us decide if we should continue using it and work out what we
-      need to fix.
-
-      * Need ability to cross-reference members of interfaces (e.g. constants
-        etc.)
-    -->
   </head>
   <body>
     <section id='abstract'>
@@ -129,14 +119,82 @@
       <section>
         <h3>The <code>SVGAnimationElement</code> interface</h3>
         <p>
-          <dl title="interface SVGAnimationElement : WebAnimation"
-            class="idl">
+          <dl title="interface SVGAnimationElement : Anim" class="idl">
           </dl>
         </p>
         <p>
           Need to describe how to set up named animations using these elements.
         </p>
       </section>
+    </section>
+
+    <section>
+      <h2>Animations in elements referenced by a
+          <code>&lsquo;use&rsquo;</code> element</h2>
+      <p>
+        The usual behavior for <code>&lsquo;use&rsquo;</code> elements
+        is that the referenced content is effectively deeply cloned into
+        a separate non-exposed DOM tree.
+        However, <code>AnimInstance</code> objects produced by the cloned tree
+        are exposed in the animation tree after first being wrapped in
+        a parallel <code>AnimGroupInstance</code> object with <var>start
+        time</var> of zero.
+      </p>
+      <p>
+        Note that <code>AnimInstance</code> objects attached to the referenced
+        content are never cloned.
+      </p>
+      <p>
+        For example, in the following fragment,
+      </p>
+      <pre>&lt;g id="a"/&gt;
+  &lt;animate id="b"/&gt;
+  &lt;animate id="c"/&gt;
+&lt;/g&gt;
+&lt;seq&gt;
+  &lt;use href="#a"/&gt;
+  &lt;animate id="d"/&gt;
+&lt;/seq&gt;</pre>
+      <p>
+        the resulting objects will be produced
+      </p>
+<pre>
+     Timeline (AnimGroupInstance: par)
+                    |
+     +--------------+------------------+
+     |              |                  |
+AnimInstance   AnimInstance    AnimGroupInstance
+(template: b)  (template: c)         (seq)
+                                       |
+                         +-------------+---------+
+                         |                       |
+                 AnimGroupInstance         AnimInstance
+                       (par)               (template: d)
+                         |
+             +-----------+----------+
+             |                      |
+        AnimInstance          AnimInstance
+   (template: clone of b)  (template: clone of c)
+</pre>
+      <div class="feedbackWanted">
+        <p>
+          What animations should be cloned? I think you should just clone the
+          DOM elements, not animations applied via script / CSS. Then, you can
+          define a :hover animation and it will apply on the individual clones
+          as you'd expect. Likewise for SVG. You clone the &lt;animate&gt;
+          element, then if it has begin="click" each individual clone will
+          respond as you expect.
+        </p>
+        <p>
+          If you really want them all to start at once, you can set up
+          a syncbase / event-base relationship, or a stylesheet rule.
+        </p>
+        <p>
+          SVG 1.1 says, "animations on a referenced element will cause the
+          instances to also be animated" which is conveniently ambiguous and
+          implemented differently in WebKit and Gecko.
+        </p>
+      </div>
     </section>
   </body>
 </html>

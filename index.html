@@ -1883,7 +1883,7 @@
           <h4>Start of the timeline</h4>
           <p>
             The time at which the timeline will be automatically unpaused is
-            determined by the <code>animStart</code> property on the
+            determined by the <code>timelineStart</code> property on the
             <code>Document</code> object (see <a
             href="#extensions-to-the-document-interface"
             class="sectionRef"></a>). It can have the following values:
@@ -1943,29 +1943,29 @@
           <p>
             Any call to <code>pause</code> or <code>unpause</code> on the
             timeline disables the automatic unpause behavior defined by the
-            <code>animStart</code> property on the document.
-            It is as if the <code>animStart</code> property were set to
+            <code>timelineStart</code> property on the document.
+            It is as if the <code>timelineStart</code> property were set to
             <var>manual</var>.
           </p>
           <div class="note">
             <p>
-              The ability for script to override the <code>animStart</code>
+              The ability for script to override the <code>timelineStart</code>
               property by calling <code>pause</code> to indefinitely postpone
               the start of animation is necessary for backwards compatibility
               with SVG.
             </p>
             <p>
               This override behavior applies even if the timeline has already
-              been unpaused since changing the <code>animStart</code> property
-              could return the timeline to a state where the automatic unpause
-              behavior would otherwise apply.
+              been unpaused since changing the <code>timelineStart</code>
+              property could return the timeline to a state where the automatic
+              unpause behavior would otherwise apply.
             </p>
           </div>
         </section>
         <section>
           <h4>Changing the timeline start</h4>
           <p>
-            The <code>animStart</code> property may be changed at any time.
+            The <code>timelineStart</code> property may be changed at any time.
             The result of changing this property is as follows:
           </p>
           <ol>
@@ -1975,7 +1975,7 @@
             </li>
             <li>
               Let <var>autostart</var> be the moment at which the timeline would
-              corresponding to the new value of <code>animStart</code> as
+              corresponding to the new value of <code>timelineStart</code> as
               defined in <a href="#start-of-the-timeline"
               class="sectionRef"></a>.
             </li>
@@ -2020,9 +2020,9 @@
               the root animation group in <a href="#the-document-timeline"
               class="sectionRef"></a>.
             </dd>
-            <dt>attribute AnimStartType animStart</dt>
+            <dt>attribute AnimStartType timelineStart</dt>
             <dd>
-              Sets the time at which the animationTimeline will begin animating
+              Sets the time at which the animation timeline will begin animating
               unless it is overridden by script as defined in <a
               href="#start-of-the-timeline" class="sectionRef"></a>.
               Changes to this property are defined in <a
@@ -2033,20 +2033,14 @@
         </section>
         <section>
           <h3>Timeline of document resources</h3>
-          <div class="todo">
-            <p>
-              Define the two basic scenarios: embedded content and independent
-              content.
-            </p>
-            <p>
-              For embedded content we basically replace the embedded document's
-              timeline with a par group. Then what do we do with the startTime?
-              Do we honour onload? Or just always use zero?
-            </p>
-            <p>
-              For independent content it's just an separate timeline.
-            </p>
-          </div>
+          <p>
+            Documents may include external animated resources, for example, via
+            the <code>&lt;object&gt;</code> or <code>&lt;use&gt;</code>
+            elements. These external resources will often have their own
+            Document object and their own timeline. In order to synchronize
+            these timelines the same approaches can be applied as with described
+            under <a href="#synchronizing-with-media" class="sectionRef"></a>.
+          </p>
         </section>
       </section>
       <section>
@@ -3115,56 +3109,9 @@
 
     <section>
       <h2>Synchronizing with media</h2>
-      <div class="feedbackWanted">
-        <p>
-          We want to model synchronizing with media as forcing the pause/play 
-          and current time state of content to be synchronized to match the 
-          state of the media. There are two basic possibilities here:
-        </p>
-        <ol>
-          <li>
-            <p>
-              Create a container type that causes all contained items to have
-              synchronized pause/play and current time state. The pause state
-              of such containers would be the union of pause states of children,
-              and calls to set the current time of any child would be diverted
-              to modify the current time of the parent instead.
-            </p>
-            <p>
-              Note that this could be a completely new container type 
-              (e.g. a "synchronized" or "media" container) or an optional
-              parameter modifying existing container types.
-          </li>
-          <li>
-            <p>
-              Add an option to the children that, when set, causes them to be
-              synchronized to the parent state. The pause state of the parent 
-              would need to take the pause state of synchronized children into 
-              account. Calls to set the current time of synchronized children 
-              would be diverted to modify the current time of the parent
-              instead.
-            </p>
-              <p>
-                If this model is adopted, media can be synchronized to the 
-                parent state, causing network-derived delays to propagate to the
-                parent container and hence all children of that container;
-                however other children of the container could still be
-                independently played/paused/seeked.
-              </p>
-          </li>
-        </ol>
-        <p>
-          Which model is better? Are there alternatives we should consider too?
-        </p>
+      <div class="todo">
+        Currently investigating integration with HTML5's MediaController object.
       </div>
-      <section>
-        <h3>The intrinsic duration of a media item</h3>
-        <p class="todo">
-          Basically just take the <code>HTMLMediaElement.duration</code>
-          property. Possibly convert <code>NaN</code> values to positive
-          infinity.
-        </p>
-      </section>
       <section>
         <h3>The <code>MediaItem</code> interface</h3>
         <dl title="interface MediaItem : TimedItem" class="idl">
@@ -3338,7 +3285,7 @@
           <p class="note">
             Note that seeking behavior is well-defined even when the document
             has yet to start and hence the seek can be performed regardless of
-            the setting of the <code>animStart</code> property (see <a
+            the setting of the <code>timelineStart</code> property (see <a
             href="#start-of-the-timeline" class="sectionRef"></a>).
           </p>
         </li>
