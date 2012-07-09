@@ -170,7 +170,7 @@
           the behavior of SVG's animation features.
         </p>
         <p>
-          This specifications makes some additions to some interfaces defined in
+          This specification makes some additions to some interfaces defined in
           HTML5 [[HTML5]].
         </p>
       </section>
@@ -247,16 +247,10 @@
         Animation C has finished animating.
         Animation D has yet to begin and is not animating.
       </p>
-      <section>
-        <h3>Start of the timeline</h3>
-        <p class="todo">
-          Define when the timeline starts&mdash;is it document load, or can it
-          start beforehand?<br>
-          Time moments are defined in <a
-          href="http://test.w3.org/webperf/specs/NavigationTiming/#processing-model">Navigation
-          Timing spec</a>. We should re-use one of those definitions here.
-        </p>
-      </section>
+      <p>
+        The start time of the timeline is defined in <a
+        href="#start-of-the-timeline" class="sectionRef"></a>.
+      </p>
     </section>
 
     <section>
@@ -351,7 +345,7 @@
 
            If, internally, implementation A filters out redundant changes whilst
            implementation B blindly accepts all changes we still want the same
-           behaviour with regards to becoming independent. It's easier, more
+           behavior with regards to becoming independent. It's easier, more
            convenient and, I think, more intuitive for authors to define it this
            way.
 
@@ -416,7 +410,7 @@
           Both the timing of an <code>Anim</code> and the methods for
           creating an <code>AnimInstance</code> from
           an <code>Anim</code> are specified on the
-          <code>TimedTemplate</code> since this behaviour is shared with
+          <code>TimedTemplate</code> since this behavior is shared with
           animation groups
           (see <a href="#grouping-and-synchronization" class="sectionRef"></a>).
         </p>
@@ -1169,15 +1163,20 @@
             - <var>start time</var></code> as a result of pausing and seeking
             this item.
           </dd>
-          <dt>void setPauseState (bool pauseState)</dt>
+          <dt>void pause ()</dt>
           <dd>
-            Sets the pause state of this timed item.
+            Sets the pause state of this timed item to true.
+          </dd>
+          <dt>void unpause ()</dt>
+          <dd>
+            Sets the pause state of this timed item to false.
           </dd>
           <dt>bool getPauseState ()</dt>
           <dd>
-            Returns the pause state of this timed item. Note that even if this
-            returns false, the timed item might still be effectively paused by
-            an ancestor animation group.
+            Returns the pause state of this timed item.
+            The pause state is initially false except for the document timeline
+            where it is initially true (see <a href="#start-of-timeline"
+            class="sectionRef"></a>).
           </dd>
           <dt>bool isPaused ()</dt>
           <dd>
@@ -1519,23 +1518,25 @@
           </ol>
         </section>
       </section>
-      <section class="informative">
+      <section>
         <h3>Pausing a timed item</h3>
-        <p>
-          Timed items may be paused and resumed independently of the parent
-          animation group instance they belong to.
-          The effect is that the time of the item drifts from that of its
-          parent.
-          This drift is called the <var>start offset</var> since it acts as an
-          additional delay added to the <var>start time</var> of the item.
-        </p>
-        <p>
-          Timed elements that do not have a parent animation group may still be
-          paused and resumed.
-          However, except for the case of the document timeline, there will be
-          no observable effect until the element is attached to a parent
-          animation group instance.
-        </p>
+        <div class="informative">
+          <p>
+            Timed items may be paused and resumed independently of the parent
+            animation group instance they belong to.
+            The effect is that the time of the item drifts from that of its
+            parent.
+            This drift is called the <var>start offset</var> since it acts as an
+            additional delay added to the <var>start time</var> of the item.
+          </p>
+          <p>
+            Timed elements that do not have a parent animation group may still
+            be paused and resumed.
+            However, except for the case of the document timeline, there will be
+            no observable effect until the element is attached to a parent
+            animation group instance.
+          </p>
+        </div>
         <p>
           The <var>start offset</var> produced by pausing can be calculated as
           follows:
@@ -1599,6 +1600,10 @@
             item time space.
           </li>
         </ul>
+        <p>
+          For the <code>AnimationGroupInstance</code> representing the document
+          timeline, the <var>start time</var> is not defined until (see <a href="#the-document-timeline"></a>)
+        </p>
         <p>
           The animation events dispatched when a seek is performed are described
           in <a href="#animation-events" class="sectionRef"></a>.
@@ -1804,10 +1809,11 @@
         <h3>The document timeline</h3>
         <p>
           We have previously referred to the document timeline as the context in
-          which animation takes places. Likewise we have referred to the
-          <em>document time space</em> as the master time space which contains
-          other time spaces. The document timeline is, in fact, a parallel
-          animation group instance with the following special properties:
+          which animation takes places.
+          Likewise we have referred to the <em>document time space</em> as the
+          master time space which contains other time spaces.
+          The document timeline is, in fact, a parallel animation group instance
+          with the following special properties:
         </p>
         <ul>
           <li>
@@ -1823,18 +1829,225 @@
             HIERARCHY_REQUEST_ERR) being thrown.
           </li>
           <li>
-            For properties that represent times in <em>parent iteration time
-            space</em> a time space whose zero time is 00:00:00 UTC on 1 January
-            1970 is used instead.
-            For example, the <code>startTime</code> property of the document
-            timeline represents the number of seconds between 00:00:00 UTC on
-            1 January 1970 and when the timeline started (see <a
-              href="#start-of-the-timeline" class="sectionRef"></a>).
+            <p>
+              For properties that represent times in <em>parent iteration time
+              space</em> a time space whose zero time is 00:00:00 UTC on
+              1 January 1970 is used.
+            </p>
+            <p>
+              As a result, the <var>parent iteration time</var> is the number of
+              seconds from 00:00:00 UTC on 1 January 1970 to the current moment
+              in UTC time.
+            </p>
+          </li>
+          <li>
+            It is initially paused as described in <a
+              href="#initial-state-of-the-document-timeline"
+              class="sectionRef"></a>.
           </li>
         </ul>
         <p class="todo">
           Move/copy exception behavior to the relevant properties / methods.
         </p>
+        <section>
+          <h4>Initial state of the document timeline</h4>
+          <p>
+            Unlike other timed items, the document timeline is initially paused.
+            The moment at which the timeline becomes active is defined in <a
+              href="#start-of-the-timeline" class="sectionRef"></a>.
+          </p>
+          <p>
+            On creating an <code>AnimationGroupInstance</code> corresponding to
+            the document timeline, the following steps are performed.
+          </p>
+          <ol>
+            <li>
+              Set the <var>start time</var> to the current <var>parent
+              iteration time</var> (i.e. the number of seconds since 00:00:00
+              UTC on 1 January 1970).
+            </li>
+            <li>
+              Set the <var>pause state</var> to <code>true</code>.
+            </li>
+          </ol>
+          <p class="note">
+            By setting the <var>start time</var> to the <var>parent iteration
+            time</var> and then pausing the timeline, the start time is always
+            well-defined.
+            Furthermore, seeking the timeline before it is unpaused provides
+            intuitive results without special casing the algorithm for seeking
+            (see <a href="#seeking-a-timed-item" class="sectionRef"></a>).
+          </p>
+        </section>
+        <section>
+          <h4>Start of the timeline</h4>
+          <p>
+            The time at which the timeline will be automatically unpaused is
+            determined by the <code>animStart</code> property on the
+            <code>Document</code> object (see <a
+            href="#extensions-to-the-document-interface"
+            class="sectionRef"></a>). It can have the following values:
+          </p>
+          <dl>
+            <dt>onload</dt>
+            <dd>
+              <p>
+                The moment immediately prior to dispatching the "load" event for
+                the document.
+              </p>
+              <p>
+                For HTML documents, this is the moment after the <a
+                  href="http://dev.w3.org/html5/spec/dom.html#current-document-readiness">current
+                  document readiness</a> has changed to "complete" but before
+                dispatching the load event.  In terms of the timings defined in
+                <a
+                  href="http://test.w3.org/webperf/specs/NavigationTiming/">NAVIGATION-TIMING</a>
+                <span class="todo">(Need to add NAVIGATION-TIMING to the
+                  biblio)</span>, this occurs between the <em>domComplete</em>
+                and <em>loadEventStart</em> timings.
+              </p>
+              <p>
+                This is the default value.
+              </p>
+            </dd>
+            <dt>onstart</dt>
+            <dd>
+              <p>
+                The moment after the user agent stops parsing but before running
+                scripts that are designated to execute when parsing finishes.
+              </p>
+              <p>
+                For HTML documents, this occurs after updating the <a
+                  href="http://dev.w3.org/html5/spec/dom.html#current-document-readiness">current
+                  document readiness</a> to "interactive" (see <a
+                href="http://dev.w3.org/html5/spec/the-end.html#the-end">the
+                specified behavior for the end of parsing</a>), that is,
+                after the <em>domInteractive</em> timing.
+              </p>
+            </dd>
+            <dt>manual</dt>
+            <dd>
+              A moment infinitely distant in the future. That is, animation will
+              not begin until <code>unpause</code> is called on the timeline.
+            </dd>
+          </dl>
+          <p>
+            For the <var>onload</var> and <var>onstart</var> values, it is not
+            sufficient to simply the record the appropriate time and seek the
+            animations accordingly at a later moment.
+            Rather, the timeline must be actually unpaused at the appropriate
+            moment such that scripts that execute during page loading (for
+            example, in response to the load event) can make assumptions about
+            the pause state of the timeline.
+          </p>
+          <p>
+            Any call to <code>pause</code> or <code>unpause</code> on the
+            timeline disables the automatic unpause behavior defined by the
+            <code>animStart</code> property on the document.
+            It is as if the <code>animStart</code> property were set to
+            <var>manual</var>.
+          </p>
+          <div class="note">
+            <p>
+              The ability for script to override the <code>animStart</code>
+              property by calling <code>pause</code> to indefinitely postpone
+              the start of animation is necessary for backwards compatibility
+              with SVG.
+            </p>
+            <p>
+              This override behavior applies even if the timeline has already
+              been unpaused since changing the <code>animStart</code> property
+              could return the timeline to a state where the automatic unpause
+              behavior would otherwise apply.
+            </p>
+          </div>
+        </section>
+        <section>
+          <h4>Changing the timeline start</h4>
+          <p>
+            The <code>animStart</code> property may be changed at any time.
+            The result of changing this property is as follows:
+          </p>
+          <ol>
+            <li>
+              If <code>pause</code> or <code>unpause</code> has been called on
+              the timeline, return immediately.
+            </li>
+            <li>
+              Let <var>autostart</var> be the moment at which the timeline would
+              corresponding to the new value of <code>animStart</code> as
+              defined in <a href="#start-of-the-timeline"
+              class="sectionRef"></a>.
+            </li>
+            <li>
+              Let <var>now</var> be the <var>parent iteration time</var>.
+            </li>
+            <li>
+              If <var>autostart</var> &lt;= <var>now</var>, set the
+              <var>pause state</var> to false.
+            </li>
+            <li>
+              If <var>autostart</var> &gt; <var>now</var>, set the <var>start
+              pause state</var> to true.
+            </li>
+            <li>
+              If the pause state is newly true seek the timeline to
+              <var>autostart</var> - <var>now</var>.
+            </li>
+            <li>
+              If the pause state is newly false seek the timeline to 0.
+            </li>
+          </ol>
+        </section>
+        <section>
+          <h4>Extensions to the <code>Document</code> interface</h4>
+          <p>
+            To provide access to the document timeline the following extensions
+            to the <code>Document</code> interface are required.
+          </p>
+          <p class="todo">
+            Still waiting for Enum support.
+          </p>
+          <pre>
+            enum AnimStartType { "onload", "onstart", "manual" };
+          </pre>
+          <dl title="partial interface Document" class="idl">
+            <dt>readonly attribute AnimGroupInstance animationTimeline</dt>
+            <dd>
+              The animation group instance corresponding to the root of the
+              document.
+              This group instance exhibits the special behavior described for
+              the root animation group in <a href="#the-document-timeline"
+              class="sectionRef"></a>.
+            </dd>
+            <dt>attribute AnimStartType animStart</dt>
+            <dd>
+              Sets the time at which the animationTimeline will begin animating
+              unless it is overridden by script as defined in <a
+              href="#start-of-the-timeline" class="sectionRef"></a>.
+              Changes to this property are defined in <a
+              href="#changing-the-timeline-start" class="sectionRef"></a>.
+              Initialized to "onload".
+            </dd>
+          </dl>
+        </section>
+        <section>
+          <h3>Timeline of document resources</h3>
+          <div class="todo">
+            <p>
+              Define the two basic scenarios: embedded content and independent
+              content.
+            </p>
+            <p>
+              For embedded content we basically replace the embedded document's
+              timeline with a par group. Then what do we do with the startTime?
+              Do we honour onload? Or just always use zero?
+            </p>
+            <p>
+              For independent content it's just an separate timeline.
+            </p>
+          </div>
+        </section>
       </section>
       <section>
         <h3>Groups and liveness</h3>
@@ -3104,6 +3317,43 @@
       </p>
       <p>
         Need to provide facility for smooth interpolation of arbitrary paths.
+      </p>
+    </section>
+
+    <section>
+      <h2>Integration with Media Fragments</h2>
+      <p>
+        The Media Fragments specification [[MEDIA-FRAGMENTS]] defines a means
+        for addressing a temporal range of a media resource.  For resources
+        containing content animated with Web Animations the application of the
+        temporal parameters is as follows:
+      </p>
+      <ol>
+        <li>
+          <p>
+            If a begin time is specified, perform a seek on the document
+            timeline passing in the specified begin time as the seek time (see
+            <a href="#seeking-a-timed-item" class="sectionRef"></a>).
+          </p>
+          <p class="note">
+            Note that seeking behavior is well-defined even when the document
+            has yet to start and hence the seek can be performed regardless of
+            the setting of the <code>timelineStart</code> property (see <a
+            href="#start-of-the-timeline" class="sectionRef"></a>).
+          </p>
+        </li>
+        <li class="todo">
+          If an end time is specified... we need a way to clamp the duration of
+          a group (other than just setting endTime behind the scenes).
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Interaction with page display</h2>
+      <p class="todo">
+        What should be the behavior here? Should we pause on unload/pagehide?
+        What does video do?
       </p>
     </section>
 
