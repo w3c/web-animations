@@ -1017,6 +1017,22 @@
                 The <var>default value</var> is 1.
               </p>
             </dd>
+            <dt>attribute float iterationStart</dt>
+            <dd>
+              <p>
+                A finite real number greater than or equal to zero representing
+                the number of iterations into the animation at which to begin.
+                For example, a value of 0.5 would cause the animation to begin
+                half-way through the first iteration.
+                If this value is greater than <code>iterationCount</code> then
+                it is clamped as defined in <a
+                  href="#calculating-the-animation-duration"
+                  class="sectionRef"></a>.
+              </p>
+              <p>
+                The <var>default value</var> is 0.
+              </p>
+            </dd>
             <dt>attribute float speed</dt>
             <dd>
               <p>
@@ -1078,7 +1094,7 @@
           <dt>readonly attribute float? animationTime</dt>
           <dd>
             The time in seconds representing the offset into the animation
-            phase.
+            phase plus any offset caused by <code>timing.iterationStart</code>.
             It is calculated using the steps described in <a
             href="#calculating-the-animation-time" class="sectionRef"></a>.
             As a result of that definition, this property will be
@@ -1267,8 +1283,22 @@
         </p>
         <ol>
           <li>
+            Let the <var>effective iteration start</var> be
+            <code>min(<var>iteration start</var>, <var>iteration
+            count</var>)</code>.
+          </li>
+          <li>
+            If the <var>effective iteration start</var> is negative or not
+            finite, let the <var>effective iteration start</var> be 0.
+          </li>
+          <li>
+            Let the <var>effective iteration count</var> be
+            <code>max(0, <var>iteration count</var>)</code>.
+          </li>
+          <li>
             Let the <var>repeated duration</var> be <code><var>iteration
-            duration</var> * <var>iteration count</var></code>.
+            duration</var> * (<var>effective iteration count</var> -
+            <var>effective iteration start</var>)</code>.
           </li>
           <li>
             If <var>speed</var> is zero, return <code>Infinity</code>.
@@ -1315,8 +1345,8 @@
       <section>
         <h3>Calculating the animation time</h3>
         <p>
-          The <var>animation time</var> is based on the <var>item time</var> and
-          <var>start delay</var>.
+          The <var>animation time</var> is based on the <var>item time</var>, 
+          <var>start delay</var>, and <var>iteration start</var>.
           It is defined only when the timed item is active and calculated
           according to the following steps:
         </p>
@@ -1324,6 +1354,15 @@
           <li>
             If <var>item time</var> is <code>null</code>, return
             <code>null</code>.
+          </li>
+          <li>
+            Calculate the <var>effective iteration start</var> as described in
+            <a href="#calculating-the-animation-duration"
+            class="sectionRef"></a>.
+          </li>
+          <li>
+            Let the <var>start offset</var> be <code><var>effective iteration
+            start</var> * <var>iteration duration</var></code>.
           </li>
           <li>
             If <code><var>item time</var> &lt; <var>start delay</var></code>,
@@ -1334,7 +1373,7 @@
                 <em>both</em>,
               </dt>
               <dd>
-                return zero.
+                return <var>start offset</var>.
               <dd>
               <dt>
                 Otherwise,
@@ -1345,9 +1384,10 @@
             </dl>
           </li>
           <li>
-            If <code><var>item time</var> &lt; <var>animation
-            duration</var></code>, return <code><var>item
-            time</var> - <var>start delay</var></code>.
+            If <code><var>item time</var> &lt; <var>start delay</var> +
+            <var>animation duration</var></code>, return
+            <code><var>item time</var> - <var>start delay</var>
+            + <var>start offset</var></code>.
           </li>
           <li>
             Otherwise, the result depends on the <var>fill mode</var> as
