@@ -1156,7 +1156,7 @@
           <dd>
             The parent animation group instance.
           </dd>
-          <dt>readonly attribute float startOffset</dt>
+          <dt>readonly attribute float timeDrift</dt>
           <dd>
             The number of seconds that the actual item time of this item
             lags behind the time given by <code><var>parent iteration time</var>
@@ -1287,7 +1287,7 @@
         </p>
         <blockquote>
           <code><var>item time</var> = <var>parent iteration time</var>
-            - <var>start time</var> - <var>start offset</var></code>
+            - <var>start time</var> - <var>time drift</var></code>
         </blockquote>
         <p>where:</p>
         <ul>
@@ -1299,9 +1299,9 @@
             <var>start time</var> is the item's start time.
           </li>
           <li>
-            <var>start offset</var> is the accumulated drift from the start
-            time as described in <a href="#pausing-a-timed-item"
-            class="sectionRef"></a>.
+            <var>time drift</var> is the accumulated offset from the start
+            time resulting from pausing and seeking the item as described in <a
+            href="#pausing-a-timed-item" class="sectionRef"></a>.
           </li>
         </ul>
         <p>
@@ -1524,9 +1524,9 @@
           <p>
             Timed items may be paused and resumed independently of the parent
             animation group instance they belong to.
-            The effect is that the time of the item drifts from that of its
+            The effect is that the time of the item lags behind that of its
             parent.
-            This drift is called the <var>start offset</var> since it acts as an
+            This lag is called the <var>time drift</var> and acts as an
             additional delay added to the <var>start time</var> of the item.
           </p>
           <p>
@@ -1538,19 +1538,19 @@
           </p>
         </div>
         <p>
-          The <var>start offset</var> produced by pausing can be calculated as
+          The <var>time drift</var> produced by pausing can be calculated as
           follows:
         </p>
         <ol>
           <li>
-            Let <var>start offset</var> be initially zero.
+            Let <var>time drift</var> be initially zero.
           </li>
           <li>
             When the pause state is newly true, record the <var>parent iteration
             time</var> as <var>pause start time</var>.
           </li>
           <li>
-            On the next sample, increment <var>start offset</var> by
+            On the next sample, increment <var>time drift</var> by
             <code><var>parent iteration time</var> - <var>pause start
             time</var></code>.
           </li>
@@ -1565,9 +1565,10 @@
         </ol>
         <p>
           An important characteristic of the above procedure is that the
-          <var>start offset</var> continues to accumulate while the
-          item is paused. As a result, the <var>start offset</var> must be
-          calculated prior to calculating the <var>item time</var>.
+          <var>time drift</var> continues to accumulate while the
+          item is paused.
+          As a result, the <var>time drift</var> must be calculated prior to
+          calculating the <var>item time</var>.
         </p>
       </section>
       <section>
@@ -1577,11 +1578,11 @@
           time to drift from that of its parent animation group instance.
         </p>
         <p>
-          When a seek operation is performed, the <var>start offset</var> is set
+          When a seek operation is performed, the <var>time drift</var> is set
           according to the following formula:
         </p>
         <blockquote>
-          <code><var>start offset</var> = <var>parent iteration time</var>
+          <code><var>time drift</var> = <var>parent iteration time</var>
             - <var>start time</var> - <var>seek time</var></code>
         </blockquote>
         <p>where:</p>
@@ -1621,14 +1622,6 @@
         <p class="feedbackWanted">
           Is it worth adding "seek" events for this? Or the ability to mark
           animations as "remove-on-seek" (or something of that ilk).
-        </p>
-        <p class="feedbackWanted">
-          I wonder if it makes sense to clear accumulated start offsets in some
-          states. If you rewind a document to the start, then it's perhaps
-          counter-intuitive if, on replay, the accumulated start offset due to
-          pauses still takes effect. Or maybe it's ok? Bear in mind, that if we
-          do add some feature here, it should ideally work the same when the
-          document is played in reverse.
         </p>
       </section>
     </section>
