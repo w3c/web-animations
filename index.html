@@ -1094,7 +1094,7 @@
           <dt>readonly attribute float? animationTime</dt>
           <dd>
             The time in seconds representing the offset into the animation
-            phase plus any offset caused by <code>timing.iterationStart</code>.
+            phase.
             It is calculated using the steps described in <a
             href="#calculating-the-animation-time" class="sectionRef"></a>.
             As a result of that definition, this property will be
@@ -1345,9 +1345,9 @@
       <section>
         <h3>Calculating the animation time</h3>
         <p>
-          The <var>animation time</var> is based on the <var>item time</var>, 
-          <var>start delay</var>, and <var>iteration start</var>.
-          It is defined only when the timed item is active and calculated
+          The <var>animation time</var> is based on the <var>item time</var>
+          and <var>start delay</var>.
+          It is defined only when the timed item is active and is calculated
           according to the following steps:
         </p>
         <ol>
@@ -1356,17 +1356,7 @@
             <code>null</code>.
           </li>
           <li>
-            Calculate the <var>effective iteration start</var> as described in
-            <a href="#calculating-the-animation-duration"
-            class="sectionRef"></a>.
-          </li>
-          <li>
-            Let the <var>start offset</var> be <code><var>effective iteration
-            start</var> * <var>iteration duration</var></code>.
-          </li>
-          <li>
-            If <code><var>item time</var> &lt; <var>start delay</var></code>,
-            or if <var>speed</var> is zero,
+            If <code><var>item time</var> &lt; <var>start delay</var></code>
             the result depends on the <var>fill mode</var> as follows,
             <dl class="switch">
               <dt>
@@ -1374,7 +1364,7 @@
                 <em>both</em>,
               </dt>
               <dd>
-                return <var>start offset</var>.
+                return zero.
               <dd>
               <dt>
                 Otherwise,
@@ -1387,8 +1377,7 @@
           <li>
             If <code><var>item time</var> &lt; <var>start delay</var> +
             <var>animation duration</var></code>, return
-            <code>(<var>item time</var> - <var>start delay</var>)
-            * 1.0 / <var>speed</var> + <var>start offset</var></code>.
+            <code><var>item time</var> - <var>start delay</var></code>.
           </li>
           <li>
             Otherwise, the result depends on the <var>fill mode</var> as
@@ -1410,15 +1399,49 @@
             </dl>
           </li>
         </ol>
+        <section>
+          <h4>Calculating the adjusted animation time</h4>
+          <p>
+            Before the <var>animation time</var> can be converted to an
+            <var>iteration time</var>
+            we must factor in the animation's <var>speed</var> and
+            <var>iteration start</var>. This is called the <var>adjusted
+            animation time</var>.
+          </p>
+          <p>
+            The <var>adjusted animation time</var> is calculated according to
+            the following steps:
+          </p>
+          <ol>
+            <li>
+              If the <var>animation time</var> is <code>null</code>, return
+              <code>null</code>.
+            </li>
+            <li>
+              Calculate the <var>effective iteration start</var> as described in
+              <a href="#calculating-the-animation-duration"
+              class="sectionRef"></a>.
+            </li>
+            <li>
+              Let the <var>start offset</var> be <code><var>effective iteration
+              start</var> * <var>iteration duration</var></code>.
+            </li>
+            <li>
+              Return <code><var>animation time</var> * <var>speed</var>
+              + <var>start offset</var></code>.
+            </li>
+          </ol>
+        </section>
       </section>
       <section>
         <h3>Calculating the iteration time</h3>
         <p>
-          The iteration time is calculated by first dividing the <var>animation
-          time</var> into intervals. This is called the <var>unscaled iteration
-          time</var>. Following this, timing manipulations specified on the
-          timed item are applied to the <var>unscaled iteration time</var> to
-          produce the <var>iteration time</var>.
+          The iteration time is calculated by first dividing the <var>adjusted
+          animation time</var> into intervals.
+          This is called the <var>unscaled iteration time</var>.
+          Following this, timing manipulations specified on the timed item are
+          applied to the <var>unscaled iteration time</var> to produce the
+          <var>iteration time</var>.
         </p>
         <section>
           <h4>Calculating the unscaled iteration time</h4>
@@ -1429,7 +1452,8 @@
           <ol>
             <li>
               If the <var>item time</var> is <code>null</code> (i.e. the
-              animation's start time is not defined), return <code>null</code>.
+              animation's <var>start time</var> is not defined),
+              return <code>null</code>.
             </li>
             <li>
               If the <var>iteration duration</var> is zero, return zero.
@@ -1441,7 +1465,7 @@
               duration</var>, return the <var>iteration duration</var>.
             </li>
             <li>
-              Otherwise, return <code><var>animation time</var>
+              Otherwise, return <code><var>adjusted animation time</var>
               % <var>iteration duration</var></code>.
             </li>
           </ol>
@@ -1525,7 +1549,8 @@
         <section>
           <h4>Calculating the time fraction</h4>
           <p>
-            The <var>time fraction</var> is given by dividing the <var>iteration time</var> by the <var>iteration duration</var>.
+            The <var>time fraction</var> is given by dividing the <var>iteration
+            time</var> by the <var>iteration duration</var>.
           </p>
         </section>
         <section>
@@ -1540,18 +1565,18 @@
               <code>null</code>.
             </li>
             <li>
-              If the <var>animation time</var> is zero, return zero.
+              If the <var>adjusted animation time</var> is zero, return zero.
             </li>
             <li>
               If the <var>iteration duration</var> is zero, return
               <code>floor(<var>iteration count</var>)</code>.
             </li>
             <li>
-              Return <code>floor(<var>animation time</var> /
+              Return <code>floor(<var>adjusted animation time</var> /
               <var>iteration duration</var>)</code>.
               <p class="note">
                 If the <var>iteration duration</var> is infinite, the
-                result of <code>floor(<var>animation time</var> /
+                result of <code>floor(<var>adjusted animation time</var> /
                 <var>iteration duration</var>)</code> will be zero as defined by
                 IEEE 754-2008.
               </p>
@@ -2756,6 +2781,12 @@
               first time for an animation, the current 
               <var>animation value</var> should be retained as the
               <var>end value</var> for the animation.
+            </p>
+            <p class="todo">
+              Need to revise this definition since we can't assume the time at
+              the end of the first iteration will be visited (we might be
+              playing backwards, or have a <var>iteration start</var> greater
+              than 1).
             </p>
             <p>
               If the <var>current iteration</var> is not zero and the
