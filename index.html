@@ -1334,7 +1334,11 @@
           </dd>
           <dt>void reverse ()</dt>
           <dd>
-            <p class="todo">TBD</p>
+            Reverses the timing parameters for this object and then performs
+            a compensatory seek such that the animation immediately begins
+            reversing from its current point.
+            The specific steps for this operation are defined in <a
+            href="#reversing-a-timed-item" class="sectionRef"></a>.
           </dd>
           <dt>void cancel ()</dt>
           <dd>
@@ -1342,16 +1346,6 @@
             timed item will no longer affect its target.
           </dd>
         </dl>
-        <div class="feedbackWanted">
-          How about a <code>reverse</code> method? What it does is call
-          <code>cancel</code> on the timed item.
-          Then it generates a clone with the <code>startTime</code> set to the
-          current time (actually, we probably want to use the delay so the
-          reverse animation has the same priority).
-          Then it sets the <code>direction</code> to its opposite (i.e.
-          normal&#x2194;reverse, alternate&#x2194;alternate-reverse) and returns
-          the new timed item? (Need to make sure we avoid object-slicing here.)
-        </div>
         <div class="todo">
           <p>
             Do we need a means for getting the startTime etc. in document
@@ -1804,6 +1798,69 @@
           Is it worth adding "seek" events for this? Or the ability to mark
           animations as "remove-on-seek" (or something of that ilk).
         </p>
+      </section>
+      <section>
+        <h3>Reversing a timed item</h3>
+        <p>
+          Reversing a timed item such that it immediately takes effect is
+          achieved according to the following steps:
+        </p>
+        <ol>
+          <li>
+            Let <var>item</var> be the timed item to be reversed.
+          </li>
+          <li>
+            Call <code><var>item</var>.timing.reverse()</code>.
+          </li>
+          <li>
+            Adjust the <var>time drift</var> as follows:
+            <dl class="switch">
+              <dt>If <var>item time</var> is null,</dt>
+              <dd>
+                let <var>time drift</var> be <code>-<var>start time</var></code>
+                and then return.
+              </dd>
+              <dt>If <code><var>item time</var> &lt; <var>start
+                  delay</var></code>,</dt>
+              <dd>
+                Perform a seek to time <code><var>start delay</var>
+                + <var>animation duration</var></code> according to the steps
+                in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
+              </dd>
+              <dt>If <code><var>item time</var> &gt; <var>start
+                  delay</var> + <var>animation duration</var></code>,</dt>
+              <dd>
+                Perform a seek to <var>start delay</var> according to the steps
+                in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                Perform a seek to
+                <code>
+                  <var>animation duration</var> - <var>animation time</var>
+                </code>
+                according to the steps
+                in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
+              </dd>
+            </dl>
+          </li>
+        </ol>
+        <div class="informative">
+          <p>
+            By following these steps, assuming a forwards direction of play,
+            even if a timed item has finished its animation interval three
+            seconds in the past, it will not wait a further three seconds as if
+            retracing that time, but will immediately begin reversing.
+          </p>
+          <p>
+            Similarly, assuming a forwards direction of play, if a timed item
+            is reversed before it begins its animation interval it will never
+            play. Instead it will be seeked to the moment at the end of the
+            animation interval.
+            This provides consistent behavior when the direction of play is
+            backwards.
+          </p>
+        </div>
       </section>
     </section>
 
