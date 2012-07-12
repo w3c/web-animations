@@ -1,0 +1,233 @@
+<!-- vim: set expandtab ts=2 sw=2 tw=80: -->
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  viewBox="0 0 610 470">
+  <defs>
+    <style type="text/css">
+    svg {
+      font-size: 19px;
+      font-family: sans-serif;
+    }
+
+    /*
+     * Line work
+     */
+    .line, .arrowLine, .dottedArrow, .doubleArrowLine {
+      stroke: black;
+      stroke-width: 1.5;
+      fill: none;
+    }
+    .arrowLine, .dottedArrow {
+      marker-end: url(#arrow);
+    }
+    .dottedArrow {
+      stroke-dasharray: 4 4;
+      stroke-width: 2;
+    }
+    .doubleArrowLine {
+      marker-start: url(#reverseArrow);
+      marker-end: url(#arrow);
+    }
+    .bracket {
+      stroke: black;
+      stroke-width: 1.5;
+      fill: none;
+    }
+
+    /*
+     * Animation spans
+     */
+    .animatingSpan  {
+      fill: paleturquoise;
+      stroke: black;
+    }
+    .groupRepeatBoundary, .animRepeatBoundary {
+      stroke-dasharray: 4 4;
+    }
+    .groupRepeatBoundary {
+      stroke: darkgreen;
+      stroke-width: 3;
+    }
+    .animRepeatBoundary {
+      stroke: navy;
+      stroke-width: 2;
+    }
+    .animationA  {
+      fill: paleturquoise;
+      stroke: black;
+    }
+    .animationB  {
+      fill: mistyrose;
+      stroke: black;
+    }
+
+    /*
+     * Text labels
+     */
+    .timelineLabel {
+      font-size: 0.7em;
+    }
+    .timelineTick {
+      font-size: 0.6em;
+      text-anchor: middle;
+    }
+    .legendText {
+      font-size: 0.7em;
+    }
+    .regionLabel {
+      text-anchor: middle;
+      font-size: 0.7em;
+    }
+
+    /*
+     * Time values
+     */
+    .iterationTime, .animationATime, .animationBTime {
+      stroke-width: 3;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .iterationTimeExcludedPoint,
+    .animationAExcludedPoint,
+    .animationBExcludedPoint {
+      fill: none;
+      stroke-width: 2;
+    }
+    .iterationTimeIncludedPoint,
+    .animationAIncludedPoint,
+    .animationBIncludedPoint {
+      stroke-width: 2;
+    }
+    .iterationTime, .iterationTimeExcludedPoint, .iterationTimeIncludedPoint {
+      stroke: green;
+    }
+    .iterationTimeIncludedPoint {
+      fill: green;
+    }
+    .animationATime,
+    .animationAExcludedPoint,
+    .animationAIncludedPoint {
+      stroke: blue;
+    }
+    .animationAIncludedPoint {
+      fill: blue;
+    }
+    .animationBTime,
+    .animationBExcludedPoint,
+    .animationBIncludedPoint {
+      stroke: red;
+    }
+    .animationBIncludedPoint {
+      fill: red;
+    }
+    </style>
+
+    <!-- Arrows -->
+    <style type="text/css">
+      .blackArrowHead {
+        fill: black;
+        stroke: none;
+      }
+    </style>
+    <marker id="arrow" viewBox="0 -5 10 10" orient="auto" markerWidth="5"
+      markerHeight="5">
+      <path d="M0-5l10 5l-10 5z" class="blackArrowHead"/>
+    </marker>
+
+    <!-- Timelines -->
+    <g id="itemTimeline">
+      <path d="M0 0h510" class="arrowLine"/>
+      <path d="M0-2v4m160-4v4m160-4v4m160-4v4" class="line"/>
+      <text y="-0.6em" class="timelineLabel">Item time</text>
+      <text y="1.1em" class="timelineTick">
+        0<tspan x="160">1</tspan><tspan x="320">2</tspan><tspan
+        x="480">3</tspan>
+      </text>
+    </g>
+    <g id="iterationTimeline">
+      <path d="M0 0v-92" class="arrowLine"/>
+      <path d="M-2 0h4" class="line"/>
+      <text y="-0.8em" transform="rotate(-90)" class="timelineLabel">
+        Iteration time</text>
+      <text y="1.1em" transform="rotate(-90)" class="timelineTick">0</text>
+    </g>
+  </defs>
+  <!-- Initial -->
+  <g transform="translate(20 20)">
+    <!-- Heading -->
+    <text>Initial animation</text>
+    <!-- Animation diagram -->
+    <g transform="translate(40 0)">
+      <use xlink:href="#itemTimeline" y="32"/>
+      <use xlink:href="#iterationTimeline" x="-20" y="155"/>
+      <!-- Animation shaded area -->
+      <g transform="translate(0 55)">
+        <rect x="160" width="240" height="100" class="animatingSpan"/>
+        <path d="M320 0v100" class="animRepeatBoundary"/>
+      </g>
+      <!-- Iteration time -->
+      <g transform="translate(0 155)">
+        <path d="M160 0l160-100m0 100l80-50h80"
+          class="iterationTime" mask="url(#excludedEndPoints)"/>
+        <!-- Endpoints  -->
+        <circle cx="160" r="3" class="iterationTimeIncludedPoint"/>
+        <circle cx="320" cy="-100" r="4" class="iterationTimeExcludedPoint"/>
+        <circle cx="320" r="3" class="iterationTimeIncludedPoint"/>
+        <mask id="excludedEndPoints">
+          <rect x="-10" y="-160" width="500" height="170" fill="white"/>
+          <circle cx="160" cy="-100" r="4" fill="black" stroke="none"/>
+          <circle cx="320" cy="-100" r="4" fill="black" stroke="none"/>
+        </mask>
+      </g>
+      <!-- Delay label -->
+      <g transform="translate(0 170)">
+        <path d="M0 0s0 7 7 7h66s7 0 7 7c0 0 0-7 7-7h66s7 0 7-7"
+          class="bracket"/>
+        <text x="80" y="30" class="regionLabel">start delay</text>
+      </g>
+      <!-- Forwards fill label -->
+      <g transform="translate(400 170)">
+        <path d="M0 0s0 7 7 7h26s7 0 7 7c0 0 0-7 7-7h26s7 0 7-7"
+          class="bracket"/>
+        <text x="40" y="30" class="regionLabel">forwards fill</text>
+      </g>
+    </g>
+  </g>
+  <!-- Reversed -->
+  <g transform="translate(20 250)">
+    <!-- Heading -->
+    <text>Reversed animation</text>
+    <!-- Animation diagram -->
+    <g transform="translate(40 0)">
+      <use xlink:href="#itemTimeline" y="32"/>
+      <use xlink:href="#iterationTimeline" x="-20" y="155"/>
+      <!-- Animation shaded area -->
+      <g transform="translate(0 55)">
+        <rect x="160" width="240" height="100" class="animatingSpan"/>
+        <path d="M240 0v100" class="animRepeatBoundary"/>
+      </g>
+      <!-- Iteration time -->
+      <g transform="translate(0 155)">
+        <path d="M0-50h160l80 50m0-100l160 100"
+          class="iterationTime" mask="url(#excludedEndPointsReverse)"/>
+        <!-- Endpoints  -->
+        <circle cx="240" r="4" class="iterationTimeExcludedPoint"/>
+        <circle cx="240" cy="-100" r="3" class="iterationTimeIncludedPoint"/>
+        <circle cx="400" r="4" class="iterationTimeExcludedPoint"/>
+        <mask id="excludedEndPointsReverse">
+          <rect x="-10" y="-160" width="500" height="170" fill="white"/>
+          <circle cx="240" r="4" fill="black" stroke="none"/>
+          <circle cx="400" r="4" fill="black" stroke="none"/>
+        </mask>
+      </g>
+      <!-- Delay and backwards fill label -->
+      <g transform="translate(0 170)">
+        <path d="M0 0s0 7 7 7h66s7 0 7 7c0 0 0-7 7-7h66s7 0 7-7"
+          class="bracket"/>
+        <text x="80" y="30" class="regionLabel">start delay,<tspan
+          x="80" dy="1em">backwards fill</tspan></text>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -941,11 +941,11 @@
         <p>
           Timing properties are collected under the <code>Timing</code>
           interface.
-          All properties have a default value associated with them with is the
+          All properties have a default value associated with them which is the
           value used when a new <code>Timing</code> object is constructed.
         </p>
         <section>
-          <h3>The <code>Timing</code> interface</h3>
+          <h4>The <code>Timing</code> interface</h4>
           <dl title="interface Timing" class="idl">
             <dt>const unsigned short WEBA_FILL_NONE = 0</dt>
             <dd>
@@ -1076,7 +1076,122 @@
                 The <var>default value</var> is <code>WEBA_FILL_NONE</code>.
               </p>
             </dd>
+            <dt>Timing clone ()</dt>
+            <dd>
+              <p>
+                Creates an object with the same properties as this object.
+                The <code>timingFunction</code> property of the cloned object is
+                assigned the result of calling
+                <code>timingFunction.clone()</code> on this object.
+              </p>
+              <p>
+                Calling this method on an object attached to a live
+                <code>AnimInstance</code> or <code>AnimGroupInstance</code> will
+                have no effect on the liveness of the instance (see <a
+                href="#creating-animations" class="sectionRef"></a>).
+              </p>
+            </dd>
+            <dt>void reverse ()</dt>
+            <dd>
+              <p>
+                Modifies the properties of this object such that effect is that
+                the animation proceeds in reverse using the steps defined in <a
+                href="#reversing-time-properties" class="sectionRef"></a>.
+              </p>
+              <p>
+                This method only changes the timing properties. To cause
+                a running <code>TimedItem</code> to reverse from its current
+                position see the <code>reverse</code> method on the
+                <code>TimedItem</code> interface (<a
+                href="#the-timeditem-interface" class="sectionRef"></a>).
+              </p>
+              <p>
+                Calling this method on an object attached to a live
+                <code>AnimInstance</code> or <code>AnimGroupInstance</code> will
+                cause the instance to become independent (see <a
+                href="#creating-animations" class="sectionRef"></a>).
+              </p>
+              <p>
+                This method mutates the object it is called on.
+                To reverse the timing and create a new object use
+                <code>clone().reverse()</code>.
+              </p>
+            <dd>
           </dl>
+        </section>
+        <section>
+          <h4>Reversing timing properties</h4>
+          <p>
+            It is often necessary to create an animation that produces the
+            reverse effect of an existing animation.
+            For example, consider an animation which features an <var>iteration
+            count</var> of 1.5 and a forwards <var>fill mode</var>.
+            This animation and its reverse effect are illustrated below.
+          </p>
+          <div class="figure">
+            <object data="img/reverse-timing.svg" width="700"></object>
+          </div>
+          <p class="caption">
+            The initial animation has a <var>start delay</var> of 1, an
+            <var>iteration duration</var> of 1, an <var>iteration count</var> of
+            1.5, and a forwards <var>fill mode</var>.<br>
+            After reversing, the <var>start delay</var> is unchanged but the
+            <var>direction</var>, <var>iteration start</var>, <var>iteration
+            count</var> are adjusted to produce the reverse
+            effect. The <var>fill mode</var> is also inverted.
+          </p>
+          <p>
+            Note that the <var>start delay</var> is unaffected by reversing but
+            the <var>fill mode</var> is reversed.
+          </p>
+          <p>
+            The reverse set of timing properties is produced according to the
+            following steps:
+          </p>
+          <ol>
+            <li>Invert the <var>direction</var> as follows:
+              <dl class="switch">
+                <dt>normal</dt>
+                <dd>let the <var>direction</var> be reverse</dd>
+                <dt>reverse</dt>
+                <dd>let the <var>direction</var> be normal</dd>
+                <dt>alternate</dt>
+                <dd>let the <var>direction</var> be alternate-reverse</dd>
+                <dt>alternate-reverse</dt>
+                <dd>let the <var>direction</var> be alternate</dd>
+              </dl>
+            </li>
+            <li>
+              Let <var>iteration fraction</var> be <code><var>iteration
+              count</var> % <var>1</var></code>.
+            </li>
+            <li>
+              Set <var>iteration count</var> to <code>ceil(<var>iteration
+              count</var>) - <var>iteration start</var></code>.
+            </li>
+            <li>
+              Set <var>iteration start</var> as follows:
+              <dl class="switch">
+                <dt>if the <var>iteration fraction</var> is zero,</dt>
+                <dd>set the <var>iteration start</var> to zero,</dd>
+                <dt>otherwise,</dt>
+                <dd>set the <var>iteration start</var> to
+                  <code>1 - <var>iteration fraction</var></code>.</dd>
+              </dl>
+            </li>
+            <li>Invert the <var>fill mode</var> as follows:
+              <dl class="switch">
+                <dt>none</dt>
+                <dd>leave the <var>fill mode</var> as none</dd>
+                <dt>forwards</dt>
+                <dd>let the <var>fill mode</var> be backwards</dd>
+                <dt>backwards</dt>
+                <dd>let the <var>fill mode</var> be forwards</dd>
+                <dt>both</dt>
+                <dd>leave the <var>fill mode</var> as both</dd>
+              </dl>
+            </li>
+          </ol>
         </section>
       </section>
       <section>
@@ -1216,6 +1331,10 @@
             such that the <var>animation time</var> does not change.
             <span class="todo">Need to write out the algorithm for this and
             clarify the meaning <code>speed</code>.</span>
+          </dd>
+          <dt>void reverse ()</dt>
+          <dd>
+            <p class="todo">TBD</p>
           </dd>
           <dt>void cancel ()</dt>
           <dd>
@@ -1703,6 +1822,10 @@
         TBD.
       </p>
       <dl title="interface TimingFunction" class="idl">
+        <dt>TimingFunction clone()</dt>
+        <dd>
+          <p class="todo">Needed for <code>Timing.clone</code>.</p>
+        </dd>
       </dl>
     </section>
 
