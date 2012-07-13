@@ -2554,12 +2554,12 @@
             An overload of <code>splice</code> to take a variadic list of items
             rather than requiring a sequence.
             The operation is identical to <code>splice(unsigned long start,
-            unsigned long deleteCount, optioanl sequence&lt;TimedItem&gt; new
-            items)</code>.
+            unsigned long deleteCount, optional sequence&lt;TimedItem&gt;
+            newItems)</code>.
           </dd>
           <dt>long indexOf (TimedItem item)</dt>
           <dd>
-            Returns the index of the <code>item</code> within the group.
+            Returns the index of <code>item</code> within the group.
             If <code>item</code> is not in the group, returns <code>-1</code>.
           </dd>
           <dt>bool makeIndependent()</dt>
@@ -2676,53 +2676,131 @@
               animation group as specified by one of the
               <code>WEBA_SYNC_*</code> constants defined in this interface.
             </p>
+          </dd>
           <dt>void clear ()</dt>
           <dd>
-            Removes all child templates from the group.
+            Removes all child items from the group.
           </dd>
-          <dt>TemplateItem append (TemplateItem newItem)</dt>
+          <dt>getter TimedTemplate? item (unsigned long index)</dt>
           <dd>
-            Add <code>newItem</code> as the last item in the group. If
-            <code>newItem</code> already belongs to a group (including this
-            group) it will first be removed from that group before being added
-            to this group. Returns <code>newItem</code>.
-            <span class="todo">Is that necessary? For templates you could just
-              make them share-able? But better to be consistent?</span>
+            Returns the template item at <code>index</code>.
+            If <code>index</code> is greater than or equal to
+            <code>length</code> returns <code>null</code>.
           </dd>
-          <dt>TemplateItem insertBefore (TemplateItem newItem,
-            TemplateItem? refItem)</dt>
+          <dt>setter TimedTemplate replace (unsigned long index,
+                                            TimedTemplate newItem)</dt>
           <dd>
             <p>
-              Inserts <code>newItem</code> before the existing
-              <code>refItem</code>. If <code>refItem</code> is null,
-              <code>newChild</code> is added to the end of the list. If
-              <code>newItem</code> already belongs to a group (including this
-              group) it will first be removed from that group before being added
-              to this group. If <code>newItem</code> and <code>refItem</code>
-              are the same object then no change is made. Returns
-              <code>newItem</code>.
+              Replaces the item at <code>index</code> with
+              <code>newItem</code> by calling
+              <code>splice(index, 1, newItem)</code>.
             </p>
-            <p>Exceptions:</p>
-            <ul>
-              <li>NOT_FOUND_ERR: Raised if <code>refItem</code> is not a child
-              of this group.</li>
-            </ul>
+            <p>
+              Returns <code>newItem</code>.
+            </p>
+            <p>
+              The behavior of this method is identical to
+              <code>AnimGroupInstance.replace</code> except that
+              HIERARCHY_REQUEST_ERR exceptions are not thrown.
+            </p>
           </dd>
-          <dt>TemplateItem? item (unsigned long index)</dt>
+          <dt>deleter TimedTemplate remove (unsigned long index)</dt>
           <dd>
-            Returns the item at <code>index</code>. If <code>index</code> is
-            greater than or equal to <code>length</code> returns
-            <code>null</code>. Equivalent to
-            <code>AnimGroup[index]</code>.
-            <span class="todo">(Need to work out how to define this
-              behavior&mdash;i.e. that you can use the subscript
-              operator)</span>
+            <p>
+              Removes the item at <code>index</code> by calling
+              <code>splice(index, 1)</code>.
+            </p>
+            <p>
+              Returns the removed item.
+            </p>
+            <p>
+              The behavior of this method is in all regards identical to
+              <code>AnimGroupInstance.remove</code>.
+            </p>
           </dd>
-          <dt>TemplateItem? remove (TemplateItem removedItem)</dt>
+          <dt>TimedTemplate append (TimedTemplate newItem)</dt>
           <dd>
-            Removes <code>removedItem</code> from the group and returns it. If
-            <code>removedItem</code> is not part of this group, returns
-            <code>null</code>.
+            <p>
+              Add <code>newItem</code> as the last item in the group by calling
+              <code>splice(group.length, 0, newItem)</code>.
+            </p>
+            <p>
+              Returns <code>newItem</code>.
+            </p>
+            <p>
+              The behavior of this method is identical to
+              <code>AnimGroupInstance.replace</code> except that
+              HIERARCHY_REQUEST_ERR exceptions are not thrown.
+            </p>
+          </dd>
+          <dt>
+            sequence&lt;TimedTemplate&gt; splice ()
+          </dt>
+          <dd>
+            <p>
+              Modifies the list of children of this group by first removing
+              <code>deleteCount</code> items from <code>start</code> followed by
+              adding <code>newItems</code> at the same point.
+            </p>
+            <p>
+              Returns a sequence of the items removed from group during the
+              removal step (regardless of whether these items were re-added
+              during the addition step).
+            </p>
+            <p>
+              As with <code>AnimGroupInstance.slice</code> the operation of
+              slice is based on <a
+              href="http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262%205th%20edition%20December%202009.pdf#page=140">ECMAScript
+              5's Array.prototype.splice</a>.
+            </p>
+            <p>
+              The operation of this method is identical to that of
+              <code>AnimGroupInstance.slice</code> with the notable difference
+              that HIERARCHY_REQUEST_ERR exceptions are not thrown since there
+              is no <code>AnimGroup</code> corresponding to a document timeline.
+            </p>
+            <dl class="parameters">
+              <dt>long start</dt>
+              <dd>
+                The index at which items should be removed and inserted.
+                Negative indices represent an offset from the end of the list of
+                items.
+                This value is clamped to the range [-<code>length</code>,
+                <code>length</code>].
+              </dd>
+              <dt>unsigned long deleteCount</dt>
+              <dd>
+                The number of items to remove from the group beginning at
+                <code>start</code>.
+                Negative values are clamped to zero, and all other values are
+                clamped such that
+                0 &lt; <code>start</code> + <code>deleteCount</code> &le;
+                length.
+              </dd>
+              <dt>optional sequence&lt;TimedTemplate&gt; newItems</dt>
+              <dd>
+                The items to be added at <code>start</code>.
+                Each item, if it already has a parent group (including this
+                group), is first removed from its parent group before being
+                added to this group.
+              </dd>
+            </dl>
+          </dd>
+          <dt>
+            sequence&lt;TimedTemplate&gt; splice (long start,
+              unsigned long deleteCount, TimedTemplate... newItem)
+          </dt>
+          <dd>
+            An overload of <code>splice</code> to take a variadic list of items
+            rather than requiring a sequence.
+            The operation is identical to <code>splice(unsigned long start,
+            unsigned long deleteCount, optional sequence&lt;TimedTemplate&gt;
+            newItems)</code>.
+          </dd>
+          <dt>long indexOf (TimedTemplate item)</dt>
+          <dd>
+            Returns the index of <code>item</code> within the group.
+            If <code>item</code> is not in the group, returns <code>-1</code>.
           </dd>
         </dl>
         <p class="todo">
