@@ -2302,8 +2302,8 @@
           </li>
           <li>
             Calling any of the methods that affect the list of child items
-            (<code>clear</code>, <code>append</code>, <code>insertBefore</code>,
-            or <code>remove</code>).
+            (<code>clear</code>, <code>add</code>, <code>remove</code>,
+            or <code>splice</code>).
           </li>
           <li>
             Calling the <code>makeIndependent</code> method of the
@@ -2461,23 +2461,28 @@
               Returns the removed items.
             </p>
           </dd>
-          <dt>TimedItem append (TimedItem newItem)</dt>
+          <dt>sequence&lt;TimedItem&gt; add (TimedItem newItem,
+                                             TimedItem... otherItems)</dt>
           <dd>
             <p>
-              Add <code>newItem</code> as the last item in the group by calling
-              <code>splice(group.length, 0, newItem)</code>.
+              Add <code>newItem</code> and each <code>otherItems</code> as the
+              last item(s) in the group by calling <code>splice(group.length, 0,
+              newItem, otherItem1, ... otherItemN)</code>.
             </p>
             <p>
-              Returns <code>newItem</code>.
+              Returns a sequence containing the added items:
+              <code>[newItem, otherItem1, ... otherItemN]</code>.
             </p>
             <p>
               Exceptions:
             </p>
             <ul>
               <li>
-                HIERARCHY_REQUEST_ERR: Raised if
-                <code>newItem</code> is the timeline for a document (see <a
+                HIERARCHY_REQUEST_ERR: Raised if any of the items to add 
+                is the timeline for a document (see <a
                 href="#the-document-timeline" class="sectionRef"></a>).
+                If this exception is thrown none of the <code>newItem</code>
+                objects will be added to the group.
               </li>
             </ul>
           </dd>
@@ -2706,19 +2711,17 @@
               Returns the removed items.
             </p>
           </dd>
-          <dt>TimedTemplate append (TimedTemplate newItem)</dt>
+          <dt>sequence&lt;TimedTemplate&gt; add (
+                TimedTemplate newItem, TimedTemplate... otherItems)</dt>
           <dd>
             <p>
-              Add <code>newItem</code> as the last item in the group by calling
-              <code>splice(group.length, 0, newItem)</code>.
+              Add <code>newItem</code> and each <code>otherItems</code> as the
+              last item(s) in the group by calling <code>splice(group.length, 0,
+              newItem, otherItem1, ... otherItemN)</code>.
             </p>
             <p>
-              Returns <code>newItem</code>.
-            </p>
-            <p>
-              The behavior of this method is identical to
-              <code>AnimGroupInstance.replace</code> except that
-              HIERARCHY_REQUEST_ERR exceptions are not thrown.
+              Returns a sequence containing the added items:
+              <code>[newItem, otherItem1, ... otherItemN]</code>.
             </p>
           </dd>
           <dt>
