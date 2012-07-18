@@ -2057,10 +2057,6 @@
             <code>parentGroup</code> property returns <code>null</code>.
           </li>
           <li>
-            Attempting to set the <code>type</code> property will result in a
-            DOMException (code: NO_MODIFICATION_ALLOWED_ERR) being thrown.
-          </li>
-          <li>
             Calls to <code>cancel()</code> will result in a DOMException (code:
             HIERARCHY_REQUEST_ERR) being thrown.
           </li>
@@ -2294,9 +2290,7 @@
         </p>
         <ul>
           <li>
-            Modifying any of the members of the <code>timing</code> property or
-            modifying the <code>type</code> property of the
-            <code>AnimGroupInstance</code> object.
+            Modifying any of the members of the <code>timing</code> property.
             This includes redundant modifications, that is, setting a property
             to its current value.
           </li>
@@ -2325,8 +2319,7 @@
         <h3>The <code>AnimGroupInstance</code> interface</h3>
         <p>
           Represents a list of timed items which may be animation instances or
-          nested animation group instances. Order is significant only when
-          <code>type</code> is <code>WEBA_SYNC_SEQ</code>.
+          nested animation group instances.
         </p>
         <p>
           The <code>AnimGroupInstance</code> interface supports indexed
@@ -2338,55 +2331,6 @@
           <dt>readonly attribute unsigned long length</dt>
           <dd>
             The number of timed items in the group.
-          </dd>
-          <dt>attribute unsigned short type</dt>
-          <dd>
-            <p>
-              The type of synchronization provided by this animation group
-              instance as specified by one of the <code>WEBA_SYNC_*</code>
-              constants defined on the AnimGroup interface.
-            </p>
-            <p>
-              Setting this value has the following effect:
-            </p>
-            <ol>
-              <li>
-                If <code>type</code> is set to the same value as the previous
-                value return.
-              </li>
-              <li>
-                Record the current container time.
-              </li>
-              <li>
-                For each child in the group, call <code>cancel</code>.
-              </li>
-              <li>
-                Seek the container time to zero.
-              </li>
-              <li>
-                Calculate effective start time of each child in the
-                animation group instance using the new synchronization type.
-              </li>
-              <li>
-                Seek the container time to the previously recorded time.
-              </li>
-            </ol>
-            <div class="feedbackWanted">
-              <p>
-                Note that a consequence of the above is that, for example, if
-                you change a container from type <code>par</code> to
-                <code>seq</code> you could potentially generate a lot of end
-                events followed by a lot of begin events despite the fact that
-                the animation might not produce any different visual result. We
-                could change the behavior so that it effectively records the
-                play state of each item before and then after the "seek"
-                dispatches the appropriate events.
-              </p>
-              <p>
-                Actually, I think we're just going to end up subclassing groups
-                based on type. It solves lots of problems
-              </p>
-            </div>
           </dd>
           <dt>readonly attribute AnimGroup? template</dt>
           <dd>
@@ -2403,9 +2347,11 @@
           </dd>
           <dt>getter TimedItem? (unsigned long index)</dt>
           <dd>
-            Returns the item at <code>index</code>. If <code>index</code> is
-            greater than or equal to <code>length</code> returns
-            <code>null</code>.
+            <p>
+              Returns the item at <code>index</code>.
+              If <code>index</code> is greater than or equal to
+              <code>length</code> returns <code>null</code>.
+            </p>
           </dd>
           <dt>setter TimedItem (unsigned long index, TimedItem newItem)</dt>
           <dd>
@@ -2443,10 +2389,6 @@
                 <code>unsigned long</code> and hence <code>index</code> is
                 restricted to the range 0 &le; <var>index</var> &lt;
                 <code>group.length</code>.
-              </p>
-              <p>
-                The same is true of <code>remove</code> as well as for
-                <code>item</code>.
               </p>
             </div>
           </dd>
@@ -2597,82 +2539,115 @@
         </dl>
       </section>
       <section>
-        <h3>Calculating the intrinsic duration of an animation group instance
-        </h3>
+        <h3>Parallel animation group instances</h3>
         <p>
-          TBD, but basically:
+          Parallel animation group instances run their children such they
+          potentially play simultaneously.
+          The start time of each child depends on its 
+          <code>startTime</code> property.
         </p>
-        <dl class="switch">
-          <dt>If the type is parallel,</dt>
-          <dd>
-            Calc the endTime for each child and take the max
-          </dd>
-          <dt>If the type is sequence</dt>
-          <dd>
-            Sum all the animation durations + start delays (including
-            negatives)
-          </dd>
-        </dl>
+        <section>
+          <h4>The intrinsic duration of a parallel animation group instance</h4>
+          <p>
+            The intrinsic duration of a parallel animation group instance is
+            the maximum of the <code>endTime</code> property of each
+            child <code>TimedItem</code>.
+          </p>
+          <p>
+            If the group has no children then the intrinsic duration is zero.
+          </p>
+        </section>
+        <section>
+          <h4>The <code>ParAnimGroupInstance</code> interface</h4>
+          <p>
+            Parallel animation group instances are represented by
+            <code>ParAnimGroupInstance</code> objects.
+          </p>
+          <dl title="interface ParAnimGroupInstance : AnimGroupInstance"
+            class="idl">
+          </dl>
+        </section>
       </section>
       <section>
-        <h3>Calculating the start time of children of a sequence group</h3>
+        <h3>Sequence animation group instances</h3>
         <p>
-          The start time for the children of a sequence animation group instance
-          is calculated according to the following procedure:
+          Parallel animation group instances run their children such they
+          potentially play simultaneously.
+          The start time of each child depends on its 
+          <code>startTime</code> property.
         </p>
-        <ol>
-          <li>Let the <var>accumulated start time</var> be zero.
-          <li>
-            Iterate over each child in the group beginning with the first item
-            in the group and proceeding to the last.
-            For each child perform the following steps:
-            <ol>
-              <li>
-                Let the start time of the child be <var>accumulated start
-                time</var>
-              </li>
-              <li>
-                Increment <var>accumulated start time</var> by
-                <code><var>start delay</var> + <var>animation
-                duration</var></code>
-              </li>
-            </ol>
-          </li>
-        </ol>
-        <p class="note">
-          When <var>animation duration</var> is positive infinity the behavior
-          is defined by IEEE 754-2008.
-          In effect, if any of the children of a sequence animation group
-          instance has an infinite animation duration, any children that occur
-          later in the sequence will not play.
-        </p>
+        <section>
+          <h4>The start time of children of a sequence animation group
+            instance</h4>
+          <p>
+            The start time for the children of a sequence animation group
+            instance is calculated according to the following procedure:
+          </p>
+          <ol>
+            <li>Let the <var>accumulated start time</var> be zero.
+            <li>
+              Iterate over each child in the group beginning with the first item
+              in the group and proceeding to the last.
+              For each child perform the following steps:
+              <ol>
+                <li>
+                  Let the start time of the child be <var>accumulated start
+                  time</var>
+                </li>
+                <li>
+                  Increment <var>accumulated start time</var> by
+                  <code><var>start delay</var> + <var>animation
+                  duration</var></code>
+                </li>
+              </ol>
+            </li>
+          </ol>
+          <p class="note">
+            When <var>animation duration</var> is positive infinity the behavior
+            is defined by IEEE 754-2008.
+            In effect, if any of the children of a sequence animation group
+            instance has an infinite animation duration, any children that occur
+            later in the sequence will not play.
+          </p>
+          <p class="todo">
+            Need to define how <code>stop</code> will work for sequence
+            children.
+          </p>
+        </section>
+        <section>
+          <h4>The intrinsic duration of a sequence animation group instance</h4>
+          <p>
+            The instrinsic duration of a sequence animation group instance is
+            equivalent to the <var>start time</var> of a hypothetical child
+            appended to the group's children.
+            It can be calculated as the sum of the <var>start time</var>,
+            <var>start delay</var>, and <var>animation duration</var> of the
+            last child of the animation group.
+          </p>
+          <p class="todo">
+            Need to define how <code>stop</code> will interact here.
+          </p>
+        </section>
+        <section>
+          <h4>The <code>SeqAnimGroupInstance</code> interface</h4>
+          <p>
+            Sequence animation group instances are represented by
+            <code>SeqAnimGroupInstance</code> objects.
+          </p>
+          <dl title="interface SeqAnimGroupInstance : AnimGroupInstance"
+            class="idl">
+          </dl>
+        </section>
       </section>
       <section>
         <h3>The <code>AnimGroup</code> interface</h3>
         <p>
           <code>AnimGroupInstance</code> objects are not created
-          directly, but rather via a <code>AnimGroup</code> object that
+          directly, but rather via an <code>AnimGroup</code> object that
           acts as a template for creating animation group instances that target
           different elements.
         </p>
-        <dl title="[Constructor] interface AnimGroup : TimedTemplate"
-          class="idl">
-          <dt>const unsigned short WEBA_SYNC_PAR = 0</dt>
-          <dd>
-            Parallel synchronization.
-          </dd>
-          <dt>const unsigned short WEBA_SYNC_SEQ = 1</dt>
-          <dd>
-            Sequence synchronization.
-          </dd>
-          <dt>attribute unsigned short type</dt>
-          <dd>
-            <p>
-              The type of synchronization provided by instances of this
-              animation group as specified by one of the
-              <code>WEBA_SYNC_*</code> constants defined in this interface.
-            </p>
-          </dd>
+        <dl title="interface AnimGroup : TimedTemplate" class="idl">
           <dt>void clear ()</dt>
           <dd>
             Removes all child items from the group.
@@ -2801,16 +2776,46 @@
         </p>
       </section>
       <section>
+        <h3>The <code>ParAnimGroup</code> interface</h3>
+        <p>
+          <code>ParAnimGroupInstance</code> objects are created from
+          <code>ParAnimGroup</code> objects.
+        </p>
+        <dl title="[Constructor] interface ParAnimGroup : AnimGroup"
+          class="idl">
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>SeqAnimGroup</code> interface</h3>
+        <p>
+          <code>SeqAnimGroupInstance</code> objects are created from
+          <code>SeqAnimGroup</code> objects.
+        </p>
+        <dl title="[Constructor] interface SeqAnimGroup : AnimGroup"
+          class="idl">
+        </dl>
+      </section>
+      <section>
         <h3>Instantiating an <code>AnimGroup</code></h3>
         <p>
-          The procedure for instantiating an <code>AnimGroup</code>,
-          <var>template</var>, given a list of target elements, and optionally
-          given a <var>parent group</var>, is as follows:
+          The procedure for creating an <code>AnimGroupInstance</code> from
+          an <code>AnimGroup</code>, <var>template</var>,
+          given a list of target elements, and optionally given a <var>parent
+          group</var> follows.
+        </p>
+        <p>
+          Note that <code>ParAnimGroup</code> objects produce
+          <code>ParAnimGroupInstance</code> objects and likewise 
+          <code>SeqAnimGroup</code> objects produce
+          <code>SeqAnimGroupInstance</code> objects.
+          In the following description the <code>AnimGroup</code> and
+          <code>AnimGroupInstance</code> types should be substituted with the
+          concrete types in use.
         </p>
         <ol>
           <li>
-            Create an empty sequence of <code>AnimGroupInstance</code>
-            objects.
+            Create an empty sequence to hold the generated
+            <code>AnimGroupInstance</code> objects.
           </li>
           <li>
             For each <var>element</var> in the list of target elements:
@@ -2826,7 +2831,11 @@
               <li>
                 For each <var>child</var> in <var>template</var>, call
                 <code><var>child</var>.animateWithParent(<var>element</var>,
-                <var>group</var>, <code>startTime</code>)</code>
+                <var>group</var>, <code>startTime</code>)</code> or
+                <code><var>child</var>.animateLiveWithParent(<var>element</var>,
+                <var>group</var>, <code>startTime</code>)</code> depending on
+                whether this procedure was invoked with <code>animate</code> or
+                <code>animateLive</code>.
               </li>
               <li>
                 If <var>parentGroup</var> is not specified, let
