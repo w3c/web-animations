@@ -121,6 +121,7 @@
       * Support enums in WebIDL
       * Support NamedConstructors (including where the parameters use angle
         brackets like sequence<TimedTemplate>)
+      * Support getter/setter/deleter/creator
     -->
   </head>
   <body>
@@ -941,11 +942,11 @@
         <p>
           Timing properties are collected under the <code>Timing</code>
           interface.
-          All properties have a default value associated with them with is the
+          All properties have a default value associated with them which is the
           value used when a new <code>Timing</code> object is constructed.
         </p>
         <section>
-          <h3>The <code>Timing</code> interface</h3>
+          <h4>The <code>Timing</code> interface</h4>
           <dl title="interface Timing" class="idl">
             <dt>const unsigned short WEBA_FILL_NONE = 0</dt>
             <dd>
@@ -1076,7 +1077,122 @@
                 The <var>default value</var> is <code>WEBA_FILL_NONE</code>.
               </p>
             </dd>
+            <dt>Timing clone ()</dt>
+            <dd>
+              <p>
+                Creates an object with the same properties as this object.
+                The <code>timingFunction</code> property of the cloned object is
+                assigned the result of calling
+                <code>timingFunction.clone()</code> on this object.
+              </p>
+              <p>
+                Calling this method on an object attached to a live
+                <code>AnimInstance</code> or <code>AnimGroupInstance</code> will
+                have no effect on the liveness of the instance (see <a
+                href="#creating-animations" class="sectionRef"></a>).
+              </p>
+            </dd>
+            <dt>void reverse ()</dt>
+            <dd>
+              <p>
+                Modifies the properties of this object such that effect is that
+                the animation proceeds in reverse using the steps defined in <a
+                href="#reversing-time-properties" class="sectionRef"></a>.
+              </p>
+              <p>
+                This method only changes the timing properties. To cause
+                a running <code>TimedItem</code> to reverse from its current
+                position see the <code>reverse</code> method on the
+                <code>TimedItem</code> interface (<a
+                href="#the-timeditem-interface" class="sectionRef"></a>).
+              </p>
+              <p>
+                Calling this method on an object attached to a live
+                <code>AnimInstance</code> or <code>AnimGroupInstance</code> will
+                cause the instance to become independent (see <a
+                href="#creating-animations" class="sectionRef"></a>).
+              </p>
+              <p>
+                This method mutates the object it is called on.
+                To reverse the timing and create a new object use
+                <code>clone().reverse()</code>.
+              </p>
+            <dd>
           </dl>
+        </section>
+        <section>
+          <h4>Reversing timing properties</h4>
+          <p>
+            It is often necessary to create an animation that produces the
+            reverse effect of an existing animation.
+            For example, consider an animation which features an <var>iteration
+            count</var> of 1.5 and a forwards <var>fill mode</var>.
+            This animation and its reverse effect are illustrated below.
+          </p>
+          <div class="figure">
+            <object data="img/reverse-timing.svg" width="700"></object>
+          </div>
+          <p class="caption">
+            The initial animation has a <var>start delay</var> of 1, an
+            <var>iteration duration</var> of 1, an <var>iteration count</var> of
+            1.5, and a forwards <var>fill mode</var>.<br>
+            After reversing, the <var>start delay</var> is unchanged but the
+            <var>direction</var>, <var>iteration start</var>, <var>iteration
+            count</var> are adjusted to produce the reverse
+            effect. The <var>fill mode</var> is also inverted.
+          </p>
+          <p>
+            Note that the <var>start delay</var> is unaffected by reversing but
+            the <var>fill mode</var> is reversed.
+          </p>
+          <p>
+            The reverse set of timing properties is produced according to the
+            following steps:
+          </p>
+          <ol>
+            <li>Invert the <var>direction</var> as follows:
+              <dl class="switch">
+                <dt>normal</dt>
+                <dd>let the <var>direction</var> be reverse</dd>
+                <dt>reverse</dt>
+                <dd>let the <var>direction</var> be normal</dd>
+                <dt>alternate</dt>
+                <dd>let the <var>direction</var> be alternate-reverse</dd>
+                <dt>alternate-reverse</dt>
+                <dd>let the <var>direction</var> be alternate</dd>
+              </dl>
+            </li>
+            <li>
+              Let <var>iteration fraction</var> be <code><var>iteration
+              count</var> % <var>1</var></code>.
+            </li>
+            <li>
+              Set <var>iteration count</var> to <code>ceil(<var>iteration
+              count</var>) - <var>iteration start</var></code>.
+            </li>
+            <li>
+              Set <var>iteration start</var> as follows:
+              <dl class="switch">
+                <dt>if the <var>iteration fraction</var> is zero,</dt>
+                <dd>set the <var>iteration start</var> to zero,</dd>
+                <dt>otherwise,</dt>
+                <dd>set the <var>iteration start</var> to
+                  <code>1 - <var>iteration fraction</var></code>.</dd>
+              </dl>
+            </li>
+            <li>Invert the <var>fill mode</var> as follows:
+              <dl class="switch">
+                <dt>none</dt>
+                <dd>leave the <var>fill mode</var> as none</dd>
+                <dt>forwards</dt>
+                <dd>let the <var>fill mode</var> be backwards</dd>
+                <dt>backwards</dt>
+                <dd>let the <var>fill mode</var> be forwards</dd>
+                <dt>both</dt>
+                <dd>leave the <var>fill mode</var> as both</dd>
+              </dl>
+            </li>
+          </ol>
         </section>
       </section>
       <section>
@@ -1217,22 +1333,20 @@
             <span class="todo">Need to write out the algorithm for this and
             clarify the meaning <code>speed</code>.</span>
           </dd>
+          <dt>void reverse ()</dt>
+          <dd>
+            Reverses the timing parameters for this object and then performs
+            a compensatory seek such that the animation immediately begins
+            reversing from its current point.
+            The specific steps for this operation are defined in <a
+            href="#reversing-a-timed-item" class="sectionRef"></a>.
+          </dd>
           <dt>void cancel ()</dt>
           <dd>
             Removes the timed item from its parent group. As a result, the
             timed item will no longer affect its target.
           </dd>
         </dl>
-        <div class="feedbackWanted">
-          How about a <code>reverse</code> method? What it does is call
-          <code>cancel</code> on the timed item.
-          Then it generates a clone with the <code>startTime</code> set to the
-          current time (actually, we probably want to use the delay so the
-          reverse animation has the same priority).
-          Then it sets the <code>direction</code> to its opposite (i.e.
-          normal&#x2194;reverse, alternate&#x2194;alternate-reverse) and returns
-          the new timed item? (Need to make sure we avoid object-slicing here.)
-        </div>
         <div class="todo">
           <p>
             Do we need a means for getting the startTime etc. in document
@@ -1686,6 +1800,69 @@
           animations as "remove-on-seek" (or something of that ilk).
         </p>
       </section>
+      <section>
+        <h3>Reversing a timed item</h3>
+        <p>
+          Reversing a timed item such that it immediately takes effect is
+          achieved according to the following steps:
+        </p>
+        <ol>
+          <li>
+            Let <var>item</var> be the timed item to be reversed.
+          </li>
+          <li>
+            Call <code><var>item</var>.timing.reverse()</code>.
+          </li>
+          <li>
+            Adjust the <var>time drift</var> as follows:
+            <dl class="switch">
+              <dt>If <var>item time</var> is null,</dt>
+              <dd>
+                let <var>time drift</var> be <code>-<var>start time</var></code>
+                and then return.
+              </dd>
+              <dt>If <code><var>item time</var> &lt; <var>start
+                  delay</var></code>,</dt>
+              <dd>
+                Perform a seek to time <code><var>start delay</var>
+                + <var>animation duration</var></code> according to the steps
+                in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
+              </dd>
+              <dt>If <code><var>item time</var> &gt; <var>start
+                  delay</var> + <var>animation duration</var></code>,</dt>
+              <dd>
+                Perform a seek to <var>start delay</var> according to the steps
+                in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                Perform a seek to
+                <code>
+                  <var>animation duration</var> - <var>animation time</var>
+                </code>
+                according to the steps
+                in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
+              </dd>
+            </dl>
+          </li>
+        </ol>
+        <div class="informative">
+          <p>
+            By following these steps, assuming a forwards direction of play,
+            even if a timed item has finished its animation interval three
+            seconds in the past, it will not wait a further three seconds as if
+            retracing that time, but will immediately begin reversing.
+          </p>
+          <p>
+            Similarly, assuming a forwards direction of play, if a timed item
+            is reversed before it begins its animation interval it will never
+            play. Instead it will be seeked to the moment at the end of the
+            animation interval.
+            This provides consistent behavior when the direction of play is
+            backwards.
+          </p>
+        </div>
+      </section>
     </section>
 
     <section>
@@ -1703,6 +1880,10 @@
         TBD.
       </p>
       <dl title="interface TimingFunction" class="idl">
+        <dt>TimingFunction clone()</dt>
+        <dd>
+          <p class="todo">Needed for <code>Timing.clone</code>.</p>
+        </dd>
       </dl>
     </section>
 
@@ -1874,10 +2055,6 @@
           <li>
             It cannot be appended as a child of another group. As a result the
             <code>parentGroup</code> property returns <code>null</code>.
-          </li>
-          <li>
-            Attempting to set the <code>type</code> property will result in a
-            DOMException (code: NO_MODIFICATION_ALLOWED_ERR) being thrown.
           </li>
           <li>
             Calls to <code>cancel()</code> will result in a DOMException (code:
@@ -2113,16 +2290,14 @@
         </p>
         <ul>
           <li>
-            Modifying any of the members of the <code>timing</code> property or
-            modifying the <code>type</code> property of the
-            <code>AnimGroupInstance</code> object.
+            Modifying any of the members of the <code>timing</code> property.
             This includes redundant modifications, that is, setting a property
             to its current value.
           </li>
           <li>
             Calling any of the methods that affect the list of child items
-            (<code>clear</code>, <code>append</code>, <code>insertBefore</code>,
-            or <code>remove</code>).
+            (<code>clear</code>, <code>add</code>, <code>remove</code>,
+            or <code>splice</code>).
           </li>
           <li>
             Calling the <code>makeIndependent</code> method of the
@@ -2144,99 +2319,18 @@
         <h3>The <code>AnimGroupInstance</code> interface</h3>
         <p>
           Represents a list of timed items which may be animation instances or
-          nested animation group instances. Order is significant only when
-          <code>type</code> is <code>WEBA_SYNC_SEQ</code>.
+          nested animation group instances.
         </p>
-        <div class="feedbackWanted">
-          <p>
-            For adding and removing items this interface relies on passing in
-            actual <a>TimedItem</a> objects. This is similar to the Element
-            interface but differs from many SVG interfaces which use numeric
-            indices instead.
-          </p>
-          <p>
-            Using objects instead of indices is generally more useful since,
-            even if you only know the index you can easily convert it to an
-            object (e.g. <code>remove(group.getItem(2))</code>) but the reverse
-            conversion is more difficult. However, there are performance costs
-            associated with creating these objects in situations where indices
-            are sufficient.
-          </p>
-          <p>
-            With the interface defined below, it's really hard to (a) remove and
-            re-add an item in the same place, (b) move an item forward one
-            place. DOM doesn't have this problem because it has
-            <code>nextSibling</code> and co. The SVG interfaces also don't have
-            this problem because they use indexes but they <em>do</em> have
-            the problem that working with a passed in object is very difficult
-            (because you don't know its index). Maybe we need nextSibling? Or
-            something to take an item and find its index?
-          </p>
-          <p>
-            Also, the use of exceptions below is perhaps a little inconsistent.
-            I've used exceptions for cases which are exceptional. For
-            <code>item</code> I think it's reasonable to return null (like
-            <code>NodeList</code>). Likewise, for <code>remove</code> I think
-            it's useful to just return <code>null</code> rather than throwing
-            an exception (e.g. if it has already been removed / not yet added).
-            Maybe you really want to return null if it has no parent and throw
-            an exception if it belongs to another group?
-          </p>
-        </div>
+        <p>
+          The <code>AnimGroupInstance</code> interface supports indexed
+          properties with indices in the range 0 ≤ <var>index</var> &lt;
+          <code>group.size</code>. 
+        </p>
         <dl title="interface AnimGroupInstance : TimedItem"
           class="idl">
           <dt>readonly attribute unsigned long length</dt>
           <dd>
             The number of timed items in the group.
-          </dd>
-          <dt>attribute unsigned short type</dt>
-          <dd>
-            <p>
-              The type of synchronization provided by this animation group
-              instance as specified by one of the <code>WEBA_SYNC_*</code>
-              constants defined on the AnimGroup interface.
-            </p>
-            <p>
-              Setting this value has the following effect:
-            </p>
-            <ol>
-              <li>
-                If <code>type</code> is set to the same value as the previous
-                value return.
-              </li>
-              <li>
-                Record the current container time.
-              </li>
-              <li>
-                For each child in the group, call <code>cancel</code>.
-              </li>
-              <li>
-                Seek the container time to zero.
-              </li>
-              <li>
-                Calculate effective start time of each child in the
-                animation group instance using the new synchronization type.
-              </li>
-              <li>
-                Seek the container time to the previously recorded time.
-              </li>
-            </ol>
-            <div class="feedbackWanted">
-              <p>
-                Note that a consequence of the above is that, for example, if
-                you change a container from type <code>par</code> to
-                <code>seq</code> you could potentially generate a lot of end
-                events followed by a lot of begin events despite the fact that
-                the animation might not produce any different visual result. We
-                could change the behavior so that it effectively records the
-                play state of each item before and then after the "seek"
-                dispatches the appropriate events.
-              </p>
-              <p>
-                Actually, I think we're just going to end up subclassing groups
-                based on type. It solves lots of problems
-              </p>
-            </div>
           </dd>
           <dt>readonly attribute AnimGroup? template</dt>
           <dd>
@@ -2251,75 +2345,160 @@
           <dd>
             Removes all child timed items from the group.
           </dd>
-          <dt>TimedItem append (TimedItem newItem)</dt>
-          <dd>
-            Add <code>newItem</code> as the last item in the group. If
-            <code>newItem</code> already belongs to a group (including this
-            group) it will first be removed from that group before being added
-            to this group. Returns <code>newItem</code>.
-          </dd>
-          <dt>TimedItem insertBefore (TimedItem newItem,
-            TimedItem? refItem)</dt>
+          <dt>getter TimedItem? (unsigned long index)</dt>
           <dd>
             <p>
-              Inserts <code>newItem</code> before the existing
-              <code>refItem</code>. If <code>refItem</code> is null,
-              <code>newChild</code> is added to the end of the list. If
-              <code>newItem</code> already belongs to a group (including this
-              group) it will first be removed from that group before being added
-              to this group. If <code>newItem</code> and <code>refItem</code>
-              are the same object then no change is made. Returns
-              <code>newItem</code>.
+              Returns the item at <code>index</code>.
+              If <code>index</code> is greater than or equal to
+              <code>length</code> returns <code>null</code>.
             </p>
-            <p class="feedbackWanted">
-              What events are fired? If <code>newChild</code> is removed from
-              a group then fire end event?
+          </dd>
+          <dt>setter TimedItem (unsigned long index, TimedItem newItem)</dt>
+          <dd>
+            <p>
+              Replaces the item at <code>index</code> with <code>newItem</code>
+              by calling <code>splice(index, 1, newItem)</code>.
             </p>
-            <p>Exceptions:</p>
+            <p>
+              No attempt is made to check if the item at <code>index</code> is
+              already <code>newItem</code>. In such a case, <code>newItem</code>
+              will be removed from this group and re-added as per the usual
+              operation of <code>slice</code>.
+            </p>
+            <p>
+              Returns <code>newItem</code>.
+            </p>
+            <p>
+              Exceptions:
+            </p>
             <ul>
-              <li>HIERARCHY_REQUEST_ERR: Raised if <code>newItem</code> is
-              the document timeline for a document (see <a
-                href="#the-document-timeline" class="sectionRef"></a>).</li>
-              <li>NOT_FOUND_ERR: Raised if <code>refItem</code> is not a child
-              of this group.</li>
+              <li>
+                HIERARCHY_REQUEST_ERR: Raised if <code>newItem</code> is
+                the timeline for a document (see <a
+                href="#the-document-timeline" class="sectionRef"></a>).
+              </li>
+              <li>
+                INDEX_SIZE_ERR: Raised if <code>index</code> is outside of the
+                range 0 &le; <var>index</var> &lt; <code>group.length</code>.
+              </li>
+            </ul>
+            <div class="note">
+              <p>
+                Whilst <code>splice</code> allows negative indices,
+                WebIDL requires index property setters to take an index of type
+                <code>unsigned long</code> and hence <code>index</code> is
+                restricted to the range 0 &le; <var>index</var> &lt;
+                <code>group.length</code>.
+              </p>
+            </div>
+          </dd>
+          <dt>sequence&lt;TimedItem&gt; add (TimedItem newItem,
+                                             TimedItem... otherItems)</dt>
+          <dd>
+            <p>
+              Add <code>newItem</code> and each <code>otherItems</code> as the
+              last item(s) in the group by calling <code>splice(group.length, 0,
+              newItem, otherItem1, ... otherItemN)</code>.
+            </p>
+            <p>
+              Returns a sequence containing the added items:
+              <code>[newItem, otherItem1, ... otherItemN]</code>.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <ul>
+              <li>
+                HIERARCHY_REQUEST_ERR: Raised if any of the items to add 
+                is the timeline for a document (see <a
+                href="#the-document-timeline" class="sectionRef"></a>).
+                If this exception is thrown none of the <code>newItem</code>
+                objects will be added to the group.
+              </li>
             </ul>
           </dd>
-          <dt>TimedItem? item (unsigned long index)</dt>
+          <dt>sequence&lt;TimedItem&gt; remove (
+                long index, optional unsigned long count = 1)</dt>
           <dd>
-            Returns the item at <code>index</code>. If <code>index</code> is
-            greater than or equal to <code>length</code> returns
-            <code>null</code>. Equivalent to
-            <code>AnimGroupInstance[index]</code>.
-            <span class="todo">(Need to work out how to define this
-              behavior&mdash;i.e. that you can use the subscript
-              operator)</span>
-          </dd>
-          <dt>unsigned long indexOf (TimedItem item)</dt>
-          <dd>
-            Opposite to <code>item()</code> method, returns index of the
-            <code>item</code>. If <code>item</code> is not in the group,
-            returns <code>-1</code>.
+            <p>
+              Removes the item(s) at <code>index</code> by calling
+              <code>splice(index, count)</code>.
+            </p>
+            <p>
+              Returns the removed items.
+            </p>
           </dd>
           <dt>
-            array splice (unsigned long start, unsigned long deleteCount,
-            TimedItem item1?, TimedItem item2?, )
+            sequence&lt;TimedItem&gt; splice ()
           </dt>
           <dd>
-            <!-- pretty much copied from ECMAScript description of splice method
-            for array: Array.prototype.splice -->
-            When the <code>splice</code> method is called with two or more
-            arguments <code>start</code>, <code>deleteCount</code> and
-            (optionally) <code>item1</code>, <code>item2</code>, etc., the
-            <code>deleteCount</code> elements of the group starting at group
-            index <code>start</code> are replaced by the arguments
-            <code>item1</code>, <code>item2</code>, etc. An Array object
-            containing the deleted elements (if any) is returned.
+            <p>
+              Modifies the list of children of this group by first removing
+              <code>deleteCount</code> items from <code>start</code> followed by
+              adding <code>newItems</code> at the same point.
+            </p>
+            <p>
+              The operation of slice is based on <a
+                href="http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262%205th%20edition%20December%202009.pdf#page=140">ECMAScript 5's
+                Array.prototype.splice</a>.
+            </p>
+            <p>
+              Returns a sequence of the items removed from group during the
+              removal step (regardless of whether these items were re-added
+              during the addition step).
+            </p>
+            <dl class="parameters">
+              <dt>long start</dt>
+              <dd>
+                The index at which items should be removed and inserted.
+                Negative indices represent an offset from the end of the list of
+                items.
+                This value is clamped to the range [-<code>length</code>,
+                <code>length</code>].
+              </dd>
+              <dt>unsigned long deleteCount</dt>
+              <dd>
+                The number of items to remove from the group beginning at
+                <code>start</code>.
+                Negative values are clamped to zero, and all other values are
+                clamped such that
+                0 &lt; <code>start</code> + <code>deleteCount</code> &le;
+                length.
+              </dd>
+              <dt>sequence&lt;TimedItem&gt; newItems</dt>
+              <dd>
+                The items to be added at <code>start</code>.
+                Each item, if it already has a parent group (including this
+                group), is first removed from its parent group before being
+                added to this group.
+              </dd>
+            </dl>
+            <p>
+              Exceptions:
+            </p>
+            <ul>
+              <li>
+                HIERARCHY_REQUEST_ERR: Raised if any of the items in
+                <code>newItem</code> is the timeline for a document (see <a
+                href="#the-document-timeline" class="sectionRef"></a>).
+              </li>
+            </ul>
           </dd>
-          <dt>TimedItem? remove (TimedItem removedItem)</dt>
+          <dt>
+            sequence&lt;TimedItem&gt; splice (long start,
+              unsigned long deleteCount, TimedItem... newItem)
+          </dt>
           <dd>
-            Removes <code>removedItem</code> from the group and returns it. If
-            <code>removedItem</code> is not part of this group, returns
-            <code>null</code>.
+            An overload of <code>splice</code> to take a variadic list of items
+            rather than requiring a sequence.
+            The operation is identical to <code>splice(unsigned long start,
+            unsigned long deleteCount, sequence&lt;TimedItem&gt;
+            newItems)</code>.
+          </dd>
+          <dt>long indexOf (TimedItem item)</dt>
+          <dd>
+            Returns the index of <code>item</code> within the group.
+            If <code>item</code> is not in the group, returns <code>-1</code>.
           </dd>
           <dt>bool makeIndependent()</dt>
           <dd>
@@ -2360,128 +2539,234 @@
         </dl>
       </section>
       <section>
-        <h3>Calculating the intrinsic duration of an animation group instance
-        </h3>
+        <h3>Parallel animation group instances</h3>
         <p>
-          TBD, but basically:
+          Parallel animation group instances run their children such they
+          potentially play simultaneously.
+          The start time of each child depends on its 
+          <code>startTime</code> property.
         </p>
-        <dl class="switch">
-          <dt>If the type is parallel,</dt>
-          <dd>
-            Calc the endTime for each child and take the max
-          </dd>
-          <dt>If the type is sequence</dt>
-          <dd>
-            Sum all the animation durations + start delays (including
-            negatives)
-          </dd>
-        </dl>
+        <section>
+          <h4>The intrinsic duration of a parallel animation group instance</h4>
+          <p>
+            The intrinsic duration of a parallel animation group instance is
+            the maximum of the <code>endTime</code> property of each
+            child <code>TimedItem</code>.
+          </p>
+          <p>
+            If the group has no children then the intrinsic duration is zero.
+          </p>
+        </section>
+        <section>
+          <h4>The <code>ParAnimGroupInstance</code> interface</h4>
+          <p>
+            Parallel animation group instances are represented by
+            <code>ParAnimGroupInstance</code> objects.
+          </p>
+          <dl title="interface ParAnimGroupInstance : AnimGroupInstance"
+            class="idl">
+          </dl>
+        </section>
       </section>
       <section>
-        <h3>Calculating the start time of children of a sequence group</h3>
+        <h3>Sequence animation group instances</h3>
         <p>
-          The start time for the children of a sequence animation group instance
-          is calculated according to the following procedure:
+          Parallel animation group instances run their children such they
+          potentially play simultaneously.
+          The start time of each child depends on its 
+          <code>startTime</code> property.
         </p>
-        <ol>
-          <li>Let the <var>accumulated start time</var> be zero.
-          <li>
-            Iterate over each child in the group beginning with the first item
-            in the group and proceeding to the last.
-            For each child perform the following steps:
-            <ol>
-              <li>
-                Let the start time of the child be <var>accumulated start
-                time</var>
-              </li>
-              <li>
-                Increment <var>accumulated start time</var> by
-                <code><var>start delay</var> + <var>animation
-                duration</var></code>
-              </li>
-            </ol>
-          </li>
-        </ol>
-        <p class="note">
-          When <var>animation duration</var> is positive infinity the behavior
-          is defined by IEEE 754-2008.
-          In effect, if any of the children of a sequence animation group
-          instance has an infinite animation duration, any children that occur
-          later in the sequence will not play.
-        </p>
+        <section>
+          <h4>The start time of children of a sequence animation group
+            instance</h4>
+          <p>
+            The start time for the children of a sequence animation group
+            instance is calculated according to the following procedure:
+          </p>
+          <ol>
+            <li>Let the <var>accumulated start time</var> be zero.
+            <li>
+              Iterate over each child in the group beginning with the first item
+              in the group and proceeding to the last.
+              For each child perform the following steps:
+              <ol>
+                <li>
+                  Let the start time of the child be <var>accumulated start
+                  time</var>
+                </li>
+                <li>
+                  Increment <var>accumulated start time</var> by
+                  <code><var>start delay</var> + <var>animation
+                  duration</var></code>
+                </li>
+              </ol>
+            </li>
+          </ol>
+          <p class="note">
+            When <var>animation duration</var> is positive infinity the behavior
+            is defined by IEEE 754-2008.
+            In effect, if any of the children of a sequence animation group
+            instance has an infinite animation duration, any children that occur
+            later in the sequence will not play.
+          </p>
+          <p class="todo">
+            Need to define how <code>stop</code> will work for sequence
+            children.
+          </p>
+        </section>
+        <section>
+          <h4>The intrinsic duration of a sequence animation group instance</h4>
+          <p>
+            The instrinsic duration of a sequence animation group instance is
+            equivalent to the <var>start time</var> of a hypothetical child
+            appended to the group's children.
+            It can be calculated as the sum of the <var>start time</var>,
+            <var>start delay</var>, and <var>animation duration</var> of the
+            last child of the animation group.
+          </p>
+          <p class="todo">
+            Need to define how <code>stop</code> will interact here.
+          </p>
+        </section>
+        <section>
+          <h4>The <code>SeqAnimGroupInstance</code> interface</h4>
+          <p>
+            Sequence animation group instances are represented by
+            <code>SeqAnimGroupInstance</code> objects.
+          </p>
+          <dl title="interface SeqAnimGroupInstance : AnimGroupInstance"
+            class="idl">
+          </dl>
+        </section>
       </section>
       <section>
         <h3>The <code>AnimGroup</code> interface</h3>
         <p>
           <code>AnimGroupInstance</code> objects are not created
-          directly, but rather via a <code>AnimGroup</code> object that
+          directly, but rather via an <code>AnimGroup</code> object that
           acts as a template for creating animation group instances that target
           different elements.
         </p>
-        <dl title="[Constructor] interface AnimGroup : TimedTemplate"
-          class="idl">
-          <dt>const unsigned short WEBA_SYNC_PAR = 0</dt>
-          <dd>
-            Parallel synchronization.
-          </dd>
-          <dt>const unsigned short WEBA_SYNC_SEQ = 1</dt>
-          <dd>
-            Sequence synchronization.
-          </dd>
-          <dt>attribute unsigned short type</dt>
-          <dd>
-            <p>
-              The type of synchronization provided by instances of this
-              animation group as specified by one of the
-              <code>WEBA_SYNC_*</code> constants defined in this interface.
-            </p>
+        <dl title="interface AnimGroup : TimedTemplate" class="idl">
           <dt>void clear ()</dt>
           <dd>
-            Removes all child templates from the group.
+            Removes all child items from the group.
           </dd>
-          <dt>TemplateItem append (TemplateItem newItem)</dt>
+          <dt>getter TimedTemplate? (unsigned long index)</dt>
           <dd>
-            Add <code>newItem</code> as the last item in the group. If
-            <code>newItem</code> already belongs to a group (including this
-            group) it will first be removed from that group before being added
-            to this group. Returns <code>newItem</code>.
-            <span class="todo">Is that necessary? For templates you could just
-              make them share-able? But better to be consistent?</span>
+            Returns the template item at <code>index</code>.
+            If <code>index</code> is greater than or equal to
+            <code>length</code> returns <code>null</code>.
           </dd>
-          <dt>TemplateItem insertBefore (TemplateItem newItem,
-            TemplateItem? refItem)</dt>
+          <dt>setter TimedTemplate (unsigned long index,
+                                    TimedTemplate newItem)</dt>
           <dd>
             <p>
-              Inserts <code>newItem</code> before the existing
-              <code>refItem</code>. If <code>refItem</code> is null,
-              <code>newChild</code> is added to the end of the list. If
-              <code>newItem</code> already belongs to a group (including this
-              group) it will first be removed from that group before being added
-              to this group. If <code>newItem</code> and <code>refItem</code>
-              are the same object then no change is made. Returns
-              <code>newItem</code>.
+              Replaces the item at <code>index</code> with
+              <code>newItem</code> by calling
+              <code>splice(index, 1, newItem)</code>.
             </p>
-            <p>Exceptions:</p>
-            <ul>
-              <li>NOT_FOUND_ERR: Raised if <code>refItem</code> is not a child
-              of this group.</li>
-            </ul>
+            <p>
+              Returns <code>newItem</code>.
+            </p>
+            <p>
+              The behavior of this method is identical to
+              the equivalent setter in <code>AnimGroupInstance.replace</code>
+              except that HIERARCHY_REQUEST_ERR exceptions are not thrown.
+            </p>
           </dd>
-          <dt>TemplateItem? item (unsigned long index)</dt>
+          <dt>sequence&lt;TimedTemplate&gt; add (
+                TimedTemplate newItem, TimedTemplate... otherItems)</dt>
           <dd>
-            Returns the item at <code>index</code>. If <code>index</code> is
-            greater than or equal to <code>length</code> returns
-            <code>null</code>. Equivalent to
-            <code>AnimGroup[index]</code>.
-            <span class="todo">(Need to work out how to define this
-              behavior&mdash;i.e. that you can use the subscript
-              operator)</span>
+            <p>
+              Add <code>newItem</code> and each <code>otherItems</code> as the
+              last item(s) in the group by calling <code>splice(group.length, 0,
+              newItem, otherItem1, ... otherItemN)</code>.
+            </p>
+            <p>
+              Returns a sequence containing the added items:
+              <code>[newItem, otherItem1, ... otherItemN]</code>.
+            </p>
           </dd>
-          <dt>TemplateItem? remove (TemplateItem removedItem)</dt>
+          <dt>sequence&lt;TimedTemplate&gt; remove (
+                long index, optional unsigned long count = 1)</dt>
           <dd>
-            Removes <code>removedItem</code> from the group and returns it. If
-            <code>removedItem</code> is not part of this group, returns
-            <code>null</code>.
+            <p>
+              Removes the item(s) at <code>index</code> by calling
+              <code>splice(index, count)</code>.
+            </p>
+            <p>
+              Returns the removed items.
+            </p>
+          </dd>
+          <dt>
+            sequence&lt;TimedTemplate&gt; splice ()
+          </dt>
+          <dd>
+            <p>
+              Modifies the list of children of this group by first removing
+              <code>deleteCount</code> items from <code>start</code> followed by
+              adding <code>newItems</code> at the same point.
+            </p>
+            <p>
+              Returns a sequence of the items removed from group during the
+              removal step (regardless of whether these items were re-added
+              during the addition step).
+            </p>
+            <p>
+              As with <code>AnimGroupInstance.slice</code> the operation of
+              slice is based on <a
+              href="http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262%205th%20edition%20December%202009.pdf#page=140">ECMAScript
+              5's Array.prototype.splice</a>.
+            </p>
+            <p>
+              The operation of this method is identical to that of
+              <code>AnimGroupInstance.slice</code> with the notable difference
+              that HIERARCHY_REQUEST_ERR exceptions are not thrown since there
+              is no <code>AnimGroup</code> corresponding to a document timeline.
+            </p>
+            <dl class="parameters">
+              <dt>long start</dt>
+              <dd>
+                The index at which items should be removed and inserted.
+                Negative indices represent an offset from the end of the list of
+                items.
+                This value is clamped to the range [-<code>length</code>,
+                <code>length</code>].
+              </dd>
+              <dt>unsigned long deleteCount</dt>
+              <dd>
+                The number of items to remove from the group beginning at
+                <code>start</code>.
+                Negative values are clamped to zero, and all other values are
+                clamped such that
+                0 &lt; <code>start</code> + <code>deleteCount</code> &le;
+                length.
+              </dd>
+              <dt>sequence&lt;TimedTemplate&gt; newItems</dt>
+              <dd>
+                The items to be added at <code>start</code>.
+                Each item, if it already has a parent group (including this
+                group), is first removed from its parent group before being
+                added to this group.
+              </dd>
+            </dl>
+          </dd>
+          <dt>
+            sequence&lt;TimedTemplate&gt; splice (long start,
+              unsigned long deleteCount, TimedTemplate... newItem)
+          </dt>
+          <dd>
+            An overload of <code>splice</code> to take a variadic list of items
+            rather than requiring a sequence.
+            The operation is identical to <code>splice(unsigned long start,
+            unsigned long deleteCount, sequence&lt;TimedTemplate&gt;
+            newItems)</code>.
+          </dd>
+          <dt>long indexOf (TimedTemplate item)</dt>
+          <dd>
+            Returns the index of <code>item</code> within the group.
+            If <code>item</code> is not in the group, returns <code>-1</code>.
           </dd>
         </dl>
         <p class="todo">
@@ -2491,16 +2776,46 @@
         </p>
       </section>
       <section>
+        <h3>The <code>ParAnimGroup</code> interface</h3>
+        <p>
+          <code>ParAnimGroupInstance</code> objects are created from
+          <code>ParAnimGroup</code> objects.
+        </p>
+        <dl title="[Constructor] interface ParAnimGroup : AnimGroup"
+          class="idl">
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>SeqAnimGroup</code> interface</h3>
+        <p>
+          <code>SeqAnimGroupInstance</code> objects are created from
+          <code>SeqAnimGroup</code> objects.
+        </p>
+        <dl title="[Constructor] interface SeqAnimGroup : AnimGroup"
+          class="idl">
+        </dl>
+      </section>
+      <section>
         <h3>Instantiating an <code>AnimGroup</code></h3>
         <p>
-          The procedure for instantiating an <code>AnimGroup</code>,
-          <var>template</var>, given a list of target elements, and optionally
-          given a <var>parent group</var>, is as follows:
+          The procedure for creating an <code>AnimGroupInstance</code> from
+          an <code>AnimGroup</code>, <var>template</var>,
+          given a list of target elements, and optionally given a <var>parent
+          group</var> follows.
+        </p>
+        <p>
+          Note that <code>ParAnimGroup</code> objects produce
+          <code>ParAnimGroupInstance</code> objects and likewise 
+          <code>SeqAnimGroup</code> objects produce
+          <code>SeqAnimGroupInstance</code> objects.
+          In the following description the <code>AnimGroup</code> and
+          <code>AnimGroupInstance</code> types should be substituted with the
+          concrete types in use.
         </p>
         <ol>
           <li>
-            Create an empty sequence of <code>AnimGroupInstance</code>
-            objects.
+            Create an empty sequence to hold the generated
+            <code>AnimGroupInstance</code> objects.
           </li>
           <li>
             For each <var>element</var> in the list of target elements:
@@ -2516,7 +2831,11 @@
               <li>
                 For each <var>child</var> in <var>template</var>, call
                 <code><var>child</var>.animateWithParent(<var>element</var>,
-                <var>group</var>, <code>startTime</code>)</code>
+                <var>group</var>, <code>startTime</code>)</code> or
+                <code><var>child</var>.animateLiveWithParent(<var>element</var>,
+                <var>group</var>, <code>startTime</code>)</code> depending on
+                whether this procedure was invoked with <code>animate</code> or
+                <code>animateLive</code>.
               </li>
               <li>
                 If <var>parentGroup</var> is not specified, let
@@ -3351,8 +3670,14 @@
           </p>
         </li>
         <li class="todo">
-          If an end time is specified... we need a way to clamp the duration of
-          a group (other than just setting endTime behind the scenes).
+          If an end time is specified... we need a way to say, "play this
+          range", or "stop at this point" but in such a way that you can still
+          seek beyond that range.
+          (In order to be consistent with how hyperlinks work elsewhere such as
+          document anchors, svg views, etc.)
+          Perhaps we just make it an interal thing for now and in a future
+          version add some means of playing a range, or better still, a series
+          of ranges; something compatible with what we have for video.
         </li>
       </ol>
     </section>
