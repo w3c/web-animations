@@ -1033,9 +1033,14 @@
             <dd>
               <p>
                 A real number that acts as a multiplier on the item's rate of
-                play. For example, a value of 2.0 will cause the item to run at
-                twice its usual speed. A value of -1.0 will cause the item to
-                play backwards.
+                play.
+                For example, a value of 2.0 will cause the item to run at twice
+                its usual speed.
+                A value of -1.0 will cause the item to play backwards.
+                The <code>speed</code> is applied to the item's active time and
+                hence has no effect on the start time (see <a
+                href="#iteration-time-and-animation-time"
+                class="sectionRef"></a>).
               </p>
               <p>
                 Setting this attribute will affect the item's active duration as
@@ -1406,8 +1411,7 @@
           </li>
           <li>
             Let the <var>repeated duration</var> be <code><var>iteration
-            duration</var> * (<var>effective iteration count</var> -
-            <var>effective iteration start</var>)</code>.
+            duration</var> * <var>effective iteration count</var></code>.
           </li>
           <li>
             If <var>speed</var> is zero, return <code>Infinity</code>.
@@ -1536,8 +1540,20 @@
               start</var> * <var>iteration duration</var></code>.
             </li>
             <li>
-              Return <code><var>animation time</var> * <var>speed</var>
-              + <var>start offset</var></code>.
+              Return the adjusted animation time based on the
+              <var>speed</var> timing property as follows,
+              <dl class="switch">
+                <dt>If the <var>speed</var> is negative,</dt>
+                <dd>
+                Return <code>(<var>animation time</var> -
+                              <var>animation duration</var>) * <var>speed</var>
+                        + <var>start offset</var></code>.
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  Return <code><var>animation time</var> * <var>speed</var>
+                  + <var>start offset</var></code>.
+                </dd>
             </li>
           </ol>
         </section>
@@ -1568,10 +1584,22 @@
               If the <var>iteration duration</var> is zero, return zero.
             </li>
             <li>
-              If the <var>animation time</var> equals the
-              <var>animation duration</var> and the <var>animation
-              duration</var> is a positive (non-zero) multiple of <var>iteration
-              duration</var>, return the <var>iteration duration</var>.
+              Calculate the <var>start offset</var> as described in
+              <a href="#calculating-the-adjusted-animation-time"
+              class="sectionRef"></a>.
+            </li>
+            <li>
+              Calculate the <var>repeated duration</var> as described in
+              <a href="#calculating-the-animation-duration"
+              class="sectionRef"></a>.
+            </li>
+            <li>
+              If <code><var>adjusted animation time</var> -
+                       <var>start offset</var></code> equals the
+              <var>repeated duration</var>, and
+              <code>(<var>effective iteration count</var> -
+                     <var>effective iteration start</var>) % 1</code> is zero,
+              return the <var>iteration duration</var>.
             </li>
             <li>
               Otherwise, return <code><var>adjusted animation time</var>
@@ -1635,10 +1663,6 @@
                   </ol>
                 </dd>
               </dl>
-            </li>
-            <li>
-              If the <var>speed</var> timing property is negative, reverse the
-              <var>current direction</var>.
             </li>
             <li>
               If the <var>current direction</var> is forwards then return
