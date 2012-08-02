@@ -1262,8 +1262,8 @@
               For example, when the parent animation group instance is
               a sequence group, the value will be determined by the procedure
               defined in <a
-              href="#calculating-the-start-time-of-children-of-a-sequence-group"
-              class="sectionRef"></a>.
+      href="#the-start-time-of-children-of-a-sequence-animation-group-instance"
+      class="sectionRef"></a>.
             </p>
             <p class="todo">
               As with <code>endTime</code> and the proposed <code>stop()</code>
@@ -1325,13 +1325,42 @@
             space (see <a href="#iteration-time-and-animation-time"
             class="sectionRef"></a>).
           </dd>
-          <dt>void updateSpeed (float speed)</dt>
+          <dt>void changeSpeed (float speed)</dt>
           <dd>
-            Changes the <code>timing.speed</code> property to match the
-            <code>speed</code> parameter and then performs a compensatory seek
-            such that the <var>animation time</var> does not change.
-            <span class="todo">Need to write out the algorithm for this and
-            clarify the meaning <code>speed</code>.</span>
+            <p>
+              Set the <code>timing.speed</code> property to the
+              <code>speed</code> parameter and then performs a compensatory seek
+              such that the <var>adjusted animation time</var> does not change
+              as a result of updating the speed.
+            </p>
+            <p>
+              The compensatory seek may be achieved by using the following
+              algorithm:
+            </p>
+            <ol>
+              <li>Let <var>previous speed</var> be the value of
+                  <code>timing.speed</code> prior to updating it.</li>
+              <li>Update <code>timing.speed</code> to the passed-in
+                  <code>speed</code> parameter.</li>
+              <li>Let <var>new speed</var> be the updated value of
+                  <code>timing.speed</code>.</li> 
+              <li>If either <var>previous speed</var> or <var>new speed</var>
+                  are zero, return.</li>
+              <li>Calculate the new value of <var>animation duration</var>
+                  applying the updated speed (see <a
+                  href="#calculating-the-animation-duration"
+                  class="sectionRef"></a>).</li>
+              <li>Calculate the <var>seek adjustment</var> according to the
+                  following formula:
+                  <code><var>animation time</var> * (1 - <var>previous
+                  speed</var> / <var>new speed</var>)</code>.</li>
+              <li>If the sign of <var>new speed</var> and <var>previous
+                  speed</var> differs, subtract from the <var>seek
+                  adjustment</var> the updated value of <var>animation
+                  duration</var>.</li>
+              <li>Increment <code>timeDrift</code> by <var>seek
+                  adjustment</var>.</li>
+            </ol>
           </dd>
           <dt>void reverse ()</dt>
           <dd>
@@ -2596,8 +2625,7 @@
           <code>startTime</code> property.
         </p>
         <section>
-          <h4>The start time of children of a sequence animation group
-            instance</h4>
+      <h4>The start time of children of a sequence animation group instance</h4>
           <p>
             The start time for the children of a sequence animation group
             instance is calculated according to the following procedure:
