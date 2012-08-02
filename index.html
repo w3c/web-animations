@@ -202,7 +202,7 @@
         Graphically, this flow can be represented as follows:
       </p>
       <div class="figure">
-        <object data="img/timing-and-animation-models.svg" width="700"></object>
+        <img src="img/timing-and-animation-models.svg" width="700">
       </div>
       <p class="caption">
         Overview of the operation of Web Animations.<br>
@@ -241,7 +241,7 @@
         animate.
       </p>
       <div class="figure">
-        <object data="img/timeline.svg" width="600"></object>
+        <img src="img/timeline.svg" width="600">
       </div>
       <p class="caption">
         At time <em>t</em> animations A and B are animating.
@@ -672,7 +672,7 @@
           sequence of states is illustrated below.
         </p>
         <div class="figure">
-          <object data="img/animation-states.svg" width="600"></object>
+          <img src="img/animation-states.svg" width="600">
         </div>
         <p class="caption">
           An example of the animation states for an animation with a forwards
@@ -706,8 +706,7 @@
             Some examples are illustrated below.
           </p>
           <div class="figure">
-            <object data="img/animation-interval-examples.svg"
-              width="600"></object>
+            <img src="img/animation-interval-examples.svg" width="600">
           </div>
           <p class="caption">
             Examples of the effect of the start delay on endpoints of the
@@ -766,8 +765,7 @@
           states are illustrated below.
         </p>
         <div class="figure">
-          <object data="img/animation-state-and-fill-behavior.svg"
-            width="600"></object>
+          <img src="img/animation-state-and-fill-behavior.svg" width="600">
         </div>
         <p class="caption">
           Examples of various fill modes and the animation states produced.<br>
@@ -841,7 +839,7 @@
           Some of these time spaces are illustrated below.
         </p>
         <div class="figure">
-          <object data="img/time-spaces.svg" width="600"></object>
+          <img src="img/time-spaces.svg" width="600">
         </div>
         <p class="caption">
           A comparison of item time, animation time, and iteration time for an
@@ -883,8 +881,7 @@
             This may be visualized as follows:
           </p>
           <div class="figure">
-            <object data="img/iteration-and-animation-duration.svg"
-                width="600"></object>
+            <img src="img/iteration-and-animation-duration.svg" width="600">
           </div>
           <p class="caption">
             A comparison of the iteration and animation durations for an
@@ -911,8 +908,7 @@
             overlap.
           </p>
           <div class="figure">
-            <object data="img/endpoint-exclusive-timing.svg"
-                width="600"></object>
+            <img src="img/endpoint-exclusive-timing.svg" width="600">
           </div>
           <p class="caption">
             Illustration of end-point exclusive timing. For both repeated and
@@ -927,8 +923,7 @@
             class="sectionRef"></a> and is demonstrated below.
           </p>
           <div class="figure">
-            <object data="img/endpoint-exclusive-timing-and-fill.svg"
-                width="600"></object>
+            <img src="img/endpoint-exclusive-timing-and-fill.svg" width="600">
           </div>
           <p class="caption">
             After one iteration, the first frame of the animation is shown, but
@@ -1038,9 +1033,14 @@
             <dd>
               <p>
                 A real number that acts as a multiplier on the item's rate of
-                play. For example, a value of 2.0 will cause the item to run at
-                twice its usual speed. A value of -1.0 will cause the item to
-                play backwards.
+                play.
+                For example, a value of 2.0 will cause the item to run at twice
+                its usual speed.
+                A value of -1.0 will cause the item to play backwards.
+                The <code>speed</code> is applied to the item's active time and
+                hence has no effect on the start time (see <a
+                href="#iteration-time-and-animation-time"
+                class="sectionRef"></a>).
               </p>
               <p>
                 Setting this attribute will affect the item's active duration as
@@ -1130,7 +1130,7 @@
             This animation and its reverse effect are illustrated below.
           </p>
           <div class="figure">
-            <object data="img/reverse-timing.svg" width="700"></object>
+            <img src="img/reverse-timing.svg" width="700">
           </div>
           <p class="caption">
             The initial animation has a <var>start delay</var> of 1, an
@@ -1411,8 +1411,7 @@
           </li>
           <li>
             Let the <var>repeated duration</var> be <code><var>iteration
-            duration</var> * (<var>effective iteration count</var> -
-            <var>effective iteration start</var>)</code>.
+            duration</var> * <var>effective iteration count</var></code>.
           </li>
           <li>
             If <var>speed</var> is zero, return <code>Infinity</code>.
@@ -1541,8 +1540,20 @@
               start</var> * <var>iteration duration</var></code>.
             </li>
             <li>
-              Return <code><var>animation time</var> * <var>speed</var>
-              + <var>start offset</var></code>.
+              Return the adjusted animation time based on the
+              <var>speed</var> timing property as follows,
+              <dl class="switch">
+                <dt>If the <var>speed</var> is negative,</dt>
+                <dd>
+                Return <code>(<var>animation time</var> -
+                              <var>animation duration</var>) * <var>speed</var>
+                        + <var>start offset</var></code>.
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  Return <code><var>animation time</var> * <var>speed</var>
+                  + <var>start offset</var></code>.
+                </dd>
             </li>
           </ol>
         </section>
@@ -1573,10 +1584,22 @@
               If the <var>iteration duration</var> is zero, return zero.
             </li>
             <li>
-              If the <var>animation time</var> equals the
-              <var>animation duration</var> and the <var>animation
-              duration</var> is a positive (non-zero) multiple of <var>iteration
-              duration</var>, return the <var>iteration duration</var>.
+              Calculate the <var>start offset</var> as described in
+              <a href="#calculating-the-adjusted-animation-time"
+              class="sectionRef"></a>.
+            </li>
+            <li>
+              Calculate the <var>repeated duration</var> as described in
+              <a href="#calculating-the-animation-duration"
+              class="sectionRef"></a>.
+            </li>
+            <li>
+              If <code><var>adjusted animation time</var> -
+                       <var>start offset</var></code> equals the
+              <var>repeated duration</var>, and
+              <code>(<var>effective iteration count</var> -
+                     <var>effective iteration start</var>) % 1</code> is zero,
+              return the <var>iteration duration</var>.
             </li>
             <li>
               Otherwise, return <code><var>adjusted animation time</var>
@@ -1640,10 +1663,6 @@
                   </ol>
                 </dd>
               </dl>
-            </li>
-            <li>
-              If the <var>speed</var> timing property is negative, reverse the
-              <var>current direction</var>.
             </li>
             <li>
               If the <var>current direction</var> is forwards then return
@@ -1898,7 +1917,7 @@
         This can be used to share common timing properties as illustrated below:
       </p>
       <div class="figure">
-        <object data="img/grouping-delay.svg" width="800"></object>
+        <img src="img/grouping-delay.svg" width="800">
       </div>
       <p class="caption">
         Using groups to share common timing properties.<br>
@@ -1923,7 +1942,7 @@
           since they effectively play <em>inside</em> the group's iterations.
         </p>
         <div class="figure">
-          <object data="img/grouping-repetition.svg" width="600"></object>
+          <img src="img/grouping-repetition.svg" width="600">
         </div>
         <p class="caption">
           Since children of an animation group base their timing on the group's
@@ -1936,8 +1955,8 @@
           was multiplied with the iteration count of the children.
         </p>
         <div class="figure">
-          <object data="img/grouping-repetition-and-animation-repetition.svg"
-            width="600"></object>
+          <img src="img/grouping-repetition-and-animation-repetition.svg"
+            width="600">
         </div>
         <p class="caption">
           Specifying an iteration count of 2 on an animation group and an
@@ -1952,7 +1971,7 @@
           This allows groups to clip the playback of their children.
         </p>
         <div class="figure">
-          <object data="img/grouping-clipping.svg" width="600"></object>
+          <img src="img/grouping-clipping.svg" width="600">
         </div>
         <p class="caption">
           In the first instance, an animation has a negative delay and an
@@ -1992,7 +2011,7 @@
           Compare the two arrangements illustrated below:
         </p>
         <div class="figure">
-          <object data="img/grouping-types.svg" width="600"></object>
+          <img src="img/grouping-types.svg" width="600">
         </div>
         <p class="caption">
           Two types of animation groups.<br>
@@ -2004,7 +2023,7 @@
           sophisticated synchronization.
         </p>
         <div class="figure">
-          <object data="img/grouping-nesting.svg" width="600"></object>
+          <img src="img/grouping-nesting.svg" width="600">
         </div>
         <p class="caption">
           A sequence animation group that contains a parallel animation group as
