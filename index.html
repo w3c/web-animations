@@ -263,7 +263,7 @@
       <section>
         <h3>The <code>AnimInstance</code> interface</h3>
         <dl title="interface AnimInstance : TimedItem" class="idl">
-          <dt>attribute AnimFunction function</dt>
+          <dt>attribute AnimFunction func</dt>
           <dd>
             The animation function to apply (see <a href="#animation-values"
             class="sectionRef"></a>).
@@ -336,7 +336,7 @@
       </p>
       <ol>
         <li>
-          Modifying any of the members of the <code>function</code> or
+          Modifying any of the members of the <code>func</code> or
           <code>timing</code> properties of the
           <code>AnimInstance</code> object. This includes redundant
           modifications, that is, setting a property to its current value.
@@ -368,7 +368,7 @@
       <p class="note">
         One implication of the fact that a live instance can be converted to an
         independent instance is that when a live instance is created, the object
-        identity of its <code>function</code> and <code>timing</code> properties
+        identity of its <code>func</code> and <code>timing</code> properties
         must differ from those of the animation from which it was created. This
         is because, for example, modifying the <code>timing.duration</code>
         property of a live animation instance and hence converting it to an
@@ -378,14 +378,14 @@
       <pre class="example sh_javascript">
         // Create a new animation
         var anim = new Anim();
-        anim.timing.duration = 1;
+        anim.timing.iterationDuration = 1;
 
         // Create a live instance
-        var instance = anim.animateLive(document.getElementById('a'));
+        var instance = anim.animateLive(document.getElementById("a"));
         alert(instance.timing.iterationDuration); // Displays "1"
 
         // Modify the animation
-        anim.timing.duration = 2;
+        anim.timing.iterationDuration = 2;
         alert(instance.timing.iterationDuration); // Displays "2"
 
         // Modify both the animation and instance
@@ -398,7 +398,7 @@
         <p>
           <dl title="[Constructor] interface Anim : TimedTemplate"
             class="idl">
-            <dt>attribute AnimFunction function</dt>
+            <dt>attribute AnimFunction func</dt>
             <dd>
               The animation function to apply.
             </dd>
@@ -606,9 +606,9 @@
                 <var>instance</var>.
               </li>
               <li>
-                Set the <code>timing</code> and <code>function</code> properties
+                Set the <code>timing</code> and <code>func</code> properties
                 of <var>instance</var> to copies <code>template.timing</code>
-                and <code>template.function</code>.
+                and <code>template.func</code>.
               </li>
               <li>
                 If <var>parentGroup</var> is not specified, let
@@ -3121,9 +3121,9 @@
           <dd>
             Returns the function at <code>index</code> if it exists, or null.
           </dd>
-          <dt>void add(AnimFunction function)</dt>
+          <dt>void add(AnimFunction func)</dt>
           <dd>
-            Adds <code>function</code> to the group.
+            Adds <code>func</code> to the group.
           </dd>
           <dt>void remove(unsigned long index)</dt>
           <dd>
