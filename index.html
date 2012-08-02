@@ -4,8 +4,7 @@
   <head>
     <title>Web Animations 1.0</title>
     <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
-    <script src='http://dev.w3.org/2009/dap/ReSpec.js/js/respec.js'
-      class='remove'></script>
+    <script src='respec/respec.js' class='remove'></script>
     <script
       src='http://dev.w3.org/2009/dap/ReSpec.js/js/lang/sh_javascript.min.js'
       class='remove'></script>
@@ -1263,12 +1262,7 @@
               a sequence group, the value will be determined by the procedure
               defined in <a
       href="#the-start-time-of-children-of-a-sequence-animation-group-instance"
-      class="sectionRef"></a>.
-            </p>
-            <p class="todo">
-              As with <code>endTime</code> and the proposed <code>stop()</code>
-              method below, add <code>start()</code> to set this here?
-              Throws exception for children of a sequence container?
+              class="sectionRef"></a>.
             </p>
           </dd>
           <dt>readonly attribute float endTime</dt>
@@ -1294,6 +1288,33 @@
             lags behind the time given by <code><var>parent iteration time</var>
             - <var>start time</var></code> as a result of pausing and seeking
             this item.
+          </dd>
+          <dt>void start ()</dt>
+          <dd>
+            <p>
+              Sets <code>startTime</code> to
+              <code>parentGroup.iterationTime + timeFromNow</code>.
+              If <code>parentGroup</code> is <code>null</code>, sets
+              <code>startTime</code> to <code>timeFromNow</code>.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <ul>
+              <li>
+                INVALID_MODIFICATION_ERROR: Raised if 
+                <code>parentGroup</code> is a sequence container (see <a
+      href="#the-start-time-of-children-of-a-sequence-animation-group-instance"
+                class="sectionRef"></a>).
+              </li>
+            </ul>
+            <dl class="parameters">
+              <dt>optional float timeFromNow = 0</dt>
+              <dd>
+                The number of seconds relative to the iteration time of the
+                parent group at which the item should start.
+              </dd>
+            </dl>
           </dd>
           <dt>void pause ()</dt>
           <dd>
@@ -2079,8 +2100,8 @@
             and proceeding to the last.
             Any start time specified on children is ignored and replaced with
             the time calculated using the procedure in <a
-              href="#calculating-the-start-time-of-children-of-a-sequence-group"
-              class="sectionRef"></a>.
+      href="#the-start-time-of-children-of-a-sequence-animation-group-instance"
+            class="sectionRef"></a>.
           </dd>
         </dl>
         <p class="todo">
@@ -2619,10 +2640,10 @@
       <section>
         <h3>Sequence animation group instances</h3>
         <p>
-          Parallel animation group instances run their children such they
-          potentially play simultaneously.
-          The start time of each child depends on its 
-          <code>startTime</code> property.
+          Sequence animation group instances run their children in turn
+          following their order in the group.
+          The animation intervals of the children will not overlap unless
+          a negative start delay is specified on one of the children.
         </p>
         <section>
       <h4>The start time of children of a sequence animation group instance</h4>
