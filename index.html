@@ -1222,20 +1222,18 @@
               The length in seconds of the animation interval.
             </p>
             <p>
-              Initially, this attribute will reflect the <var>intrinsic
-              animation duration</var> calculated according to the procedure
-              defined in <a href="#calculating-the-intrinsic-animation-duration"
-              class="sectionRef"></a>.
+              Initially, this attribute will reflect the <a>intrinsic
+              animation duration</a>.
               Changes to the model that cause the <var>intrinsic animation
               duration</var> to change are reflected in the value returned here.
             </p>
             <p>
-              The <var>instrinsic animation duration</var> may be overridden by
+              The <a>instrinsic animation duration</a> may be overridden by
               setting this attribute to any real number.
               Negative values are clamped to zero.
               Setting this attribute to <code>undefined</code> has the effect of
               clearing the override value so that the attribute returns to
-              reflecting the <var>intrinsic animation duration</var>.
+              reflecting the <a>intrinsic animation duration</a>.
             </p>
           </dd>
           <dt>readonly attribute unrestricted float? iterationTime</dt>
@@ -1314,9 +1312,10 @@
           <dt>readonly attribute float timeDrift</dt>
           <dd>
             The number of seconds that the actual item time of this item
-            lags behind the time given by <code><var>parent iteration time</var>
-            - <var>start time</var></code> as a result of pausing and seeking
-            this item.
+            lags behind the time given by <code>parentGroup.iterationTime
+            - startTime</code> as a result of pausing and seeking this item.
+            It is initially zero as described in <a
+            href="#pausing-a-timed-item" class="sectionRef"></a>.
           </dd>
           <dt>void start ()</dt>
           <dd>
@@ -1430,18 +1429,17 @@
                   <code>timing.speed</code>.</li> 
               <li>If either <var>previous speed</var> or <var>new speed</var>
                   are zero, return.</li>
-              <li>Calculate the new value of <var>animation duration</var>
-                  applying the updated speed (see <a
-                  href="#calculating-the-intrinsic-animation-duration"
-                  class="sectionRef"></a>).</li>
+              <li>Update the value of <code>animationDuration</code> if
+                  necessary (that is, if <code>animationDuration</code> reflects
+                  the <a>intrinsic animation duration</a>), applying the updated
+                  value for <code>timing.speed</code>.</li>
               <li>Calculate the <var>seek adjustment</var> according to the
                   following formula:
                   <code><var>animation time</var> * (1 - <var>previous
                   speed</var> / <var>new speed</var>)</code>.</li>
               <li>If the sign of <var>new speed</var> and <var>previous
                   speed</var> differs, subtract from the <var>seek
-                  adjustment</var> the updated value of <var>animation
-                  duration</var>.</li>
+                  adjustment</var> the updated value of animationDuration.</li>
               <li>Increment <code>timeDrift</code> by <var>seek
                   adjustment</var>.</li>
             </ol>
@@ -1475,24 +1473,26 @@
         </p>
         <ul>
           <li><dfn>iteration start</dfn> =
-              <code>max(0, min(iterationStart, iterationCount))</code></li>
+              <code>max(0, min(timing.iterationStart,
+                               timing.iterationCount))</code></li>
           <li><dfn>iteration count</dfn> =
-              <code>max(0, iterationCount)</code></li>
+              <code>max(0, timing.iterationCount)</code></li>
         </ul>
       </section>
       <section>
         <h3>Calculating the iteration duration</h3>
         <p>
-          The <var>iteration duration</var> is calculated according to the
+          The <dfn>iteration duration</dfn> is calculated according to the
           following steps:
         </p>
         <dl class="switch">
           <dt>
-            If the <var>duration</var> timing property is set to a numerical
-            value greater than or equal to zero (including positive infinity),
+            If the <code>timing.iterationDuration</code> timing property is set
+            to a numerical value greater than or equal to zero (including
+            positive infinity),
           </dt>
           <dd>
-            return <var>duration</var>.
+            return <code>timing.iterationDuration</code>.
           </dd>
           <dt>
             Otherwise,
@@ -1521,13 +1521,13 @@
       <section>
         <h3>Calculating the intrinsic animation duration</h3>
         <p>
-          The <var>intrinsic animation duration</var> is calculated according to
+          The <dfn>intrinsic animation duration</dfn> is calculated according to
           the following steps:
         </p>
         <ol>
           <li>
-            Let the <var>repeated duration</var> be <code><var>iteration
-            duration</var> * <a>iteration count</a></code>.
+            Let the <var>repeated duration</var> be <code><a>iteration
+            duration</a> * <a>iteration count</a></code>.
           </li>
           <li>
             If <var>speed</var> is zero, return <code>Infinity</code>.
@@ -1545,24 +1545,9 @@
           equation:
         </p>
         <blockquote>
-          <code><var>item time</var> = <var>parent iteration time</var>
-            - <var>start time</var> - <var>time drift</var></code>
+          <code><var>item time</var> = parentGroup.iterationTime
+            - startTime - timeDrift</code>
         </blockquote>
-        <p>where:</p>
-        <ul>
-          <li>
-            <var>parent iteration time</var> is
-            <code>parentGroup.iterationTime</code>.
-          </li>
-          <li>
-            <var>start time</var> is the item's start time.
-          </li>
-          <li>
-            <var>time drift</var> is the accumulated offset from the start
-            time resulting from pausing and seeking the item as described in <a
-            href="#pausing-a-timed-item" class="sectionRef"></a>.
-          </li>
-        </ul>
         <p>
           If the timed item is not the child of a parent animation group
           instance, the <var>item time</var> is <code>null</code>.
@@ -1574,7 +1559,7 @@
       <section>
         <h3>Calculating the animation time</h3>
         <p>
-          The <var>animation time</var> is based on the <a>item time</a>
+          The <dfn>animation time</dfn> is based on the <a>item time</a>
           and <var>start delay</var>.
           It is defined only when the timed item is active and is calculated
           according to the following steps:
@@ -1603,8 +1588,8 @@
             </dl>
           </li>
           <li>
-            If <code><a>item time</a> &lt; <var>start delay</var> +
-            <var>animation duration</var></code>, return
+            If <code><a>item time</a> &lt; timing.startDelay +
+            animationDuration</code>, return
             <code><a>item time</a> - <var>start delay</var></code>.
           </li>
           <li>
@@ -1616,7 +1601,7 @@
                 <em>both</em>,
               </dt>
               <dd>
-                return <var>animation duration</var>.
+                return <code>animationDuration</code>.
               <dd>
               <dt>
                 Otherwise,
@@ -1630,24 +1615,24 @@
         <section>
           <h4>Calculating the adjusted animation time</h4>
           <p>
-            Before the <var>animation time</var> can be converted to an
+            Before the <a>animation time</a> can be converted to an
             <var>iteration time</var>
             we must factor in the animation's <var>speed</var> and
-            <var>iteration start</var>. This is called the <var>adjusted
-            animation time</var>.
+            <a>iteration start</a>. This is called the <a>adjusted
+            animation time</a>.
           </p>
           <p>
-            The <var>adjusted animation time</var> is calculated according to
+            The <dfn>adjusted animation time</dfn> is calculated according to
             the following steps:
           </p>
           <ol>
             <li>
-              If the <var>animation time</var> is <code>null</code>, return
+              If the <a>animation time</a> is <code>null</code>, return
               <code>null</code>.
             </li>
             <li>
               Let the <var>start offset</var> be <code><a>iteration start</a>
-              * <var>iteration duration</var></code>.
+              * <a>iteration duration</a></code>.
             </li>
             <li>
               Return the adjusted animation time based on the
@@ -1655,13 +1640,13 @@
               <dl class="switch">
                 <dt>If the <var>speed</var> is negative,</dt>
                 <dd>
-                Return <code>(<var>animation time</var> -
-                              <var>animation duration</var>) * <var>speed</var>
+                Return <code>(<a>animation time</a> -
+                              animationDuration) * <var>speed</var>
                         + <var>start offset</var></code>.
                 </dd>
                 <dt>Otherwise,</dt>
                 <dd>
-                  Return <code><var>animation time</var> * <var>speed</var>
+                  Return <code><a>animation time</a> * <var>speed</var>
                   + <var>start offset</var></code>.
                 </dd>
             </li>
@@ -1671,8 +1656,8 @@
       <section>
         <h3>Calculating the iteration time</h3>
         <p>
-          The iteration time is calculated by first dividing the <var>adjusted
-          animation time</var> into intervals.
+          The iteration time is calculated by first dividing the <a>adjusted
+          animation time</a> into intervals.
           This is called the <var>unscaled iteration time</var>.
           Following this, timing manipulations specified on the timed item are
           applied to the <var>unscaled iteration time</var> to produce the
@@ -1681,7 +1666,7 @@
         <section>
           <h4>Calculating the unscaled iteration time</h4>
           <p>
-            The <var>unscaled iteration time</var> is calculated according to
+            The <dfn>unscaled iteration time</dfn> is calculated according to
             the following steps:
           </p>
           <ol>
@@ -1691,7 +1676,7 @@
               return <code>null</code>.
             </li>
             <li>
-              If the <var>iteration duration</var> is zero, return zero.
+              If the <a>iteration duration</a> is zero, return zero.
             </li>
             <li>
               Calculate the <var>start offset</var> as described in
@@ -1704,14 +1689,14 @@
               class="sectionRef"></a>.
             </li>
             <li>
-              If <code><var>adjusted animation time</var> -
-                       <var>start offset</var></code> equals the
+              If <code><a>adjusted animation time</a> -
+                       <a>start offset</a></code> equals the
               <var>repeated duration</var>, and
               <code>(<a>iteration count</a> - <a>iteration start</a>) % 1</code>
               is zero, return the <var>iteration duration</var>.
             </li>
             <li>
-              Otherwise, return <code><var>adjusted animation time</var>
+              Otherwise, return <code><a>adjusted animation time</a>
               % <var>iteration duration</var></code>.
             </li>
           </ol>
@@ -1719,8 +1704,8 @@
         <section>
           <h4>Applying time manipulations</h4>
           <p>
-            The <var>unscaled iteration time</var> is converted into the
-            <var>iteration time</var> using the following steps:
+            The <a>unscaled iteration time</a> is converted into the
+            <dfn>iteration time</dfn> using the following steps:
           <ol>
             <li>
               If the <var>unscaled iteration time</var> is <code>null</code>,
@@ -1760,8 +1745,8 @@
                     </li>
                     <li>
                       If the animation is not animating, and the
-                      <var>animation duration</var> is a positive multiple of
-                      the <var>iteration duration</var> increment <var>d</var>
+                      <code>animationDuration</code> is a positive multiple of
+                      the <a>iteration duration</a> increment <var>d</var>
                       by 1.
                     </li>
                     <li>
@@ -1777,7 +1762,7 @@
               If the <var>current direction</var> is forwards then return
               the <var>scaled iteration time</var>.
               <p>
-                Otherwise, return the <var>iteration duration</var>
+                Otherwise, return the <a>iteration duration</a>
                 - <var>scaled iteration time</var>.
               </p>
             </li>
@@ -1791,8 +1776,8 @@
         <section>
           <h4>Calculating the time fraction</h4>
           <p>
-            The <var>time fraction</var> is given by dividing the <var>iteration
-            time</var> by the <var>iteration duration</var>.
+            The <dfn>time fraction</dfn> is given by dividing the <var>iteration
+            time</var> by the <a>iteration duration</a>.
           </p>
         </section>
         <section>
@@ -1807,19 +1792,19 @@
               <code>null</code>.
             </li>
             <li>
-              If the <var>adjusted animation time</var> is zero, return zero.
+              If the <a>adjusted animation time</a> is zero, return zero.
             </li>
             <li>
-              If the <var>iteration duration</var> is zero, return
-              <code>floor(<var>iteration count</var>)</code>.
+              If the <a>iteration duration</a> is zero, return
+              <code>floor(<a>iteration count</a>)</code>.
             </li>
             <li>
-              Return <code>floor(<var>adjusted animation time</var> /
-              <var>iteration duration</var>)</code>.
+              Return <code>floor(<a>adjusted animation time</a> /
+              <a>iteration duration</a>)</code>.
               <p class="note">
-                If the <var>iteration duration</var> is infinite, the
-                result of <code>floor(<var>adjusted animation time</var> /
-                <var>iteration duration</var>)</code> will be zero as defined by
+                If the <a>iteration duration</a> is infinite, the
+                result of <code>floor(<a>adjusted animation time</a> /
+                <a>iteration duration</a>)</code> will be zero as defined by
                 IEEE 754-2008.
               </p>
             </li>
@@ -1891,7 +1876,7 @@
         </p>
         <blockquote>
           <code><var>time drift</var> = <var>parent iteration time</var>
-            - <var>start time</var> - <var>seek time</var></code>
+            - startTime - <var>seek time</var></code>
         </blockquote>
         <p>where:</p>
         <ul>
@@ -1899,10 +1884,6 @@
             <var>parent iteration time</var> - is the iteration time of the
             parent animation group instance if there is one, otherwise it is
             zero.
-          </li>
-          <li>
-            <var>start time</var> - is the start time of the item being
-            seeked.
           </li>
           <li>
             <var>seek time</var> - is the time to seek to expressed in the
@@ -1952,12 +1933,12 @@
               <dt>If <code><a>item time</a> &lt; <var>start
                   delay</var></code>,</dt>
               <dd>
-                Perform a seek to time <code><var>start delay</var>
-                + <var>animation duration</var></code> according to the steps
+                Perform a seek to time <code>startDelay
+                + animationDuration</code> according to the steps
                 in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
               </dd>
-              <dt>If <code><a>item time</a> &gt; <var>start
-                  delay</var> + <var>animation duration</var></code>,</dt>
+              <dt>If <code><a>item time</a> &gt; startDelay
+                + animationDuration</code>,</dt>
               <dd>
                 Perform a seek to <var>start delay</var> according to the steps
                 in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
@@ -1966,7 +1947,7 @@
               <dd>
                 Perform a seek to
                 <code>
-                  <var>animation duration</var> - <var>animation time</var>
+                  animationDuration - <a>animation time</a>
                 </code>
                 according to the steps
                 in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
@@ -2198,6 +2179,10 @@
               As a result, the <var>parent iteration time</var> is the number of
               seconds from 00:00:00 UTC on 1 January 1970 to the current moment
               in UTC time.
+            </p>
+            <p class="issue">
+              We should use a monotonically increasing timestamp here.
+              Not one that can potentially skip due to clock adjustments.
             </p>
           </li>
           <li>
@@ -2730,9 +2715,9 @@
             </li>
           </ol>
           <p class="note">
-            When <var>animation duration</var> is positive infinity the behavior
-            is defined by IEEE 754-2008.
-            In effect, if any of the children of a sequence animation group
+            When <code>animationDuration</code> is positive infinity the
+            behavior is defined by IEEE 754-2008.
+            As a result, if any of the children of a sequence animation group
             instance has an infinite animation duration, any children that occur
             later in the sequence will not play.
           </p>
@@ -2743,8 +2728,8 @@
             The instrinsic duration of a sequence animation group instance is
             equivalent to the <var>start time</var> of a hypothetical child
             appended to the group's children.
-            It can be calculated as the sum of the <var>start time</var>,
-            <var>start delay</var>, and <var>animation duration</var> of the
+            It can be calculated as the sum of the <code>startTime</code>,
+            <code>startDelay</code>, and <code>animationDuration</code> of the
             last child of the animation group.
           </p>
         </section>
