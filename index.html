@@ -698,8 +698,7 @@
           </p>
           <p>
             The end of the interval is determined by the <var>animation
-            duration</var> (see <a href="#calculating-the-animation-duration"
-            class="sectionRef"></a>).
+            duration</var>.
           </p>
           <p>
             Some examples are illustrated below.
@@ -980,9 +979,9 @@
             <dt>attribute float startDelay</dt>
             <dd>
               <p>
-                The number of seconds from the timed item's
-                <code>startTime</code> until the timed item should begin
-                executing.
+                The number of seconds which, when added to the timed item's
+                <code>startTime</code>, defines the lower bound of the timed
+                item's animation interval.
               </p>
               <p>
                 The <var>default value</var> is 0.
@@ -1020,9 +1019,8 @@
                 For example, a value of 0.5 would cause the animation to begin
                 half-way through the first iteration.
                 If this value is greater than <code>iterationCount</code> then
-                it is clamped as defined in <a
-                  href="#calculating-the-animation-duration"
-                  class="sectionRef"></a>.
+                it is effectively clamped as defined in the definition of
+                <a>iteration start</a>.
               </p>
               <p>
                 The <var>default value</var> is 0.
@@ -1042,8 +1040,9 @@
                 class="sectionRef"></a>).
               </p>
               <p>
-                Setting this attribute will affect the item's active duration as
-                described in <a href="#calculating-the-animation-duration"
+                Setting this attribute will affect the item's intrinsic
+                animation duration as described in <a
+                href="#calculating-the-intrinsic-animation-duration"
                 class="sectionRef"></a>.
               </p>
               <p>
@@ -1217,11 +1216,27 @@
             active state (see <a href="#animation-states"
             class="sectionRef"></a>).
           </dd>
-          <dt>readonly attribute float animationDuration</dt>
+          <dt>attribute unrestricted float animationDuration</dt>
           <dd>
-            The amount of time in seconds the animation is scheduled to animate
-            as described in <a href="#calculating-the-animation-duration"
+            <p>
+              The length in seconds of the animation interval.
+            </p>
+            <p>
+              Initially, this attribute will reflect the <var>intrinsic
+              animation duration</var> calculated according to the procedure
+              defined in <a href="#calculating-the-intrinsic-animation-duration"
               class="sectionRef"></a>.
+              Changes to the model that cause the <var>intrinsic animation
+              duration</var> to change are reflected in the value returned here.
+            </p>
+            <p>
+              The <var>instrinsic animation duration</var> may be overridden by
+              setting this attribute to any real number.
+              Negative values are clamped to zero.
+              Setting this attribute to <code>undefined</code> has the effect of
+              clearing the override value so that the attribute returns to
+              reflecting the <var>intrinsic animation duration</var>.
+            </p>
           </dd>
           <dt>readonly attribute unrestricted float? iterationTime</dt>
           <dd>
@@ -1248,34 +1263,48 @@
             The number of iterations that have completed as described in <a
               href="#calculating-the-current-iteration" class="sectionRef"></a>.
           </dd>
-          <dt>readonly attribute float startTime</dt>
+          <dt>attribute float startTime</dt>
           <dd>
             <p>
-              The start of the animation interval before applying
-              <code>startDelay</code> expressed in seconds in the iteration time
-              space of <code>parentGroup</code>.
+              The time which when combined wit the <code>startDelay</code>
+              defines the lower bound of the animation interval. It is expressed
+              in seconds in the iteration time space of
+              <code>parentGroup</code>.
             </p>
             <p>
-              The value returned may not correspond to the value specified when
-              creating the item (e.g. using <code>Anim.animate</code>).
-              For example, when the parent animation group instance is
-              a sequence group, the value will be determined by the procedure
+              When the parent animation group instance is a sequence group, any
+              previously set value set for <code>startTime</code> is ignored and
+              instead the value of this property is determined by the procedure
               defined in <a
       href="#the-start-time-of-children-of-a-sequence-animation-group-instance"
               class="sectionRef"></a>.
+              Furthermore, attempts to set this property will raise an
+              DOMException of type <code>NoModificationAllowedError</code>.
+              If this item is later made the child of a parallel animation
+              group, any previously set value will be restored.
             </p>
+            <p>
+              The <code>start</code> method can be used to set this property
+              relative to the current time.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type NoModificationAllowedError</dt>
+              <dd>
+                Raised on setting if <code>parentGroup</code> is a sequence
+                animation group instance (see <a
+      href="#the-start-time-of-children-of-a-sequence-animation-group-instance"
+                class="sectionRef"></a>).
+              </dd>
+            </dl>
           </dd>
           <dt>readonly attribute float endTime</dt>
           <dd>
             <p>
-              The time at which the animation ceases to be active expressed in
+              The upper bound of the animation interval expressed in
               seconds relative to the parent animation group.
-            </p>
-            <p class="todo">
-              I think we need a means to change this while leaving the animation
-              in the tree, e.g. <code>stop(optional timeFromNow = 0)</code>.
-              For most interactive animations though <code>cancel()</code>
-              (which removes the item from the tree) should be suitable.
             </p>
           </dd>
           <dt>readonly attribute AnimGroupInstance parentGroup</dt>
@@ -1297,22 +1326,56 @@
               If <code>parentGroup</code> is <code>null</code>, sets
               <code>startTime</code> to <code>timeFromNow</code>.
             </p>
-            <p>
-              Exceptions:
-            </p>
-            <ul>
-              <li>
-                INVALID_MODIFICATION_ERROR: Raised if 
-                <code>parentGroup</code> is a sequence container (see <a
-      href="#the-start-time-of-children-of-a-sequence-animation-group-instance"
-                class="sectionRef"></a>).
-              </li>
-            </ul>
             <dl class="parameters">
               <dt>optional float timeFromNow = 0</dt>
               <dd>
                 The number of seconds relative to the iteration time of the
                 parent group at which the item should start.
+              </dd>
+            </dl>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type NoModificationAllowedError</dt>
+              <dd>
+                Raised if <code>parentGroup</code> is a sequence animation group
+                instance (see <a
+      href="#the-start-time-of-children-of-a-sequence-animation-group-instance"
+                class="sectionRef"></a>).
+              </dd>
+            </dl>
+          </dd>
+          <dt>void stop ()</dt>
+          <dd>
+            <p>
+              Updates <code>animationDuration</code> such that the upper bound
+              of the animation interval coincides with the current time plus any
+              offset specified by <code>timeFromNow</code> unless doing so would
+              make the <code>animationDuration</code> negative, in which case it
+              it set to zero as per the usual clamping behavior for
+              <code>animationDuration</code>.
+            </p>
+            <p>
+              Specifically, <code>animationDuration</code> is set to
+              <code>max(0, <a>item time</a> + timeFromNow -
+                    startTime - startDelay)</code>.
+              If <a>item time</a> is <code>null</code> it is taken to be zero
+              for the purposes of calculating the
+              <code>animationDuration</code>.
+            </p>
+            <p class="note">
+              Note that even after an item has stopped it may, depending on its
+              <a href="#animation-fill-behavior">fill mode</a>,
+              still affect its target.
+              To completely remove the influence of the item, use
+              <code>cancel()</code>.
+            </p>
+            <dl class="parameters">
+              <dt>optional float timeFromNow = 0</dt>
+              <dd>
+                The number of seconds relative to the iteration time of the
+                parent group at which the item should stop.
               </dd>
             </dl>
           </dd>
@@ -1369,7 +1432,7 @@
                   are zero, return.</li>
               <li>Calculate the new value of <var>animation duration</var>
                   applying the updated speed (see <a
-                  href="#calculating-the-animation-duration"
+                  href="#calculating-the-intrinsic-animation-duration"
                   class="sectionRef"></a>).</li>
               <li>Calculate the <var>seek adjustment</var> according to the
                   following formula:
@@ -1405,6 +1468,19 @@
         </div>
       </section>
       <section>
+        <h3>Timing model common definitions</h3>
+        <p>
+          In order to calculate various properties of the timing model the
+          following common definitions are used.
+        </p>
+        <ul>
+          <li><dfn>iteration start</dfn> =
+              <code>max(0, min(iterationStart, iterationCount))</code></li>
+          <li><dfn>iteration count</dfn> =
+              <code>max(0, iterationCount)</code></li>
+        </ul>
+      </section>
+      <section>
         <h3>Calculating the iteration duration</h3>
         <p>
           The <var>iteration duration</var> is calculated according to the
@@ -1433,35 +1509,25 @@
         <p>
           The intrinsic duration for animation group instances and media items
           is described under <a
-          href="#calculating-the-intrinsic-duration-of-an-animation-group-instance"
-          class="sectionRef"></a> and <a
+      href="#the-intrinsic-duration-of-a-parallel-animation-group-instance"
+          class="sectionRef"></a>, <a
+      href="#the-intrinsic-duration-of-a-sequence-animation-group-instance"
+          class="sectionRef"></a>,
+          and <a
           href="#the-intrinsic-duration-of-a-media-item"
-          class="sectionRef"></a> respectively.
+          class="sectionRef"></a>.
         </p>
       </section>
       <section>
-        <h3>Calculating the animation duration</h3>
+        <h3>Calculating the intrinsic animation duration</h3>
         <p>
-          The <var>animation duration</var> is calculated according to the
-          following steps:
+          The <var>intrinsic animation duration</var> is calculated according to
+          the following steps:
         </p>
         <ol>
           <li>
-            Let the <var>effective iteration start</var> be
-            <code>min(<var>iteration start</var>, <var>iteration
-            count</var>)</code>.
-          </li>
-          <li>
-            If the <var>effective iteration start</var> is negative or not
-            finite, let the <var>effective iteration start</var> be 0.
-          </li>
-          <li>
-            Let the <var>effective iteration count</var> be
-            <code>max(0, <var>iteration count</var>)</code>.
-          </li>
-          <li>
             Let the <var>repeated duration</var> be <code><var>iteration
-            duration</var> * <var>effective iteration count</var></code>.
+            duration</var> * <a>iteration count</a></code>.
           </li>
           <li>
             If <var>speed</var> is zero, return <code>Infinity</code>.
@@ -1475,7 +1541,7 @@
       <section>
         <h3>Calculating the item time</h3>
         <p>
-          The <var>item time</var> is calculated according to the following
+          The <dfn>item time</dfn> is calculated according to the following
           equation:
         </p>
         <blockquote>
@@ -1485,8 +1551,8 @@
         <p>where:</p>
         <ul>
           <li>
-            <var>parent iteration time</var> is the iteration time of the parent
-            animation group instance.
+            <var>parent iteration time</var> is
+            <code>parentGroup.iterationTime</code>.
           </li>
           <li>
             <var>start time</var> is the item's start time.
@@ -1508,18 +1574,17 @@
       <section>
         <h3>Calculating the animation time</h3>
         <p>
-          The <var>animation time</var> is based on the <var>item time</var>
+          The <var>animation time</var> is based on the <a>item time</a>
           and <var>start delay</var>.
           It is defined only when the timed item is active and is calculated
           according to the following steps:
         </p>
         <ol>
           <li>
-            If <var>item time</var> is <code>null</code>, return
-            <code>null</code>.
+            If <a>item time</a> is <code>null</code>, return <code>null</code>.
           </li>
           <li>
-            If <code><var>item time</var> &lt; <var>start delay</var></code>
+            If <code><a>item time</a> &lt; <var>start delay</var></code>
             the result depends on the <var>fill mode</var> as follows,
             <dl class="switch">
               <dt>
@@ -1538,9 +1603,9 @@
             </dl>
           </li>
           <li>
-            If <code><var>item time</var> &lt; <var>start delay</var> +
+            If <code><a>item time</a> &lt; <var>start delay</var> +
             <var>animation duration</var></code>, return
-            <code><var>item time</var> - <var>start delay</var></code>.
+            <code><a>item time</a> - <var>start delay</var></code>.
           </li>
           <li>
             Otherwise, the result depends on the <var>fill mode</var> as
@@ -1581,13 +1646,8 @@
               <code>null</code>.
             </li>
             <li>
-              Calculate the <var>effective iteration start</var> as described in
-              <a href="#calculating-the-animation-duration"
-              class="sectionRef"></a>.
-            </li>
-            <li>
-              Let the <var>start offset</var> be <code><var>effective iteration
-              start</var> * <var>iteration duration</var></code>.
+              Let the <var>start offset</var> be <code><a>iteration start</a>
+              * <var>iteration duration</var></code>.
             </li>
             <li>
               Return the adjusted animation time based on the
@@ -1626,7 +1686,7 @@
           </p>
           <ol>
             <li>
-              If the <var>item time</var> is <code>null</code> (i.e. the
+              If the <a>item time</a> is <code>null</code> (i.e. the
               animation's <var>start time</var> is not defined),
               return <code>null</code>.
             </li>
@@ -1640,16 +1700,15 @@
             </li>
             <li>
               Calculate the <var>repeated duration</var> as described in
-              <a href="#calculating-the-animation-duration"
+              <a href="#calculating-the-intrinsic-animation-duration"
               class="sectionRef"></a>.
             </li>
             <li>
               If <code><var>adjusted animation time</var> -
                        <var>start offset</var></code> equals the
               <var>repeated duration</var>, and
-              <code>(<var>effective iteration count</var> -
-                     <var>effective iteration start</var>) % 1</code> is zero,
-              return the <var>iteration duration</var>.
+              <code>(<a>iteration count</a> - <a>iteration start</a>) % 1</code>
+              is zero, return the <var>iteration duration</var>.
             </li>
             <li>
               Otherwise, return <code><var>adjusted animation time</var>
@@ -1744,7 +1803,7 @@
           </p>
           <ol>
             <li>
-              If the <var>item time</var> is <code>null</code>, return
+              If the <a>item time</a> is <code>null</code>, return
               <code>null</code>.
             </li>
             <li>
@@ -1817,7 +1876,7 @@
           <var>time drift</var> continues to accumulate while the
           item is paused.
           As a result, the <var>time drift</var> must be calculated prior to
-          calculating the <var>item time</var>.
+          calculating the <a>item time</a>.
         </p>
       </section>
       <section>
@@ -1885,19 +1944,19 @@
           <li>
             Adjust the <var>time drift</var> as follows:
             <dl class="switch">
-              <dt>If <var>item time</var> is null,</dt>
+              <dt>If <a>item time</a> is null,</dt>
               <dd>
                 let <var>time drift</var> be <code>-<var>start time</var></code>
                 and then return.
               </dd>
-              <dt>If <code><var>item time</var> &lt; <var>start
+              <dt>If <code><a>item time</a> &lt; <var>start
                   delay</var></code>,</dt>
               <dd>
                 Perform a seek to time <code><var>start delay</var>
                 + <var>animation duration</var></code> according to the steps
                 in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
               </dd>
-              <dt>If <code><var>item time</var> &gt; <var>start
+              <dt>If <code><a>item time</a> &gt; <var>start
                   delay</var> + <var>animation duration</var></code>,</dt>
               <dd>
                 Perform a seek to <var>start delay</var> according to the steps
@@ -2677,10 +2736,6 @@
             instance has an infinite animation duration, any children that occur
             later in the sequence will not play.
           </p>
-          <p class="todo">
-            Need to define how <code>stop</code> will work for sequence
-            children.
-          </p>
         </section>
         <section>
           <h4>The intrinsic duration of a sequence animation group instance</h4>
@@ -2691,9 +2746,6 @@
             It can be calculated as the sum of the <var>start time</var>,
             <var>start delay</var>, and <var>animation duration</var> of the
             last child of the animation group.
-          </p>
-          <p class="todo">
-            Need to define how <code>stop</code> will interact here.
           </p>
         </section>
         <section>
