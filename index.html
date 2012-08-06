@@ -1241,7 +1241,7 @@
               reflecting the <a>intrinsic animation duration</a>.
             </p>
           </dd>
-          <dt>readonly attribute unrestricted float? iterationTime</dt>
+          <dt>readonly attribute float? iterationTime</dt>
           <dd>
             The time in seconds representing the offset into the iteration
             duration using the steps described in <a
@@ -1304,7 +1304,7 @@
               </dd>
             </dl>
           </dd>
-          <dt>readonly attribute float endTime</dt>
+          <dt>readonly attribute unrestricted float endTime</dt>
           <dd>
             <p>
               The upper bound of the animation interval expressed in
@@ -1483,11 +1483,44 @@
           </dd>
           <dt>void reverse ()</dt>
           <dd>
-            Reverses the timing parameters for this object and then performs
-            a compensatory seek such that the animation immediately begins
-            reversing from its current point.
-            The specific steps for this operation are defined in <a
-            href="#reversing-a-timed-item" class="sectionRef"></a>.
+            <p>
+              Reverses this animation such that the reverse animation
+              immediately begins reversing from its current point.
+              Note that this means that an animation that has yet to begin,
+              calling <code>reverse</code> will mean that it never starts.
+            </p>
+            <li>
+              Calculate <var>seek time</var> as follows:
+            </li>
+              <dl class="switch">
+                <dt>If <a>item time</a> is null,</dt>
+                <dd>
+                  Let <var>seek time</var> be zero.
+                </dd>
+                <dt>If <code><a>item time</a> &lt;
+                  timing.startDelay</code>,</dt>
+                <dd>
+                  Let <var>seek time</var> be 
+                  <code>timing.startDelay + animationDuration</code>.
+                </dd>
+                <dt>If <code><a>item time</a> &gt; timing.startDelay
+                  + animationDuration</code>,</dt>
+                <dd>
+                  Let <var>seek time</var> be <code>timing.startDelay</code>.
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  Let <var>seek time</var> be
+                  <code>animationDuration - <a>animationTime</a></code>.
+                </dd>
+              </dl>
+            </li>
+            <li>
+              Call <code>changeSpeed(-timing.speed)</code>.
+            </li>
+            <li>
+              Call <code>seek(<var>seek time</var>)</code>.
+            </li>
           </dd>
           <dt>void cancel ()</dt>
           <dd>
@@ -1949,70 +1982,6 @@
           Is it worth adding "seek" events for this? Or the ability to mark
           animations as "remove-on-seek" (or something of that ilk).
         </p>
-      </section>
-      <section>
-        <h3>Reversing a timed item</h3>
-        <p>
-          Reversing a timed item such that it immediately takes effect is
-          achieved according to the following steps:
-        </p>
-        <ol>
-          <li>
-            Let <var>item</var> be the timed item to be reversed.
-          </li>
-          <li>
-            Call <code><var>item</var>.timing.reverse()</code>.
-          </li>
-          <li>
-            Adjust the <var>time drift</var> as follows:
-            <dl class="switch">
-              <dt>If <a>item time</a> is null,</dt>
-              <dd>
-                let <var>time drift</var> be <code>-<var>start time</var></code>
-                and then return.
-              </dd>
-              <dt>If <code><a>item time</a> &lt; <var>start
-                  delay</var></code>,</dt>
-              <dd>
-                Perform a seek to time <code>timing.startDelay
-                + animationDuration</code> according to the steps
-                in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
-              </dd>
-              <dt>If <code><a>item time</a> &gt; timing.startDelay
-                + animationDuration</code>,</dt>
-              <dd>
-                Perform a seek to <code>timing.startDelay</code> according to
-                the steps in <a href="#seeking-a-timed-item"
-                class="sectionRef"></a>.
-              </dd>
-              <dt>Otherwise,</dt>
-              <dd>
-                Perform a seek to
-                <code>
-                  animationDuration - <a>animation time</a>
-                </code>
-                according to the steps
-                in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
-              </dd>
-            </dl>
-          </li>
-        </ol>
-        <div class="informative">
-          <p>
-            By following these steps, assuming a forwards direction of play,
-            even if a timed item has finished its animation interval three
-            seconds in the past, it will not wait a further three seconds as if
-            retracing that time, but will immediately begin reversing.
-          </p>
-          <p>
-            Similarly, assuming a forwards direction of play, if a timed item
-            is reversed before it begins its animation interval it will never
-            play. Instead it will be seeked to the moment at the end of the
-            animation interval.
-            This provides consistent behavior when the direction of play is
-            backwards.
-          </p>
-        </div>
       </section>
     </section>
 
