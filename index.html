@@ -2889,43 +2889,27 @@
       <section>
         <h3>The <code>AnimFunction</code> interface</h3>
         <dl title="[Constructor] interface AnimFunction" class="idl">
-          <dt>const unsigned short WEBA_OPERATION_REPLACE = 0</dt>
-          <dd>
-            This animation should replace the value it is composited with.
-          </dd>
-          <dt>const unsigned short WEBA_OPERATION_ACCUMULATE = 1</dt>
-          <dd>
-            This animation should add to the value it is composited with.
-            The meaning of addition is dependent on the type of animation.
-          </dd>
-          <dt>const unsigned short WEBA_OPERATION_MERGE = 2</dt>
-          <dd>
-            This animation should merge with the value it is composited with.
-            The meaning of merge is dependent on the type of animation.
-            The duration of the merge is the calculated animation duration
-            of the <code>Anim</code> containing this <code>AnimFunction</code>.
-          </dd>
-          <dt>attribute unsigned short operation</dt>
+          <dt>attribute CompositeOperation operation</dt>
           <dd>
             <p>
               The operation used to composite this animation with the stack, as 
-              specified by one of the <code>WEBA_OPERATION_*</code> constants 
-              defined in this interface.
+              specified by one of the <a>CompositeOperation</a> enumeration
+              values.
             </p>
             <p>
-              This value defaults to <code>WEBA_OPERATION_REPLACE</code>
+              This value defaults to <code>"replace"</code>
             </p>
           </dd>
-          <dt>attribute unsigned short accumulateOperation</dt>
+          <dt>attribute CompositeOperation accumulateOperation</dt>
           <dd>
             <p>
               The operation used to composite each iteration of this animation
-              with the result of compositing the previous animation, as specified
-              by one of the <code>WEBA_OPERATION_*</code> constants defined in
-              this interface.
+              with the result of compositing the previous animation, as
+              specified by one of the <a>CompositeOperation</a> constants
+              defined in this interface.
             </p>
             <p>
-              This value defaults to <code>WEBA_OPERATION_REPLACE</code>.
+              This value defaults to <code>"replace"</code>.
             </p>
           </dd>
           <dt>attribute DOMString? pace</dt>
@@ -2939,6 +2923,27 @@
             The example here could take values <code>null</code> (default),
             "auto", or something like "1px/s" (not sure what the datatype
             should be here).
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>CompositeOperation</code> enumeration</h3>
+        <dl title="enum CompositeOperation" class="idl">
+          <dt>replace</dt>
+          <dd>
+            The animation should replace the value it is composited with.
+          </dd>
+          <dt>accumulate</dt>
+          <dd>
+            The animation should add to the value it is composited with.
+            The meaning of addition is dependent on the type of animation.
+          </dd>
+          <dt>merge</dt>
+          <dd>
+            The animation should merge with the value it is composited with.
+            The meaning of merge is dependent on the type of animation.
+            The duration of the merge is the calculated animation duration
+            of the <code>Anim</code> containing this <code>AnimFunction</code>.
           </dd>
         </dl>
       </section>
@@ -3107,8 +3112,8 @@
             <p>
               If the <a>current iteration</a> is zero, or the 
               <var>accumulateOperation</var> is
-               <code>WEBA_OPERATION_REPLACE</code>, then the 
-               <var>animation value</var> is simply the iteration value, as
+              <code>"replace"</code>, then the 
+              <var>animation value</var> is simply the iteration value, as
               defined below.
             </p>
             <p>
@@ -3126,15 +3131,15 @@
             <p>
               If the <a>current iteration</a> is not zero and the
               <var>accumulateOperation</var> is
-              <code>WEBA_OPERATION_ACCUMULATE</code> then the 
-              <var>animation value</var> is the <var>end value</var> accumulated 
+              <code>"accumulate"</code> then the 
+              <var>animation value</var> is the <var>end value</var> accumulated
               <a>current iteration</a> times, with the 
               <var>iteration value</var> accumulated on top.
             </p>
             <p>
               If the <a>current iteration</a> is not zero and the
               <var>accumulateOperation</var> is
-              <code>WEBA_OPERATION_MERGE</code> then the
+              <code>"merge"</code> then the
               <var>animation balue</var> is the <var>end value</var> merged
               with the <var>iteration value</var>, with an interpolation
               parameter equal to the current <var>time fraction</var>
@@ -3376,8 +3381,8 @@
           earlier in the animation stack have already applied to, the
           cumulative animation result from the stack is composited with the new
           animation to produce a new cumulative animation result.
-          The possible combinators are defined as <code>WEBA_OPERATION_*</code>
-          constants in the <code>AnimFunction</code> interface.
+          The possible combinators are defined by the <a>CompositeOperation</a>
+          enumeration.
         </p>
         <section>
           <h4>The REPLACE combinator</h4>
