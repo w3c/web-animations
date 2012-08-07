@@ -938,41 +938,6 @@
         <section>
           <h4>The <code>Timing</code> interface</h4>
           <dl title="interface Timing" class="idl">
-            <dt>const unsigned short WEBA_FILL_NONE = 0</dt>
-            <dd>
-              No fill.
-            </dd>
-            <dt>const unsigned short WEBA_FILL_FORWARDS = 1</dt>
-            <dd>
-              Fill forwards (=<code>fill="freeze"</code> in SVG speak).
-            </dd>
-            <dt>const unsigned short WEBA_FILL_BACKWARDS = 2</dt>
-            <dd>
-              Fill backwards.
-            </dd>
-            <dt>const unsigned short WEBA_FILL_BOTH = 3</dt>
-            <dd>
-              Fill backwards and forwards.
-            </dd>
-            <dt>const unsigned short WEBA_DIRECTION_NORMAL = 0</dt>
-            <dd>
-              All iterations are played as specified.
-            </dd>
-            <dt>const unsigned short WEBA_DIRECTION_REVERSE = 1</dt>
-            <dd>
-              All iterations are played in the reverse direction from the way
-              they were specified.
-            </dd>
-            <dt>const unsigned short WEBA_DIRECTION_ALTERNATE = 2</dt>
-            <dd>
-              Even iterations are played as specified, odd iterations are played
-              in the reverse direction from the way they were specified.
-            </dd>
-            <dt>const unsigned short WEBA_DIRECTION_ALTERNATE_REVERSE = 3</dt>
-            <dd>
-              Even iterations are played in the reverse direction from the way
-              they were specified, odd iterations are played as specified.
-            </dd>
             <dt>attribute float startDelay</dt>
             <dd>
               <p>
@@ -1031,8 +996,8 @@
                 For example, a value of 2.0 will cause the item to run at twice
                 its usual speed.
                 A value of -1.0 will cause the item to play backwards.
-                The <code>speed</code> is applied to the item's active time and
-                hence has no effect on the start time (see <a
+                The <code>speed</code> is applied to the item's animation time
+                and hence has no effect on the start time (see <a
                 href="#iteration-time-and-animation-time"
                 class="sectionRef"></a>).
               </p>
@@ -1046,30 +1011,28 @@
                 The <var>default value</var> is 1.
               </p>
             </dd>
-            <dt>attribute unsigned short direction</dt>
+            <dt>attribute PlaybackDirection direction</dt>
             <dd>
               <p>
                 Direction behavior as specified by one of the
-                <code>WEBA_DIRECTION_*</code> constants defined in this
-                interface.
+                <a>Direction</a> enumeration values.
               </p>
               <p>
-                The <var>default value</var> is
-                <code>WEBA_DIRECTION_NORMAL</code>.
+                The <var>default value</var> is <code>"normal"</code>.
               </p>
             </dd>
             <dt>attribute TimingFunction timingFunction</dt>
             <dd class="todo">
               TBD.
             </dd>
-            <dt>attribute unsigned short fill</dt>
+            <dt>attribute FillMode fill</dt>
             <dd>
               <p>
-                Fill mode as specified by one of the <code>WEBA_FILL_*</code>
-                constants defined in this interface.
+                Fill mode as specified by one of the <a>FillMode</a> enumeration
+                values.
               </p>
               <p>
-                The <var>default value</var> is <code>WEBA_FILL_NONE</code>.
+                The <var>default value</var> is <code>"none"</code>.
               </p>
             </dd>
             <dt>Timing clone ()</dt>
@@ -1087,107 +1050,54 @@
                 href="#creating-animations" class="sectionRef"></a>).
               </p>
             </dd>
-            <dt>void reverse ()</dt>
-            <dd>
-              <p>
-                Modifies the properties of this object such that effect is that
-                the animation proceeds in reverse using the steps defined in <a
-                href="#reversing-time-properties" class="sectionRef"></a>.
-              </p>
-              <p>
-                This method only changes the timing properties. To cause
-                a running <code>TimedItem</code> to reverse from its current
-                position see the <code>reverse</code> method on the
-                <code>TimedItem</code> interface (<a
-                href="#the-timeditem-interface" class="sectionRef"></a>).
-              </p>
-              <p>
-                Calling this method on an object attached to a live
-                <code>AnimInstance</code> or <code>AnimGroupInstance</code> will
-                cause the instance to become independent (see <a
-                href="#creating-animations" class="sectionRef"></a>).
-              </p>
-              <p>
-                This method mutates the object it is called on.
-                To reverse the timing and create a new object use
-                <code>clone().reverse()</code>.
-              </p>
-            <dd>
           </dl>
         </section>
         <section>
-          <h4>Reversing timing properties</h4>
-          <p>
-            It is often necessary to create an animation that produces the
-            reverse effect of an existing animation.
-            For example, consider an animation which features an <var>iteration
-            count</var> of 1.5 and a forwards <var>fill mode</var>.
-            This animation and its reverse effect are illustrated below.
-          </p>
-          <div class="figure">
-            <img src="img/reverse-timing.svg" width="700">
-          </div>
-          <p class="caption">
-            The initial animation has a <var>start delay</var> of 1, an
-            <var>iteration duration</var> of 1, an <var>iteration count</var> of
-            1.5, and a forwards <var>fill mode</var>.<br>
-            After reversing, the <var>start delay</var> is unchanged but the
-            <var>direction</var>, <var>iteration start</var>, <var>iteration
-            count</var> are adjusted to produce the reverse
-            effect. The <var>fill mode</var> is also inverted.
-          </p>
-          <p>
-            Note that the <var>start delay</var> is unaffected by reversing but
-            the <var>fill mode</var> is reversed.
-          </p>
-          <p>
-            The reverse set of timing properties is produced according to the
-            following steps:
-          </p>
-          <ol>
-            <li>Invert the <var>direction</var> as follows:
-              <dl class="switch">
-                <dt>normal</dt>
-                <dd>let the <var>direction</var> be reverse</dd>
-                <dt>reverse</dt>
-                <dd>let the <var>direction</var> be normal</dd>
-                <dt>alternate</dt>
-                <dd>let the <var>direction</var> be alternate-reverse</dd>
-                <dt>alternate-reverse</dt>
-                <dd>let the <var>direction</var> be alternate</dd>
-              </dl>
-            </li>
-            <li>
-              Let <var>iteration fraction</var> be <code><var>iteration
-              count</var> % <var>1</var></code>.
-            </li>
-            <li>
-              Set <var>iteration count</var> to <code>ceil(<var>iteration
-              count</var>) - <var>iteration start</var></code>.
-            </li>
-            <li>
-              Set <var>iteration start</var> as follows:
-              <dl class="switch">
-                <dt>if the <var>iteration fraction</var> is zero,</dt>
-                <dd>set the <var>iteration start</var> to zero,</dd>
-                <dt>otherwise,</dt>
-                <dd>set the <var>iteration start</var> to
-                  <code>1 - <var>iteration fraction</var></code>.</dd>
-              </dl>
-            </li>
-            <li>Invert the <var>fill mode</var> as follows:
-              <dl class="switch">
-                <dt>none</dt>
-                <dd>leave the <var>fill mode</var> as none</dd>
-                <dt>forwards</dt>
-                <dd>let the <var>fill mode</var> be backwards</dd>
-                <dt>backwards</dt>
-                <dd>let the <var>fill mode</var> be forwards</dd>
-                <dt>both</dt>
-                <dd>leave the <var>fill mode</var> as both</dd>
-              </dl>
-            </li>
-          </ol>
+          <h4>The <code>FillMode</code> enumeration</h4>
+          <p>A non-normative description of these modes is given in
+             <a href="#animation-fill-behavior" class="sectionRef"></a>.</p>
+          <dl title="enum FillMode" class="idl">
+            <dt>none</dt>
+            <dd>
+              No fill.
+            </dd>
+            <dt>forwards</dt>
+            <dd>
+              Fill forwards.
+            </dd>
+            <dt>backwards</dt>
+            <dd>
+              Fill backwards.
+            </dd>
+            <dt>both</dt>
+            <dd>
+              Fill backwards and forwards.
+            </dd>
+          </dl>
+        </section>
+        <section>
+          <h4>The <code>PlaybackDirection</code> enumeration</h4>
+          <dl title="enum PlaybackDirection" class="idl">
+            <dt>normal</dt>
+            <dd>
+              All iterations are played as specified.
+            </dd>
+            <dt>reverse</dt>
+            <dd>
+              All iterations are played in the reverse direction from the way
+              they were specified.
+            </dd>
+            <dt>alternate</dt>
+            <dd>
+              Even iterations are played as specified, odd iterations are played
+              in the reverse direction from the way they were specified.
+            </dd>
+            <dt>alternate-reverse</dt>
+            <dd>
+              Even iterations are played in the reverse direction from the way
+              they were specified, odd iterations are played as specified.
+            </dd>
+          </dl>
         </section>
       </section>
       <section>
@@ -1233,14 +1143,15 @@
               reflecting the <a>intrinsic animation duration</a>.
             </p>
           </dd>
-          <dt>readonly attribute unrestricted float? iterationTime</dt>
+          <dt>readonly attribute float? iterationTime</dt>
           <dd>
             The time in seconds representing the offset into the iteration
             duration using the steps described in <a
             href="#calculating-the-iteration-time" class="sectionRef"></a>.
             As a result of that definition, this property will be
-            non-<code>null</code> only when the item is in the active state (see
-            <a href="#animation-states" class="sectionRef"></a>.
+            non-<code>null</code> if and only if the animation is in the
+            active state (see <a href="#animation-states"
+            class="sectionRef"></a>).
           </dd>
           <dt>readonly attribute unrestricted float iterationDuration</dt>
           <dd>
@@ -1261,10 +1172,10 @@
           <dt>attribute float startTime</dt>
           <dd>
             <p>
-              The time which when combined wit the <code>startDelay</code>
-              defines the lower bound of the animation interval. It is expressed
-              in seconds in the iteration time space of
-              <code>parentGroup</code>.
+              The time which when combined with the
+              <code>timing.startDelay</code> defines the lower bound of the
+              animation interval. It is expressed in seconds in the iteration
+              time space of <code>parentGroup</code>.
             </p>
             <p>
               When the parent animation group instance is a sequence group, any
@@ -1295,7 +1206,7 @@
               </dd>
             </dl>
           </dd>
-          <dt>readonly attribute float endTime</dt>
+          <dt>readonly attribute unrestricted float endTime</dt>
           <dd>
             <p>
               The upper bound of the animation interval expressed in
@@ -1355,7 +1266,7 @@
             <p>
               Specifically, <code>animationDuration</code> is set to
               <code>max(0, <a>item time</a> + timeFromNow -
-                    startTime - startDelay)</code>.
+                    startTime - timing.startDelay)</code>.
               If <a>item time</a> is <code>null</code> it is taken to be zero
               for the purposes of calculating the
               <code>animationDuration</code>.
@@ -1408,14 +1319,22 @@
           <dt>void changeSpeed (float speed)</dt>
           <dd>
             <p>
-              Set the <code>timing.speed</code> property to the
-              <code>speed</code> parameter and then performs a compensatory seek
-              such that the <var>adjusted animation time</var> does not change
-              as a result of updating the speed.
+              Updates the speed of the timed item such that it produces a smooth
+              change.
             </p>
             <p>
-              The compensatory seek may be achieved by using the following
-              algorithm:
+              In particular:
+            </p>
+            <ul>
+              <li>the <a>adjusted animation time</a> will not change,</li>
+              <li>if the direction changes, <code>timing.fill</code> will be
+                  inverted to prevent sudden jumps in output, and</li>
+              <li>if the current <a>item time</a> is outside the animation
+                  interval the distance from the interval is scaled according
+                  to the change in speed.</li>
+            </ul>
+            <p>
+              The smooth change is achieved using the following steps:
             </p>
             <ol>
               <li>Let <var>previous speed</var> be the value of
@@ -1426,28 +1345,84 @@
                   <code>timing.speed</code>.</li> 
               <li>If either <var>previous speed</var> or <var>new speed</var>
                   are zero, return.</li>
+              <li>Invert the fill mode as follows:
+                <dl class="switch">
+                  <dt>If <code>timing.fill</code> is
+                      <code>"forwards"</code>,</dt>
+                  <dd>
+                    Set <code>timing.fill</code> to <code>"backwards"</code>.
+                  </dd>
+                  <dt>If <code>timing.fill</code> is
+                      <code>"backwards"</code>,</dt>
+                  <dd>
+                    Set <code>timing.fill</code> to <code>"forwards"</code>.
+                  </dd>
+                  <dt>Otherwise,</dt>
+                  <dd>Leave <code>timing.fill</code> as is.</dd>
+                </dl>
+              </li>
+              <li>If <a>item time</a> is <code>null</code>, return.</li>
               <li>Update the value of <code>animationDuration</code> if
                   necessary (that is, if <code>animationDuration</code> reflects
                   the <a>intrinsic animation duration</a>), applying the updated
                   value for <code>timing.speed</code>.</li>
               <li>Calculate the <var>seek adjustment</var> according to the
                   following formula:
-                  <code><var>animation time</var> * (1 - <var>previous
-                  speed</var> / <var>new speed</var>)</code>.</li>
+                  <code><var>seek adjustment</var> =
+                  (<a>item time</a> - <code>timing.startDelay</code>) *
+                  (1 - <var>previous speed</var> / <var>new speed</var>)</code>.
+                  </li>
               <li>If the sign of <var>new speed</var> and <var>previous
                   speed</var> differs, subtract from the <var>seek
-                  adjustment</var> the updated value of animationDuration.</li>
-              <li>Increment <code>timeDrift</code> by <var>seek
-                  adjustment</var>.</li>
+                  adjustment</var> the updated value of
+                  <code>animationDuration</code>.</li>
+              <li>Let <var>seek time</var> be the result of the following
+                  formula:
+                  <code><a>item time</a>
+                    - <var>seek adjustment</var></code>.</li>
+              <li>Call <code>seek(<var>seek time</var>)</code>.</li>
             </ol>
           </dd>
           <dt>void reverse ()</dt>
           <dd>
-            Reverses the timing parameters for this object and then performs
-            a compensatory seek such that the animation immediately begins
-            reversing from its current point.
-            The specific steps for this operation are defined in <a
-            href="#reversing-a-timed-item" class="sectionRef"></a>.
+            <p>
+              Reverses this animation such that the reverse animation
+              immediately begins reversing from its current point.
+              Note that this means that an animation that has yet to begin,
+              calling <code>reverse</code> will mean that it never starts.
+            </p>
+            <li>
+              Calculate <var>seek time</var> as follows:
+            </li>
+              <dl class="switch">
+                <dt>If <a>item time</a> is null,</dt>
+                <dd>
+                  Let <var>seek time</var> be zero.
+                </dd>
+                <dt>If <code><a>item time</a> &lt;
+                  timing.startDelay</code>,</dt>
+                <dd>
+                  Let <var>seek time</var> be 
+                  <code>timing.startDelay + animationDuration</code>.
+                </dd>
+                <dt>If <code><a>item time</a> &gt; timing.startDelay
+                  + animationDuration</code>,</dt>
+                <dd>
+                  Let <var>seek time</var> be <code>timing.startDelay</code>.
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  Let <var>seek time</var> be
+                  <code>animationDuration - <a>animationTime</a></code>.
+                </dd>
+              </dl>
+            </li>
+            <li>
+              Call <code>changeSpeed(-timing.speed)</code>.
+            </li>
+            <li>
+              Call <code>seek(<var>seek time</var>)</code>.
+            </li>
           </dd>
           <dt>void cancel ()</dt>
           <dd>
@@ -1566,7 +1541,7 @@
             If <a>item time</a> is <code>null</code>, return <code>null</code>.
           </li>
           <li>
-            If <code><a>item time</a> &lt; <var>start delay</var></code>
+            If <code><a>item time</a> &lt; timing.startDelay</code>
             the result depends on the <var>fill mode</var> as follows,
             <dl class="switch">
               <dt>
@@ -1587,7 +1562,7 @@
           <li>
             If <code><a>item time</a> &lt; timing.startDelay +
             animationDuration</code>, return
-            <code><a>item time</a> - <var>start delay</var></code>.
+            <code><a>item time</a> - timing.startDelay</code>.
           </li>
           <li>
             Otherwise, the result depends on the <var>fill mode</var> as
@@ -1633,17 +1608,17 @@
             </li>
             <li>
               Return the adjusted animation time based on the
-              <var>speed</var> timing property as follows,
+              <code>timing.speed</code> as follows,
               <dl class="switch">
-                <dt>If the <var>speed</var> is negative,</dt>
+                <dt>If <code>timing.speed</code> is negative,</dt>
                 <dd>
                 Return <code>(<a>animation time</a> -
-                              animationDuration) * <var>speed</var>
+                              animationDuration) * timing.speed
                         + <var>start offset</var></code>.
                 </dd>
                 <dt>Otherwise,</dt>
                 <dd>
-                  Return <code><a>animation time</a> * <var>speed</var>
+                  Return <code><a>animation time</a> * timing.speed
                   + <var>start offset</var></code>.
                 </dd>
             </li>
@@ -1668,8 +1643,7 @@
           </p>
           <ol>
             <li>
-              If the <a>item time</a> is <code>null</code> (i.e. the
-              animation's <var>start time</var> is not defined),
+              If the <a>item time</a> is <code>null</code>,
               return <code>null</code>.
             </li>
             <li>
@@ -1732,9 +1706,7 @@
                 <dd>
                   <ol>
                     <li>
-                      Let <var>d</var> be the <var>current iteration</var> (see
-                      <a href="#calculating-the-current-iteration"
-                        class="sectionRef"></a>).
+                      Let <var>d</var> be the <a>current iteration</a>.
                     </li>
                     <li>
                       If the direction is alternate-reverse increment
@@ -1780,7 +1752,7 @@
         <section>
           <h4>Calculating the current iteration</h4>
           <p>
-            The <var>current iteration</var> can be calculated from the
+            The <dfn>current iteration</dfn> can be calculated from the
             following steps:
           </p>
           <ol>
@@ -1860,6 +1832,11 @@
           As a result, the <var>time drift</var> must be calculated prior to
           calculating the <a>item time</a>.
         </p>
+        <p class="todo">
+          Need to clarify what happens if the item is moved around the tree.
+          Basically, update the drift on bind/unbind, use zero as the parent
+          iteration time when there is none, etc.
+        </p>
       </section>
       <section>
         <h3>Seeking a timed item</h3>
@@ -1878,9 +1855,9 @@
         <p>where:</p>
         <ul>
           <li>
-            <var>parent iteration time</var> - is the iteration time of the
-            parent animation group instance if there is one, otherwise it is
-            zero.
+          <var>parent iteration time</var> - is
+            <code>parentGroup.iterationTime</code> if it is not
+            <code>null</code>, otherwise it is zero.
           </li>
           <li>
             <var>seek time</var> - is the time to seek to expressed in the
@@ -1905,69 +1882,6 @@
           Is it worth adding "seek" events for this? Or the ability to mark
           animations as "remove-on-seek" (or something of that ilk).
         </p>
-      </section>
-      <section>
-        <h3>Reversing a timed item</h3>
-        <p>
-          Reversing a timed item such that it immediately takes effect is
-          achieved according to the following steps:
-        </p>
-        <ol>
-          <li>
-            Let <var>item</var> be the timed item to be reversed.
-          </li>
-          <li>
-            Call <code><var>item</var>.timing.reverse()</code>.
-          </li>
-          <li>
-            Adjust the <var>time drift</var> as follows:
-            <dl class="switch">
-              <dt>If <a>item time</a> is null,</dt>
-              <dd>
-                let <var>time drift</var> be <code>-<var>start time</var></code>
-                and then return.
-              </dd>
-              <dt>If <code><a>item time</a> &lt; <var>start
-                  delay</var></code>,</dt>
-              <dd>
-                Perform a seek to time <code>startDelay
-                + animationDuration</code> according to the steps
-                in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
-              </dd>
-              <dt>If <code><a>item time</a> &gt; startDelay
-                + animationDuration</code>,</dt>
-              <dd>
-                Perform a seek to <var>start delay</var> according to the steps
-                in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
-              </dd>
-              <dt>Otherwise,</dt>
-              <dd>
-                Perform a seek to
-                <code>
-                  animationDuration - <a>animation time</a>
-                </code>
-                according to the steps
-                in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
-              </dd>
-            </dl>
-          </li>
-        </ol>
-        <div class="informative">
-          <p>
-            By following these steps, assuming a forwards direction of play,
-            even if a timed item has finished its animation interval three
-            seconds in the past, it will not wait a further three seconds as if
-            retracing that time, but will immediately begin reversing.
-          </p>
-          <p>
-            Similarly, assuming a forwards direction of play, if a timed item
-            is reversed before it begins its animation interval it will never
-            play. Instead it will be seeked to the moment at the end of the
-            animation interval.
-            This provides consistent behavior when the direction of play is
-            backwards.
-          </p>
-        </div>
       </section>
     </section>
 
@@ -2317,9 +2231,9 @@
             </li>
             <li>
               Let <var>autostart</var> be the moment at which the timeline would
-              corresponding to the new value of <code>timelineStart</code> as
-              defined in <a href="#start-of-the-timeline"
-              class="sectionRef"></a>.
+              be unpaused corresponding to the new value of
+              <code>timelineStart</code> as defined in <a
+              href="#start-of-the-timeline" class="sectionRef"></a>.
             </li>
             <li>
               Let <var>now</var> be the <var>parent iteration time</var>.
@@ -2701,8 +2615,7 @@
                 </li>
                 <li>
                   Increment <var>accumulated start time</var> by
-                  <code><var>start delay</var> + <var>animation
-                  duration</var></code>
+                  <code>timing.startDelay + animationDuration</code>
                 </li>
               </ol>
             </li>
@@ -2722,8 +2635,8 @@
             equivalent to the <var>start time</var> of a hypothetical child
             appended to the group's children.
             It can be calculated as the sum of the <code>startTime</code>,
-            <code>startDelay</code>, and <code>animationDuration</code> of the
-            last child of the animation group.
+            <code>timing.startDelay</code>, and <code>animationDuration</code>
+            of the last child of the animation group.
           </p>
         </section>
         <section>
@@ -2973,43 +2886,27 @@
       <section>
         <h3>The <code>AnimFunction</code> interface</h3>
         <dl title="[Constructor] interface AnimFunction" class="idl">
-          <dt>const unsigned short WEBA_OPERATION_REPLACE = 0</dt>
-          <dd>
-            This animation should replace the value it is composited with.
-          </dd>
-          <dt>const unsigned short WEBA_OPERATION_ACCUMULATE = 1</dt>
-          <dd>
-            This animation should add to the value it is composited with.
-            The meaning of addition is dependent on the type of animation.
-          </dd>
-          <dt>const unsigned short WEBA_OPERATION_MERGE = 2</dt>
-          <dd>
-            This animation should merge with the value it is composited with.
-            The meaning of merge is dependent on the type of animation.
-            The duration of the merge is the calculated animation duration
-            of the <code>Anim</code> containing this <code>AnimFunction</code>.
-          </dd>
-          <dt>attribute unsigned short operation</dt>
+          <dt>attribute CompositeOperation operation</dt>
           <dd>
             <p>
               The operation used to composite this animation with the stack, as 
-              specified by one of the <code>WEBA_OPERATION_*</code> constants 
-              defined in this interface.
+              specified by one of the <a>CompositeOperation</a> enumeration
+              values.
             </p>
             <p>
-              This value defaults to <code>WEBA_OPERATION_REPLACE</code>
+              This value defaults to <code>"replace"</code>
             </p>
           </dd>
-          <dt>attribute unsigned short accumulateOperation</dt>
+          <dt>attribute CompositeOperation accumulateOperation</dt>
           <dd>
             <p>
               The operation used to composite each iteration of this animation
-              with the result of compositing the previous animation, as specified
-              by one of the <code>WEBA_OPERATION_*</code> constants defined in
-              this interface.
+              with the result of compositing the previous animation, as
+              specified by one of the <a>CompositeOperation</a> constants
+              defined in this interface.
             </p>
             <p>
-              This value defaults to <code>WEBA_OPERATION_REPLACE</code>.
+              This value defaults to <code>"replace"</code>.
             </p>
           </dd>
           <dt>attribute DOMString? pace</dt>
@@ -3023,6 +2920,27 @@
             The example here could take values <code>null</code> (default),
             "auto", or something like "1px/s" (not sure what the datatype
             should be here).
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>CompositeOperation</code> enumeration</h3>
+        <dl title="enum CompositeOperation" class="idl">
+          <dt>replace</dt>
+          <dd>
+            The animation should replace the value it is composited with.
+          </dd>
+          <dt>accumulate</dt>
+          <dd>
+            The animation should add to the value it is composited with.
+            The meaning of addition is dependent on the type of animation.
+          </dd>
+          <dt>merge</dt>
+          <dd>
+            The animation should merge with the value it is composited with.
+            The meaning of merge is dependent on the type of animation.
+            The duration of the merge is the calculated animation duration
+            of the <code>Anim</code> containing this <code>AnimFunction</code>.
           </dd>
         </dl>
       </section>
@@ -3189,10 +3107,10 @@
           <section>
             <h4>Calculating the animation value from an iteration value</h4>
             <p>
-              If the <var>current iteration</var> is zero, or the 
+              If the <a>current iteration</a> is zero, or the 
               <var>accumulateOperation</var> is
-               <code>WEBA_OPERATION_REPLACE</code>, then the 
-               <var>animation value</var> is simply the iteration value, as
+              <code>"replace"</code>, then the 
+              <var>animation value</var> is simply the iteration value, as
               defined below.
             </p>
             <p>
@@ -3208,17 +3126,17 @@
               than 1).
             </p>
             <p>
-              If the <var>current iteration</var> is not zero and the
+              If the <a>current iteration</a> is not zero and the
               <var>accumulateOperation</var> is
-              <code>WEBA_OPERATION_ACCUMULATE</code> then the 
-              <var>animation value</var> is the <var>end value</var> accumulated 
-              <var>current iteration</var> times, with the 
+              <code>"accumulate"</code> then the 
+              <var>animation value</var> is the <var>end value</var> accumulated
+              <a>current iteration</a> times, with the 
               <var>iteration value</var> accumulated on top.
             </p>
             <p>
-              If the <var>current iteration</var> is not zero and the
+              If the <a>current iteration</a> is not zero and the
               <var>accumulateOperation</var> is
-              <code>WEBA_OPERATION_MERGE</code> then the
+              <code>"merge"</code> then the
               <var>animation balue</var> is the <var>end value</var> merged
               with the <var>iteration value</var>, with an interpolation
               parameter equal to the current <var>time fraction</var>
@@ -3460,8 +3378,8 @@
           earlier in the animation stack have already applied to, the
           cumulative animation result from the stack is composited with the new
           animation to produce a new cumulative animation result.
-          The possible combinators are defined as <code>WEBA_OPERATION_*</code>
-          constants in the <code>AnimFunction</code> interface.
+          The possible combinators are defined by the <a>CompositeOperation</a>
+          enumeration.
         </p>
         <section>
           <h4>The REPLACE combinator</h4>
@@ -3605,23 +3523,34 @@
 
     <section>
       <h2>Animation events</h2>
-      <p>
-        Need to consider how to align with existing
-        <code>TransitionEvent</code>s, <code>AnimationEvent</code>s and
-        <code>TimeEvent</code>s. It might make sense to have our events inherit
-        from one or more of these interfaces or have implementations dispatch
-        both (especially if their synchronization properties differ).
-      </p>
-      <p>
-        I think we might also want a seek event? It seems like a lot of
-        applications will want to do bookkeeping when there's
-        a seek&mdash;especially a backwards seek. It might also be necessary for
-        the SVG bindings so you can clear certain events on a backwards seek as
-        required by SMIL.
-      </p>
-      <p>
-        Talk about what events are dispatched on a seek.
-      </p>
+      <div class="todo">
+        <p>
+          Need to consider how to align with existing
+          <code>TransitionEvent</code>s, <code>AnimationEvent</code>s and
+          <code>TimeEvent</code>s. It might make sense to have our events
+          inherit from one or more of these interfaces or have implementations
+          dispatch both (especially if their synchronization properties differ).
+        </p>
+        <p>
+          I think we might also want a seek event? It seems like a lot of
+          applications will want to do bookkeeping when there's
+          a seek&mdash;especially a backwards seek. It might also be necessary
+          for the SVG bindings so you can clear certain events on a backwards
+          seek as required by SMIL.
+        </p>
+        <p>
+          Talk about what events are dispatched on a seek.
+          It's probably important that we don't dispatch intermediate events
+          during a seek as then implementations will be required to step through
+          each interval and it breaks the fact that skipping around the model is
+          constant time.
+          It's also not what SVG does, i.e. SVG skips events during a seek.
+          I think you just want to record the animating vs non-animating state
+          of each item before the seek, then compare to after the seek and fire
+          the appropriate event.
+          (Do groups fire events?)
+        </p>
+      </div>
       <section>
         <h3>Synchronizing event handlers</h3>
         <div class="todo">
