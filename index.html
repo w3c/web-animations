@@ -230,6 +230,112 @@
     </section>
 
     <section class="informative">
+      <h2>The timing model at a glance</h2>
+      <p>
+        Two features characterise the Web Animations timing model: it is
+        <em>stateless</em> and it is <em>hierarchical</em>.
+      </p>
+      <section>
+        <h3>Stateless</h3>
+        <p>
+          The Web Animations timing model operates by taking an input time and
+          producing an output time fraction.
+          Since the output is based solely on the input time and is entirely
+          independent of previous inputs, the model may be described as
+          stateless.
+          This gives the model the following properties:
+        </p>
+        <dl>
+          <dt>Frame-rate independent</dt>
+          <dd>
+            Since the output is independent of previous inputs, the rate at
+            which the model is sampled will not affect its progress.
+            Provided the input times are proportional to the progress of
+            real-world time, animations will progress at an identical rate
+            regardless of the capabilities of the device running them.
+          </dd>
+          <dt>Direction agnostic</dt>
+          <dd>
+            Since the sequence of inputs is insignificant, the model is
+            directionless.
+            This means that the model can be sampled in reverse or even in
+            a backwards and forwards pattern without requiring any specialized
+            handling.
+          </dd>
+          <dt>Constant-time seeking</dt>
+          <dd>
+            Since each input is independent of the previous input, the
+            processing required to perform a seek operation, even far into the
+            future, is at least potentially constant.
+          </dd>
+        </dl>
+        <p>
+          There are two apparent exceptions to the stateless behavior of the
+          timing model.
+        </p>
+        <p>
+          Firstly, events are fired when, for example, one sample falls
+          on the opposite side of an animation's interval boundary to the
+          previous sample.
+          This is certainly stative behavior.
+          However, events should be considered as a layer added on top of the
+          core timing model.
+          In the case where no event listeners are registered, the model is
+          stateless.
+        </p>
+        <p>
+          The other exception to this stateless behavior is that a number of
+          methods such as <code>pause</code> and <code>reverse</code> are
+          defined in terms of the time at which they are called and are
+          therefore stative.
+          These methods are provided primarily for convenience and are not part
+          of the core timing model but, like events, are layered on top.
+        </p>
+        <p>
+          Finally, each time the model is sampled, it can be considered to
+          establish a temporary state.
+          While this temporary state affects the values returned from the API,
+          it has no influence on the subsequent samples and hence does not
+          conflict with the stateless qualities described above.
+        </p>
+      </section>
+      <section>
+        <h3>Hierarchical</h3>
+        <p>
+          The other characteristic feature of the Web Animations timing model is
+          that time is inherited.
+          In effect, time begins with real world time (a monotonically
+          increasing time source) and cascades down a number of steps to each
+          animation.
+          At each step, time may be shifted backwards and forwards, scaled,
+          reversed, paused, and repeated.
+        </p>
+        <p class="todo">
+          Need diagram here.
+        </p>
+        <p>
+          A consequence of this hierarchical arrangement is that complex
+          animation arrangements can be reversed, schedule, accelerated and so
+          on, as a whole since the manipulations applied to the parent cascade
+          down to its descendants.
+          Furthermore, since time has a common source, it is easy to synchronize
+          otherwise independent animations.
+        </p>
+        <p>
+          Despite this notion of inherited time, some features are implemented
+          outside of the time hierarchy.
+          In particular, synchronisation with HTML's media controllers (see <a
+          href="#synchronizing-with-media" class="sectionRef"></a>) requires
+          mirroring changes to pause state between items in different branches
+          of the time hierarchy.
+        </p>
+        <p>
+          The first step in this hierarchy is the animation timeline.
+        </p>
+      </section>
+    </section>
+
+    <section class="informative">
       <h2>The animation timeline</h2>
       <p>
         Each document contains a timeline to which animations may be added.
@@ -630,90 +736,37 @@
     <section>
       <h2>Timing animations</h2>
       <section class="informative">
-        <h3>Animation states</h3>
+        <h3>The animation interval</h3>
         <p>
-          An individual animation instance can be in one of three possible
-          states:
-        </p>
-        <dl>
-          <dt>Animating (active)</dt>
-          <dd>
-            The animation instance is executing, and will apply its effect to
-            its target.
-          </dd>
-          <dt>Filling (active)</dt>
-          <dd>
-            The animation instance has yet to start executing or has already
-            finished but is still effecting its target due to the fill mode
-            specified (see <a href="#animation-fill-behavior"
-              class="sectionRef"></a>).
-          </dd>
-          <dt>Inactive</dt>
-          <dd>
-            The animation instance has yet to start executing or has already
-            finished and is not effecting its target. Animations that do not
-            belong to a group and consequently have no notion of time are also
-            considered inactive (see <a href="#grouping-and-synchronization"
-            class="sectionRef"></a>).
-          </dd>
-        </dl>
-        <p>
-          An animation instance is considered <em>active</em> if it is in either
-          the <em>animating</em> or <em>filling</em> state.
+          The period that an animation instance is animating is called the
+          <dfn>animation interval</dfn>.
+          Each animation instance has only one such interval.
         </p>
         <p>
-          An animation may not enter all of these states depending on when it
-          starts, its duration, and the fill behavior defined (see <a
-          href="#animation-fill-behavior" class="sectionRef"></a>). An example
-          sequence of states is illustrated below.
+          The start of the interval is determined by the <var>start
+          time</var> of the animation instance but may be shifted by
+          a <var>start delay</var> on the animation instance.
+        </p>
+        <p>
+          The end of the interval is determined by the <var>animation
+          duration</var>.
+        </p>
+        <p>
+          Some examples are illustrated below.
         </p>
         <div class="figure">
-          <img src="img/animation-states.svg" width="600">
+          <img src="img/animation-interval-examples.svg" width="600">
         </div>
         <p class="caption">
-          An example of the animation states for an animation with a forwards
-          fill.<br>
-          The animation is initially inactive. This may be due to a positive
-          delay or positive start time (see <a href="#the-animation-interval"
-          class="sectionRef"></a>).<br>
-          Then the animation begins executing and enters the animating
-          state.<br>
-          When the animation has completed, a forwards fill is applied and the
-          animation enters the filling state.
+          Examples of the effect of the start delay on endpoints of the
+          animation interval.<br>
+          (a) An animation instance with no delay; the start time and start of
+          animation are coincident.<br>
+          (b) An animation instance with a positive delay; the start of
+          animation is deferred by the delay.<br>
+          (c) An animation instance with a negative delay; the start of
+          animation is brought forward by the delay.
         </p>
-        <section>
-          <h3>The animation interval</h3>
-          <p>
-            The period that an animation instance is animating is called the
-            <em>animation interval</em>.
-            Each animation instance has only one such interval.
-          </p>
-          <p>
-            The start of the interval is determined by the <var>start
-            time</var> of the animation instance but may be shifted by
-            a <var>start delay</var> on the animation instance.
-          </p>
-          <p>
-            The end of the interval is determined by the <var>animation
-            duration</var>.
-          </p>
-          <p>
-            Some examples are illustrated below.
-          </p>
-          <div class="figure">
-            <img src="img/animation-interval-examples.svg" width="600">
-          </div>
-          <p class="caption">
-            Examples of the effect of the start delay on endpoints of the
-            animation interval.<br>
-            (a) An animation instance with no delay; the start time and start of
-            animation are coincident.<br>
-            (b) An animation instance with a positive delay; the start of
-            animation is deferred by the delay.<br>
-            (c) An animation instance with a negative delay; the start of
-            animation is brought forward by the delay.
-          </p>
-        </section>
       </section>
       <section class="informative">
         <h3>Animation fill behavior</h3>
@@ -725,8 +778,8 @@
         <dl>
           <dt>none</dt>
           <dd>
-            The animation instance does not effect its target outside the active
-            interval.
+            The animation instance does not effect its target outside the
+            animation interval.
           </dd>
           <dt>forwards</dt>
           <dd>
@@ -756,22 +809,29 @@
           </dd>
         </dl>
         <p>
-          Some examples of the these fill modes and the corresponding animation
-          states are illustrated below.
+          Some examples of the these fill modes are illustrated below.
         </p>
         <div class="figure">
           <img src="img/animation-state-and-fill-behavior.svg" width="600">
         </div>
         <p class="caption">
           Examples of various fill modes and the animation states produced.<br>
-          (a) fill mode &lsquo;none&rsquo;. The animation instance never enters
-          the filling state.<br>
-          (b) fill mode &lsquo;forwards&rsquo;. The animation instance enters
-          the filling state after the animation interval has complete.<br>
-          (c) fill mode &lsquo;backwards&rsquo;. The animation instance enter
-          the filling state until the start of the animation interval.<br>
-          (d) fill mode &lsquo;both&rsquo;. Outside of the animation interval
-          the animation instance is in the filling state.
+          (a) fill mode &lsquo;none&rsquo;. The animation has no effect outside
+              its animation interval.<br>
+          (b) fill mode &lsquo;forwards&rsquo;. After the animation interval has
+              finished, the animation instance continues to apply a fill value
+              to the target.<br>
+          (c) fill mode &lsquo;backwards&rsquo;. The animation instance applies
+              a fill value to its target until the start of the animation
+              interval.<br>
+          (d) fill mode &lsquo;both&rsquo;. Both before and after the animation
+              interval the animation applies a fill value to its target.
+        </p>
+        <p>
+          At a given time, it is possible to describe an animation as <dfn>in
+          effect</dfn> if either (a) the time falls within the animation's
+          <a>animation interval</a>, or (b) the fill mode of the animation
+          causes it to apply a fill mode to its target at the given time.
         </p>
         <p>
           The normative definition of fill behavior is incorporated in the
@@ -817,9 +877,6 @@
           <dd>
             A time space whose zero time is the beginning of the current
             iteration.
-            When the animation instance is inactive it is set to the iteration
-            time that will produce the appropriate fill value regardless of the
-            setting of the fill mode.
           </dd>
         </dl>
         <p>
@@ -856,7 +913,7 @@
           <h4>Iteration duration and animation duration</h4>
           <p>
             These time spaces can also be used to describe intervals and
-            durations. The distinction between iteration duration and active
+            durations. The distinction between iteration duration and animation
             duration is particularly common. The definition of these terms falls
             out of the definition of the time spaces and is summarized as
             follows:
@@ -898,9 +955,9 @@
           <p>
             In the examples below, for the repeated animation, at animation time
             1s, the iteration time is 0.
-            For the sequenced animation, at parent iteration time 1s, animation
-            A has become inactive, and animation B is now active; there is no
-            overlap.
+            For the sequenced animation, in the absence of any fill mode,
+            at parent iteration time 1s, only animation B can affect its target;
+            there is no overlap.
           </p>
           <div class="figure">
             <img src="img/endpoint-exclusive-timing.svg" width="600">
@@ -1119,9 +1176,8 @@
             It is calculated using the steps described in <a
             href="#calculating-the-animation-time" class="sectionRef"></a>.
             As a result of that definition, this property will be
-            non-<code>null</code> if and only if the animation is in the
-            active state (see <a href="#animation-states"
-            class="sectionRef"></a>).
+            non-<code>null</code> if and only if the animation is in
+            <a>in effect</a>.
           </dd>
           <dt>attribute unrestricted double animationDuration</dt>
           <dd>
@@ -1131,8 +1187,8 @@
             <p>
               Initially, this attribute will reflect the <a>intrinsic
               animation duration</a>.
-              Changes to the model that cause the <var>intrinsic animation
-              duration</var> to change are reflected in the value returned here.
+              Changes to the model that cause the <a>intrinsic animation
+              duration</a> to change are reflected in the value returned here.
             </p>
             <p>
               The <a>instrinsic animation duration</a> may be overridden by
@@ -1149,9 +1205,8 @@
             duration using the steps described in <a
             href="#calculating-the-iteration-time" class="sectionRef"></a>.
             As a result of that definition, this property will be
-            non-<code>null</code> if and only if the animation is in the
-            active state (see <a href="#animation-states"
-            class="sectionRef"></a>).
+            non-<code>null</code> if and only if the animation is in
+            <a>in effect</a>.
           </dd>
           <dt>readonly attribute unrestricted double iterationDuration</dt>
           <dd>
@@ -1533,8 +1588,8 @@
         <p>
           The <dfn>animation time</dfn> is based on the <a>item time</a>
           and <var>start delay</var>.
-          It is defined only when the timed item is active and is calculated
-          according to the following steps:
+          It is defined only when the timed item is <a>in effect</a> and is
+          calculated according to the following steps:
         </p>
         <ol>
           <li>
@@ -1878,10 +1933,6 @@
           It is the application's responsibility to restore the original state
           of the document in such situations.
         </p>
-        <p class="feedbackWanted">
-          Is it worth adding "seek" events for this? Or the ability to mark
-          animations as "remove-on-seek" (or something of that ilk).
-        </p>
       </section>
     </section>
 
@@ -1967,8 +2018,9 @@
         <p>
           A further result of the children of a group basing their timing on the
           group's <var>iteration time</var> is that they cannot animate outside
-          of the group's active interval. This is because the <var>iteration
-          time</var> of a group will not change outside its active interval.
+          of the group's <a>animation interval</a>.
+          This is because the <var>iteration time</var> of a group will not
+          change outside its animation interval.
           This allows groups to clip the playback of their children.
         </p>
         <div class="figure">
@@ -2109,7 +2161,7 @@
           <h4>Initial state of the document timeline</h4>
           <p>
             Unlike other timed items, the document timeline is initially paused.
-            The moment at which the timeline becomes active is defined in <a
+            The moment at which the timeline becomes unpaused is defined in <a
               href="#start-of-the-timeline" class="sectionRef"></a>.
           </p>
           <p>
@@ -2540,7 +2592,7 @@
           <dt>sequence&lt;AnimInstance&gt; getActiveAnimations ()</dt>
           <dd>
             Returns all descendent <code>AnimInstance</code> objects
-            that are active.
+            that are <a>in effect</a>.
             The returned sequence is a snapshot (i.e. not live) representing the
             state of animations that corresponds to the time returned by the
             <code>iterationTime</code> property of this
@@ -2611,11 +2663,11 @@
               <ol>
                 <li>
                   Let the start time of the child be <var>accumulated start
-                  time</var>
+                  time</var>.
                 </li>
                 <li>
                   Increment <var>accumulated start time</var> by
-                  <code>timing.startDelay + animationDuration</code>
+                  <code>max(0, timing.startDelay + animationDuration)</code>.
                 </li>
               </ol>
             </li>
@@ -2634,9 +2686,6 @@
             The instrinsic duration of a sequence animation group instance is
             equivalent to the <var>start time</var> of a hypothetical child
             appended to the group's children.
-            It can be calculated as the sum of the <code>startTime</code>,
-            <code>timing.startDelay</code>, and <code>animationDuration</code>
-            of the last child of the animation group.
           </p>
         </section>
         <section>
@@ -3316,9 +3365,10 @@
       <section>
         <h3>The Global Animation Stack</h3>
         <p>
-          When multiple active animations target the same element, the
+          When multiple <a>in effect</a> animations target the same element, the
           animations are ordered into a stack which resolves how those 
-          animations combine. This stack is sorted by animation start time.
+          animations combine.
+          This stack is sorted by animation <var>start time</var>.
           Where multiple animations have the same start time, those animations
           are sorted in document order (for animations from the DOM) and script
           order (for animations from the API). Script animations are always
@@ -3336,12 +3386,10 @@
           another element.
         </p>
         <p class="note">
-          The start time of an animation refers to the recorded or 
-          calculated start time (i.e. the point where an animation changes 
-          phase from <code>Inactive</code> to <code>Delayed</code>), not the
-          point at which the animation actually starts (i.e. the point where
-          an animation changes phase from <code>Delayed</code> to 
-          <code>Animating</code>). 
+          The start time of an animation refers to the time when the animation
+          is specified to begin as recorded in the
+          <code>TimedItem.startTime</code> property, that is, before applying
+          any <var>start delay</var>.
         </p>
         <p class="note">
           The stacking order of animations is independent of the
