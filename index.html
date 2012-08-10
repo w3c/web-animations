@@ -5,7 +5,9 @@
     <title>Web Animations 1.0</title>
     <meta charset="utf-8">
     <script src="respec/respec.js" class="remove"></script>
-    <script src="http://dev.w3.org/2009/dap/ReSpec.js/js/lang/sh_javascript.min.js" class="remove"></script>
+    <script
+      src="http://dev.w3.org/2009/dap/ReSpec.js/js/lang/sh_javascript.min.js"
+      class="remove"></script>
     <script class="remove">
       var respecConfig = {
         // specification status (e.g. WD, LCWD, NOTE, etc.). If in doubt use
@@ -359,23 +361,23 @@
     <section>
       <h2>Animations in the timeline</h2>
       <p>
-        Animations in the timeline are represented by
-        <code>AnimInstance</code> objects.
+        Animations in the timeline are represented by <code>Anim</code> objects.
       </p>
       <section>
-        <h3>The <code>AnimInstance</code> interface</h3>
-        <dl title="interface AnimInstance : TimedItem" class="idl">
+        <h3>The <code>Anim</code> interface</h3>
+        <dl title="interface Anim : TimedItem" class="idl">
           <dt>attribute AnimFunction func</dt>
           <dd>
             The animation function to apply (see <a href="#animation-values"
             class="sectionRef"></a>).
           </dd>
-          <dt>readonly attribute Anim? template</dt>
+          <dt>readonly attribute AnimTemplate? template</dt>
           <dd>
-            For live animation instances (see <a href="#creating-animations"
-            class="sectionRef"></a>), the <code>Anim</code> object from
-            which this object was minted. For independent animation instances,
-            this property is <code>null</code>.
+            <!-- REVIEW -->
+            For linked animations (see <a href="#creating-animations"
+            class="sectionRef"></a>), the <code>AnimTemplate</code> object from
+            which this object was minted.
+            For unlinked animations, this property is <code>null</code>.
           </dd>
           <dt>readonly attribute Element targetElement</dt>
           <dd>
@@ -405,27 +407,27 @@
     <section>
       <h2>Creating animations</h2>
       <p>
-        <code>AnimInstance</code> objects are not created directly, but
-        via a separate <code>Anim</code> object. The
-        <code>Anim</code> object acts a template allowing the same set
+        <code>Anim</code> objects are not created directly, but
+        via a separate <code>AnimTemplate</code> object. The
+        <code>AnimTemplate</code> object acts a template allowing the same set
         of animation parameters to be used multiple times with multiple target
         elements.
       </p>
       <p>
-        An <code>AnimInstance</code> can be in one of two states with
-        regards to the relationship between it and the <code>Anim</code>
+        An <code>Anim</code> can be in one of two states with
+        regards to the relationship between it and the <code>AnimTemplate</code>
         that produced it.
       </p>
       <dl>
         <dt>Live animation instance</dt>
         <dd>
-          Changes made to the <code>Anim</code> object are reflected in
-          the <code>AnimInstance</code> object.
+          Changes made to the <code>AnimTemplate</code> object are reflected in
+          the <code>Anim</code> object.
         </dd>
         <dt>Independent animation instance</dt>
         <dd>
-          Changes made to the <code>Anim</code> object have no effect on
-          the <code>AnimInstance</code> object.
+          Changes made to the <code>AnimTemplate</code> object have no effect on
+          the <code>Anim</code> object.
         </dd>
       </dl>
       <p class="todo">
@@ -440,7 +442,7 @@
         <li>
           Modifying any of the members of the <code>func</code> or
           <code>timing</code> properties of the
-          <code>AnimInstance</code> object. This includes redundant
+          <code>Anim</code> object. This includes redundant
           modifications, that is, setting a property to its current value.
           <!--
            The redundant modification condition is an attempt to eliminate an
@@ -461,7 +463,7 @@
         </li>
         <li>
           Calling the <code>makeIndependent</code> method of the
-          <code>AnimInstance</code> object.
+          <code>Anim</code> object.
         </li>
       </ol>
       <p>
@@ -479,7 +481,7 @@
       </p>
       <pre class="example sh_javascript">
         // Create a new animation
-        var anim = new Anim();
+        var anim = new AnimTemplate();
         anim.timing.iterationDuration = 1;
 
         // Create a live instance
@@ -496,9 +498,9 @@
         alert(instance.timing.iterationDuration); // Displays "3"
       </pre>
       <section>
-        <h3>The <code>Anim</code> interface</h3>
+        <h3>The <code>AnimTemplate</code> interface</h3>
         <p>
-          <dl title="[Constructor] interface Anim : TimedTemplate"
+          <dl title="[Constructor] interface AnimTemplate : TimedTemplate"
             class="idl">
             <dt>attribute AnimFunction func</dt>
             <dd>
@@ -510,9 +512,9 @@
       <section>
         <h3>The <code>TimedTemplate</code> interface</h3>
         <p>
-          Both the timing of an <code>Anim</code> and the methods for
-          creating an <code>AnimInstance</code> from
-          an <code>Anim</code> are specified on the
+          Both the timing of an <code>AnimTemplate</code> and the methods for
+          creating an <code>Anim</code> from
+          an <code>AnimTemplate</code> are specified on the
           <code>TimedTemplate</code> since this behavior is shared with
           animation groups
           (see <a href="#grouping-and-synchronization" class="sectionRef"></a>).
@@ -552,14 +554,14 @@
                 <p>
                   The start time for the generated animation instances
                   expressed in seconds in the iteration time space of the
-                  <code>AnimGroupInstance</code> to which it is
+                  <code>AnimGroup</code> to which it is
                   appended (see <a href="#iteration-time-and-animation-time"
                     class="sectionRef"></a>).
                 </p>
                 <p>
                   If this parameter is not specified it will default to the
                   current iteration time of the
-                  <code>AnimGroupInstance</code> to which it is
+                  <code>AnimGroup</code> to which it is
                   appended if it is not <code>null</code>, otherwise it will
                   default to zero.
                 </p>
@@ -623,7 +625,7 @@
               <dd>
                 As with <code>animate</code>.
               </dd>
-              <dt>AnimGroupInstance? parentGroup</dt>
+              <dt>AnimGroup? parentGroup</dt>
               <dd>
                 The animation group instance to which animation instances
                 should be appended.
@@ -633,7 +635,7 @@
                 <p>
                   The start time for the generated animation instances
                   expressed in seconds in the iteration time space of the
-                  <code>AnimGroupInstance</code> to which it is
+                  <code>AnimGroup</code> to which it is
                   appended (see <a href="#iteration-time-and-animation-time"
                     class="sectionRef"></a>).
                 </p>
@@ -648,11 +650,11 @@
           </dd>
           <dt>sequence&lt;TimedItem&gt; animateWithParent (
             sequence&lt;Node&gt; targets,
-            AnimGroupInstance? parentGroup,
+            AnimGroup? parentGroup,
             optional double startTime)</dt>
           <dd>
             As with <code>animateWithParent(Element target,
-              AnimGroupInstance? parentGroup,
+              AnimGroup? parentGroup,
               optional double startTime)</code> except
             one <code>TimedItem</code> is created for each
             <code>Node</code> in <code>target</code> that is of type
@@ -673,14 +675,14 @@
             live.
           </dd>
           <dt>TimedItem animateLiveWithParent
-            (Element target, AnimGroupInstance? parentGroup,
+            (Element target, AnimGroup? parentGroup,
              optional double startTime)</dt>
           <dd>
             As with <code>animateWithParent</code> with the exception that the
             animation instances generated by this method are live.
           </dd>
           <dt>sequence&lt;TimedItem&gt; animateLiveWithParent
-            (sequence&lt;Node&gt; targets, AnimGroupInstance? parentGroup,
+            (sequence&lt;Node&gt; targets, AnimGroup? parentGroup,
              optional double startTime)</dt>
           <dd>
             As with <code>animateWithParent</code> with the exception that the
@@ -689,23 +691,21 @@
         </dl>
       </section>
       <section>
-        <h3>Instantiating an <code>Anim</code></h3>
+        <h3>Instantiating an <code>AnimTemplate</code></h3>
         <p>
-          The procedure for instantiating an <code>Anim</code>,
+          The procedure for instantiating an <code>AnimTemplate</code>,
           <var>template</var>, given a list of target elements and an optional
           <var>parent group</var>, is as follows:
         </p>
         <ol>
           <li>
-            Create an empty sequence of <code>AnimInstance</code>
-            objects.
+            Create an empty sequence of <code>Anim</code> objects.
           </li>
           <li>
             For each <var>element</var> in the list of target elements:
             <ol>
               <li>
-                Create a new <code>AnimInstance</code> object,
-                <var>instance</var>.
+                Create a new <code>Anim</code> object, <var>instance</var>.
               </li>
               <li>
                 Set the <code>timing</code> and <code>func</code> properties
@@ -721,13 +721,13 @@
                 Append <var>element</var> to <var>parentGroup</var>.
               </li>
               <li>
-                Append <var>element</var> to the sequence of
-                <code>AnimInstance</code> objects.
+                Append <var>element</var> to the sequence of <code>Anim</code>
+                objects.
               </li>
             </ol>
           </li>
           <li>
-            Return the sequence of <code>AnimInstance</code> objects.
+            Return the sequence of <code>Anim</code> objects.
           </li>
         </ol>
       </section>
@@ -1102,7 +1102,7 @@
               </p>
               <p>
                 Calling this method on an object attached to a live
-                <code>AnimInstance</code> or <code>AnimGroupInstance</code> will
+                <code>Anim</code> or <code>AnimGroup</code> will
                 have no effect on the liveness of the instance (see <a
                 href="#creating-animations" class="sectionRef"></a>).
               </p>
@@ -1268,7 +1268,7 @@
               seconds relative to the parent animation group.
             </p>
           </dd>
-          <dt>readonly attribute AnimGroupInstance parentGroup</dt>
+          <dt>readonly attribute AnimGroup parentGroup</dt>
           <dd>
             The parent animation group instance.
           </dd>
@@ -2314,7 +2314,7 @@
             to the <code>Document</code> interface are required.
           </p>
           <dl title="partial interface Document" class="idl">
-            <dt>readonly attribute AnimGroupInstance animationTimeline</dt>
+            <dt>readonly attribute AnimGroup animationTimeline</dt>
             <dd>
               The animation group instance corresponding to the root of the
               document.
@@ -2371,7 +2371,7 @@
           </li>
           <li>
             Calling the <code>makeIndependent</code> method of the
-            <code>AnimGroupInstance</code> object.
+            <code>AnimGroup</code> object.
           </li>
         </ul>
         <p>
@@ -2386,27 +2386,27 @@
         </p>
       </section>
       <section>
-        <h3>The <code>AnimGroupInstance</code> interface</h3>
+        <h3>The <code>AnimGroup</code> interface</h3>
         <p>
           Represents a list of timed items which may be animation instances or
           nested animation group instances.
         </p>
         <p>
-          The <code>AnimGroupInstance</code> interface supports indexed
+          The <code>AnimGroup</code> interface supports indexed
           properties with indices in the range 0 &le; <var>index</var> &lt;
           <code>group.size</code>. 
         </p>
-        <dl title="interface AnimGroupInstance : TimedItem"
+        <dl title="interface AnimGroup : TimedItem"
           class="idl">
           <dt>readonly attribute unsigned long length</dt>
           <dd>
             The number of timed items in the group.
           </dd>
-          <dt>readonly attribute AnimGroup? template</dt>
+          <dt>readonly attribute AnimGroupTemplate? template</dt>
           <dd>
-            For live animation group instances (see <a
+            For linked animation group instances (see <a
             href="#creating-animations" class="sectionRef"></a>), the
-            <code>AnimGroup</code> object from which this object was
+            <code>AnimGroupTemplate</code> object from which this object was
             minted.
             For independent animation group instances, this property is
             <code>null</code>.
@@ -2589,20 +2589,19 @@
               already an independent animation group instance.
             </p>
           </dd>
-          <dt>sequence&lt;AnimInstance&gt; getActiveAnimations ()</dt>
+          <dt>sequence&lt;Anim&gt; getActiveAnimations ()</dt>
           <dd>
-            Returns all descendent <code>AnimInstance</code> objects
+            Returns all descendent <code>Anim</code> objects
             that are <a>in effect</a>.
             The returned sequence is a snapshot (i.e. not live) representing the
             state of animations that corresponds to the time returned by the
             <code>iterationTime</code> property of this
-            <code>AnimGroupInstance</code> object when this method was
+            <code>AnimGroup</code> object when this method was
             called.
           </dd>
-          <dt>sequence&lt;AnimInstance&gt; getAnimationsForElement
-            (Element elem)</dt>
+          <dt>sequence&lt;Anim&gt; getAnimationsForElement (Element elem)</dt>
           <dd>
-            Returns all descendent <code>AnimInstance</code> objects
+            Returns all descendent <code>Anim</code> objects
             whose <code>targetElement</code> is <code>elem</code>.
             As with <code>getActiveAnimations</code>, the returned sequence is
             a snapshot (i.e. not live) representing the state of animation
@@ -2630,12 +2629,12 @@
           </p>
         </section>
         <section>
-          <h4>The <code>ParAnimGroupInstance</code> interface</h4>
+          <h4>The <code>ParAnimGroup</code> interface</h4>
           <p>
             Parallel animation group instances are represented by
-            <code>ParAnimGroupInstance</code> objects.
+            <code>ParAnimGroup</code> objects.
           </p>
-          <dl title="interface ParAnimGroupInstance : AnimGroupInstance"
+          <dl title="interface ParAnimGroup : AnimGroup"
             class="idl">
           </dl>
         </section>
@@ -2689,25 +2688,25 @@
           </p>
         </section>
         <section>
-          <h4>The <code>SeqAnimGroupInstance</code> interface</h4>
+          <h4>The <code>SeqAnimGroup</code> interface</h4>
           <p>
             Sequence animation group instances are represented by
-            <code>SeqAnimGroupInstance</code> objects.
+            <code>SeqAnimGroup</code> objects.
           </p>
-          <dl title="interface SeqAnimGroupInstance : AnimGroupInstance"
+          <dl title="interface SeqAnimGroup : AnimGroup"
             class="idl">
           </dl>
         </section>
       </section>
       <section>
-        <h3>The <code>AnimGroup</code> interface</h3>
+        <h3>The <code>AnimGroupTemplate</code> interface</h3>
         <p>
-          <code>AnimGroupInstance</code> objects are not created
-          directly, but rather via an <code>AnimGroup</code> object that
+          <code>AnimGroup</code> objects are not created
+          directly, but rather via an <code>AnimGroupTemplate</code> object that
           acts as a template for creating animation group instances that target
           different elements.
         </p>
-        <dl title="interface AnimGroup : TimedTemplate" class="idl">
+        <dl title="interface AnimGroupTemplate : TimedTemplate" class="idl">
           <dt>void clear ()</dt>
           <dd>
             Removes all child items from the group.
@@ -2731,7 +2730,7 @@
             </p>
             <p>
               The behavior of this method is identical to
-              the equivalent setter in <code>AnimGroupInstance.replace</code>
+              the equivalent setter in <code>AnimGroup.replace</code>
               except that DOMExceptions of type HierarchyRequestError are not
               thrown.
             </p>
@@ -2775,16 +2774,16 @@
               during the addition step).
             </p>
             <p>
-              As with <code>AnimGroupInstance.slice</code> the operation of
+              As with <code>AnimGroup.slice</code> the operation of
               slice is based on <a
               href="http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262%205th%20edition%20December%202009.pdf#page=140">ECMAScript
               5's Array.prototype.splice</a>.
             </p>
             <p>
               The operation of this method is identical to that of
-              <code>AnimGroupInstance.slice</code> with the notable difference
+              <code>AnimGroup.slice</code> with the notable difference
               that DOMExceptions of type HierarchyRequestError are not thrown
-              since there is no <code>AnimGroup</code> corresponding to
+              since there is no <code>AnimGroupTemplate</code> corresponding to
               a document timeline.
             </p>
             <dl class="parameters">
@@ -2838,52 +2837,54 @@
         </p>
       </section>
       <section>
-        <h3>The <code>ParAnimGroup</code> interface</h3>
+        <h3>The <code>ParAnimGroupTemplate</code> interface</h3>
         <p>
-          <code>ParAnimGroupInstance</code> objects are created from
-          <code>ParAnimGroup</code> objects.
+          <code>ParAnimGroup</code> objects are created from
+          <code>ParAnimGroupTemplate</code> objects.
         </p>
-        <dl title="[Constructor] interface ParAnimGroup : AnimGroup"
+        <dl title="[Constructor] interface ParAnimGroupTemplate
+          : AnimGroupTemplate"
           class="idl">
         </dl>
       </section>
       <section>
-        <h3>The <code>SeqAnimGroup</code> interface</h3>
+        <h3>The <code>SeqAnimGroupTemplate</code> interface</h3>
         <p>
-          <code>SeqAnimGroupInstance</code> objects are created from
-          <code>SeqAnimGroup</code> objects.
+          <code>SeqAnimGroup</code> objects are created from
+          <code>SeqAnimGroupTemplate</code> objects.
         </p>
-        <dl title="[Constructor] interface SeqAnimGroup : AnimGroup"
+        <dl title="[Constructor] interface SeqAnimGroupTemplate
+          : AnimGroupTemplate"
           class="idl">
         </dl>
       </section>
       <section>
-        <h3>Instantiating an <code>AnimGroup</code></h3>
+        <h3>Instantiating an <code>AnimGroupTemplate</code></h3>
         <p>
-          The procedure for creating an <code>AnimGroupInstance</code> from
-          an <code>AnimGroup</code>, <var>template</var>,
+          The procedure for creating an <code>AnimGroup</code> from
+          an <code>AnimGroupTemplate</code>, <var>template</var>,
           given a list of target elements, and optionally given a <var>parent
           group</var> follows.
         </p>
         <p>
-          Note that <code>ParAnimGroup</code> objects produce
-          <code>ParAnimGroupInstance</code> objects and likewise 
-          <code>SeqAnimGroup</code> objects produce
-          <code>SeqAnimGroupInstance</code> objects.
-          In the following description the <code>AnimGroup</code> and
-          <code>AnimGroupInstance</code> types should be substituted with the
+          Note that <code>ParAnimGroupTemplate</code> objects produce
+          <code>ParAnimGroup</code> objects and likewise 
+          <code>SeqAnimGroupTemplate</code> objects produce
+          <code>SeqAnimGroup</code> objects.
+          In the following description the <code>AnimGroupTemplate</code> and
+          <code>AnimGroup</code> types should be substituted with the
           concrete types in use.
         </p>
         <ol>
           <li>
             Create an empty sequence to hold the generated
-            <code>AnimGroupInstance</code> objects.
+            <code>AnimGroup</code> objects.
           </li>
           <li>
             For each <var>element</var> in the list of target elements:
             <ol>
               <li>
-                Create a new <code>AnimGroupInstance</code> object,
+                Create a new <code>AnimGroup</code> object,
                 <var>group</var>.
               </li>
               <li>
@@ -2909,13 +2910,12 @@
               </li>
               <li>
                 Append <var>group</var> to the sequence of
-                <code>AnimGroupInstance</code> objects.
+                <code>AnimGroup</code> objects.
               </li>
             </ol>
           </li>
           <li>
-            Return the sequence of <code>AnimGroupInstance</code>
-            objects.
+            Return the sequence of <code>AnimGroup</code> objects.
           </li>
         </ol>
       </section>
@@ -2926,10 +2926,10 @@
 
       <section class="informative">
       <p>
-        Each <code>Anim</code> object contains an object which
+        Each <code>AnimTemplate</code> object contains an object which
         subclasses <code>AnimFunction</code>. These objects describe
         how animation values should be calculated for the
-        <code>Anim</code> for any given time.
+        <code>AnimTemplate</code> for any given time.
       </p>
       </section>
       <section>
@@ -2989,7 +2989,8 @@
             The animation should merge with the value it is composited with.
             The meaning of merge is dependent on the type of animation.
             The duration of the merge is the calculated animation duration
-            of the <code>Anim</code> containing this <code>AnimFunction</code>.
+            of the <code>AnimTemplate</code> containing this
+            <code>AnimFunction</code>.
           </dd>
         </dl>
       </section>
@@ -3026,8 +3027,8 @@
         <p>
           I think most of the members of the interface, perhaps all, should be
           readonly when this object is returned from
-          an <code>AnimInstance</code> object. Objects returned from
-          an <code>Anim</code>, however, are live.
+          an <code>Anim</code> object.
+          Objects returned from an <code>AnimTemplate</code>, however, are live.
         </p>
         <p>
           <dl title="[Constructor] interface KeyframesAnimFunction : AnimFunction" class="idl">
@@ -3130,7 +3131,7 @@
         <p>
           The <code>GroupedAnimFunction</code> interface represents a
           set of animation functions that share the same
-          <code>Anim</code> parent.
+          <code>AnimTemplate</code> parent.
         </p>
         <dl title="[Constructor] interface GroupedAnimFunction : AnimFunction" class="idl">
           <dt>readonly attribute unsigned long length</dt>
@@ -3195,7 +3196,7 @@
             <h4>Calculating the iteration value for a 
               <code>KeyframesAnimFunction</code></h4>
             <p>
-              When an <code>Anim</code> contains a pointer to a
+              When an <code>AnimTemplate</code> contains a pointer to a
               <code>KeyframesAnimFunction</code> <var>keyframes</var>, the <var>animation
               value</var> for that animation at given current time 
               <var>t</var> is calculated according to the following steps:
@@ -3247,8 +3248,7 @@
                 The <var>local time function</var> is the
                 <var>timingFunction</var> of the <var>before frame</var>, if 
                 it exists; otherwise the <var>timingFunction</var> of the
-                <code>AnimInstance</code> interface's
-                <var>timing</var> attribute.
+                <code>Anim</code> interface's <var>timing</var> attribute.
               </li>
               <li>
                 Find the <var>local time fraction</var> by subtracting
@@ -3273,7 +3273,7 @@
             <h4>Calculating the iteration value for a 
               <code>PathAnimFunction</code></h4>
             <p>
-              When an <code>Anim</code> contains a pointer to a
+              When an <code>AnimTemplate</code> contains a pointer to a
               <code>PathAnimFunction</code> and <var>rotate</var> is set
               to false, the <var>animation value</var> for that animation at
               given current time <var>t</var> is the transform defined by a
@@ -3304,7 +3304,7 @@
             <h4>Calculating the iteration value for a 
               <code>GroupedAnimFunction</code></h4>
             <p>
-              When an <code>Anim</code> contains a pointer to a
+              When an <code>AnimTemplate</code> contains a pointer to a
               <code>GroupedAnimFunction</code>, the <var>animation
               value</var> for that animation at given current time <var>t</var> 
               is calculated by following the procedure outlined in
@@ -3467,7 +3467,7 @@
             All MERGE operators are governed by an interpolation parameter
             <code>p</code> that is calculated as the ratio of
             <code>(currentTime - parent.startTime) / parent.animationDuration</code>,
-            where <code>parent</code> is the <code>Anim</code> which
+            where <code>parent</code> is the <code>AnimTemplate</code> which
             references the <code>AnimFunction</code> that is being
             composited.
           </p>
@@ -3691,7 +3691,7 @@
         The definition of this member is given below.
       </p>
       <dl title="partial interface HTMLDocument" class="idl">
-        <dt>readonly attribute AnimGroupInstance animationTimeline</dt>
+        <dt>readonly attribute ParAnimGroup animationTimeline</dt>
         <dd>
           The animation group instance corresponding to the root of the
           document.
