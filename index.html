@@ -373,363 +373,52 @@
           </dd>
           <dt>readonly attribute AnimTemplate? template</dt>
           <dd>
-            <!-- REVIEW -->
-            For linked animations (see <a href="#creating-animations"
-            class="sectionRef"></a>), the <code>AnimTemplate</code> object from
-            which this object was minted.
-            For unlinked animations, this property is <code>null</code>.
+            <p>
+              For linked animations (see <a href="#animation-templates"
+              class="sectionRef"></a>), the <a>AnimTemplate</a> object
+              from which this object derives its values.
+              For animations that are not linked to a template, this property is
+              <code>null</code>.
+            </p>
+            <p class="feedbackWanted">
+              Make this writeable? I think so. But need to specify the mechanics
+              involved.
+            </p>
           </dd>
-          <dt>readonly attribute Element targetElement</dt>
-          <dd>
-            The element being animated by this object.
-          </dd>
-          <dt>bool makeIndependent()</dt>
+          <dt>readonly attribute Element? targetElement</dt>
           <dd>
             <p>
+              The element being animated by this object.
+            </p>
+            <p class="todo">
+              Explain what it means for this to be <code>null</code>.
+            </p>
+          </dd>
+          <dt>AnimTemplate? templatize()</dt>
+          <dd>
+            <p class="todo">
+              Creates a new <a>AnimTemplate</a> object whose <code>timing</code>
+              and <code>func</code> properties are copies and sets
+              <code>template</code> to this new object and returns it.
+              Need to write out the steps involved here.
+            </p>
+          </dd>
+          <dt>AnimTemplate? unlink()</dt>
+          <dd>
+            <p class="todo">
               Makes this object independent of the template from which it was
               created.
-              See <a href="#creating-animations" class="sectionRef"></a>.
+              See <a href="#animation-templates" class="sectionRef"></a>.
             </p>
             <p>
               After this method returns, the <code>template</code>
               property will be <code>null</code>.
             </p>
             <p>
-              Returns <code>true</code> if this object was previously a live
-              animation instance, <code>false</code> if this object was already
-              an independent animation instance.
+              Returns the previous value of <code>template</code>.
             </p>
           </dd>
         </dl>
-      </section>
-    </section>
-
-    <section>
-      <h2>Creating animations</h2>
-      <p>
-        <code>Anim</code> objects are not created directly, but
-        via a separate <code>AnimTemplate</code> object. The
-        <code>AnimTemplate</code> object acts a template allowing the same set
-        of animation parameters to be used multiple times with multiple target
-        elements.
-      </p>
-      <p>
-        An <code>Anim</code> can be in one of two states with
-        regards to the relationship between it and the <code>AnimTemplate</code>
-        that produced it.
-      </p>
-      <dl>
-        <dt>Live animation instance</dt>
-        <dd>
-          Changes made to the <code>AnimTemplate</code> object are reflected in
-          the <code>Anim</code> object.
-        </dd>
-        <dt>Independent animation instance</dt>
-        <dd>
-          Changes made to the <code>AnimTemplate</code> object have no effect on
-          the <code>Anim</code> object.
-        </dd>
-      </dl>
-      <p class="todo">
-        Add a diagram which shows a live animation instance and an independent
-        one.
-      </p>
-      <p>
-        Live animation instances can be converted to independent animation
-        instances by one of two means:
-      </p>
-      <ol>
-        <li>
-          Modifying any of the members of the <code>func</code> or
-          <code>timing</code> properties of the
-          <code>Anim</code> object. This includes redundant
-          modifications, that is, setting a property to its current value.
-          <!--
-           The redundant modification condition is an attempt to eliminate an
-           area where interop might fail subtley.
-
-           If, internally, implementation A filters out redundant changes whilst
-           implementation B blindly accepts all changes we still want the same
-           behavior with regards to becoming independent. It's easier, more
-           convenient and, I think, more intuitive for authors to define it this
-           way.
-
-           The alternative, requiring redundant changes to be ignored, is more
-           complex as we need to specify what consitutes a redundant change and
-           that's not always easy as the data types become complex. For example,
-           what constitutues a redundant change to an SVGLength is not always
-           obvious.
-           -->
-        </li>
-        <li>
-          Calling the <code>makeIndependent</code> method of the
-          <code>Anim</code> object.
-        </li>
-      </ol>
-      <p>
-        Once independent, animation instances cannot be made live again.
-      </p>
-      <p class="note">
-        One implication of the fact that a live instance can be converted to an
-        independent instance is that when a live instance is created, the object
-        identity of its <code>func</code> and <code>timing</code> properties
-        must differ from those of the animation from which it was created. This
-        is because, for example, modifying the <code>timing.duration</code>
-        property of a live animation instance and hence converting it to an
-        independent animation instance, cannot at the same time change the
-        object identity of the <code>timing</code> property.
-      </p>
-      <pre class="example sh_javascript">
-        // Create a new animation
-        var anim = new AnimTemplate();
-        anim.timing.iterationDuration = 1;
-
-        // Create a live instance
-        var instance = anim.animateLive(document.getElementById("a"));
-        alert(instance.timing.iterationDuration); // Displays "1"
-
-        // Modify the animation
-        anim.timing.iterationDuration = 2;
-        alert(instance.timing.iterationDuration); // Displays "2"
-
-        // Modify both the animation and instance
-        instance.timing.iterationDuration = 3;    // instance is now independent
-        anim.timing.iterationDuration = 4;
-        alert(instance.timing.iterationDuration); // Displays "3"
-      </pre>
-      <section>
-        <h3>The <code>AnimTemplate</code> interface</h3>
-        <p>
-          <dl title="[Constructor] interface AnimTemplate : TimedTemplate"
-            class="idl">
-            <dt>attribute AnimFunction func</dt>
-            <dd>
-              The animation function to apply.
-            </dd>
-          </dl>
-        </p>
-      </section>
-      <section>
-        <h3>The <code>TimedTemplate</code> interface</h3>
-        <p>
-          Both the timing of an <code>AnimTemplate</code> and the methods for
-          creating an <code>Anim</code> from
-          an <code>AnimTemplate</code> are specified on the
-          <code>TimedTemplate</code> since this behavior is shared with
-          animation groups
-          (see <a href="#grouping-and-synchronization" class="sectionRef"></a>).
-        </p>
-        <dl title="interface TimedTemplate" class="idl">
-          <dt>attribute Timing timing</dt>
-          <dd>
-            The timing parameters to use for generated timed items.
-          </dd>
-          <dt>TimedItem animate ()</dt>
-          <dd>
-            <p>
-              Creates an independent <code>TimedItem</code> and appends it
-              to <code>element.ownerDocument.animationTimeline</code>.
-            </p>
-            <p>
-              This allows the following sort of usage:
-            </p>
-            <pre class="example sh_javascript">
-              anim.animate(document.getElementById("a"));
-            </pre>
-            <p>
-              The specific steps for instantiating a
-              <code>TimedTemplate</code> depends on its concrete type and is
-              described in <a href="#instantiating-an-anim"
-              class="sectionRef"></a> and <a
-              href="#instantiating-an-animgroup"
-              class="sectionRef"></a>.
-            </p>
-            <dl class="parameters">
-              <dt>Element target</dt>
-              <dd>
-                The <code>Element</code> to be targetted.
-              </dd>
-              <dt>optional double startTime</dt>
-              <dd>
-                <p>
-                  The start time for the generated animation instances
-                  expressed in seconds in the iteration time space of the
-                  <code>AnimGroup</code> to which it is
-                  appended (see <a href="#iteration-time-and-animation-time"
-                    class="sectionRef"></a>).
-                </p>
-                <p>
-                  If this parameter is not specified it will default to the
-                  current iteration time of the
-                  <code>AnimGroup</code> to which it is
-                  appended if it is not <code>null</code>, otherwise it will
-                  default to zero.
-                </p>
-              </dd>
-            </dl>
-          </dd>
-          <dt>sequence&lt;TimedItem&gt; animate ()</dt>
-          <dd>
-            <p>
-              Creates a series of independent <code>TimedItem</code>
-              objects, one for each element in <code>target</code>.
-              As with <code>animate(Element target, double startTime)</code>
-              each such <code>TimedItem</code> object is appended
-              to <code>element.ownerDocument.animationTimeline</code>.
-            </p>
-            <p>
-              This allows the following sort of usage:
-            </p>
-            <pre class="example sh_javascript">
-  anim.animate([document.getElementById("a"), document.getElementById("b")]);
-  anim.animate(document.querySelectorAll("div.warning"));
-  anim.animate(document.getElementsByTagName("button"));
-  anim.animate(document.getElementById("group").childNodes);
-            </pre>
-            <p>
-              The specific steps for instantiating a
-              <code>TimedTemplate</code> depends on its concrete type and is
-              described in <a href="#instantiating-an-anim"
-              class="sectionRef"></a> and <a
-              href="#instantiating-an-animgroup"
-              class="sectionRef"></a>.
-            </p>
-            <dl class="parameters">
-              <dt>sequence&lt;Node&gt; targets</dt>
-              <dd>
-                An sequence of <code>Node</code>s to be animated.
-                Any nodes in the sequence that are not of type
-                <code>ELEMENT_NODE</code> will be ignored.
-              </dd>
-              <dt>optional double startTime</dt>
-              <dd>
-                As with <code>animate(Element target, optional double
-                  startTime)</code>.
-              </dd>
-            </dl>
-          </dd>
-          <dt>TimedItem animateWithParent ()</dt>
-          <dd>
-            <p>
-              Similar to <code>animate</code>, this method creates
-              independent <code>TimedItem</code> object(s) for the
-              elements in <code>target</code>.
-              However, the resulting items are appended to the given
-              <code>parentGroup</code>, if provided.
-              If <code>parentGroup</code> is <code>null</code>, the
-              <code>TimedItem</code> objects will not be added to any
-              group.
-            </p>
-            <dl class="parameters">
-              <dt>Element target</dt>
-              <dd>
-                As with <code>animate</code>.
-              </dd>
-              <dt>AnimGroup? parentGroup</dt>
-              <dd>
-                The animation group instance to which animation instances
-                should be appended.
-              </dd>
-              <dt>optional double startTime</dt>
-              <dd>
-                <p>
-                  The start time for the generated animation instances
-                  expressed in seconds in the iteration time space of the
-                  <code>AnimGroup</code> to which it is
-                  appended (see <a href="#iteration-time-and-animation-time"
-                    class="sectionRef"></a>).
-                </p>
-                <p>
-                  If this parameter is not specified it will default to the
-                  current iteration time of <code>parentGroup</code>.
-                  If <code>parentGroup</code> is <code>null</code>,
-                  this parameter will default to zero.
-                </p>
-              </dd>
-            </dl>
-          </dd>
-          <dt>sequence&lt;TimedItem&gt; animateWithParent (
-            sequence&lt;Node&gt; targets,
-            AnimGroup? parentGroup,
-            optional double startTime)</dt>
-          <dd>
-            As with <code>animateWithParent(Element target,
-              AnimGroup? parentGroup,
-              optional double startTime)</code> except
-            one <code>TimedItem</code> is created for each
-            <code>Node</code> in <code>target</code> that is of type
-            <code>ELEMENT_NODE</code>.
-          </dd>
-          <dt>TimedItem animateLive (Element target,
-            optional double startTime)</dt>
-          <dd>
-            As with <code>animate</code> with the exception that the
-            <code>TimedItem</code> objects generated by this method are
-            live.
-          </dd>
-          <dt>sequence&lt;TimedItem&gt; animateLive (
-            sequence&lt;Node&gt; targets, optional double startTime)</dt>
-          <dd>
-            As with <code>animate</code> with the exception that the
-            <code>TimedItem</code> objects generated by this method are
-            live.
-          </dd>
-          <dt>TimedItem animateLiveWithParent
-            (Element target, AnimGroup? parentGroup,
-             optional double startTime)</dt>
-          <dd>
-            As with <code>animateWithParent</code> with the exception that the
-            animation instances generated by this method are live.
-          </dd>
-          <dt>sequence&lt;TimedItem&gt; animateLiveWithParent
-            (sequence&lt;Node&gt; targets, AnimGroup? parentGroup,
-             optional double startTime)</dt>
-          <dd>
-            As with <code>animateWithParent</code> with the exception that the
-            animation instances generated by this method are live.
-          </dd>
-        </dl>
-      </section>
-      <section>
-        <h3>Instantiating an <code>AnimTemplate</code></h3>
-        <p>
-          The procedure for instantiating an <code>AnimTemplate</code>,
-          <var>template</var>, given a list of target elements and an optional
-          <var>parent group</var>, is as follows:
-        </p>
-        <ol>
-          <li>
-            Create an empty sequence of <code>Anim</code> objects.
-          </li>
-          <li>
-            For each <var>element</var> in the list of target elements:
-            <ol>
-              <li>
-                Create a new <code>Anim</code> object, <var>instance</var>.
-              </li>
-              <li>
-                Set the <code>timing</code> and <code>func</code> properties
-                of <var>instance</var> to copies <code>template.timing</code>
-                and <code>template.func</code>.
-              </li>
-              <li>
-                If <var>parentGroup</var> is not specified, let
-                <var>parentGroup</var> be
-                <code><var>element</var>.ownerDocument.animationTimeline</code>.
-              </li>
-              <li>
-                Append <var>element</var> to <var>parentGroup</var>.
-              </li>
-              <li>
-                Append <var>element</var> to the sequence of <code>Anim</code>
-                objects.
-              </li>
-            </ol>
-          </li>
-          <li>
-            Return the sequence of <code>Anim</code> objects.
-          </li>
-        </ol>
       </section>
     </section>
 
@@ -2346,46 +2035,6 @@
         </section>
       </section>
       <section>
-        <h3>Groups and liveness</h3>
-        <p>
-          As with animations, animation groups act as templates that can be
-          instantiated (see <a href="#creating-animations"
-          class="sectionRef"></a>).
-          The resulting groups can likewise be <em>live</em> or
-          <em>independent</em>.
-        </p>
-        <p>
-          Live animation group instances can be made independent by the
-          following means:
-        </p>
-        <ul>
-          <li>
-            Modifying any of the members of the <code>timing</code> property.
-            This includes redundant modifications, that is, setting a property
-            to its current value.
-          </li>
-          <li>
-            Calling any of the methods that affect the list of child items
-            (<code>clear</code>, <code>add</code>, <code>remove</code>,
-            or <code>splice</code>).
-          </li>
-          <li>
-            Calling the <code>makeIndependent</code> method of the
-            <code>AnimGroup</code> object.
-          </li>
-        </ul>
-        <p>
-          Note that making an animation group instance independent does
-          <em>NOT</em> cause its child <code>TimedTemplate</code> objects
-          to become independent.
-        </p>
-        <p>
-          Similarly, making a child of an animation group instance independent
-          does <em>NOT</em> cause the animation group instance itself
-          to become independent.
-        </p>
-      </section>
-      <section>
         <h3>The <code>AnimGroup</code> interface</h3>
         <p>
           Represents a list of timed items which may be animation instances or
@@ -2405,7 +2054,7 @@
           <dt>readonly attribute AnimGroupTemplate? template</dt>
           <dd>
             For linked animation group instances (see <a
-            href="#creating-animations" class="sectionRef"></a>), the
+            href="#animation-templates" class="sectionRef"></a>), the
             <code>AnimGroupTemplate</code> object from which this object was
             minted.
             For independent animation group instances, this property is
@@ -2697,227 +2346,6 @@
             class="idl">
           </dl>
         </section>
-      </section>
-      <section>
-        <h3>The <code>AnimGroupTemplate</code> interface</h3>
-        <p>
-          <code>AnimGroup</code> objects are not created
-          directly, but rather via an <code>AnimGroupTemplate</code> object that
-          acts as a template for creating animation group instances that target
-          different elements.
-        </p>
-        <dl title="interface AnimGroupTemplate : TimedTemplate" class="idl">
-          <dt>void clear ()</dt>
-          <dd>
-            Removes all child items from the group.
-          </dd>
-          <dt>getter TimedTemplate? (unsigned long index)</dt>
-          <dd>
-            Returns the template item at <code>index</code>.
-            If <code>index</code> is greater than or equal to
-            <code>length</code> returns <code>null</code>.
-          </dd>
-          <dt>setter TimedTemplate (unsigned long index,
-                                    TimedTemplate newItem)</dt>
-          <dd>
-            <p>
-              Replaces the item at <code>index</code> with
-              <code>newItem</code> by calling
-              <code>splice(index, 1, newItem)</code>.
-            </p>
-            <p>
-              Returns <code>newItem</code>.
-            </p>
-            <p>
-              The behavior of this method is identical to
-              the equivalent setter in <code>AnimGroup.replace</code>
-              except that DOMExceptions of type HierarchyRequestError are not
-              thrown.
-            </p>
-          </dd>
-          <dt>sequence&lt;TimedTemplate&gt; add (
-                TimedTemplate newItem, TimedTemplate... otherItems)</dt>
-          <dd>
-            <p>
-              Add <code>newItem</code> and each <code>otherItems</code> as the
-              last item(s) in the group by calling <code>splice(group.length, 0,
-              newItem, otherItem1, ... otherItemN)</code>.
-            </p>
-            <p>
-              Returns a sequence containing the added items:
-              <code>[newItem, otherItem1, ... otherItemN]</code>.
-            </p>
-          </dd>
-          <dt>sequence&lt;TimedTemplate&gt; remove (
-                long index, optional unsigned long count = 1)</dt>
-          <dd>
-            <p>
-              Removes the item(s) at <code>index</code> by calling
-              <code>splice(index, count)</code>.
-            </p>
-            <p>
-              Returns the removed items.
-            </p>
-          </dd>
-          <dt>
-            sequence&lt;TimedTemplate&gt; splice ()
-          </dt>
-          <dd>
-            <p>
-              Modifies the list of children of this group by first removing
-              <code>deleteCount</code> items from <code>start</code> followed by
-              adding <code>newItems</code> at the same point.
-            </p>
-            <p>
-              Returns a sequence of the items removed from group during the
-              removal step (regardless of whether these items were re-added
-              during the addition step).
-            </p>
-            <p>
-              As with <code>AnimGroup.slice</code> the operation of
-              slice is based on <a
-              href="http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262%205th%20edition%20December%202009.pdf#page=140">ECMAScript
-              5's Array.prototype.splice</a>.
-            </p>
-            <p>
-              The operation of this method is identical to that of
-              <code>AnimGroup.slice</code> with the notable difference
-              that DOMExceptions of type HierarchyRequestError are not thrown
-              since there is no <code>AnimGroupTemplate</code> corresponding to
-              a document timeline.
-            </p>
-            <dl class="parameters">
-              <dt>long start</dt>
-              <dd>
-                The index at which items should be removed and inserted.
-                Negative indices represent an offset from the end of the list of
-                items.
-                This value is clamped to the range [-<code>length</code>,
-                <code>length</code>].
-              </dd>
-              <dt>unsigned long deleteCount</dt>
-              <dd>
-                The number of items to remove from the group beginning at
-                <code>start</code>.
-                Negative values are clamped to zero, and all other values are
-                clamped such that
-                0 &lt; <code>start</code> + <code>deleteCount</code> &le;
-                length.
-              </dd>
-              <dt>sequence&lt;TimedTemplate&gt; newItems</dt>
-              <dd>
-                The items to be added at <code>start</code>.
-                Each item, if it already has a parent group (including this
-                group), is first removed from its parent group before being
-                added to this group.
-              </dd>
-            </dl>
-          </dd>
-          <dt>
-            sequence&lt;TimedTemplate&gt; splice (long start,
-              unsigned long deleteCount, TimedTemplate... newItem)
-          </dt>
-          <dd>
-            An overload of <code>splice</code> to take a variadic list of items
-            rather than requiring a sequence.
-            The operation is identical to <code>splice(unsigned long start,
-            unsigned long deleteCount, sequence&lt;TimedTemplate&gt;
-            newItems)</code>.
-          </dd>
-          <dt>long indexOf (TimedTemplate item)</dt>
-          <dd>
-            Returns the index of <code>item</code> within the group.
-            If <code>item</code> is not in the group, returns <code>-1</code>.
-          </dd>
-        </dl>
-        <p class="todo">
-          Need to think about the constructors for this. You really want to be
-          able to just do something like <code>var group = new par(anim1,
-          anim2)</code>.
-        </p>
-      </section>
-      <section>
-        <h3>The <code>ParAnimGroupTemplate</code> interface</h3>
-        <p>
-          <code>ParAnimGroup</code> objects are created from
-          <code>ParAnimGroupTemplate</code> objects.
-        </p>
-        <dl title="[Constructor] interface ParAnimGroupTemplate
-          : AnimGroupTemplate"
-          class="idl">
-        </dl>
-      </section>
-      <section>
-        <h3>The <code>SeqAnimGroupTemplate</code> interface</h3>
-        <p>
-          <code>SeqAnimGroup</code> objects are created from
-          <code>SeqAnimGroupTemplate</code> objects.
-        </p>
-        <dl title="[Constructor] interface SeqAnimGroupTemplate
-          : AnimGroupTemplate"
-          class="idl">
-        </dl>
-      </section>
-      <section>
-        <h3>Instantiating an <code>AnimGroupTemplate</code></h3>
-        <p>
-          The procedure for creating an <code>AnimGroup</code> from
-          an <code>AnimGroupTemplate</code>, <var>template</var>,
-          given a list of target elements, and optionally given a <var>parent
-          group</var> follows.
-        </p>
-        <p>
-          Note that <code>ParAnimGroupTemplate</code> objects produce
-          <code>ParAnimGroup</code> objects and likewise 
-          <code>SeqAnimGroupTemplate</code> objects produce
-          <code>SeqAnimGroup</code> objects.
-          In the following description the <code>AnimGroupTemplate</code> and
-          <code>AnimGroup</code> types should be substituted with the
-          concrete types in use.
-        </p>
-        <ol>
-          <li>
-            Create an empty sequence to hold the generated
-            <code>AnimGroup</code> objects.
-          </li>
-          <li>
-            For each <var>element</var> in the list of target elements:
-            <ol>
-              <li>
-                Create a new <code>AnimGroup</code> object,
-                <var>group</var>.
-              </li>
-              <li>
-                Set the <code>timing</code> property of <var>group</var> to
-                a copy of <code>template.timing</code>.
-              </li>
-              <li>
-                For each <var>child</var> in <var>template</var>, call
-                <code><var>child</var>.animateWithParent(<var>element</var>,
-                <var>group</var>, <code>startTime</code>)</code> or
-                <code><var>child</var>.animateLiveWithParent(<var>element</var>,
-                <var>group</var>, <code>startTime</code>)</code> depending on
-                whether this procedure was invoked with <code>animate</code> or
-                <code>animateLive</code>.
-              </li>
-              <li>
-                If <var>parentGroup</var> is not specified, let
-                <var>parentGroup</var> be
-                <code><var>element</var>.ownerDocument.animationTimeline</code>.
-              </li>
-              <li>
-                Append <var>group</var> to <var>parentGroup</var>.
-              </li>
-              <li>
-                Append <var>group</var> to the sequence of
-                <code>AnimGroup</code> objects.
-              </li>
-            </ol>
-          </li>
-          <li>
-            Return the sequence of <code>AnimGroup</code> objects.
-          </li>
-        </ol>
       </section>
     </section>
 
@@ -3550,6 +2978,596 @@
             </p>
           </ol>
         </section>
+      </section>
+    </section>
+
+    <section>
+      <h2>Animation templates</h2>
+      <p>
+        <code>Anim</code> objects are not created directly, but
+        via a separate <code>AnimTemplate</code> object. The
+        <code>AnimTemplate</code> object acts a template allowing the same set
+        of animation parameters to be used multiple times with multiple target
+        elements.
+      </p>
+      <p>
+        An <code>Anim</code> can be in one of two states with
+        regards to the relationship between it and the <code>AnimTemplate</code>
+        that produced it.
+      </p>
+      <dl>
+        <dt>Live animation instance</dt>
+        <dd>
+          Changes made to the <code>AnimTemplate</code> object are reflected in
+          the <code>Anim</code> object.
+        </dd>
+        <dt>Independent animation instance</dt>
+        <dd>
+          Changes made to the <code>AnimTemplate</code> object have no effect on
+          the <code>Anim</code> object.
+        </dd>
+      </dl>
+      <p class="todo">
+        Add a diagram which shows a live animation instance and an independent
+        one.
+      </p>
+      <p>
+        Live animation instances can be converted to independent animation
+        instances by one of two means:
+      </p>
+      <ol>
+        <li>
+          Modifying any of the members of the <code>func</code> or
+          <code>timing</code> properties of the
+          <code>Anim</code> object. This includes redundant
+          modifications, that is, setting a property to its current value.
+          <!--
+           The redundant modification condition is an attempt to eliminate an
+           area where interop might fail subtley.
+
+           If, internally, implementation A filters out redundant changes whilst
+           implementation B blindly accepts all changes we still want the same
+           behavior with regards to becoming independent. It's easier, more
+           convenient and, I think, more intuitive for authors to define it this
+           way.
+
+           The alternative, requiring redundant changes to be ignored, is more
+           complex as we need to specify what consitutes a redundant change and
+           that's not always easy as the data types become complex. For example,
+           what constitutues a redundant change to an SVGLength is not always
+           obvious.
+           -->
+        </li>
+        <li>
+          Calling the <code>makeIndependent</code> method of the
+          <code>Anim</code> object.
+        </li>
+      </ol>
+      <p>
+        Once independent, animation instances cannot be made live again.
+      </p>
+      <p class="note">
+        One implication of the fact that a live instance can be converted to an
+        independent instance is that when a live instance is created, the object
+        identity of its <code>func</code> and <code>timing</code> properties
+        must differ from those of the animation from which it was created. This
+        is because, for example, modifying the <code>timing.duration</code>
+        property of a live animation instance and hence converting it to an
+        independent animation instance, cannot at the same time change the
+        object identity of the <code>timing</code> property.
+      </p>
+      <pre class="example sh_javascript">
+        // Create a new animation
+        var anim = new AnimTemplate();
+        anim.timing.iterationDuration = 1;
+
+        // Create a live instance
+        var instance = anim.animateLive(document.getElementById("a"));
+        alert(instance.timing.iterationDuration); // Displays "1"
+
+        // Modify the animation
+        anim.timing.iterationDuration = 2;
+        alert(instance.timing.iterationDuration); // Displays "2"
+
+        // Modify both the animation and instance
+        instance.timing.iterationDuration = 3;    // instance is now independent
+        anim.timing.iterationDuration = 4;
+        alert(instance.timing.iterationDuration); // Displays "3"
+      </pre>
+      <section>
+        <h3>The <code>AnimTemplate</code> interface</h3>
+        <p>
+          <dl title="[Constructor] interface AnimTemplate : TimedTemplate"
+            class="idl">
+            <dt>attribute AnimFunction func</dt>
+            <dd>
+              The animation function to apply.
+            </dd>
+          </dl>
+        </p>
+      </section>
+      <section>
+        <h3>The <code>TimedTemplate</code> interface</h3>
+        <p>
+          Both the timing of an <code>AnimTemplate</code> and the methods for
+          creating an <code>Anim</code> from
+          an <code>AnimTemplate</code> are specified on the
+          <code>TimedTemplate</code> since this behavior is shared with
+          animation groups
+          (see <a href="#grouping-and-synchronization" class="sectionRef"></a>).
+        </p>
+        <dl title="interface TimedTemplate" class="idl">
+          <dt>attribute Timing timing</dt>
+          <dd>
+            The timing parameters to use for generated timed items.
+          </dd>
+          <dt>TimedItem animate ()</dt>
+          <dd>
+            <p>
+              Creates an independent <code>TimedItem</code> and appends it
+              to <code>element.ownerDocument.animationTimeline</code>.
+            </p>
+            <p>
+              This allows the following sort of usage:
+            </p>
+            <pre class="example sh_javascript">
+              anim.animate(document.getElementById("a"));
+            </pre>
+            <p>
+              The specific steps for instantiating a
+              <code>TimedTemplate</code> depends on its concrete type and is
+              described in <a href="#instantiating-an-anim"
+              class="sectionRef"></a> and <a
+              href="#instantiating-an-animgroup"
+              class="sectionRef"></a>.
+            </p>
+            <dl class="parameters">
+              <dt>Element target</dt>
+              <dd>
+                The <code>Element</code> to be targetted.
+              </dd>
+              <dt>optional double startTime</dt>
+              <dd>
+                <p>
+                  The start time for the generated animation instances
+                  expressed in seconds in the iteration time space of the
+                  <code>AnimGroup</code> to which it is
+                  appended (see <a href="#iteration-time-and-animation-time"
+                    class="sectionRef"></a>).
+                </p>
+                <p>
+                  If this parameter is not specified it will default to the
+                  current iteration time of the
+                  <code>AnimGroup</code> to which it is
+                  appended if it is not <code>null</code>, otherwise it will
+                  default to zero.
+                </p>
+              </dd>
+            </dl>
+          </dd>
+          <dt>sequence&lt;TimedItem&gt; animate ()</dt>
+          <dd>
+            <p>
+              Creates a series of independent <code>TimedItem</code>
+              objects, one for each element in <code>target</code>.
+              As with <code>animate(Element target, double startTime)</code>
+              each such <code>TimedItem</code> object is appended
+              to <code>element.ownerDocument.animationTimeline</code>.
+            </p>
+            <p>
+              This allows the following sort of usage:
+            </p>
+            <pre class="example sh_javascript">
+  anim.animate([document.getElementById("a"), document.getElementById("b")]);
+  anim.animate(document.querySelectorAll("div.warning"));
+  anim.animate(document.getElementsByTagName("button"));
+  anim.animate(document.getElementById("group").childNodes);
+            </pre>
+            <p>
+              The specific steps for instantiating a
+              <code>TimedTemplate</code> depends on its concrete type and is
+              described in <a href="#instantiating-an-anim"
+              class="sectionRef"></a> and <a
+              href="#instantiating-an-animgroup"
+              class="sectionRef"></a>.
+            </p>
+            <dl class="parameters">
+              <dt>sequence&lt;Node&gt; targets</dt>
+              <dd>
+                An sequence of <code>Node</code>s to be animated.
+                Any nodes in the sequence that are not of type
+                <code>ELEMENT_NODE</code> will be ignored.
+              </dd>
+              <dt>optional double startTime</dt>
+              <dd>
+                As with <code>animate(Element target, optional double
+                  startTime)</code>.
+              </dd>
+            </dl>
+          </dd>
+          <dt>TimedItem animateWithParent ()</dt>
+          <dd>
+            <p>
+              Similar to <code>animate</code>, this method creates
+              independent <code>TimedItem</code> object(s) for the
+              elements in <code>target</code>.
+              However, the resulting items are appended to the given
+              <code>parentGroup</code>, if provided.
+              If <code>parentGroup</code> is <code>null</code>, the
+              <code>TimedItem</code> objects will not be added to any
+              group.
+            </p>
+            <dl class="parameters">
+              <dt>Element target</dt>
+              <dd>
+                As with <code>animate</code>.
+              </dd>
+              <dt>AnimGroup? parentGroup</dt>
+              <dd>
+                The animation group instance to which animation instances
+                should be appended.
+              </dd>
+              <dt>optional double startTime</dt>
+              <dd>
+                <p>
+                  The start time for the generated animation instances
+                  expressed in seconds in the iteration time space of the
+                  <code>AnimGroup</code> to which it is
+                  appended (see <a href="#iteration-time-and-animation-time"
+                    class="sectionRef"></a>).
+                </p>
+                <p>
+                  If this parameter is not specified it will default to the
+                  current iteration time of <code>parentGroup</code>.
+                  If <code>parentGroup</code> is <code>null</code>,
+                  this parameter will default to zero.
+                </p>
+              </dd>
+            </dl>
+          </dd>
+          <dt>sequence&lt;TimedItem&gt; animateWithParent (
+            sequence&lt;Node&gt; targets,
+            AnimGroup? parentGroup,
+            optional double startTime)</dt>
+          <dd>
+            As with <code>animateWithParent(Element target,
+              AnimGroup? parentGroup,
+              optional double startTime)</code> except
+            one <code>TimedItem</code> is created for each
+            <code>Node</code> in <code>target</code> that is of type
+            <code>ELEMENT_NODE</code>.
+          </dd>
+          <dt>TimedItem animateLive (Element target,
+            optional double startTime)</dt>
+          <dd>
+            As with <code>animate</code> with the exception that the
+            <code>TimedItem</code> objects generated by this method are
+            live.
+          </dd>
+          <dt>sequence&lt;TimedItem&gt; animateLive (
+            sequence&lt;Node&gt; targets, optional double startTime)</dt>
+          <dd>
+            As with <code>animate</code> with the exception that the
+            <code>TimedItem</code> objects generated by this method are
+            live.
+          </dd>
+          <dt>TimedItem animateLiveWithParent
+            (Element target, AnimGroup? parentGroup,
+             optional double startTime)</dt>
+          <dd>
+            As with <code>animateWithParent</code> with the exception that the
+            animation instances generated by this method are live.
+          </dd>
+          <dt>sequence&lt;TimedItem&gt; animateLiveWithParent
+            (sequence&lt;Node&gt; targets, AnimGroup? parentGroup,
+             optional double startTime)</dt>
+          <dd>
+            As with <code>animateWithParent</code> with the exception that the
+            animation instances generated by this method are live.
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Instantiating an <code>AnimTemplate</code></h3>
+        <p>
+          The procedure for instantiating an <code>AnimTemplate</code>,
+          <var>template</var>, given a list of target elements and an optional
+          <var>parent group</var>, is as follows:
+        </p>
+        <ol>
+          <li>
+            Create an empty sequence of <code>Anim</code> objects.
+          </li>
+          <li>
+            For each <var>element</var> in the list of target elements:
+            <ol>
+              <li>
+                Create a new <code>Anim</code> object, <var>instance</var>.
+              </li>
+              <li>
+                Set the <code>timing</code> and <code>func</code> properties
+                of <var>instance</var> to copies <code>template.timing</code>
+                and <code>template.func</code>.
+              </li>
+              <li>
+                If <var>parentGroup</var> is not specified, let
+                <var>parentGroup</var> be
+                <code><var>element</var>.ownerDocument.animationTimeline</code>.
+              </li>
+              <li>
+                Append <var>element</var> to <var>parentGroup</var>.
+              </li>
+              <li>
+                Append <var>element</var> to the sequence of <code>Anim</code>
+                objects.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Return the sequence of <code>Anim</code> objects.
+          </li>
+        </ol>
+      </section>
+      <section>
+        <h3>Groups and liveness</h3>
+        <p>
+          As with animations, animation groups act as templates that can be
+          instantiated (see <a href="#creating-animations"
+          class="sectionRef"></a>).
+          The resulting groups can likewise be <em>live</em> or
+          <em>independent</em>.
+        </p>
+        <p>
+          Live animation group instances can be made independent by the
+          following means:
+        </p>
+        <ul>
+          <li>
+            Modifying any of the members of the <code>timing</code> property.
+            This includes redundant modifications, that is, setting a property
+            to its current value.
+          </li>
+          <li>
+            Calling any of the methods that affect the list of child items
+            (<code>clear</code>, <code>add</code>, <code>remove</code>,
+            or <code>splice</code>).
+          </li>
+          <li>
+            Calling the <code>makeIndependent</code> method of the
+            <code>AnimGroup</code> object.
+          </li>
+        </ul>
+        <p>
+          Note that making an animation group instance independent does
+          <em>NOT</em> cause its child <code>TimedTemplate</code> objects
+          to become independent.
+        </p>
+        <p>
+          Similarly, making a child of an animation group instance independent
+          does <em>NOT</em> cause the animation group instance itself
+          to become independent.
+        </p>
+      </section>
+      <section>
+        <h3>The <code>AnimGroupTemplate</code> interface</h3>
+        <p>
+          <code>AnimGroup</code> objects are not created
+          directly, but rather via an <code>AnimGroupTemplate</code> object that
+          acts as a template for creating animation group instances that target
+          different elements.
+        </p>
+        <dl title="interface AnimGroupTemplate : TimedTemplate" class="idl">
+          <dt>void clear ()</dt>
+          <dd>
+            Removes all child items from the group.
+          </dd>
+          <dt>getter TimedTemplate? (unsigned long index)</dt>
+          <dd>
+            Returns the template item at <code>index</code>.
+            If <code>index</code> is greater than or equal to
+            <code>length</code> returns <code>null</code>.
+          </dd>
+          <dt>setter TimedTemplate (unsigned long index,
+                                    TimedTemplate newItem)</dt>
+          <dd>
+            <p>
+              Replaces the item at <code>index</code> with
+              <code>newItem</code> by calling
+              <code>splice(index, 1, newItem)</code>.
+            </p>
+            <p>
+              Returns <code>newItem</code>.
+            </p>
+            <p>
+              The behavior of this method is identical to
+              the equivalent setter in <code>AnimGroup.replace</code>
+              except that DOMExceptions of type HierarchyRequestError are not
+              thrown.
+            </p>
+          </dd>
+          <dt>sequence&lt;TimedTemplate&gt; add (
+                TimedTemplate newItem, TimedTemplate... otherItems)</dt>
+          <dd>
+            <p>
+              Add <code>newItem</code> and each <code>otherItems</code> as the
+              last item(s) in the group by calling <code>splice(group.length, 0,
+              newItem, otherItem1, ... otherItemN)</code>.
+            </p>
+            <p>
+              Returns a sequence containing the added items:
+              <code>[newItem, otherItem1, ... otherItemN]</code>.
+            </p>
+          </dd>
+          <dt>sequence&lt;TimedTemplate&gt; remove (
+                long index, optional unsigned long count = 1)</dt>
+          <dd>
+            <p>
+              Removes the item(s) at <code>index</code> by calling
+              <code>splice(index, count)</code>.
+            </p>
+            <p>
+              Returns the removed items.
+            </p>
+          </dd>
+          <dt>
+            sequence&lt;TimedTemplate&gt; splice ()
+          </dt>
+          <dd>
+            <p>
+              Modifies the list of children of this group by first removing
+              <code>deleteCount</code> items from <code>start</code> followed by
+              adding <code>newItems</code> at the same point.
+            </p>
+            <p>
+              Returns a sequence of the items removed from group during the
+              removal step (regardless of whether these items were re-added
+              during the addition step).
+            </p>
+            <p>
+              As with <code>AnimGroup.slice</code> the operation of
+              slice is based on <a
+              href="http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262%205th%20edition%20December%202009.pdf#page=140">ECMAScript
+              5's Array.prototype.splice</a>.
+            </p>
+            <p>
+              The operation of this method is identical to that of
+              <code>AnimGroup.slice</code> with the notable difference
+              that DOMExceptions of type HierarchyRequestError are not thrown
+              since there is no <code>AnimGroupTemplate</code> corresponding to
+              a document timeline.
+            </p>
+            <dl class="parameters">
+              <dt>long start</dt>
+              <dd>
+                The index at which items should be removed and inserted.
+                Negative indices represent an offset from the end of the list of
+                items.
+                This value is clamped to the range [-<code>length</code>,
+                <code>length</code>].
+              </dd>
+              <dt>unsigned long deleteCount</dt>
+              <dd>
+                The number of items to remove from the group beginning at
+                <code>start</code>.
+                Negative values are clamped to zero, and all other values are
+                clamped such that
+                0 &lt; <code>start</code> + <code>deleteCount</code> &le;
+                length.
+              </dd>
+              <dt>sequence&lt;TimedTemplate&gt; newItems</dt>
+              <dd>
+                The items to be added at <code>start</code>.
+                Each item, if it already has a parent group (including this
+                group), is first removed from its parent group before being
+                added to this group.
+              </dd>
+            </dl>
+          </dd>
+          <dt>
+            sequence&lt;TimedTemplate&gt; splice (long start,
+              unsigned long deleteCount, TimedTemplate... newItem)
+          </dt>
+          <dd>
+            An overload of <code>splice</code> to take a variadic list of items
+            rather than requiring a sequence.
+            The operation is identical to <code>splice(unsigned long start,
+            unsigned long deleteCount, sequence&lt;TimedTemplate&gt;
+            newItems)</code>.
+          </dd>
+          <dt>long indexOf (TimedTemplate item)</dt>
+          <dd>
+            Returns the index of <code>item</code> within the group.
+            If <code>item</code> is not in the group, returns <code>-1</code>.
+          </dd>
+        </dl>
+        <p class="todo">
+          Need to think about the constructors for this. You really want to be
+          able to just do something like <code>var group = new par(anim1,
+          anim2)</code>.
+        </p>
+      </section>
+      <section>
+        <h3>The <code>ParAnimGroupTemplate</code> interface</h3>
+        <p>
+          <code>ParAnimGroup</code> objects are created from
+          <code>ParAnimGroupTemplate</code> objects.
+        </p>
+        <dl title="[Constructor] interface ParAnimGroupTemplate
+          : AnimGroupTemplate"
+          class="idl">
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>SeqAnimGroupTemplate</code> interface</h3>
+        <p>
+          <code>SeqAnimGroup</code> objects are created from
+          <code>SeqAnimGroupTemplate</code> objects.
+        </p>
+        <dl title="[Constructor] interface SeqAnimGroupTemplate
+          : AnimGroupTemplate"
+          class="idl">
+        </dl>
+      </section>
+      <section>
+        <h3>Instantiating an <code>AnimGroupTemplate</code></h3>
+        <p>
+          The procedure for creating an <code>AnimGroup</code> from
+          an <code>AnimGroupTemplate</code>, <var>template</var>,
+          given a list of target elements, and optionally given a <var>parent
+          group</var> follows.
+        </p>
+        <p>
+          Note that <code>ParAnimGroupTemplate</code> objects produce
+          <code>ParAnimGroup</code> objects and likewise 
+          <code>SeqAnimGroupTemplate</code> objects produce
+          <code>SeqAnimGroup</code> objects.
+          In the following description the <code>AnimGroupTemplate</code> and
+          <code>AnimGroup</code> types should be substituted with the
+          concrete types in use.
+        </p>
+        <ol>
+          <li>
+            Create an empty sequence to hold the generated
+            <code>AnimGroup</code> objects.
+          </li>
+          <li>
+            For each <var>element</var> in the list of target elements:
+            <ol>
+              <li>
+                Create a new <code>AnimGroup</code> object,
+                <var>group</var>.
+              </li>
+              <li>
+                Set the <code>timing</code> property of <var>group</var> to
+                a copy of <code>template.timing</code>.
+              </li>
+              <li>
+                For each <var>child</var> in <var>template</var>, call
+                <code><var>child</var>.animateWithParent(<var>element</var>,
+                <var>group</var>, <code>startTime</code>)</code> or
+                <code><var>child</var>.animateLiveWithParent(<var>element</var>,
+                <var>group</var>, <code>startTime</code>)</code> depending on
+                whether this procedure was invoked with <code>animate</code> or
+                <code>animateLive</code>.
+              </li>
+              <li>
+                If <var>parentGroup</var> is not specified, let
+                <var>parentGroup</var> be
+                <code><var>element</var>.ownerDocument.animationTimeline</code>.
+              </li>
+              <li>
+                Append <var>group</var> to <var>parentGroup</var>.
+              </li>
+              <li>
+                Append <var>group</var> to the sequence of
+                <code>AnimGroup</code> objects.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Return the sequence of <code>AnimGroup</code> objects.
+          </li>
+        </ol>
       </section>
     </section>
 
