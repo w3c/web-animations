@@ -427,14 +427,14 @@
       <section class="informative">
         <h3>The animation interval</h3>
         <p>
-          The period that an animation instance is animating is called the
+          The period that an animation is animating is called the
           <dfn>animation interval</dfn>.
-          Each animation instance has only one such interval.
+          Each animation has only one such interval.
         </p>
         <p>
           The start of the interval is determined by the <var>start
-          time</var> of the animation instance but may be shifted by
-          a <var>start delay</var> on the animation instance.
+          time</var> of the animation but may be shifted by
+          a <var>start delay</var> on the animation.
         </p>
         <p>
           The end of the interval is determined by the <var>animation
@@ -449,44 +449,44 @@
         <p class="caption">
           Examples of the effect of the start delay on endpoints of the
           animation interval.<br>
-          (a) An animation instance with no delay; the start time and start of
+          (a) An animation with no delay; the start time and start of
           animation are coincident.<br>
-          (b) An animation instance with a positive delay; the start of
+          (b) An animation with a positive delay; the start of
           animation is deferred by the delay.<br>
-          (c) An animation instance with a negative delay; the start of
+          (c) An animation with a negative delay; the start of
           animation is brought forward by the delay.
         </p>
       </section>
       <section class="informative">
         <h3>Animation fill behavior</h3>
         <p>
-          Outside of the animation interval, an animation instance may still
+          Outside of the animation interval, an animation may still
           effect its target depending on its fill mode. The different modes are
           as follows:
         </p>
         <dl>
           <dt>none</dt>
           <dd>
-            The animation instance does not effect its target outside the
+            The animation does not effect its target outside the
             animation interval.
           </dd>
           <dt>forwards</dt>
           <dd>
             For times that occur later than the animation interval, the
-            animation instance will continue to apply to its target the
+            animation will continue to apply to its target the
             animation value that was used at the end of the animation interval.
 
             For times that occur before the animation interval, the animation
-            instance will not effect its target.
+            will not effect its target.
           </dd>
           <dt>backwards</dt>
           <dd>
             For times that occur before the animation interval, the animation
-            instance will apply the same animation value that will be used at
-            the start of the animation interval.
+            will apply the same animation value that will be used at the start
+            of the animation interval.
 
             For times that occur later than the animation interval, the
-            animation instance will not effect its target.
+            animation will not effect its target.
           </dd>
           <dt>both</dt>
           <dd>
@@ -508,10 +508,10 @@
           (a) fill mode &lsquo;none&rsquo;. The animation has no effect outside
               its animation interval.<br>
           (b) fill mode &lsquo;forwards&rsquo;. After the animation interval has
-              finished, the animation instance continues to apply a fill value
-              to the target.<br>
-          (c) fill mode &lsquo;backwards&rsquo;. The animation instance applies
-              a fill value to its target until the start of the animation
+              finished, the animation continues to apply a fill value to the
+              target.<br>
+          (c) fill mode &lsquo;backwards&rsquo;. The animation applies a fill
+              value to its target until the start of the animation
               interval.<br>
           (d) fill mode &lsquo;both&rsquo;. Both before and after the animation
               interval the animation applies a fill value to its target.
@@ -554,8 +554,8 @@
           </dd>
           <dt>Item time space</dt>
           <dd>
-            A time space whose zero time is the timed item's (e.g. an animation
-            instance) start time.
+            A time space whose zero time is the timed item's (e.g. an animation)
+            start time.
           </dd>
           <dt>Animation time space</dt>
           <dd>
@@ -594,8 +594,8 @@
           diagram.
           For example, whilst a time of -1 second is a valid time in
           <em>animation time space</em>, querying the <var>animation time</var>
-          of an animation instance will never return a negative value due to the
-          clamping performed when this value is calculated (see <a
+          of an animation will never return a negative value due to the clamping
+          performed when this value is calculated (see <a
           href="#calculating-the-animation-time" class="sectionRef"></a>).
         </p>
         <section>
@@ -681,6 +681,21 @@
           All properties have a default value associated with them which is the
           value used when a new <code>Timing</code> object is constructed.
         </p>
+        <p>
+          If this object is attached to a linked <a>Anim</a> or <a>AnimGroup</a>
+          (see <a href="#animation-templates" class="sectionRef"></a>) then it
+          is readonly and attempting to set any of its properties will result in
+          a DOMException of type NoModificationAllowedError being thrown.
+          In order to modify the properties of a readonly object, it is
+          necessary to first call the <code>unlink</code> method on the
+          corresponding <a>Anim</a> or <a>AnimGroup</a> object.
+        </p>
+        <p>
+          When throwing a DOMException as a result of attempting to set
+          a readonly property, <a>user agent</a>s that provide debugging
+          feedback SHOULD also provide feedback indicating the reason that this
+          object is readonly and the remedy described above.
+        </p>
         <section>
           <h4>The <code>Timing</code> interface</h4>
           <dl title="interface Timing" class="idl">
@@ -689,11 +704,20 @@
               <p>
                 The number of seconds which, when added to the timed item's
                 <code>startTime</code>, defines the lower bound of the timed
-                item's animation interval.
+                item's <a>animation interval</a>.
               </p>
               <p>
                 The <var>default value</var> is 0.
               </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type NoModificationAllowedError</dt>
+                <dd>
+                  Raised on setting if this object is readonly.
+                </dd>
+              </dl>
             </dd>
             <dt>attribute unrestricted double? iterationDuration</dt>
             <dd>
@@ -707,6 +731,15 @@
               <p>
                 The <var>default value</var> is <code>null</code>.
               </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type NoModificationAllowedError</dt>
+                <dd>
+                  Raised on setting if this object is readonly.
+                </dd>
+              </dl>
             </dd>
             <dt>attribute unrestricted double iterationCount</dt>
             <dd>
@@ -718,6 +751,15 @@
               <p>
                 The <var>default value</var> is 1.
               </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type NoModificationAllowedError</dt>
+                <dd>
+                  Raised on setting if this object is readonly.
+                </dd>
+              </dl>
             </dd>
             <dt>attribute double iterationStart</dt>
             <dd>
@@ -733,6 +775,15 @@
               <p>
                 The <var>default value</var> is 0.
               </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type NoModificationAllowedError</dt>
+                <dd>
+                  Raised on setting if this object is readonly.
+                </dd>
+              </dl>
             </dd>
             <dt>attribute double speed</dt>
             <dd>
@@ -756,16 +807,34 @@
               <p>
                 The <var>default value</var> is 1.
               </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type NoModificationAllowedError</dt>
+                <dd>
+                  Raised on setting if this object is readonly.
+                </dd>
+              </dl>
             </dd>
             <dt>attribute PlaybackDirection direction</dt>
             <dd>
               <p>
                 Direction behavior as specified by one of the
-                <a>Direction</a> enumeration values.
+                <a>PlaybackDirection</a> enumeration values.
               </p>
               <p>
                 The <var>default value</var> is <code>"normal"</code>.
               </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type NoModificationAllowedError</dt>
+                <dd>
+                  Raised on setting if this object is readonly.
+                </dd>
+              </dl>
             </dd>
             <dt>attribute TimingFunction timingFunction</dt>
             <dd class="todo">
@@ -780,20 +849,21 @@
               <p>
                 The <var>default value</var> is <code>"none"</code>.
               </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type NoModificationAllowedError</dt>
+                <dd>
+                  Raised on setting if this object is readonly.
+                </dd>
+              </dl>
             </dd>
             <dt>Timing clone ()</dt>
             <dd>
               <p>
-                Creates an object with the same properties as this object.
-                The <code>timingFunction</code> property of the cloned object is
-                assigned the result of calling
-                <code>timingFunction.clone()</code> on this object.
-              </p>
-              <p>
-                Calling this method on an object attached to a live
-                <code>Anim</code> or <code>AnimGroup</code> will
-                have no effect on the liveness of the instance (see <a
-                href="#creating-animations" class="sectionRef"></a>).
+                Creates a new <a>Timing</a> object with each of its properties
+                set to the same value as this object.
               </p>
             </dd>
           </dl>
