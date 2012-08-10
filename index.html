@@ -406,8 +406,8 @@
           <dt>AnimTemplate? unlink()</dt>
           <dd>
             <p class="todo">
-              Makes this object independent of the template from which it was
-              created.
+              Makes this animation independent of the template with which it is
+              associated if any.
               See <a href="#animation-templates" class="sectionRef"></a>.
             </p>
             <p>
@@ -1775,9 +1775,9 @@
     <section class="informative">
       <h2>Grouping and synchronization</h2>
       <p>
-        While it is possible to set the timing properties of animations and
-        their instances individually, it is often useful to bundle animations
-        together and control their timing as a group.
+        While it is possible to set the timing properties of animations
+        individually, it is often useful to bundle animations together and
+        control their timing as a group.
       </p>
       <p>
         This can be used to share common timing properties as illustrated below:
@@ -1804,8 +1804,8 @@
         </p>
         <p>
           As an example, consider repetition. If a group has an iteration count
-          of 3, then the children of of the group will all play three times
-          since they effectively play <em>inside</em> the group's iterations.
+          of 2, then the children of of the group will all play twice since they
+          effectively play <em>inside</em> the group's iterations.
         </p>
         <div class="figure">
           <img src="img/grouping-repetition.svg" width="600">
@@ -1917,7 +1917,7 @@
             and proceeding to the last.
             Any start time specified on children is ignored and replaced with
             the time calculated using the procedure in <a
-      href="#the-start-time-of-children-of-a-sequence-animation-group-instance"
+            href="#the-start-time-of-children-of-a-sequence-animation-group"
             class="sectionRef"></a>.
           </dd>
         </dl>
@@ -1929,12 +1929,15 @@
       </section>
       <section>
         <h3>The document timeline</h3>
+        <p class="todo">
+          Move all this to its own section later on.
+        </p>
         <p>
           We have previously referred to the document timeline as the context in
           which animation takes places.
           Likewise we have referred to the <em>document time space</em> as the
           master time space which contains other time spaces.
-          The document timeline is, in fact, a parallel animation group instance
+          The document timeline is, in fact, a parallel animation group
           with the following special properties:
         </p>
         <ul>
@@ -2128,12 +2131,11 @@
             to the <code>Document</code> interface are required.
           </p>
           <dl title="partial interface Document" class="idl">
-            <dt>readonly attribute AnimGroup animationTimeline</dt>
+            <dt>readonly attribute ParAnimGroup animationTimeline</dt>
             <dd>
-              The animation group instance corresponding to the root of the
-              document.
-              This group instance exhibits the special behavior described for
-              the root animation group in <a href="#the-document-timeline"
+              The animation group corresponding to the root of the document.
+              This group exhibits the special behavior described for the root
+              animation group in <a href="#the-document-timeline"
               class="sectionRef"></a>.
             </dd>
             <dt>attribute AnimStartType timelineStart</dt>
@@ -2162,8 +2164,7 @@
       <section>
         <h3>The <code>AnimGroup</code> interface</h3>
         <p>
-          Represents a list of timed items which may be animation instances or
-          nested animation group instances.
+          Represents a list of timed items.
         </p>
         <p>
           The <code>AnimGroup</code> interface supports indexed
@@ -2178,16 +2179,34 @@
           </dd>
           <dt>readonly attribute AnimGroupTemplate? template</dt>
           <dd>
-            For linked animation group instances (see <a
-            href="#animation-templates" class="sectionRef"></a>), the
-            <code>AnimGroupTemplate</code> object from which this object was
-            minted.
-            For independent animation group instances, this property is
-            <code>null</code>.
+            <p>
+              For linked animation groups (see <a href="#animation-templates"
+              class="sectionRef"></a>), the <a>AnimGroupTemplate</a> object
+              from which this object derives its values.
+              For animations that are not linked to a template, this property is
+              <code>null</code>.
+            </p>
+            <p class="feedbackWanted">
+              Make this writeable?
+            </p>
           </dd>
           <dt>void clear ()</dt>
           <dd>
-            Removes all child timed items from the group.
+            <p>
+              Removes all child timed items from the group.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised if this group is a linked group, that is, if
+                <code>template</code> is not <code>null</code>
+                (see <a href="#animation-templates" class="sectionRef"></a>).
+              </dd>
+            </dl>
           </dd>
           <dt>getter TimedItem? (unsigned long index)</dt>
           <dd>
@@ -2216,15 +2235,22 @@
               Exceptions:
             </p>
             <dl class="exceptions">
-              <dt>DOMException of type HierarchyRequestError</dt>
+              <dt>DOMException of type <code>HierarchyRequestError</code></dt>
               <dd>
                 Raised if <code>newItem</code> is the timeline for a document
                 (see <a href="#the-document-timeline" class="sectionRef"></a>).
               </dd>
-              <dt>DOMException of type IndexSizeError</dt>
+              <dt>DOMException of type <code>IndexSizeError</code></dt>
               <dd>
                 Raised if <code>index</code> is outside of the range 0 &le;
                 <var>index</var> &lt; <code>group.length</code>.
+              </dd>
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised if this group is a linked group, that is, if
+                <code>template</code> is not <code>null</code>
+                (see <a href="#animation-templates" class="sectionRef"></a>).
               </dd>
             </dl>
             <div class="note">
@@ -2253,12 +2279,19 @@
               Exceptions:
             </p>
             <dl class="exceptions">
-              <dt>DOMException of type HierarchyRequestError</dt>
+              <dt>DOMException of type <code>HierarchyRequestError</code></dt>
               <dd>
                 Raised if any of the items to add is the timeline for a document
                 (see <a href="#the-document-timeline" class="sectionRef"></a>).
                 If this exception is thrown none of the <code>newItem</code>
                 objects will be added to the group.
+              </dd>
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised if this group is a linked group, that is, if
+                <code>template</code> is not <code>null</code>
+                (see <a href="#animation-templates" class="sectionRef"></a>).
               </dd>
             </dl>
           </dd>
@@ -2272,6 +2305,18 @@
             <p>
               Returns the removed items.
             </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised if this group is a linked group, that is, if
+                <code>template</code> is not <code>null</code>
+                (see <a href="#animation-templates" class="sectionRef"></a>).
+              </dd>
+            </dl>
           </dd>
           <dt>
             sequence&lt;TimedItem&gt; splice ()
@@ -2322,11 +2367,18 @@
               Exceptions:
             </p>
             <dl class="exceptions">
-              <dt>DOMException of type HierarchyRequestError</dt>
+              <dt>DOMException of type <code>HierarchyRequestError</code></dt>
               <dd>
                 Raised if any of the items in <code>newItem</code> is the
                 timeline for a document (see <a href="#the-document-timeline"
                 class="sectionRef"></a>).
+              </dd>
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised if this group is a linked group, that is, if
+                <code>template</code> is not <code>null</code>
+                (see <a href="#animation-templates" class="sectionRef"></a>).
               </dd>
             </dl>
           </dd>
@@ -2346,21 +2398,19 @@
             Returns the index of <code>item</code> within the group.
             If <code>item</code> is not in the group, returns <code>-1</code>.
           </dd>
-          <dt>bool makeIndependent()</dt>
+          <dt>AnimGroupTemplate? unlink()</dt>
           <dd>
-            <p>
-              Makes this object independent of the template from which it was
-              created.
-              See <a href="#creating-animations" class="sectionRef"></a>.
+            <p class="todo">
+              Makes this group independent of the template with which it is
+              associated if any.
+              See <a href="#animation-templates" class="sectionRef"></a>.
             </p>
             <p>
               After this method returns, the <code>template</code>
               property will be <code>null</code>.
             </p>
             <p>
-              Returns <code>true</code> if this object was previously a live
-              animation group instance, <code>false</code> if this object was
-              already an independent animation group instance.
+              Returns the previous value of <code>template</code>.
             </p>
           </dd>
           <dt>sequence&lt;Anim&gt; getActiveAnimations ()</dt>
@@ -2388,14 +2438,14 @@
         <p>
           Parallel animation group instances run their children such they
           potentially play simultaneously.
-          The start time of each child depends on its 
-          <code>startTime</code> property.
+          The start time of each child depends on its own <code>startTime</code>
+          property.
         </p>
         <section>
           <h4>The intrinsic duration of a parallel animation group instance</h4>
           <p>
             The intrinsic duration of a parallel animation group instance is
-            the maximum of the <code>endTime</code> property of each
+            the maximum of the <code>endTime</code> properties of each
             child <code>TimedItem</code>.
           </p>
           <p>
@@ -2418,7 +2468,7 @@
         <p>
           Sequence animation group instances run their children in turn
           following their order in the group.
-          The animation intervals of the children will not overlap unless
+          The <a>animation interval</a>s of the children will not overlap unless
           a negative start delay is specified on one of the children.
         </p>
         <section>
@@ -3820,29 +3870,6 @@
             </li>
         </div>
       </section>
-    </section>
-
-    <section>
-      <h2>Extensions to Document interfaces</h2>
-      <p>
-        Since the document acts as a root animation group user agents MUST add
-        an <code>animationTimeline</code> member to the document interface for
-        each document type where animation is supported.
-        For example, HTMLDocument and SVGDocument.
-      </p>
-      <p>
-        The definition of this member is given below.
-      </p>
-      <dl title="partial interface HTMLDocument" class="idl">
-        <dt>readonly attribute ParAnimGroup animationTimeline</dt>
-        <dd>
-          The animation group instance corresponding to the root of the
-          document.
-          This group instance exhibits the special behavior described for the
-          root animation group in <a href="#the-document-timeline"
-          class="sectionRef"></a>.
-        </dd>
-      </dl>
     </section>
 
     <section>
