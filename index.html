@@ -2404,6 +2404,7 @@
               Makes this group independent of the template with which it is
               associated if any.
               See <a href="#animation-templates" class="sectionRef"></a>.
+              Does this recurse through children and unlink them too?
             </p>
             <p>
               After this method returns, the <code>template</code>
@@ -3151,99 +3152,52 @@
       </section>
     </section>
 
-    <section>
+    <section class="informative">
       <h2>Animation templates</h2>
       <p>
-        <code>Anim</code> objects are not created directly, but
-        via a separate <code>AnimTemplate</code> object. The
-        <code>AnimTemplate</code> object acts a template allowing the same set
-        of animation parameters to be used multiple times with multiple target
-        elements.
+        Sometimes it is necessary to apply the same animation effect to a series
+        of targets.
+        Animation templates provide a means for the same set of animation
+        properties to be applied repeatedly to a number of targets
+        whilst maintaining a link such that changes to the template are
+        reflected at each place where the template is applied.
       </p>
       <p>
-        An <code>Anim</code> can be in one of two states with
-        regards to the relationship between it and the <code>AnimTemplate</code>
-        that produced it.
+        In concrete terms, an <a>AnimTemplate</a> object is used to create
+        multiple <a>Anim</a> objects each of which maintains a link back to the
+        template via its <code>template</code> property.
+        Such <a>Anim</a> objects are said to be <dfn>linked</dfn> to a template.
       </p>
-      <dl>
-        <dt>Live animation instance</dt>
-        <dd>
-          Changes made to the <code>AnimTemplate</code> object are reflected in
-          the <code>Anim</code> object.
-        </dd>
-        <dt>Independent animation instance</dt>
-        <dd>
-          Changes made to the <code>AnimTemplate</code> object have no effect on
-          the <code>Anim</code> object.
-        </dd>
-      </dl>
+      <p>
+        The timing and animation parameters of <a>linked</a> animations cannot
+        be modified directly.
+        Rather, changes are made to the template which is then echoed to all
+        animations linked to the same template.
+        In order to modify the timing and animation parameters of
+        a <a>linked</a> animation directly, it must first be unlinked using the
+        <code>unlink</code> method.
+      </p>
+      <p>
+        Note that run-time properties of a <a>linked</a> animation such as its
+        <var>start time</var> and <var>time drift</var> can still be modified.
+        Only those properties attached to the <code>timing</code> and
+        <code>func</code> properties of a <a>linked</a> <a>Anim</a> object are
+        read-only.
+      </p>
+      <p>
+        Unlinked animations can be linked to a template by:
+      </p>
+      <ul>
+        <li>assigning the <var>template</var> property to an
+        <a>AnimTemplate</a> <span class="todo">(Is this right? Are we going to
+        do this?)</span>, or</li>
+        <li>calling <code>templatize</code> to create a new <a>AnimTemplate</a>
+        with properties set to reflect the current state of the <a>Anim</a>
+        object on which it is called.</li>
+      </ul>
       <p class="todo">
-        Add a diagram which shows a live animation instance and an independent
-        one.
+        Provide some javascript sample here demonstrating?
       </p>
-      <p>
-        Live animation instances can be converted to independent animation
-        instances by one of two means:
-      </p>
-      <ol>
-        <li>
-          Modifying any of the members of the <code>func</code> or
-          <code>timing</code> properties of the
-          <code>Anim</code> object. This includes redundant
-          modifications, that is, setting a property to its current value.
-          <!--
-           The redundant modification condition is an attempt to eliminate an
-           area where interop might fail subtley.
-
-           If, internally, implementation A filters out redundant changes whilst
-           implementation B blindly accepts all changes we still want the same
-           behavior with regards to becoming independent. It's easier, more
-           convenient and, I think, more intuitive for authors to define it this
-           way.
-
-           The alternative, requiring redundant changes to be ignored, is more
-           complex as we need to specify what consitutes a redundant change and
-           that's not always easy as the data types become complex. For example,
-           what constitutues a redundant change to an SVGLength is not always
-           obvious.
-           -->
-        </li>
-        <li>
-          Calling the <code>makeIndependent</code> method of the
-          <code>Anim</code> object.
-        </li>
-      </ol>
-      <p>
-        Once independent, animation instances cannot be made live again.
-      </p>
-      <p class="note">
-        One implication of the fact that a live instance can be converted to an
-        independent instance is that when a live instance is created, the object
-        identity of its <code>func</code> and <code>timing</code> properties
-        must differ from those of the animation from which it was created. This
-        is because, for example, modifying the <code>timing.duration</code>
-        property of a live animation instance and hence converting it to an
-        independent animation instance, cannot at the same time change the
-        object identity of the <code>timing</code> property.
-      </p>
-      <pre class="example sh_javascript">
-        // Create a new animation
-        var anim = new AnimTemplate();
-        anim.timing.iterationDuration = 1;
-
-        // Create a live instance
-        var instance = anim.animateLive(document.getElementById("a"));
-        alert(instance.timing.iterationDuration); // Displays "1"
-
-        // Modify the animation
-        anim.timing.iterationDuration = 2;
-        alert(instance.timing.iterationDuration); // Displays "2"
-
-        // Modify both the animation and instance
-        instance.timing.iterationDuration = 3;    // instance is now independent
-        anim.timing.iterationDuration = 4;
-        alert(instance.timing.iterationDuration); // Displays "3"
-      </pre>
       <section>
         <h3>The <code>AnimTemplate</code> interface</h3>
         <p>
@@ -3263,8 +3217,11 @@
           creating an <code>Anim</code> from
           an <code>AnimTemplate</code> are specified on the
           <code>TimedTemplate</code> since this behavior is shared with
-          animation groups
-          (see <a href="#grouping-and-synchronization" class="sectionRef"></a>).
+          animation groups (see <a href="#group-templates"
+          class="sectionRef"></a>).
+        </p>
+        <p class="todo">
+          Should we allow live lists to be passed in? i.e. selectors etc.?
         </p>
         <dl title="interface TimedTemplate" class="idl">
           <dt>attribute Timing timing</dt>
@@ -3452,11 +3409,11 @@
             For each <var>element</var> in the list of target elements:
             <ol>
               <li>
-                Create a new <code>Anim</code> object, <var>instance</var>.
+                Create a new <code>Anim</code> object, <var>anim</var>.
               </li>
               <li>
                 Set the <code>timing</code> and <code>func</code> properties
-                of <var>instance</var> to copies <code>template.timing</code>
+                of <var>anim</var> to copies <code>template.timing</code>
                 and <code>template.func</code>.
               </li>
               <li>
@@ -3479,52 +3436,19 @@
         </ol>
       </section>
       <section>
-        <h3>Groups and liveness</h3>
+        <h3>Group templates</h3>
         <p>
-          As with animations, animation groups act as templates that can be
-          instantiated (see <a href="#creating-animations"
-          class="sectionRef"></a>).
-          The resulting groups can likewise be <em>live</em> or
-          <em>independent</em>.
+          As with animations, templates can also be created for animation
+          groups.
         </p>
-        <p>
-          Live animation group instances can be made independent by the
-          following means:
-        </p>
-        <ul>
-          <li>
-            Modifying any of the members of the <code>timing</code> property.
-            This includes redundant modifications, that is, setting a property
-            to its current value.
-          </li>
-          <li>
-            Calling any of the methods that affect the list of child items
-            (<code>clear</code>, <code>add</code>, <code>remove</code>,
-            or <code>splice</code>).
-          </li>
-          <li>
-            Calling the <code>makeIndependent</code> method of the
-            <code>AnimGroup</code> object.
-          </li>
-        </ul>
-        <p>
-          Note that making an animation group instance independent does
-          <em>NOT</em> cause its child <code>TimedTemplate</code> objects
-          to become independent.
-        </p>
-        <p>
-          Similarly, making a child of an animation group instance independent
-          does <em>NOT</em> cause the animation group instance itself
-          to become independent.
+        <p class="todo">
+          Lots of questions here about how this should work.
         </p>
       </section>
       <section>
         <h3>The <code>AnimGroupTemplate</code> interface</h3>
-        <p>
-          <code>AnimGroup</code> objects are not created
-          directly, but rather via an <code>AnimGroupTemplate</code> object that
-          acts as a template for creating animation group instances that target
-          different elements.
+        <p class="todo">
+          TBD
         </p>
         <dl title="interface AnimGroupTemplate : TimedTemplate" class="idl">
           <dt>void clear ()</dt>
@@ -3550,7 +3474,7 @@
             </p>
             <p>
               The behavior of this method is identical to
-              the equivalent setter in <code>AnimGroup.replace</code>
+              the equivalent setter in <code>AnimGroup</code>
               except that DOMExceptions of type HierarchyRequestError are not
               thrown.
             </p>
@@ -3650,17 +3574,12 @@
             If <code>item</code> is not in the group, returns <code>-1</code>.
           </dd>
         </dl>
-        <p class="todo">
-          Need to think about the constructors for this. You really want to be
-          able to just do something like <code>var group = new par(anim1,
-          anim2)</code>.
-        </p>
       </section>
       <section>
         <h3>The <code>ParAnimGroupTemplate</code> interface</h3>
         <p>
-          <code>ParAnimGroup</code> objects are created from
-          <code>ParAnimGroupTemplate</code> objects.
+          <a>ParAnimGroup</a> objects can be created from
+          <a>ParAnimGroupTemplate</a> objects.
         </p>
         <dl title="[Constructor] interface ParAnimGroupTemplate
           : AnimGroupTemplate"
@@ -3670,8 +3589,8 @@
       <section>
         <h3>The <code>SeqAnimGroupTemplate</code> interface</h3>
         <p>
-          <code>SeqAnimGroup</code> objects are created from
-          <code>SeqAnimGroupTemplate</code> objects.
+          <a>SeqAnimGroup</a> objects can be created from
+          <a>SeqAnimGroupTemplate</a> objects.
         </p>
         <dl title="[Constructor] interface SeqAnimGroupTemplate
           : AnimGroupTemplate"
@@ -3680,6 +3599,9 @@
       </section>
       <section>
         <h3>Instantiating an <code>AnimGroupTemplate</code></h3>
+        <p class="todo">
+          TBD. This is probably all wrong.
+        </p>
         <p>
           The procedure for creating an <code>AnimGroup</code> from
           an <code>AnimGroupTemplate</code>, <var>template</var>,
