@@ -2013,7 +2013,7 @@
             href="#extensions-to-the-document-interface"
             class="sectionRef"></a>). It can have the following values:
           </p>
-		  <dl title="enum AnimStartType" class="idl">
+          <dl title="enum AnimStartType" class="idl">
             <dt>onload</dt>
             <dd>
               <p>
@@ -2526,15 +2526,25 @@
 
     <section>
       <h2>Animation values</h2>
-
-      <section class="informative">
-      <p>
-        Each <code>AnimTemplate</code> object contains an object which
-        subclasses <code>AnimFunction</code>. These objects describe
-        how animation values should be calculated for the
-        <code>AnimTemplate</code> for any given time.
-      </p>
-      </section>
+      <div class="informative">
+        <p>
+          The Web Animations <em>animation model</em> takes the <a>time
+          fraction</a>s produced by the <em>timing model</em> for a given
+          <a>Anim</a> and applies it as the input to the <em>animation
+          function</em> defined for the <a>Anim</a> object.
+          The output of each <em>animation function</em> is then combined using
+          a global animation stack before being applied to the target property
+          (see <a href="#combining-animations" class="sectionRef"></a>).
+        </p>
+        <p>
+          The entry-point to the <em>animation model</em> is the
+          <a>AnimFunction</a> object associated with each <a>Anim</a>.
+          These objects describe how animation values should be calculated for
+          the <a>Anim</a> for any given time.
+          <a>AnimFunction</a> serves as an abstract interface of which several
+          concrete subclasses are provided.
+        </p>
+      </div>
       <section>
         <h3>The <code>AnimFunction</code> interface</h3>
         <dl title="[Constructor] interface AnimFunction" class="idl">
@@ -2561,19 +2571,26 @@
               This value defaults to <code>"replace"</code>.
             </p>
           </dd>
-          <dt>attribute DOMString? pace</dt>
-          <dd>
-            This is just a placeholder for some kind of
-            <i>whole-animation-function</i> timing control.
-            For example, SVG has <code>calcMode="paced"</code> which looks at
-            all the frames in the animation and adjusts the timing so the pace
-            of change is constant (this is especially useful for motion on
-            a path).<br>
-            The example here could take values <code>null</code> (default),
-            "auto", or something like "1px/s" (not sure what the datatype
-            should be here).
+          <dt>any sample(double timeFraction, double currentIteration,
+                         Element? target, any underlyingValue)</dt>
+          <dd class="todo">
+            <p>
+              Define this here?
+              Potentially this should be an interface that script could provide
+              its own object for.
+            </p>
+            <p>
+              Implementations of the function would be expected to produce the
+              same result given the same parameters so the implementation could
+              cache the result and not call the function when the parameters
+              were the same. 
+            </p>
           </dd>
         </dl>
+        <p class="todo">
+          Need to add exception behavior for this interface and all its
+          subclasses for when it is linked to a template.
+        </p>
       </section>
       <section>
         <h3>The <code>CompositeOperation</code> enumeration</h3>
@@ -2599,34 +2616,6 @@
       </section>
       <section>
         <h3>The <code>KeyframesAnimFunction</code> interface</h3>
-        <div class="todo">
-          <p>
-            It seems like it might even be
-            useful to allow script to provide its own function. I'm not sure how
-            that works exactly, but if we were to support that, then the
-            interface would be something like:
-          </p>
-          <ul>
-            <li>
-              <code>Sample(double iterationProgress, Element target, any
-              underlyingValue)</code> (where <code>iterationProgress</code> is
-              the ratio of <var>iteration time</var> to <var>iteration
-              duration</var>)
-            </li>
-          </ul>
-          <p>
-            Implementations of the function would be expected to produce the
-            same result given the same parameters so the implementation could
-            cache the result and not call the function when the parameters were
-            the same.
-          </p>
-          <p>
-            That would potentially let you animate anything. Anything! (And,
-            that could be bad. The callback could rewrite the entire document
-            every sample. After returning from the callback you'd have to do
-            a lot of checks regarding the state of the world before continuing.)
-          </p>
-        </div>
         <p>
           I think most of the members of the interface, perhaps all, should be
           readonly when this object is returned from
@@ -2757,188 +2746,189 @@
       </section>
       <section>
         <h3>Calculating animation values</h3>
-          <section>
-            <h4>Calculating the animation value from an iteration value</h4>
-            <p>
-              If the <a>current iteration</a> is zero, or the 
-              <var>accumulateOperation</var> is
-              <code>"replace"</code>, then the 
-              <var>animation value</var> is simply the iteration value, as
-              defined below.
-            </p>
-            <p>
-              When the animation time equals the iteration duration for the 
-              first time for an animation, the current 
-              <var>animation value</var> should be retained as the
-              <var>end value</var> for the animation.
-            </p>
-            <p class="todo">
-              Need to revise this definition since we can't assume the time at
-              the end of the first iteration will be visited (we might be
-              playing backwards, or have a <var>iteration start</var> greater
-              than 1).
-            </p>
-            <p>
-              If the <a>current iteration</a> is not zero and the
-              <var>accumulateOperation</var> is
-              <code>"accumulate"</code> then the 
-              <var>animation value</var> is the <var>end value</var> accumulated
-              <a>current iteration</a> times, with the 
-              <var>iteration value</var> accumulated on top.
-            </p>
-            <p>
-              If the <a>current iteration</a> is not zero and the
-              <var>accumulateOperation</var> is
-              <code>"merge"</code> then the
-              <var>animation balue</var> is the <var>end value</var> merged
-              with the <var>iteration value</var>, with an interpolation
-              parameter equal to the current <var>time fraction</var>
-            </p>
-          </section>
-          <section>              
-            <h4>Calculating the iteration value for a 
-              <code>KeyframesAnimFunction</code></h4>
-            <p>
-              When an <code>AnimTemplate</code> contains a pointer to a
-              <code>KeyframesAnimFunction</code> <var>keyframes</var>, the <var>animation
-              value</var> for that animation at given current time 
-              <var>t</var> is calculated according to the following steps:
-            </p>
-            <ol>
-              <li>
-                Convert <var>t</var> to the <var>time fraction</var> 
-                (see <a href="#calculating-the-time-fraction" class="sectionRef"></a>).
-              </li>
-              <li>
-                Generate a <var>sorted frame list</var> by sorting the list of
-                <code>AnimFrame</code> objects contained within the
-                <code>AnimFrameList</code> object stored in <var>keyframes.frames</var> 
-                by their <var>offset</var>.
-                If there are no frames in the <var>sorted frame list</var>
-                then no animation occurs and the <var>iteration value</var> is
-                just the <var>base value</var> of the property being animated.
-              </li>
-              <li>
-                Otherwise, find the <var>after frame</var> by iterating through
-                the <var>sorted frame list</var> until the last
-                <code>AnimFrame</code> with an <var>offset</var>
-                larger than the <var>time fraction</var> is
-                encountered.
-              </li>
-              <li>
-                If the <var>after frame</var> is the first frame in the
-                <var>sorted frame list</var>, then construct a 
-                <var>before frame</var> with an <var>offset</var> of 0 and a
-                value equal to the <var>base value</var> of the property being
-                animated.
-              </li>
-              <li>
-                If the <var>after frame</var> does not exist (i.e. all frames
-                have an <var>offset</var> less than the <var>time 
-                fraction</var>) then construct an <var>after frame</var> with
-                an <var>offset</var> of 1 and a value equal to the
-                <var>base value</var> of the property being animated, and
-                Set the <var>before frame</var> to the last frame in the 
-                <var>sorted frame list</var>.
-              </li> 
-              <li>
-                Otherwise (the <var>after frame</var> exists and is not the
-                first frame in the <var>sorted frame list</var>) set the 
-                <var>before frame</var> to the frame immediately prior to the
-                <var>after frame</var> in the <var>sorted frame list</var>.
-              </li>
-              <li>
-                The <var>local time function</var> is the
-                <var>timingFunction</var> of the <var>before frame</var>, if 
-                it exists; otherwise the <var>timingFunction</var> of the
-                <code>Anim</code> interface's <var>timing</var> attribute.
-              </li>
-              <li>
-                Find the <var>local time fraction</var> by subtracting
-                the <var>offset</var> of the <var>before frame</var> from
-                the <var>time fraction</var>, then dividing the result
-                by the difference between the <var>offset</var> of the
-                <var>after frame</var> and the <var>offset</var> of the
-                <var>before frame</var>.
-              <li>
-                Calculate the <var>effective time fraction</var> by applying
-                the <var>local time function</var> to the <var>local time
-                fraction</var>.
-              <li>
-                Calculate the <var>animation value</var> by linearly 
-                interpolating the values of the <var>before frame</var> and
-                <var>after frame</var>, using the 
-                <var>effective time fraction</var> as interpolation parameter (see <a href="#linear-interpolation" class="sectionRef"></a>).
-              </li>
-            </ol>
-          </section>
-          <section>
-            <h4>Calculating the iteration value for a 
-              <code>PathAnimFunction</code></h4>
-            <p>
-              When an <code>AnimTemplate</code> contains a pointer to a
-              <code>PathAnimFunction</code> and <var>rotate</var> is set
-              to false, the <var>animation value</var> for that animation at
-              given current time <var>t</var> is the transform defined by a
-              translation equal to the location on the path at <var>t</var>.
-            </p>
-            <p>
-              When <var>rotate</var> is set to true, the
-              <var>animation value</var> is the transform defined by the above
-              translation followed by a rotation defined by the following
-              process:
-            </p>
-            <ol>
-              <li>
-                Calculate the <var>normal</var> to the path at <var>t</var> (see <a href="#calculating-the-normal-to-a-path" class="sectionRef"></a>).
-              </li>
-              <li>
-                Determine the <var>normal rotation</var>, which is given by 
-                <var>atan2(normal.y, normal.x).
-              </li>
-              <li>
-                The <var>rotation</var> is the transform that rotates by
-                the <var>normal rotation</var>.
-              </li>
-            </ol>
-
-          </section>
-          <section>
-            <h4>Calculating the iteration value for a 
-              <code>GroupedAnimFunction</code></h4>
-            <p>
-              When an <code>AnimTemplate</code> contains a pointer to a
-              <code>GroupedAnimFunction</code>, the <var>animation
-              value</var> for that animation at given current time <var>t</var> 
-              is calculated by following the procedure outlined in
-              <a href="#resolving-animation-stacks" class="sectionRef"></a>, 
-              treating the list of <code>AnimFunction</code> objects 
-              contained within the <code>GroupedAnimFunction</code> as 
-              the animation stack and using an initial animation value 
-              of 0 for all simple properties and id for transform.
-            </p>
-          </section>
+        <section>
+          <h4>Calculating the animation value from an iteration value</h4>
+          <p>
+            If the <a>current iteration</a> is zero, or the 
+            <var>accumulateOperation</var> is
+            <code>"replace"</code>, then the 
+            <var>animation value</var> is simply the iteration value, as
+            defined below.
+          </p>
+          <p>
+            When the animation time equals the iteration duration for the 
+            first time for an animation, the current 
+            <var>animation value</var> should be retained as the
+            <var>end value</var> for the animation.
+          </p>
+          <p class="todo">
+            Need to revise this definition since we can't assume the time at
+            the end of the first iteration will be visited (we might be
+            playing backwards, or have a <var>iteration start</var> greater
+            than 1).
+          </p>
+          <p>
+            If the <a>current iteration</a> is not zero and the
+            <var>accumulateOperation</var> is
+            <code>"accumulate"</code> then the 
+            <var>animation value</var> is the <var>end value</var> accumulated
+            <a>current iteration</a> times, with the 
+            <var>iteration value</var> accumulated on top.
+          </p>
+          <p>
+            If the <a>current iteration</a> is not zero and the
+            <var>accumulateOperation</var> is
+            <code>"merge"</code> then the
+            <var>animation balue</var> is the <var>end value</var> merged
+            with the <var>iteration value</var>, with an interpolation
+            parameter equal to the current <var>time fraction</var>
+          </p>
         </section>
-      <p>
-        Need to add:
-        <ul>
-          <li>Pre-defined timing functions, spline-based timing functions etc.
-          (want to allow a series of splines, not just four points)</li>
-          <li>Custom easing functions</li>
-          <li>Pace control (e.g. <code>pace="10px/s"</code>?)</li>
-          <li>General functional syntax</li>
-          <li>&lsquo;to&rsquo; animation</li>
-        </ul>
-      </p>
-      <p>
-        Somewhere we need to describe how animated values get stored in the DOM.
-        i.e. can you access them at all? what's the interaction with various
-        override stylesheets etc.
-      </p>
-      <p>
-        Need to add a way for getting animation values of motion-on-a-path
-        animations
-      </p>
+        <section>              
+          <h4>Calculating the iteration value for a 
+            <code>KeyframesAnimFunction</code></h4>
+          <p>
+            When an <code>AnimTemplate</code> contains a pointer to a
+            <code>KeyframesAnimFunction</code> <var>keyframes</var>, the <var>animation
+            value</var> for that animation at given current time 
+            <var>t</var> is calculated according to the following steps:
+          </p>
+          <ol>
+            <li>
+              Convert <var>t</var> to the <var>time fraction</var> 
+              (see <a href="#calculating-the-time-fraction" class="sectionRef"></a>).
+            </li>
+            <li>
+              Generate a <var>sorted frame list</var> by sorting the list of
+              <code>AnimFrame</code> objects contained within the
+              <code>AnimFrameList</code> object stored in <var>keyframes.frames</var> 
+              by their <var>offset</var>.
+              If there are no frames in the <var>sorted frame list</var>
+              then no animation occurs and the <var>iteration value</var> is
+              just the <var>base value</var> of the property being animated.
+            </li>
+            <li>
+              Otherwise, find the <var>after frame</var> by iterating through
+              the <var>sorted frame list</var> until the last
+              <code>AnimFrame</code> with an <var>offset</var>
+              larger than the <var>time fraction</var> is
+              encountered.
+            </li>
+            <li>
+              If the <var>after frame</var> is the first frame in the
+              <var>sorted frame list</var>, then construct a 
+              <var>before frame</var> with an <var>offset</var> of 0 and a
+              value equal to the <var>base value</var> of the property being
+              animated.
+            </li>
+            <li>
+              If the <var>after frame</var> does not exist (i.e. all frames
+              have an <var>offset</var> less than the <var>time 
+              fraction</var>) then construct an <var>after frame</var> with
+              an <var>offset</var> of 1 and a value equal to the
+              <var>base value</var> of the property being animated, and
+              Set the <var>before frame</var> to the last frame in the 
+              <var>sorted frame list</var>.
+            </li> 
+            <li>
+              Otherwise (the <var>after frame</var> exists and is not the
+              first frame in the <var>sorted frame list</var>) set the 
+              <var>before frame</var> to the frame immediately prior to the
+              <var>after frame</var> in the <var>sorted frame list</var>.
+            </li>
+            <li>
+              The <var>local time function</var> is the
+              <var>timingFunction</var> of the <var>before frame</var>, if 
+              it exists; otherwise the <var>timingFunction</var> of the
+              <code>Anim</code> interface's <var>timing</var> attribute.
+            </li>
+            <li>
+              Find the <var>local time fraction</var> by subtracting
+              the <var>offset</var> of the <var>before frame</var> from
+              the <var>time fraction</var>, then dividing the result
+              by the difference between the <var>offset</var> of the
+              <var>after frame</var> and the <var>offset</var> of the
+              <var>before frame</var>.
+            <li>
+              Calculate the <var>effective time fraction</var> by applying
+              the <var>local time function</var> to the <var>local time
+              fraction</var>.
+            <li>
+              Calculate the <var>animation value</var> by linearly 
+              interpolating the values of the <var>before frame</var> and
+              <var>after frame</var>, using the 
+              <var>effective time fraction</var> as interpolation parameter (see <a href="#linear-interpolation" class="sectionRef"></a>).
+            </li>
+          </ol>
+        </section>
+        <section>
+          <h4>Calculating the iteration value for a 
+            <code>PathAnimFunction</code></h4>
+          <p>
+            When an <code>AnimTemplate</code> contains a pointer to a
+            <code>PathAnimFunction</code> and <var>rotate</var> is set
+            to false, the <var>animation value</var> for that animation at
+            given current time <var>t</var> is the transform defined by a
+            translation equal to the location on the path at <var>t</var>.
+          </p>
+          <p>
+            When <var>rotate</var> is set to true, the
+            <var>animation value</var> is the transform defined by the above
+            translation followed by a rotation defined by the following
+            process:
+          </p>
+          <ol>
+            <li>
+              Calculate the <var>normal</var> to the path at <var>t</var> (see <a href="#calculating-the-normal-to-a-path" class="sectionRef"></a>).
+            </li>
+            <li>
+              Determine the <var>normal rotation</var>, which is given by 
+              <var>atan2(normal.y, normal.x).
+            </li>
+            <li>
+              The <var>rotation</var> is the transform that rotates by
+              the <var>normal rotation</var>.
+            </li>
+          </ol>
+        </section>
+        <section>
+          <h4>Calculating the iteration value for a 
+            <code>GroupedAnimFunction</code></h4>
+          <p>
+            When an <code>AnimTemplate</code> contains a pointer to a
+            <code>GroupedAnimFunction</code>, the <var>animation
+            value</var> for that animation at given current time <var>t</var> 
+            is calculated by following the procedure outlined in
+            <a href="#resolving-animation-stacks" class="sectionRef"></a>, 
+            treating the list of <code>AnimFunction</code> objects 
+            contained within the <code>GroupedAnimFunction</code> as 
+            the animation stack and using an initial animation value 
+            of 0 for all simple properties and id for transform.
+          </p>
+        </section>
+      </section>
+      <div class="todo">
+        <p>
+          Need to add:
+          <ul>
+            <li>Pre-defined timing functions, spline-based timing functions etc.
+            (want to allow a series of splines, not just four points)</li>
+            <li>Custom easing functions</li>
+            <li>Pace control (e.g. <code>pace="10px/s"</code>?)</li>
+            <li>General functional syntax</li>
+            <li>&lsquo;to&rsquo; animation</li>
+          </ul>
+        </p>
+        <p>
+          Somewhere we need to describe how animated values get stored in the
+          DOM. i.e. can you access them at all? what's the interaction with
+          various override stylesheets etc.
+        </p>
+        <p>
+          Need to add a way for getting animation values of motion-on-a-path
+          animations
+        </p>
+      </div>
     </section>
 
     <section>
@@ -3123,6 +3113,11 @@
         </section>
         <section>
           <h4>Animation values</h4>
+          <p class="todo">
+            We already have a section with the heading "animation values".
+            Ideally they should be unique so they're easy to target by named
+            anchor.
+          </p>
           <p>
             Animation values for all animated properties are generated at
             each time point according to the following process, then inserted
