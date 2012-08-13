@@ -368,10 +368,23 @@
         <dl title="interface Anim : TimedItem" class="idl">
           <dt>attribute AnimFunction func</dt>
           <dd>
-            The animation function to apply (see <a href="#animation-values"
-            class="sectionRef"></a>).
+            <p>
+              The animation function to apply (see <a href="#animation-values"
+              class="sectionRef"></a>).
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised on setting if this object is linked to a template (i.e.
+                <code>template</code> is not <code>null</code>).
+              </dd>
+            </dl>
           </dd>
-          <dt>readonly attribute AnimTemplate? template</dt>
+          <dt>attribute AnimTemplate? template</dt>
           <dd>
             <p>
               For linked animations (see <a href="#animation-templates"
@@ -380,10 +393,28 @@
               For animations that are not linked to a template, this property is
               <code>null</code>.
             </p>
-            <p class="feedbackWanted">
-              Make this writeable? I think so. But need to specify the mechanics
-              involved.
+            <p>
+              Setting this property has the following effect:
             </p>
+            <ol>
+              <li>Let <var>new template</var> be the value to assign to the
+                  <code>template</code> property.</li>
+              <li>If <var>new template</var> is <code>null</code>,
+                <ol>
+                  <li>Call <code>unlink()</code>.</li>
+                </ol>
+              </li>
+              <li>Otherwise,
+                <ol>
+                  <li>Set <code>timing</code> to <code><var>new
+                      template</var>.timing</code>.</li>
+                  <li>Set <code>func</code> to <code><var>new
+                      template</var>.func</code>.</li>
+                  <li>Set <code>template</code> to <code><var>new
+                      template</var></code>.</li>
+                </ol>
+              </li>
+            </ol>
           </dd>
           <dt>readonly attribute Element? targetElement</dt>
           <dd>
@@ -416,28 +447,41 @@
                   <code>null</code>, return.</li>
               <li>Create a new <a>AnimTemplate</a> object,
                   <var>template</var>.</li>
-              <li>Let <code><var>template</var>.timing</code> be
+              <li>Set <code><var>template</var>.timing</code> to
                   <code><var>source</var>.timing.clone()</code>.</li>
-              <li>Let <code><var>template</var>.func</code> be
+              <li>Set <code><var>template</var>.func</code> to
                   <code><var>source</var>.func.clone()</code>.</li>
-              <li>Let <code><var>source</var>.template</code> be
+              <li>Set <code><var>source</var>.template</code> to
                   <var>template</var>.</li>
+              <li>Return <var>template</var>.</li>
             </ol>
           </dd>
           <dt>AnimTemplate? unlink()</dt>
           <dd>
-            <p class="todo">
+            <p>
               Makes this animation independent of the template with which it is
-              associated if any.
-              See <a href="#animation-templates" class="sectionRef"></a>.
+              associated if any
+              (see <a href="#animation-templates" class="sectionRef"></a>)
             </p>
             <p>
-              After this method returns, the <code>template</code>
-              property will be <code>null</code>.
+              After setting <code>template</code> to <code>null</code> the
+              previous value of <code>template</code> is returned.
             </p>
             <p>
-              Returns the previous value of <code>template</code>.
+              The effect is equivalent to the following steps:
             </p>
+            <ol>
+              <li>If <code>template</code> is <code>null</code>, return
+                  <code>null</code>.</li>
+              <li>Let <var>old template</var> be <code>template</code>.</li>
+              <li>Set <code>timing</code> to
+                  <code>template.timing.clone()</code>.</li>
+              <li>Set <code>func</code> to
+                  <code>template.func.clone()</code>.</li>
+              <li>Set <code>template</code> to <code>null</code> (but do not
+                  recursively call this function).</li>
+              <li>Return <var>old template</var>.</li>
+            </ol>
           </dd>
         </dl>
       </section>
