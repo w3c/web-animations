@@ -394,14 +394,35 @@
               Explain what it means for this to be <code>null</code>.
             </p>
           </dd>
-          <dt>AnimTemplate? templatize()</dt>
+          <dt>AnimTemplate templatize()</dt>
           <dd>
-            <p class="todo">
-              Creates a new <a>AnimTemplate</a> object whose <code>timing</code>
-              and <code>func</code> properties are copies and sets
-              <code>template</code> to this new object and returns it.
-              Need to write out the steps involved here.
+            <p>
+              If this object is not already linked to a template,
+              creates a new <a>AnimTemplate</a> object based on this object and
+              links this object to it (see <a href="#animation-templates"
+              class="sectionRef"></a>).
             </p>
+            <p class="feedbackWanted">
+              What is the more useful behavior? To always create a template?
+              Or to only create one if it doesn't already have one?
+            </p>
+            <p>
+              The effect is equivalent to the following steps:
+            </p>
+            <ol>
+              <li>Let <var>source</var> be the object on which
+                  <code>templatize</code> is called.</li>
+              <li>If <code><var>source</var>.template</code> is not
+                  <code>null</code>, return.</li>
+              <li>Create a new <a>AnimTemplate</a> object,
+                  <var>template</var>.</li>
+              <li>Let <code><var>template</var>.timing</code> be
+                  <code><var>source</var>.timing.clone()</code>.</li>
+              <li>Let <code><var>template</var>.func</code> be
+                  <code><var>source</var>.func.clone()</code>.</li>
+              <li>Let <code><var>source</var>.template</code> be
+                  <var>template</var>.</li>
+            </ol>
           </dd>
           <dt>AnimTemplate? unlink()</dt>
           <dd>
@@ -871,7 +892,9 @@
             <dd>
               <p>
                 Creates a new <a>Timing</a> object with each of its properties
-                set to the same value as this object.
+                set to the same value as this object with the exception of the
+                <code>timingFunction</code> property which is set to
+                <code>timingFunction.clone()</code>.
               </p>
             </dd>
           </dl>
@@ -934,7 +957,12 @@
         <dl title="interface TimedItem" class="idl">
           <dt>readonly attribute Timing timing</dt>
           <dd>
-            The timing parameters for this item.
+            <p>
+              The timing parameters for this item.
+            </p>
+            <p class="todo">
+              Make this writeable.
+            </p>
           </dd>
           <dt>readonly attribute double? animationTime</dt>
           <dd>
@@ -2574,23 +2602,37 @@
           </dd>
           <dt>any sample (double? timeFraction, double currentIteration,
                           Element? target, any underlyingValue)</dt>
-          <dd class="todo">
+          <dd>
+            <div class="todo">
+              <p>
+                Define this here?<br>
+                Potentially this should be an interface that script could
+                provide its own object for.
+              </p>
+              <p>
+                Implementations of the function would be expected to produce the
+                same result given the same parameters so the implementation
+                could cache the result and not call the function when the
+                parameters were the same. 
+              </p>
+              <p>
+                <code>timeFraction</code> would be a number between 0.0 and 1.0
+                inclusive.
+                <code>null</code> values indicate the function should no longer
+                affect the target.
+              </p>
+            </div>
+          </dd>
+          <dt>AnimFunction clone ()</dt>
+          <dd>
             <p>
-              Define this here?
-              Potentially this should be an interface that script could provide
-              its own object for.
+              Creates and returns a new object of the same type as this object's
+              most-derived interface such that it will produce the same output
+              as this object.
             </p>
-            <p>
-              Implementations of the function would be expected to produce the
-              same result given the same parameters so the implementation could
-              cache the result and not call the function when the parameters
-              were the same. 
-            </p>
-            <p>
-              <code>timeFraction</code> would be a number between 0.0 and 1.0
-              inclusive.
-              <code>null</code> values indicate the function should no longer
-              affect the target.
+            <p class="todo">
+              We either need a more rigorous definition here or (probably
+              better) a sets of steps on a per-subclass basis.
             </p>
           </dd>
         </dl>
