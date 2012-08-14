@@ -1176,8 +1176,12 @@ berjon.respec.prototype = {
     lastNonAppendix:    0,
     alphabet:   "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     makeTOCAtLevel:    function (parent, current, level) {
-        var xpath = this.tocIntroductory ? "./x:section|./section" :
-                                           "./x:section[not(@class='introductory')]|./section[not(@class='introductory')]"
+        var cond = this.tocIntroductory ? "" : "[not(@class='introductory')]";
+        // Allow sections to be nested in a div so we can use divs to block
+        // off informative sections that begin within a section and span
+        // sub-sections
+        var xpath = "./*[self::x:section or self::section]" + cond +
+                    "|./div/*[self::x:section or self::section]" + cond;
         var secs = sn.findNodes(xpath, parent);
         if (secs.length == 0) return null;
         var ul = sn.element("ul", { "class": "toc" });
