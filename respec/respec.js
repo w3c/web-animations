@@ -1522,7 +1522,7 @@ berjon.respec.prototype = {
             var inf = w.definition(idl);
             var df = w.makeMarkup();
             idl.parentNode.replaceChild(df, idl);
-            if (inf.type == "interface" || inf.type == "exception" || inf.type == "dictionary" || inf.type == "typedef" || inf.type == "enum") infNames.push(inf.id);
+            if (inf.type == "interface" || inf.type == "exception" || inf.type == "dictionary" || inf.type == "typedef" || inf.type == "enum" || inf.type == "namedconstructor") infNames.push(inf.id);
         }
         document.normalize();
         var ants = document.querySelectorAll("a:not([href])");
@@ -1682,6 +1682,7 @@ berjon.WebIDLProcessor.prototype = {
         str = this.parseExtendedAttributes(str, def);
         if      (str.indexOf("interface") == 0 || str.indexOf("partial") == 0) type = "interface";
         else if (str.indexOf("enum") == 0)			type = "enum";
+        else if (str.indexOf("constructor") == 0)	type = "namedconstructor";
         else if (str.indexOf("exception") == 0)		type = "exception";
         else if (str.indexOf("dictionary") == 0)	type = "dictionary";
         else if (str.indexOf("typedef") == 0)		type = "typedef";
@@ -1768,6 +1769,20 @@ berjon.WebIDLProcessor.prototype = {
     
     enum: function (enm, str, idl) {
         enm.type = "enum";
+        var match = /^\s*enum\s+(\S+)\s*$/.exec(str);
+		enm.id = match[1];
+        if (match) {
+            enm.id = match[1];
+            enm.refId = this._id(enm.id);
+        }
+        else {
+            error("Expected enum, got: " + str);
+        }
+        return enm;
+    },
+    
+    namedconstructor: function (enm, str, idl) {
+        enm.type = "namedconstructor";
         var match = /^\s*enum\s+(\S+)\s*$/.exec(str);
 		enm.id = match[1];
         if (match) {
