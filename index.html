@@ -420,14 +420,20 @@
               <li>Otherwise,
                 <ol>
                   <li>Set <code>timing</code> to <code><var>new
-                      template</var>.timing</code>.</li>
+                      template</var>.timing.clone()</code>.</li>
                   <li>Set <code>func</code> to <code><var>new
-                      template</var>.func</code>.</li>
+                      template</var>.func.clone()</code>.</li>
                   <li>Set <code>template</code> to <code><var>new
                       template</var></code>.</li>
                 </ol>
               </li>
             </ol>
+            <p class="annotation">
+              The reason we clone the template's members is that we need a way
+              to differentiate <code>anim.timing.startDelay = 4</code> (which
+              throws an exception when <code>anim.template</code> is non-null),
+              and <code>template.timing.startDelay = 4</code> (which is fine).
+            </p>
           </dd>
           <dt>readonly attribute Element? targetElement</dt>
           <dd>
