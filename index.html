@@ -365,7 +365,20 @@
       </p>
       <section>
         <h3>The <code>Anim</code> interface</h3>
-        <dl title="interface Anim : TimedItem" class="idl">
+        <div class="todo">
+          Need to support <code>NamedConstructor</code>s (or even just multiple
+          ctors) in respec so we can document how the ctors below work.
+        </div>
+        <dl title="
+[Constructor (Element? elem, Object? properties,
+              AnimGroup? parentGroup, optional double startTime),
+ NamedConstructor = LinkedAnim(Element? elem, AnimTemplate template,
+                               AnimGroup? parentGroup,
+                               optional double startTime),
+ NamedConstructor = ClonedAnim(Element? elem, Anim cloneSource,
+                               AnimGroup? parentGroup,
+                               optional double startTime)]
+                interface Anim : TimedItem" class="idl">
           <dt>attribute AnimFunction func</dt>
           <dd>
             <p>
@@ -484,6 +497,259 @@
             </ol>
           </dd>
         </dl>
+        <section>
+          <h4>Using anonymous parameter objects</h4>
+          <div class="informative">
+            <p>
+              For convenience, the <a>Anim</a> constructor allows passing in
+              a collection of parameters on an anonymous object that are then
+              assigned to the appropriate sub-properties of the newly
+              construction <a>Anim</a> object.
+            </p>
+            <p>
+              This allows the following usage:
+            </p>
+            <pre class='example sh_javascript'>
+var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
+            </pre>
+            <p>
+              When using a collection of parameters, the timing parameters may
+              be specified by using either of the following methods:
+            </p>
+            <ul>
+              <li>
+                <p>Setting a <code>timing</code> property on the parameters
+                   object to a <a>Timing</a> object. For example,</p>
+                <p><pre class="sh_javascript"><code>{
+  timing: otherAnim.timing.clone()
+}</code></pre>
+                </p>
+                <p>
+                  This object is directly assigned to the new <a>Anim</a>
+                  object's <code>timing</code> property, it is not copied.
+                </p>
+              </li>
+              <li>
+                <p>Setting the timing properties individually on the parameters
+                   object itself. For example,</p>
+                <p><pre class="sh_javascript"><code>{
+  iterationDuration: 3,
+  startDelay: 0.5
+}</code></pre>
+                </p>
+                <p>
+                  The property names on the parameters object are matched with
+                  those defined on the <a>Timing</a> interface.
+                  Unspecified properties take on their default values.
+                </p>
+              </li>
+            </ul>
+            <p>
+              If the <code>timing</code> property is set, all other timing
+              properties are ignored.
+            </p>
+            <p class="feedbackWanted">
+              This is because the <code>timing</code> property is shared in this
+              case.
+              If we allow both to be used (i.e. <code>timing</code> property
+              plus some overrides), you would end up affecting other users of
+              the same <a>Timing</a> object which is probably unexpected.
+              If we decide to make it copy the <a>Timing</a> object before
+              assigning, then allowing both methods to be used together is safe
+              and probably very convenient.
+            </p>
+            <p>
+              Within the collection of parameters, the animation parameters may
+              be specified by using either of the following methods:
+            </p>
+            <ul>
+              <li>
+                <p>Setting an <code>animFunc</code> property on the parameters
+                   object to an <a>AnimFunction</a> object. For example,</p>
+                <p><pre class="sh_javascript"><code>{
+  animFunc: otherAnim.func.clone()
+}</code></pre>
+                </p>
+                <p>
+                  This object is directly assigned to the new <a>Anim</a>
+                  object's <code>func</code> property, it is not copied.
+                </p>
+               </li>
+              <li>
+                <p>Setting a <code>prop</code> property on the parameters object
+                   specifying the property on the target element to animate,
+                   along with a <code>to</code> property giving the target
+                   value and an optional <code>from</code> property giving the
+                   starting value. For example,</p>
+                <p><pre class="sh_javascript"><code>{
+  prop: 'height',
+  from: '100px', // 'from' is optional
+  to: '200px'
+}</code></pre>
+                </p>
+                <p>
+                  These values are used to build a new
+                  <a>KeyframesAnimFunction</a> object.
+                </p>
+                <div class="feedbackWanted">
+                  <p>
+                    I think it would be better to follow what Raphael does here:
+                  </p>
+                  <p><pre class="sh_javascript"><code>{
+  'height': '200px',
+}</code></pre>
+                  <p>
+                    There are two issues here:
+                  </p>
+                  <ol>
+                    <li>Not possible to do from-to animations with this
+                        arrangement. &rarr; That's fine so long as the ctor for
+                        <a>KeyframesAnimFunction</a> is easy to use.</li>
+                    <li>Potential clashes between attribute/property names and
+                        any property defined on the <a>Timing</a> interface.
+                        &rarr; Maybe we just nip this in the bud and append
+                        something on to the property name, e.g.
+                        <code>prop:height</code>.</li>
+                  </ol>
+                </div>
+            </ul>
+            <p>
+              If the <code>animFunc</code> property is set, any
+              <code>prop</code>, <code>from</code>, or <code>to</code>
+              properties are ignored.
+            </p>
+          </div>
+          <p>
+            The interpretation of these parameters is based on the following
+            process:
+          </p>
+          <ol>
+            <li>Let <var>params</var> be the passed in object whose properties
+                represent the parameters to set.</li>
+            <li>Construct a new <a>Anim</a> object, <var>anim</var>.</li>
+            <li>
+              <p>
+                Set the timing properties using the first matching condition
+                from the following list.
+              </p>
+              <dl class="switch">
+                <dt>If <code><var>params</var>.timing</code> is set,</dt>
+                <dd>
+                  Set <code><var>anim</var>.timing</code> to
+                      <code><var>params</var>.timing</code>.
+                </dd>
+                <dt>Otherwise (including if <var>params</var> is
+                    <code>null</code>),</dt>
+                <dd>
+                  <ol>
+                    <li>Initialize <code><var>anim</var>.timing</code> property
+                        to a newly constructed <code>Timing</code> object using
+                        the default values for each property.</li>
+                    <li>If <var>params</var> is not <code>null</code>,
+                        then for each of property, <var>candidate</var>, of
+                        <var>params</var>, if
+                        <code><var>anim</var>.timing.<var>candidate</var></code>
+                        exists, set
+                        <code><var>anim</var>.timing.<var>candidate</var></code>
+                        to
+                        <code><var>params</var>.<var>candidate</var></code>.
+                        <p class="todo">
+                          <code>TimingFunction</code> will probably need
+                          special handling. Do we copy it? Will we need to
+                          translate strings (e.g. "ease-in") into numbers, or
+                          will <code>TimingFunction</code> have
+                          a ctor/property that takes care of this?
+                        </p>
+                        <p class="todo">
+                          Setting a property to an invalid value will sometimes
+                          raise an exception aborting the whole process.
+                          In some cases that's what you want but in terms of
+                          forwards compability, it would be nice to be able to
+                          set a value in a way that older UAs that don't support
+                          the new value would just ignore it (like usual
+                          HTML/CSS processing).
+                          e.g. <code>'@dur': '50%'</code> means, "Set the
+                          'dur' property but if there's any exception, just
+                          ignore it".
+                        </p>
+                        <p class="todo">
+                          Do we want to provide a facility to convert
+                          <code>'50ms'</code> to <code>0.05</code>?
+                          Or can we define this on the <a>Timing</a> interface
+                          somehow?
+                        </p>
+                        <p class="todo">
+                          Similarly, should we allow property aliases
+                          to match up with CSS/SVG syntax, e.g.
+                          <code>duration</code> is interpreted as
+                          <code>iterationDuration</code>?
+                        </p>
+                    </li>
+                  </ol>
+                </dd>
+            </li>
+            <li>
+              <p>
+                Initialize the animation function based on the first matching
+                condition from the following,
+              </p>
+              <dl class="switch">
+                <dt>If <code><var>params</var>.animFunc</code> is set,</dt>
+                <dd>
+                  Set <code><var>anim</var>.func</code> to
+                      <code><var>params</var>.animFunc</code>.
+                </dd>
+                <dt>If <code><var>params</var>.prop</code>
+                    and <code><var>params</var>.to</code> is set,</dt>
+                <dd>
+                  <ol>
+                    <li>Create a new <a>KeyframesAnimFunction</a>,
+                        <var>func</var>.</li>
+                    <li>Set <code><var>func</var>.property</code> to
+                        <code><var>params</var>.prop</code>.</li>
+                    <li>If <code><var>params</var>.from</code> is set,
+                      <ol>
+                        <li>Create a new <a>AnimFrame</a>, <var>first
+                            frame</var>.</li>
+                        <li>Set <code><var>first frame</var>.value</code> to
+                                <code><var>params</var>.from</code>.</li>
+                        <li>Set <code><var>first frame</var>.offset</code> to
+                            0.</li>
+                        <li>Call
+                <code><var>func</var>.frames.add(<var>first frame</var>)</code>.
+                        </li>
+                      </ol>
+                    </li>
+                    <li>Create a new <a>AnimFrame</a>, <var>last
+                        frame</var>.</li>
+                    <li>Set <code><var>last frame</var>.value</code> to
+                            <code><var>params</var>.to</code>.</li>
+                    <li>Set <code><var>last frame</var>.offset</code> to 1.</li>
+                    <li>Call
+                <code><var>func</var>.frames.add(<var>last frame</var>)</code>.
+                    </li>
+                    <li>Set <code><var>anim</var>.animFunc</code> to
+                        <var>func</var>.</li>
+                  </ol>
+                </dd>
+                <dt>Otherwise (including if <var>params</var> is
+                    <code>null</code>),</dt>
+                <dd>
+                  <p>
+                    Set <code><var>anim</var>.animFunc</code> to a newly
+                    constructed empty <a>KeyframesAnimFunction</a>.
+                  </p>
+                  <p class="todo">
+                    Can you even create an empty one without setting a property?
+                  </p>
+                </dd>
+              </dl>
+            </li>
+            <li>
+              Return <var>anim</var>.
+            </li>
+          </ol>
+        </section>
       </section>
     </section>
 
@@ -2716,11 +2982,46 @@
       </section>
       <section>
         <h3>The <code>KeyframesAnimFunction</code> interface</h3>
-        <p>
-          I think most of the members of the interface, perhaps all, should be
-          readonly when this object is returned from
-          an <code>Anim</code> object.
-          Objects returned from an <code>AnimTemplate</code>, however, are live.
+        <div class="todo">
+          <p>
+            Need to define convenience ctors here. I think you want to support
+            something like this:
+          </p>
+          <pre class="sh_javascript">
+{
+  [
+    { offset: 0,   height: '200px' },
+    { offset: 0.2, height: '300px', timing: 'ease-in' },
+    { offset: 1,   height: '400px' },
+  ]
+}</pre>
+          <p>
+            If <code>offset</code> is not specified it makes them equidistant?
+            That assumes they're in order though.
+          </p>
+          <p>
+            Also, ideally the ctor for <a>GroupedAnimFunction</a> would accept
+            the above input as well as the below.
+          </p>
+          <pre class="sh_javascript">
+{
+  [
+    { offset: 0, height: '200px' },
+    { offset: 1, height: '400px', width: '500px' },
+  ]
+}</pre>
+          <p>
+            As a bonus, the ctor for <a>KeyframesAnimFunction</a> should also be
+            nice to support the following arrangement:
+          </p>
+          <pre class="sh_javascript">
+{
+  prop: 'height',
+  values: [ '200px', '300px', '400px']
+}</pre>
+        </div>
+        <p class="todo">
+          Need to define exceptions when this is a read-only object.
         </p>
         <p>
           <dl title="[Constructor] interface KeyframesAnimFunction : AnimFunction" class="idl">
