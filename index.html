@@ -510,7 +510,7 @@
             This allows the following usage:
           </p>
           <pre class='example sh_javascript'>
-var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
+var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           </pre>
           <p>
             When using a collection of parameters, the timing parameters may
@@ -533,7 +533,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               <p>Setting the timing properties individually on the parameters
                  object itself. For example,</p>
               <p><pre class="sh_javascript"><code>{
-  iterationDuration: 3,
+  duration: 3,
   startDelay: 0.5
 }</code></pre>
               </p>
@@ -684,7 +684,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
                           Similarly, should we allow property aliases
                           to match up with CSS/SVG syntax, e.g.
                           <code>duration</code> is interpreted as
-                          <code>iterationDuration</code>?
+                          <code>duration</code>?
                         </p>
                     </li>
                   </ol>
@@ -1054,7 +1054,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
                 </dd>
               </dl>
             </dd>
-            <dt>attribute unrestricted double? iterationDuration</dt>
+            <dt>attribute unrestricted double? duration</dt>
             <dd>
               <p>
                 The duration specified for a single iteration.
@@ -1276,37 +1276,51 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               Make this writeable.
             </p>
           </dd>
-          <dt>readonly attribute double? animationTime</dt>
-          <dd>
-            The time in seconds representing the offset into the animation
-            interval.
-            It is calculated using the steps described in <a
-            href="#calculating-the-animation-time" class="sectionRef"></a>.
-            As a result of that definition, this property will be
-            non-<code>null</code> if and only if the animation is in
-            <a>in effect</a>.
-          </dd>
-          <dt>attribute unrestricted double animationDuration</dt>
+          <dt>attribute double? totalTime</dt>
           <dd>
             <p>
-              The length in seconds of the animation interval.
+              Returns the <a>item time</a> of this item in seconds.
             </p>
             <p>
-              Initially, this attribute will reflect the <a>intrinsic
-              animation duration</a>.
+              Setting this value performs a seek operation according to the
+              steps described in described in <a href="#seeking-a-timed-item"
+              class="sectionRef"></a>.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type <code>InvalidStateError</code></dt>
+              <dd>
+                Raised on setting if <code>parentGroup</code> is a sequence
+                animation group (see <a
+                href="#the-start-time-of-children-of-a-sequence-animation-group"
+                class="sectionRef"></a>).
+              </dd>
+            </dl>
+          </dd>
+          <dt>attribute unrestricted double totalDuration</dt>
+          <dd>
+            <p>
+              The length in seconds of the <a>item interval</a>.
+            </p>
+            <p>
+              Initially, this attribute will reflect the sum of the <a>intrinsic
+              animation duration</a> plus <code>timing.startDelay</code>.
               Changes to the model that cause the <a>intrinsic animation
               duration</a> to change are reflected in the value returned here.
             </p>
             <p>
-              The <a>instrinsic animation duration</a> may be overridden by
-              setting this attribute to any real number.
+              The calculated value may be be overridden by setting this
+              attribute to any real number.
               Negative values are clamped to zero.
               Setting this attribute to <code>undefined</code> has the effect of
               clearing the override value so that the attribute returns to
-              reflecting the <a>intrinsic animation duration</a>.
+              reflecting the sum of <a>intrinsic animation duration</a> and
+              <code>timing.startDelay</code>.
             </p>
           </dd>
-          <dt>readonly attribute double? iterationTime</dt>
+          <dt>readonly attribute double? currentTime</dt>
           <dd>
             The time in seconds representing the offset into the iteration
             duration using the steps described in <a
@@ -1315,29 +1329,28 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
             non-<code>null</code> if and only if the animation is in
             <a>in effect</a>.
           </dd>
-          <dt>readonly attribute unrestricted double iterationDuration</dt>
-          <dd>
-            The iteration duration calculated for this item.
-            If <code>timing.iterationDuration</code> is set and greater than or
-            equal to zero, this will match
-            <code>timing.iterationDuration</code>.
-            Otherwise, this will reflect the calculated intrinsic duration of
-            the item as described in <a
-            href="#calculating-the-iteration-duration"
-            class="sectionRef"></a>.
-          </dd>
           <dt>readonly attribute unsigned long? currentIteration</dt>
           <dd>
             The number of iterations that have completed as described in <a
               href="#calculating-the-current-iteration" class="sectionRef"></a>.
+          </dd>
+          <dt>readonly attribute unrestricted double duration</dt>
+          <dd>
+            The iteration duration calculated for this item.
+            If <code>timing.duration</code> is set and greater than or
+            equal to zero, this will match <code>timing.duration</code>.
+            Otherwise, this will reflect the calculated intrinsic duration of
+            the item as described in <a
+            href="#calculating-the-iteration-duration" class="sectionRef"></a>.
           </dd>
           <dt>attribute double startTime</dt>
           <dd>
             <p>
               The time which when combined with the
               <code>timing.startDelay</code> defines the lower bound of the
-              animation interval. It is expressed in seconds in the iteration
-              time space of <code>parentGroup</code>.
+              <a>animation interval</a>.
+              It is expressed in seconds in the iteration time space of
+              <code>parentGroup</code>.
             </p>
             <p>
               When the parent animation group is a sequence group, any
@@ -1347,7 +1360,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               href="#the-start-time-of-children-of-a-sequence-animation-group"
               class="sectionRef"></a>.
               Furthermore, attempts to set this property will raise an
-              DOMException of type <code>NoModificationAllowedError</code>.
+              DOMException of type <code>InvalidStateError</code>.
               If this item is later made the child of a parallel animation
               group, any previously set value will be restored.
             </p>
@@ -1359,8 +1372,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               Exceptions:
             </p>
             <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
+              <dt>DOMException of type <code>InvalidStateError</code></dt>
               <dd>
                 Raised on setting if <code>parentGroup</code> is a sequence
                 animation group (see <a
@@ -1410,8 +1422,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               Exceptions:
             </p>
             <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
+              <dt>DOMException of type <code>InvalidStateError</code></dt>
               <dd>
                 Raised if <code>parentGroup</code> is a sequence animation group
                 (see <a
@@ -1498,8 +1509,8 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
             </p>
             <ol>
               <li>If <code>totalTime &gt; totalDuration</code> and
-                  <code>timing.playbackRate &ge; 0</code>, call
-                  <code>seek(timing.startDelay)</code>.</li>
+                  <code>timing.playbackRate &ge; 0</code>, set
+                  <code>totalTime</code> to <code>timing.startDelay</code>.</li>
               <li>Set <code>locallyPaused</code> to <code>false</code>.</li>
             </ol>
             <p>
@@ -1513,15 +1524,6 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               href="http://dev.w3.org/html5/spec/media-elements.html#dom-media-play">play
               method</a>.
             </p>
-          </dd>
-          <dt>void seek (unsigned long itemTime)</dt>
-          <dd>
-            Performs a seek operation on this timed item according to the steps
-            described in <a href="#seeking-a-timed-item"
-            class="sectionRef"></a>.
-            <code>itemTime</code> is a time in seconds in <em>item time</em>
-            space (see <a href="#iteration-time-and-animation-time"
-            class="sectionRef"></a>).
           </dd>
           <dt>void changePlaybackRate (double playbackRate)</dt>
           <dd>
@@ -1587,7 +1589,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
                   formula:
                   <code><a>item time</a>
                     - <var>seek adjustment</var></code>.</li>
-              <li>Call <code>seek(<var>seek time</var>)</code>.</li>
+              <li>Set <code>totalTime</code> to <var>seek time</var>.</li>
             </ol>
             <p>
               Exceptions:
@@ -1640,7 +1642,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               Call <code>changePlaybackRate(-timing.playbackRate)</code>.
             </li>
             <li>
-              Call <code>seek(<var>seek time</var>)</code>.
+              Set <code>totalTime</code> to <var>seek time</var>.
             </li>
             <p>
               Exceptions:
@@ -1708,12 +1710,12 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
         </p>
         <dl class="switch">
           <dt>
-            If the <code>timing.iterationDuration</code> timing property is set
+            If the <code>timing.duration</code> timing property is set
             to a numerical value greater than or equal to zero (including
             positive infinity),
           </dt>
           <dd>
-            return <code>timing.iterationDuration</code>.
+            return <code>timing.duration</code>.
           </dd>
           <dt>
             Otherwise,
@@ -2891,11 +2893,17 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
                 </li>
                 <li>
                   Increment <var>accumulated start time</var> by
-                  <code>max(0, timing.startDelay + animationDuration)</code>.
+                  <code>max(0, totalDuration)</code>.
                 </li>
               </ol>
             </li>
           </ol>
+          <p class="todo">
+            Where does the drift get incorporated here?
+            Do we defer it to the parent?
+            How should a sequence container behave if you seek backwards and
+            a child is paused?
+          </p>
           <p class="note">
             When <code>animationDuration</code> is positive infinity the
             behavior is defined by IEEE 754-2008.
