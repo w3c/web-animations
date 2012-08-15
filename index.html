@@ -380,7 +380,7 @@
                                AnimGroup? parentGroup,
                                optional double startTime)]
                 interface Anim : TimedItem" class="idl">
-          <dt>attribute AnimFunction func</dt>
+          <dt>attribute AnimFunc func</dt>
           <dd>
             <p>
               The animation function to apply (see <a href="#animation-values"
@@ -570,10 +570,10 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
           </p>
           <ul>
             <li>
-              <p>Setting an <code>animFunc</code> property on the parameters
-                 object to an <a>AnimFunction</a> object. For example,</p>
+              <p>Setting a <code>func</code> property on the parameters
+                 object to an <a>AnimFunc</a> object. For example,</p>
               <p><pre class="sh_javascript"><code>{
-  animFunc: otherAnim.func.clone()
+  func: otherAnim.func.clone()
 }</code></pre>
               </p>
               <p>
@@ -595,7 +595,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               </p>
               <p>
                 These values are used to build a new
-                <a>KeyframesAnimFunction</a> object.
+                <a>KeyframesAnimFunc</a> object.
               </p>
               <div class="feedbackWanted">
                 <p>
@@ -610,7 +610,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
                 <ol>
                   <li>Not possible to do from-to animations with this
                       arrangement. &rarr; That's fine so long as the ctor for
-                      <a>KeyframesAnimFunction</a> is easy to use.</li>
+                      <a>KeyframesAnimFunc</a> is easy to use.</li>
                   <li>Potential clashes between attribute/property names and
                       any property defined on the <a>Timing</a> interface.
                       &rarr; Maybe we just nip this in the bud and append
@@ -620,7 +620,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               </div>
           </ul>
           <p>
-            If the <code>animFunc</code> property is set, any
+            If the <code>func</code> property is set, any
             <code>prop</code>, <code>from</code>, or <code>to</code>
             properties are ignored.
           </p>
@@ -662,10 +662,10 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
                         to
                         <code><var>params</var>.<var>candidate</var></code>.
                         <p class="todo">
-                          <code>TimingFunction</code> will probably need
+                          <code>TimingFunc</code> will probably need
                           special handling. Do we copy it? Will we need to
                           translate strings (e.g. "ease-in") into numbers, or
-                          will <code>TimingFunction</code> have
+                          will <code>TimingFunc</code> have
                           a ctor/property that takes care of this?
                         </p>
                         <p class="todo">
@@ -702,16 +702,16 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
                 condition from the following,
               </p>
               <dl class="switch">
-                <dt>If <code><var>params</var>.animFunc</code> is set,</dt>
+                <dt>If <code><var>params</var>.func</code> is set,</dt>
                 <dd>
                   Set <code><var>anim</var>.func</code> to
-                      <code><var>params</var>.animFunc</code>.
+                      <code><var>params</var>.func</code>.
                 </dd>
                 <dt>If <code><var>params</var>.prop</code>
                     and <code><var>params</var>.to</code> is set,</dt>
                 <dd>
                   <ol>
-                    <li>Create a new <a>KeyframesAnimFunction</a>,
+                    <li>Create a new <a>KeyframesAnimFunc</a>,
                         <var>func</var>.</li>
                     <li>Set <code><var>func</var>.property</code> to
                         <code><var>params</var>.prop</code>.</li>
@@ -736,7 +736,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
                     <li>Call
                 <code><var>func</var>.frames.add(<var>last frame</var>)</code>.
                     </li>
-                    <li>Set <code><var>anim</var>.animFunc</code> to
+                    <li>Set <code><var>anim</var>.func</code> to
                         <var>func</var>.</li>
                   </ol>
                 </dd>
@@ -744,8 +744,8 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
                     <code>null</code>),</dt>
                 <dd>
                   <p>
-                    Set <code><var>anim</var>.animFunc</code> to a newly
-                    constructed empty <a>KeyframesAnimFunction</a>.
+                    Set <code><var>anim</var>.func</code> to a newly
+                    constructed empty <a>KeyframesAnimFunc</a>.
                   </p>
                   <p class="todo">
                     Can you even create an empty one without setting a property?
@@ -1182,7 +1182,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
                 </dd>
               </dl>
             </dd>
-            <dt>attribute TimingFunction timingFunction</dt>
+            <dt>attribute TimingFunc timingFunc</dt>
             <dd class="todo">
               TBD.
             </dd>
@@ -1211,8 +1211,8 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               <p>
                 Creates a new <a>Timing</a> object with each of its properties
                 set to the same value as this object with the exception of the
-                <code>timingFunction</code> property which is set to
-                <code>timingFunction.clone()</code>.
+                <code>timingFunc</code> property which is set to
+                <code>timingFunc.clone()</code>.
               </p>
             </dd>
           </dl>
@@ -2108,12 +2108,12 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
         subsection of the previous section.
         &ldquo;Scaling the time&rdquo;?
       </p>
-      <h3>The <code>TimingFunction</code> interface</h3>
+      <h3>The <code>TimingFunc</code> interface</h3>
       <p class="todo">
         TBD.
       </p>
-      <dl title="interface TimingFunction" class="idl">
-        <dt>TimingFunction clone()</dt>
+      <dl title="interface TimingFunc" class="idl">
+        <dt>TimingFunc clone()</dt>
         <dd>
           <p class="todo">Needed for <code>Timing.clone</code>.</p>
         </dd>
@@ -2901,16 +2901,16 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
         </p>
         <p>
           The entry-point to the <em>animation model</em> is the
-          <a>AnimFunction</a> object associated with each <a>Anim</a>.
+          <a>AnimFunc</a> object associated with each <a>Anim</a>.
           These objects describe how animation values should be calculated for
           the <a>Anim</a> for any given time.
-          <a>AnimFunction</a> serves as an abstract interface of which several
+          <a>AnimFunc</a> serves as an abstract interface of which several
           concrete subclasses are provided.
         </p>
       </div>
       <section>
-        <h3>The <code>AnimFunction</code> interface</h3>
-        <dl title="[Constructor] interface AnimFunction" class="idl">
+        <h3>The <code>AnimFunc</code> interface</h3>
+        <dl title="[Constructor] interface AnimFunc" class="idl">
           <dt>attribute CompositeOperation operation</dt>
           <dd>
             <p>
@@ -2964,7 +2964,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               </p>
             </div>
           </dd>
-          <dt>AnimFunction clone ()</dt>
+          <dt>AnimFunc clone ()</dt>
           <dd>
             <p>
               Creates and returns a new object of the same type as this object's
@@ -3000,12 +3000,12 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
             The meaning of merge is dependent on the type of animation.
             The duration of the merge is the calculated animation duration
             of the <code>AnimTemplate</code> containing this
-            <code>AnimFunction</code>.
+            <code>AnimFunc</code>.
           </dd>
         </dl>
       </section>
       <section>
-        <h3>The <code>KeyframesAnimFunction</code> interface</h3>
+        <h3>The <code>KeyframesAnimFunc</code> interface</h3>
         <div class="todo">
           <p>
             Need to define convenience ctors here. I think you want to support
@@ -3024,7 +3024,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
             That assumes they're in order though.
           </p>
           <p>
-            Also, ideally the ctor for <a>GroupedAnimFunction</a> would accept
+            Also, ideally the ctor for <a>GroupedAnimFunc</a> would accept
             the above input as well as the below.
           </p>
           <pre class="sh_javascript">
@@ -3035,7 +3035,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
   ]
 }</pre>
           <p>
-            As a bonus, the ctor for <a>KeyframesAnimFunction</a> should also be
+            As a bonus, the ctor for <a>KeyframesAnimFunc</a> should also be
             nice to support the following arrangement:
           </p>
           <pre class="sh_javascript">
@@ -3048,7 +3048,8 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
           Need to define exceptions when this is a read-only object.
         </p>
         <p>
-          <dl title="[Constructor] interface KeyframesAnimFunction : AnimFunction" class="idl">
+          <dl title="[Constructor] interface KeyframesAnimFunc : AnimFunc"
+            class="idl">
             <dt>attribute DOMString property</dt>
             <dd>
               The target attribute / property. <code>property</code> is probably
@@ -3076,7 +3077,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               the iteration duration of the animation where this value should
               appear. Ignored if we're using paced timing?<br>
               What happens if you change it? The array returned by the
-              <code>AnimFunction</code> is updated? I guess that's fine
+              <code>AnimFunc</code> is updated? I guess that's fine
               if it's just an array. Any already-returned arrays wouldn't need
               to be updated.<br>
               What happens if you have two values with the same offset? It would
@@ -3084,7 +3085,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               in the air (since the more you leave undefined, the more you let
               the Web define it for you).
             </dd>
-            <dt>attribute TimingFunction timingFunction</dt>
+            <dt>attribute TimingFunc timingFunc</dt>
             <dd>
               The function to use for this segment. Would a string do here? E.g.
               "ease" or "cubic-bezier(1 0 0.3 1)"? Probably not. It's a little
@@ -3129,8 +3130,8 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
         </p>
       </section>
       <section>
-        <h3>The <code>PathAnimFunction</code> interface</h3>
-        <dl title="[Constructor] interface PathAnimFunction : AnimFunction" class="idl">
+        <h3>The <code>PathAnimFunc</code> interface</h3>
+        <dl title="[Constructor] interface PathAnimFunc : AnimFunc" class="idl">
           <dt>attribute SVGPathSegList segments</dt>
           <dd>
             The list of segments that make up this path.
@@ -3144,22 +3145,23 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
         </dl>
       </section>
       <section>
-        <h3>The <code>GroupedAnimFunction</code> interface</h3>
+        <h3>The <code>GroupedAnimFunc</code> interface</h3>
         <p>
-          The <code>GroupedAnimFunction</code> interface represents a
+          The <code>GroupedAnimFunc</code> interface represents a
           set of animation functions that share the same
           <code>AnimTemplate</code> parent.
         </p>
-        <dl title="[Constructor] interface GroupedAnimFunction : AnimFunction" class="idl">
+        <dl title="[Constructor] interface GroupedAnimFunc : AnimFunc"
+          class="idl">
           <dt>readonly attribute unsigned long length</dt>
           <dd>
             The number of animation functions in the group.
           </dd>
-          <dt>AnimFunction? item(unsigned long index)</dt>
+          <dt>AnimFunc? item(unsigned long index)</dt>
           <dd>
             Returns the function at <code>index</code> if it exists, or null.
           </dd>
-          <dt>void add(AnimFunction func)</dt>
+          <dt>void add(AnimFunc func)</dt>
           <dd>
             Adds <code>func</code> to the group.
           </dd>
@@ -3211,11 +3213,11 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
         </section>
         <section>              
           <h4>Calculating the iteration value for a 
-            <code>KeyframesAnimFunction</code></h4>
+            <code>KeyframesAnimFunc</code></h4>
           <p>
             When an <code>AnimTemplate</code> contains a pointer to a
-            <code>KeyframesAnimFunction</code> <var>keyframes</var>, the <var>animation
-            value</var> for that animation at given current time 
+            <code>KeyframesAnimFunc</code> <var>keyframes</var>, the
+            <var>animation value</var> for that animation at given current time
             <var>t</var> is calculated according to the following steps:
           </p>
           <ol>
@@ -3263,8 +3265,8 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
             </li>
             <li>
               The <var>local time function</var> is the
-              <var>timingFunction</var> of the <var>before frame</var>, if 
-              it exists; otherwise the <var>timingFunction</var> of the
+              <var>timingFunc</var> of the <var>before frame</var>, if 
+              it exists; otherwise the <var>timingFunc</var> of the
               <code>Anim</code> interface's <var>timing</var> attribute.
             </li>
             <li>
@@ -3288,10 +3290,10 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
         </section>
         <section>
           <h4>Calculating the iteration value for a 
-            <code>PathAnimFunction</code></h4>
+            <code>PathAnimFunc</code></h4>
           <p>
             When an <code>AnimTemplate</code> contains a pointer to a
-            <code>PathAnimFunction</code> and <var>rotate</var> is set
+            <code>PathAnimFunc</code> and <var>rotate</var> is set
             to false, the <var>animation value</var> for that animation at
             given current time <var>t</var> is the transform defined by a
             translation equal to the location on the path at <var>t</var>.
@@ -3318,15 +3320,15 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
         </section>
         <section>
           <h4>Calculating the iteration value for a 
-            <code>GroupedAnimFunction</code></h4>
+            <code>GroupedAnimFunc</code></h4>
           <p>
             When an <code>AnimTemplate</code> contains a pointer to a
-            <code>GroupedAnimFunction</code>, the <var>animation
+            <code>GroupedAnimFunc</code>, the <var>animation
             value</var> for that animation at given current time <var>t</var> 
             is calculated by following the procedure outlined in
             <a href="#resolving-animation-stacks" class="sectionRef"></a>, 
-            treating the list of <code>AnimFunction</code> objects 
-            contained within the <code>GroupedAnimFunction</code> as 
+            treating the list of <code>AnimFunc</code> objects 
+            contained within the <code>GroupedAnimFunc</code> as 
             the animation stack and using an initial animation value 
             of 0 for all simple properties and id for transform.
           </p>
@@ -3395,7 +3397,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
         <p>
           Other operations also generate animation stacks - for example, 
           grouping multiple animations using a 
-          <code>GroupedAnimFunction</code>.
+          <code>GroupedAnimFunc</code>.
         </p>
         <p>
           An animation stack may be thought of as a single stack with all
@@ -3431,7 +3433,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
           working up, as animation results are encountered for an element
           and property, these are merged into the cumulative animation result
           using the animation combinator stored in the 
-          <code>AnimFunction</code> that generated the result.
+          <code>AnimFunc</code> that generated the result.
           Once all animation results in the stack are processed, the resulting
           cumulative animation values are the current animation values for
           each property of each element that is animated.
@@ -3486,7 +3488,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
             <code>p</code> that is calculated as the ratio of
             <code>(currentTime - parent.startTime) / parent.animationDuration</code>,
             where <code>parent</code> is the <code>AnimTemplate</code> which
-            references the <code>AnimFunction</code> that is being
+            references the <code>AnimFunc</code> that is being
             composited.
           </p>
           <p>
@@ -3629,7 +3631,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
         <p>
           <dl title="[Constructor] interface AnimTemplate : TimedTemplate"
             class="idl">
-            <dt>attribute AnimFunction func</dt>
+            <dt>attribute AnimFunc func</dt>
             <dd>
               The animation function to apply.
             </dd>
