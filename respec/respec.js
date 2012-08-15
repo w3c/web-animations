@@ -1124,10 +1124,33 @@ berjon.respec.prototype = {
     informative:    function () {
         var secs = document.querySelectorAll("section.informative");
         for (var i = 0; i < secs.length; i++) {
+            // Add text indicating section is non-normative
             var sec = secs[i];
             var p = sn.element("p");
             sn.element("em", {}, p, "This section is non-normative.");
             sec.insertBefore(p, sec.firstElementChild.nextSibling);
+
+            // Add a div to mark off informative section such that it doesn't
+            // include the heading. This allows the background of informative
+            // sections to be styled differently.
+            var backing = sn.element("div", { 'class': 'informative-bg' });
+            var child = sec.firstElementChild.nextSibling;
+            while (child) {
+              var next = child.nextSibling;
+              backing.appendChild(child);
+              child = next;
+            }
+            sec.appendChild(backing);
+        }
+
+        // Style informative divs too
+        var divs = document.querySelectorAll("div.informative");
+        for (var i = 0; i < divs.length; i++) {
+            var div = divs[i];
+            var p = sn.element("p");
+            sn.element("em", {}, p, "This section is non-normative.");
+            div.insertBefore(p, div.firstElementChild);
+            sn.addClass(div, 'informative-bg');
         }
     },
 
