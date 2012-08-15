@@ -1402,6 +1402,9 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               If <code>parentGroup</code> is <code>null</code>, sets
               <code>startTime</code> to <code>timeFromNow</code>.
             </p>
+            <div class="issue">
+              Just use <code>play</code> for this?
+            </div>
             <dl class="parameters">
               <dt>optional double timeFromNow = 0</dt>
               <dd>
@@ -1441,6 +1444,9 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               for the purposes of calculating the
               <code>animationDuration</code>.
             </p>
+            <div class="issue">
+              Just use <code>pause</code> for this?
+            </div>
             <p class="note">
               Note that even after an item has stopped it may, depending on its
               <a href="#animation-fill-behavior">fill mode</a>,
@@ -1456,26 +1462,49 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               </dd>
             </dl>
           </dd>
+          <dt>attribute boolean locallyPaused</dt>
+          <dd>
+            <p>
+              The pause state of this timed item.
+              Initially <code>false</code> except for the document timeline
+              where it is initially true (see <a href="#start-of-the-timeline"
+              class="sectionRef"></a>).
+            </p>
+            <p class="issue">
+              Should this be writeable?
+              Once we integrate with media controllers we might want to make
+              this writeable only when not associated with a media controller
+              much like things currently work in HTML5.
+            </p>
+          </dd>
+          <dt>readonly attribute boolean paused</dt>
+          <dd>
+            Indicates if this element or one of its ancestors is paused.
+            This will be true if an only if <code>true</code> if the
+            <code>locallyPaused</code> state of this object <em>or one of its
+            ancestor animation groups</em> is <code>true</code>.
+          </dd>
           <dt>void pause ()</dt>
           <dd>
-            Sets the pause state of this timed item to true.
+            Sets <code>locallyPaused</code> to <code>true</code>.
           </dd>
-          <dt>void unpause ()</dt>
+          <dt>void play ()</dt>
           <dd>
-            Sets the pause state of this timed item to false.
-          </dd>
-          <dt>bool getPauseState ()</dt>
-          <dd>
-            Returns the pause state of this timed item.
-            The pause state is initially false except for the document timeline
-            where it is initially true (see <a href="#start-of-the-timeline"
-            class="sectionRef"></a>).
-          </dd>
-          <dt>bool isPaused ()</dt>
-          <dd>
-            Returns <code>true</code> if the pause state of this
-            object <em>or one of its ancestor animation groups</em> is
-            <code>true</code>.
+            <p>
+              Unpauses this item and, if the item is not currently animating,
+              seeks to the beginning of the <a>animation interval</a> by taking
+              the following steps.
+            </p>
+            <ol>
+              <li>If <code>totalTime &gt; totalDuration</code> and
+                  <code>timing.playbackRate &ge; 0</code>, call
+                  <code>seek(timing.startDelay)</code>.</li>
+              <li>Set <code>locallyPaused</code> to <code>false</code>.</li>
+            </ol>
+            <p>
+              To unpause the item without seeking, set
+              <code>locallyPaused</code> to <code>false</code>.
+            </p>
           </dd>
           <dt>void seek (unsigned long itemTime)</dt>
           <dd>
@@ -2454,7 +2483,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               Let <var>now</var> be the <var>parent iteration time</var>.
             </li>
             <li>
-              If <var>autostart</var> &lt;= <var>now</var>, set the
+              If <var>autostart</var> &le; <var>now</var>, set the
               <var>pause state</var> to false.
             </li>
             <li>
