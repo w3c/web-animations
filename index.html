@@ -1129,7 +1129,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
                 </dd>
               </dl>
             </dd>
-            <dt>attribute double speed</dt>
+            <dt>attribute double playbackRate</dt>
             <dd>
               <p>
                 A real number that acts as a multiplier on the item's rate of
@@ -1137,8 +1137,8 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
                 For example, a value of 2.0 will cause the item to run at twice
                 its usual speed.
                 A value of -1.0 will cause the item to play backwards.
-                The <code>speed</code> is applied to the item's animation time
-                and hence has no effect on the start time (see <a
+                The <code>playbackRate</code> is applied to the item's animation
+                time and hence has no effect on the start time (see <a
                 href="#iteration-time-and-animation-time"
                 class="sectionRef"></a>).
               </p>
@@ -1486,7 +1486,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
             space (see <a href="#iteration-time-and-animation-time"
             class="sectionRef"></a>).
           </dd>
-          <dt>void changeSpeed (double speed)</dt>
+          <dt>void changePlaybackRate (double playbackRate)</dt>
           <dd>
             <p>
               Updates the speed of the timed item such that it produces a smooth
@@ -1507,13 +1507,13 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               The smooth change is achieved using the following steps:
             </p>
             <ol>
-              <li>Let <var>previous speed</var> be the value of
-                  <code>timing.speed</code> prior to updating it.</li>
-              <li>Update <code>timing.speed</code> to the passed-in
-                  <code>speed</code> parameter.</li>
-              <li>Let <var>new speed</var> be the updated value of
-                  <code>timing.speed</code>.</li> 
-              <li>If either <var>previous speed</var> or <var>new speed</var>
+              <li>Let <var>previous rate</var> be the value of
+                  <code>timing.playbackRate</code> prior to updating it.</li>
+              <li>Update <code>timing.playbackRate</code> to the passed-in
+                  <code>playbackRate</code> parameter.</li>
+              <li>Let <var>new rate</var> be the updated value of
+                  <code>timing.playbackRate</code>.</li> 
+              <li>If either <var>previous rate</var> or <var>new rate</var>
                   are zero, return.</li>
               <li>Invert the fill mode as follows:
                 <dl class="switch">
@@ -1535,15 +1535,15 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               <li>Update the value of <code>animationDuration</code> if
                   necessary (that is, if <code>animationDuration</code> reflects
                   the <a>intrinsic animation duration</a>), applying the updated
-                  value for <code>timing.speed</code>.</li>
+                  value for <code>timing.playbackRate</code>.</li>
               <li>Calculate the <var>seek adjustment</var> according to the
                   following formula:
                   <code><var>seek adjustment</var> =
                   (<a>item time</a> - <code>timing.startDelay</code>) *
-                  (1 - <var>previous speed</var> / <var>new speed</var>)</code>.
+                  (1 - <var>previous rate</var> / <var>new rate</var>)</code>.
                   </li>
-              <li>If the sign of <var>new speed</var> and <var>previous
-                  speed</var> differs, subtract from the <var>seek
+              <li>If the sign of <var>new rate</var> and <var>previous
+                  rate</var> differs, subtract from the <var>seek
                   adjustment</var> the updated value of
                   <code>animationDuration</code>.</li>
               <li>Let <var>seek time</var> be the result of the following
@@ -1600,7 +1600,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
               </dl>
             </li>
             <li>
-              Call <code>changeSpeed(-timing.speed)</code>.
+              Call <code>changePlaybackRate(-timing.playbackRate)</code>.
             </li>
             <li>
               Call <code>seek(<var>seek time</var>)</code>.
@@ -1714,11 +1714,12 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
             duration</a> * <a>iteration count</a></code>.
           </li>
           <li>
-            If <var>speed</var> is zero, return <code>Infinity</code>.
+            If <code>timing.playbackRate</code> is zero, return
+            <code>Infinity</code>.
           </li>
           <li>
             Otherwise, return <code><var>repeated duration</var>
-            / abs(<var>speed</var>)</code>.
+            / abs(<code>timing.playbackRate</code>)</code>.
           </li>
         </ol>
       </section>
@@ -1801,7 +1802,7 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
           <p>
             Before the <a>animation time</a> can be converted to an
             <var>iteration time</var>
-            we must factor in the animation's <var>speed</var> and
+            we must factor in the animation's <var>playback rate</var> and
             <a>iteration start</a>. This is called the <a>adjusted
             animation time</a>.
           </p>
@@ -1820,17 +1821,17 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
             </li>
             <li>
               Return the adjusted animation time based on the
-              <code>timing.speed</code> as follows,
+              <code>timing.playbackRate</code> as follows,
               <dl class="switch">
-                <dt>If <code>timing.speed</code> is negative,</dt>
+                <dt>If <code>timing.playbackRate</code> is negative,</dt>
                 <dd>
                 Return <code>(<a>animation time</a> -
-                              animationDuration) * timing.speed
+                              animationDuration) * timing.playbackRate
                         + <var>start offset</var></code>.
                 </dd>
                 <dt>Otherwise,</dt>
                 <dd>
-                  Return <code><a>animation time</a> * timing.speed
+                  Return <code><a>animation time</a> * timing.playbackRate
                   + <var>start offset</var></code>.
                 </dd>
             </li>
@@ -2203,8 +2204,8 @@ var anim = new Anim(elem, { iterationDuration: 3, prop: 'height', to: '30px' });
         </p>
         <ul>
           <li>
-            Setting the speed of an animation group will speed up or slow down
-            all children.
+            Setting the playback rate of an animation group will speed up or
+            slow down all children.
           </li>
           <li>
             Changing the playback direction of an animation group will change
