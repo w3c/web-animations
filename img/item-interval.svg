@@ -1,7 +1,7 @@
 <!-- vim: set expandtab ts=2 sw=2 tw=80: -->
 <svg xmlns="http://www.w3.org/2000/svg"
   xmlns:xlink="http://www.w3.org/1999/xlink"
-  width="100%" height="100%" viewBox="0 0 600 140">
+  width="100%" height="100%" viewBox="0 0 530 215">
   <defs>
     <style type="text/css">
     svg {
@@ -12,7 +12,7 @@
     /*
      * Line work
      */
-    .line, .arrowLine, .dottedArrow, .doubleArrowLine {
+    .line, .arrowLine, .dottedArrow {
       stroke: black;
       stroke-width: 1.5;
       fill: none;
@@ -23,10 +23,6 @@
     .dottedArrow {
       stroke-dasharray: 4 4;
       stroke-width: 2;
-    }
-    .doubleArrowLine {
-      marker-start: url(#reverseArrow);
-      marker-end: url(#arrow);
     }
     .bracket {
       stroke: black;
@@ -58,6 +54,16 @@
     .stateLabel {
       fill: navy;
     }
+
+    /*
+     * Colored brackets
+     */
+    path.itemInterval, .itemInterval path {
+      stroke: purple;
+    }
+    text.itemInterval, .itemInterval text {
+      fill: purple;
+    }
     </style>
 
     <!-- Arrows -->
@@ -71,21 +77,18 @@
       markerHeight="5">
       <path d="M0-5l10 5l-10 5z" class="blackArrowHead"/>
     </marker>
-    <marker id="reverseArrow" viewBox="-10 -5 10 10" orient="auto"
-      markerWidth="5" markerHeight="5">
-      <path d="M0-5l-10 5l10 5z" class="blackArrowHead"/>
-    </marker>
 
-    <!-- Fade out effect -->
-    <mask id="fadeout" maskContentUnits="objectBoundingBox">
-      <rect x="-0.05" y="-0.05" width="1.1" height="1.1"
-        fill="url(#fadeoutGrad)"/>
-    </mask>
-    <linearGradient id="fadeoutGrad">
-      <stop offset="0" stop-color="white" stop-opacity="1"/>
-      <stop offset="0.5" stop-color="white" stop-opacity="1"/>
-      <stop offset="0.85" stop-color="white" stop-opacity="0"/>
-    </linearGradient>
+    <!-- Star -->
+    <style type="text/css">
+      .startTimeStar {
+        stroke: blue;
+        stroke-linecap: round;
+        stroke-width: 2;
+        fill: none;
+      }
+    </style>
+    <path d="M-3.5-3.5l7 7M3.5-3.5l-7 7M0-5v10M-5 0h10"
+      class="startTimeStar" id="star"/>
   </defs>
 
   <!-- Timeline -->
@@ -95,25 +98,29 @@
     <line x1="80" x2="80" y1="0.6em" y2="1em" class="line"/>
   </g>
 
-  <!-- Animation examples -->
-  <g transform="translate(80 50)">
-    <g transform="translate(100 0)">
-      <g mask="url(#fadeout)">
-        <rect width="400" height="40" class="fillingSpan"/>
-        <rect width="160" height="40" class="animatingSpan"/>
-      </g>
-      <text x="80" y="25" class="stateLabel">animating</text>
-      <text x="240" y="25" class="stateLabel">filling</text>
-      <g transform="translate(0 50)">
-        <path d="M2 0s0 7 7 7h164s7 0 7 7c0 0 0-7 7-7h164s7 0 7-7"
-          class="bracket"/>
-        <text x="180" y="35" class="regionLabel">active</text>
-      </g>
+  <g transform="translate(165 50)">
+    <!-- Text labels -->
+    <g>
+      <text class="timeLabel">start time</text>
+      <text x="250" y="-0.3em" class="timeLabel">end of
+       <tspan x="250" dy="0.9em">animation</tspan></text>
     </g>
+    <!-- Arrows -->
+    <g transform="translate(0 6)">
+      <path d="M0 0v20" class="dottedArrow"/>
+      <path d="M250 10v10" class="dottedArrow"/>
+    </g>
+    <!-- Animation shaded areas -->
     <g transform="translate(0 50)">
-      <path d="M2 0s0 7 7 7h34s7 0 7 7c0 0 0-7 7-7h34s7 0 7-7"
+      <rect width="250" height="60" class="animatingSpan"/>
+      <text x="125" y="35" class="stateLabel">animating</text>
+      <use xlink:href="#star"/>
+    </g>
+    <!-- Item interval label -->
+    <g transform="translate(0 122)" class="itemInterval">
+      <path d="M0 0s0 7 7 7h111s7 0 7 7c0 0 0-7 7-7h111s7 0 7-7"
         class="bracket"/>
-      <text x="50" y="35" class="regionLabel">inactive</text>
+      <text x="125" y="35" class="regionLabel">item interval</text>
     </g>
   </g>
 </svg>

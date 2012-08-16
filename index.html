@@ -758,37 +758,129 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
     <section>
       <h2>Timing animations</h2>
       <section class="informative">
-        <h3>The animation interval</h3>
-        <p>
-          The period that an animation is animating is called the
-          <dfn>animation interval</dfn>.
-          Each animation has only one such interval.
-        </p>
-        <p>
-          The start of the interval is determined by the <var>start
-          time</var> of the animation but may be shifted by
-          a <var>start delay</var> on the animation.
-        </p>
-        <p>
-          The end of the interval is determined by the <var>animation
-          duration</var>.
-        </p>
-        <p>
-          Some examples are illustrated below.
-        </p>
-        <div class="figure">
-          <img src="img/animation-interval-examples.svg" width="600">
-        </div>
-        <p class="caption">
-          Examples of the effect of the start delay on endpoints of the
-          animation interval.<br>
-          (a) An animation with no delay; the start time and start of
-          animation are coincident.<br>
-          (b) An animation with a positive delay; the start of
-          animation is deferred by the delay.<br>
-          (c) An animation with a negative delay; the start of
-          animation is brought forward by the delay.
-        </p>
+        <h3>Animation intervals</h3>
+        <section>
+          <h4>Scheduling an animation: The item interval</h4>
+          <p>
+            Each animation in the timeline has a time where it is defined to
+            begin called the <dfn>start time</dfn>.
+            The span of time from the <var>start time</var> until the animation
+            completes animating is called the <dfn>item interval</dfn>.
+            Each animation has only one item interval as illustrated below.
+          </p>
+          <div class="figure">
+            <img src="img/item-interval.svg" width="600">
+          </div>
+          <p class="caption">
+            The <a>item interval</a> of an animation begins at the animation's
+            <a>start time</a> and ends when the animation completes.
+          </p>
+        </section>
+        <section>
+          <h4>Delaying an animation: The animation interval</h4>
+          <p>
+            It is possible to define an animation so that it begins at some
+            offset from its <a>start time</a> using a <dfn>start delay</dfn>.
+            As a result, the actual period of time that an animation is
+            animating may not match the <a>item interval</a>.
+            By taking the <a>start delay</a> into account we can define the
+            <dfn>animation interval</dfn> as the period of time that an
+            animation is actually animating.
+            Like the <a>item interval</a>, each animation has only one
+            <a>animation interval</a>.
+          </p>
+          <p>
+            The relationship between the <a>item interval</a> and <a>animation
+            interval</a> is illustrated below.
+          </p>
+          <div class="figure">
+            <img src="img/item-and-animation-intervals.svg" width="600">
+          </div>
+          <p class="caption">
+            Examples of the effect of the start delay on endpoints of the
+            item interval and animation interval.<br>
+            (a) An animation with no delay; the item interval and animation
+            interval are identical.<br>
+            (b) An animation with a positive delay; the animation interval
+            starts after the item interval but they end together.<br>
+            (c) An animation with a negative delay; the animation interval
+            starts before the item interval but, again, they end together.
+          </p>
+          <p>
+            The <a>item interval</a> is the primary frame of reference for
+            scheduling.
+            For example, <a
+            href="#the-start-time-of-children-of-a-sequence-animation-group">sequencing</a>
+            is defined in terms of the item interval.
+            Likewise, actions such as <a href="#seeking-a-timed-item">seeking
+            an animation</a> are based around the item interval and not the
+            animation interval.</a>
+          </p>
+          <p class="note">
+            Note that it is possible to define a <a>start delay</a> such that
+            the animation ends before the <a>start time</a>.
+            In this case the <a>item interval</a> starts and ends at the
+            <a>start time</a>, it does not stretch backwards to actual end of
+            the <a>animation interval</a>.
+          </p>
+        </section>
+        <section>
+          <h4>Repeating an animation: the iteration interval</h4>
+          <p>
+            It is possible to specify that an animation's effect should repeat
+            a fixed number of times or even indefinitely.
+            This repetition occurs <em>within</em> the <a>animation
+            interval</a>.
+            The span of time during which a single repetition takes place is
+            called an <dfn>iteration interval</dfn>.
+          </p>
+          <p>
+            Unlike the <a>item interval</a> and <a>animation interval</a>, an
+            animation can have multiple <a>iteration interval</a>s although
+            typically only the interval corresponding to the <a>current
+            iteration</a> is of interest.
+          </p>
+          <p>
+            The relationship between the <a>item interval</a>, <a>animation
+            interval</a> and <a>iteration interval</a> is illustrated below.
+          </p>
+          <div class="figure">
+            <img src="img/iteration-intervals.svg" width="600">
+          </div>
+          <p class="caption">
+            For an animation that is specified to repeat 2.5 times, three
+            iteration intervals are created although the final interval is
+            cut-off by the animation interval.
+          </p>
+        </section>
+        <section>
+          <h4>Summary of animation intervals</h4>
+          <p>
+            In summary, for a given animation, we can describe the following
+            intervals:
+          </p>
+          <dl>
+            <dt>Item interval</dt>
+            <dd>
+              The time from an animation's <a>start time</a> until the animation
+              finishes to play, that is, the end of the <a>animation
+              interval</a>.
+            </dd>
+            <dt>Animation interval</dt>
+            <dd>
+              The span of time that an animation is actually playing.
+              The interval begins at the animation's <a>start time</a> plus any
+              <a>start delay</a> defined on the animation, and ends when the
+              animation finishes to play as determined by the <a>animation
+              duration</a>.
+            </dd>
+            <dt>Iteration interval</dt>
+            <dd>
+              The period of time during which a single iteration of the
+              animation effect takes place.
+            </dd>
+          </dl>
+        </section>
       </section>
       <section class="informative">
         <h3>Animation fill behavior</h3>
