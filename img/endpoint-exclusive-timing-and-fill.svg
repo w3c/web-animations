@@ -40,17 +40,6 @@
       fill: paleturquoise;
       stroke: black;
     }
-    .groupRepeatBoundary, .animRepeatBoundary {
-      stroke-dasharray: 4 4;
-    }
-    .groupRepeatBoundary {
-      stroke: darkgreen;
-      stroke-width: 3;
-    }
-    .animRepeatBoundary {
-      stroke: navy;
-      stroke-width: 2;
-    }
 
     /*
      * Text labels
@@ -62,12 +51,17 @@
     /*
      * Time values
      */
-    .iterationTime {
+    .iterationTime, .iterationTimeDotted {
       stroke: green;
       stroke-width: 3;
       fill: none;
       stroke-linecap: round;
       stroke-linejoin: round;
+    }
+    .iterationTimeDotted {
+      stroke-width: 2;
+      stroke-dasharray: 4 4;
+      stroke-linecap: butt;
     }
     .excludedPoint {
       fill: none;
@@ -114,13 +108,13 @@
       <!-- Animation shaded areas -->
       <g transform="translate(0 30)">
         <rect width="300" height="100" class="animatingSpan"/>
-        <path d="M150 0v100m150-100v100" class="animRepeatBoundary"/>
       </g>
       <!-- Iteration time -->
       <g transform="translate(0 130)">
-        <!-- Iteration time solid parts -->
-        <path d="M0 0l150-100m0 100l150-100h200"
-          class="iterationTime" mask="url(#excludedEndPoints)"/>
+        <g mask="url(#excludedEndPoints)">
+          <path d="M0 0l150-100m0 100l150-100h200" class="iterationTime"/>
+          <path d="M150 -100v100m150-100v100" class="iterationTimeDotted"/>
+        </g>
         <!-- End-points to demonstrate end-point exlcusive timing -->
         <circle cx="150" cy="-100" r="4" class="excludedPoint"/>
         <circle cx="150" cy="0" r="3" class="includedPoint"/>

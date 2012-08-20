@@ -40,16 +40,10 @@
       fill: paleturquoise;
       stroke: black;
     }
-    .groupRepeatBoundary, .animRepeatBoundary {
-      stroke-dasharray: 4 4;
-    }
-    .groupRepeatBoundary {
-      stroke: darkgreen;
-      stroke-width: 3;
-    }
     .animRepeatBoundary {
-      stroke: navy;
+      stroke: green;
       stroke-width: 2;
+      stroke-dasharray: 4 4;
     }
     .animationA  {
       fill: paleturquoise;
@@ -77,11 +71,16 @@
     /*
      * Time values
      */
-    .iterationTime, .animationATime, .animationBTime {
+    .iterationTime, .animationATime, .animationBTime, .iterationTimeDotted {
       stroke-width: 3;
       fill: none;
       stroke-linecap: round;
       stroke-linejoin: round;
+    }
+    .iterationTimeDotted {
+      stroke-width: 2;
+      stroke-dasharray: 4 4;
+      stroke-linecap: butt;
     }
     .iterationTimeExcludedPoint,
     .animationAExcludedPoint,
@@ -94,7 +93,8 @@
     .animationBIncludedPoint {
       stroke-width: 2;
     }
-    .iterationTime, .iterationTimeExcludedPoint, .iterationTimeIncludedPoint {
+    .iterationTime, .iterationTimeExcludedPoint, .iterationTimeIncludedPoint,
+    .iterationTimeDotted {
       stroke: green;
     }
     .iterationTimeIncludedPoint {
@@ -156,12 +156,15 @@
       <!-- Animation shaded areas -->
       <g transform="translate(0 55)">
         <rect width="400" height="100" class="animatingSpan"/>
-        <path d="M160 0v100m160-100v100" class="animRepeatBoundary"/>
       </g>
       <!-- Iteration time -->
       <g transform="translate(0 155)">
-        <path d="M0 0l160-100m0 100l160-100m0 100l80-50"
-          class="iterationTime" mask="url(#excludedEndPoints)"/>
+        <g mask="url(#excludedEndPoints)">
+          <path d="M0 0l160-100m0 100l160-100m0 100l80-50"
+            class="iterationTime"/>
+          <path d="M160-100v100m160-100v100"
+            class="iterationTimeDotted"/>
+        </g>
         <!-- Endpoints  -->
         <circle r="3" class="iterationTimeIncludedPoint"/>
         <circle cx="160" cy="-100" r="4" class="iterationTimeExcludedPoint"/>
