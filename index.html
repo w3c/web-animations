@@ -1378,19 +1378,29 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           is represented by the <code>TimedItem</code> interface.
         </p>
         <dl title="interface TimedItem" class="idl">
-          <dt>readonly attribute Timing timing</dt>
+          <dt>attribute Timing timing</dt>
           <dd>
             <p>
               The timing parameters for this item.
             </p>
-            <p class="todo">
-              Make this writeable.
+            <p>
+              Exceptions:
             </p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised on setting if this object is linked to a template (see <a
+                href="#animation-templates" class="sectionRef"></a>).
+              </dd>
+            </dl>
           </dd>
           <dt>attribute double? totalTime</dt>
           <dd>
             <p>
-              Returns the <a>item time</a> of this item in seconds.
+              Returns the <a>item time</a> of this item in seconds as calculated
+              using the procedure described in <a
+              href="#calculating-the-item-time" class="sectionRef"></a>.
             </p>
             <p>
               Setting this value performs a seek operation according to the
@@ -1423,22 +1433,37 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
             </p>
             <p>
               The calculated value may be be overridden by setting this
-              attribute to any real number.
-              Negative values are clamped to zero.
+              attribute to any real number greater than or equal to zero.
               Setting this attribute to <code>undefined</code> has the effect of
               clearing the override value so that the attribute returns to
               reflecting the sum of <a>intrinsic animation duration</a> and
               <code>timing.startDelay</code>.
             </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type <code>IndexSizeError</code></dt>
+              <dd>
+                Raised on setting if the value to set is a real number that is
+                less than zero.
+              </dd>
+            </dl>
           </dd>
           <dt>readonly attribute double? currentTime</dt>
           <dd>
-            The time in seconds representing the offset into the iteration
-            duration using the steps described in <a
-            href="#calculating-the-iteration-time" class="sectionRef"></a>.
-            As a result of that definition, this property will be
-            non-<code>null</code> if and only if the animation is in
-            <a>in effect</a>.
+            <p>
+              The time in seconds representing the offset into the iteration
+              duration using the steps described in <a
+              href="#calculating-the-iteration-time" class="sectionRef"></a>.
+              As a result of that definition, this property will be
+              non-<code>null</code> if and only if the animation is in
+              <a>in effect</a>.
+            </p>
+            <p>
+              This property corresponds to the <a>iteration time</a> described
+              in <a href="#time-spaces" class="sectionRef"></a>.
+            </p>
           </dd>
           <dt>readonly attribute unsigned long? currentIteration</dt>
           <dd>
@@ -1447,20 +1472,29 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           </dd>
           <dt>readonly attribute unrestricted double duration</dt>
           <dd>
-            The iteration duration calculated for this item.
-            If <code>timing.duration</code> is set and greater than or
-            equal to zero, this will match <code>timing.duration</code>.
-            Otherwise, this will reflect the calculated intrinsic duration of
-            the item as described in <a
-            href="#calculating-the-iteration-duration" class="sectionRef"></a>.
+            <p>
+              The iteration duration calculated for this item.
+              If <code>timing.duration</code> is set and greater than or
+              equal to zero, this will match <code>timing.duration</code>.
+              Otherwise, this will reflect the calculated intrinsic duration of
+              the item as described in <a
+              href="#calculating-the-iteration-duration"
+              class="sectionRef"></a>.
+            </p>
+            <p>
+              This property corresponds to the <a>iteration duration</a>
+              described in <a
+              href="#repeating-an-animation--the-iteration-interval"
+              class="sectionRef"></a>.
+            </p>
           </dd>
           <dt>attribute double startTime</dt>
           <dd>
             <p>
-              The time which when combined with the
-              <code>timing.startDelay</code> defines the lower bound of the
+              The time which, when combined with the
+              <code>timing.startDelay</code>, defines the lower bound of the
               <a>animation interval</a>.
-              It is expressed in seconds in the iteration time space of
+              It is expressed in seconds in the <a>iteration time space</a> of
               <code>parentGroup</code>.
             </p>
             <p>
@@ -1474,6 +1508,11 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
               DOMException of type <code>InvalidStateError</code>.
               If this item is later made the child of a parallel animation
               group, any previously set value will be restored.
+            </p>
+            <p>
+              This property corresponds to the <a>start time</a> described in <a
+              href="#scheduling-an-animation--the-item-interval"
+              class="sectionRef"></a>.
             </p>
             <p>
               The <code>start</code> method can be used to set this property
@@ -1495,8 +1534,9 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           <dt>readonly attribute unrestricted double endTime</dt>
           <dd>
             <p>
-              The upper bound of the animation interval expressed in
-              seconds relative to the parent animation group.
+              The upper bound of the <a>animation interval</a> expressed in
+              seconds relative to the <a>iteration time space</a> of
+              <code>parentGroup</code>.
             </p>
           </dd>
           <dt>readonly attribute AnimGroup parentGroup</dt>
@@ -1505,7 +1545,7 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           </dd>
           <dt>readonly attribute double timeDrift</dt>
           <dd>
-            The number of seconds that the actual item time of this item
+            The number of seconds that the actual <a>item time</a> of this item
             lags behind the time given by <code>parentGroup.iterationTime
             - startTime</code> as a result of pausing and seeking this item.
             It is initially zero as described in <a
