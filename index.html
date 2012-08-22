@@ -1395,7 +1395,7 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
               </dd>
             </dl>
           </dd>
-          <dt>attribute double? totalTime</dt>
+          <dt>attribute double? itemTime</dt>
           <dd>
             <p>
               Returns the <a>item time</a> of this item in seconds as calculated
@@ -1419,7 +1419,7 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
               </dd>
             </dl>
           </dd>
-          <dt>attribute unrestricted double totalDuration</dt>
+          <dt>attribute unrestricted double itemDuration</dt>
           <dd>
             <p>
               The length in seconds of the <a>item interval</a>.
@@ -1544,16 +1544,16 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
               <dt>Otherwise,</dt>
               <dd>
                 The <code>endTime</code> is the result of evaluating
-                <code>max(startTime, startTime + totalDuration
+                <code>max(startTime, startTime + itemDuration
                 + timeDrift)</code>.
               </dd>
             </dl>
             <p class="note">
               Note that while the <code>endTime</code> is read-only, it can be
-              set indirectly by overriding the <code>totalDuration</code>
+              set indirectly by overriding the <code>itemDuration</code>
               property.
               For example, to set <code>endTime</code> to time <var>t</var> in
-              <a>item time space</a>, set <code>totalDuration</code> to
+              <a>item time space</a>, set <code>itemDuration</code> to
               <code>max(0, <var>t</var> - startTime)</code>.
             </p>
           </dd>
@@ -1619,7 +1619,7 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
                 <dl class="switch">
                   <dt>If <code>locallyPaused</code> is true,</dt>
                   <dd>
-                    Record the current value of <code>totalTime</code> as
+                    Record the current value of <code>itemTime</code> as
                     <a>pause start time</a>.
                   </dd>
                   <dt>If <code>locallyPaused</code> is false,</dt>
@@ -1668,9 +1668,9 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
               the following steps.
             </p>
             <ol>
-              <li>If <code>totalTime &gt; totalDuration</code> and
+              <li>If <code>itemTime &gt; itemDuration</code> and
                   <code>timing.playbackRate &ge; 0</code>, set
-                  <code>totalTime</code> to <code>timing.startDelay</code>.</li>
+                  <code>itemTime</code> to <code>timing.startDelay</code>.</li>
               <li>Set <code>locallyPaused</code> to <code>false</code>.</li>
             </ol>
             <p>
@@ -1758,7 +1758,7 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
                   formula:
                   <code><a>item time</a>
                     - <var>seek adjustment</var></code>.</li>
-              <li>Set <code>totalTime</code> to <var>seek time</var>.</li>
+              <li>Set <code>itemTime</code> to <var>seek time</var>.</li>
             </ol>
             <p>
               Exceptions:
@@ -1811,7 +1811,7 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
               Call <code>changePlaybackRate(-timing.playbackRate)</code>.
             </li>
             <li>
-              Set <code>totalTime</code> to <var>seek time</var>.
+              Set <code>itemTime</code> to <var>seek time</var>.
             </li>
             <p>
               Exceptions:
@@ -2249,17 +2249,17 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
         </div>
         <p>
           Seeking is performed in response to a change to a timed item's
-          <code>totalTime</code> property and is realised by adjusting the
+          <code>itemTime</code> property and is realised by adjusting the
           <code>timeDrift</code> property or the internal <a>pause start
           time</a> of the item as follows:
         </p>
         <ol>
           <li>Let <var>seek time</var> be the new value to which
-              <code>totalTime</code> should be set.</li>
+              <code>itemTime</code> should be set.</li>
           <li>
             If <code>parentGroup</code> or
             <code>parentGroup.iterationTime</code> is <code>null</code> (that
-            is, if <code>totalTime</code> is <code>null</code>), throw
+            is, if <code>itemTime</code> is <code>null</code>), throw
             a DOMException of type <code>InvalidStateError</code> and return.
           </li>
           <li>The steps for adjusting the item time depend on the state of the
@@ -2280,7 +2280,7 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           </li>
         </ol>
         <p class="note">
-          Note that the <code>totalTime</code> property is not actually set
+          Note that the <code>itemTime</code> property is not actually set
           directly but is updated to the seek time as a result of the
           calculation outlined in <a href="#calculating-the-item-time"
           class="sectionRef"></a>.
@@ -2292,9 +2292,9 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           will be <code>null</code>.<br>
           It is probably useful to be able to seek an item in these
           circumstances so what we probably want to do is define
-          <code>totalTime</code> so that it is never <code>null</code> by using
+          <code>itemTime</code> so that it is never <code>null</code> by using
           the <a>effective parent time</a> there and divorcing the
-          <code>totalTime</code> property from the <var>total time</var> that is
+          <code>itemTime</code> property from the <var>item time</var> that is
           used in calculated the <var>animation time</var>.
         </p>
         <p>
@@ -3068,7 +3068,7 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
             </li>
           </ol>
           <p class="note">
-            When <code>totalDuration</code> is positive infinity the
+            When <code>itemDuration</code> is positive infinity the
             behavior is defined by IEEE 754-2008.
             As a result, if any of the children of a sequence animation group
             has an infinite animation duration, any children that occur
