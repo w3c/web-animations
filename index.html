@@ -1413,10 +1413,9 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
             <dl class="exceptions">
               <dt>DOMException of type <code>InvalidStateError</code></dt>
               <dd>
-                Raised on setting if <code>parentGroup</code> is a sequence
-                animation group (see <a
-                href="#the-start-time-of-children-of-a-sequence-animation-group"
-                class="sectionRef"></a>).
+                Raised on setting if <code>parentGroup</code> is
+                <code>null</code> or <code>parentGroup.iterationTime</code> is
+                <code>null</code>.
               </dd>
             </dl>
           </dd>
@@ -1564,11 +1563,36 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           </dd>
           <dt>readonly attribute double timeDrift</dt>
           <dd>
-            The number of seconds that the actual <a>item time</a> of this item
-            lags behind the time given by <code>parentGroup.iterationTime
-            - startTime</code> as a result of pausing and seeking this item.
-            It is initially zero as described in <a
-            href="#pausing-a-timed-item" class="sectionRef"></a>.
+            <p>
+              The number of seconds that the actual <a>item time</a> of this
+              item lags behind its scheduled time as a result of pausing and
+              seeking this item.
+            </p>
+            <p>
+              The <code>timeDrift</code> property is both a stored and a
+              calculated value.
+              When this timed item is paused, the value is calculated from the
+              <a>pause start time</a>.
+              When the timed item is not paused, the value stored for the
+              property is used.
+              The stored value is initially zero, and is updated when the item
+              is unpaused or seeked.
+            </p>
+            <p>
+              The value returned is as follows:
+            </p>
+            <dl class="switch">
+              <dt>If <code>locallyPaused</code> is <code>false</code>,</dt>
+              <dd>
+                Return the stored value for this property.
+              </dd>
+              <dt>If <code>locallyPaused</code> is <code>true</code>,</dt>
+              <dd>
+                Return the result of 
+                <code><a>effective parent time</a> - startTime - <a>pause start
+                time</a></code>.
+              </dd>
+            </dl>
           </dd>
           <dt>attribute boolean locallyPaused</dt>
           <dd>
@@ -1578,6 +1602,38 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
               where it is initially true (see <a href="#start-of-the-timeline"
               class="sectionRef"></a>).
             </p>
+            <p>
+              When setting the following procedure is used:
+            </p>
+            <ol>
+              <li>
+                Let <var>new value</var> be the value to set.
+              </li>
+              <li>
+                If <var>new value</var> equals <code>locallyPaused</code>,
+                return.
+              </li>
+              <li>
+                The next step depends on the current value of
+                <code>locallyPaused</code> as follows,
+                <dl class="switch">
+                  <dt>If <code>locallyPaused</code> is true,</dt>
+                  <dd>
+                    Record the current value of <code>totalTime</code> as
+                    <a>pause start time</a>.
+                  </dd>
+                  <dt>If <code>locallyPaused</code> is false,</dt>
+                  <dd>
+                    Set the stored value of <code>timeDrift</code> to the result
+                    of evaluating <code><a>effective parent time</a> - startTime
+                    - <a>pause start time</a></code>.
+                  </dd>
+                </dl>
+              </li>
+              <li>
+                Set <code>locallyPaused</code> to <var>new value</var>.
+              </li>
+            </ol>
             <p class="issue">
               Should this be writeable?
               Once we integrate with media controllers we might want to make
@@ -1588,13 +1644,14 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           <dt>readonly attribute boolean paused</dt>
           <dd>
             Indicates if this element or one of its ancestors is paused.
-            This will be true if an only if <code>true</code> if the
-            <code>locallyPaused</code> state of this object <em>or one of its
+            This will be <code>true</code> if an only if the
+            <code>locallyPaused</code> property of this object <em>or one of its
             ancestor animation groups</em> is <code>true</code>.
           </dd>
           <dt>void pause ()</dt>
           <dd>
-            Sets <code>locallyPaused</code> to <code>true</code>.
+            Sets the <code>locallyPaused</code> property to <code>true</code> by
+            following the procedure described for setting that property.
             <p class="annotation">
               This method is intended to behave in a comparable manner to
               <a
@@ -1656,7 +1713,16 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
               <li>Let <var>new rate</var> be the updated value of
                   <code>timing.playbackRate</code>.</li> 
               <li>If either <var>previous rate</var> or <var>new rate</var>
-                  are zero, return.</li>
+                  are zero, return.
+                  <p class="issue">
+                    This isn't great. If you set the playback rate to zero at
+                    a given time, you expect it to act as if paused at that
+                    time.
+                    Currently, the only way to get that behavior out of the
+                    model is to set the <code>iterationStart</code> and that
+                    seems pretty intrusive.
+                  </p>
+              </li>
               <li>Invert the fill mode as follows:
                 <dl class="switch">
                   <dt>If <code>timing.fill</code> is
@@ -1801,8 +1867,10 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           <li><dfn>iteration start</dfn> =
               <code>max(0, min(timing.iterationStart,
                                timing.iterationCount))</code></li>
-          <li><dfn>iteration count</dfn> =
-              <code>max(0, timing.iterationCount)</code></li>
+          <li><dfn>effective parent time</dfn> =
+              <code>parentGroup.iterationTime</code> unless
+              <code>parentGroup</code> or <code>parentGroup.iterationTime</code>
+              is <code>null</code> in which case it is zero.</li>
         </ul>
       </section>
       <section>
@@ -1876,7 +1944,8 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
             - startTime - timeDrift</code>
         </blockquote>
         <p>
-          If the timed item is does not have a parent animation group, the
+          If either <code>parentGroup</code> or
+          <code>parentGroup.iterationTime</code> is <code>null</code>, the
           <var>item time</var> is <code>null</code>.
         </p>
         <p class="todo">
@@ -2137,9 +2206,6 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
       </section>
       <section>
         <h3>Pausing a timed item</h3>
-        <p class="todo">
-          This is all quite wrong and needs to be re-written.
-        </p>
         <div class="informative">
           <p>
             Timed items may be paused and resumed independently of the parent
@@ -2158,86 +2224,83 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           </p>
         </div>
         <p>
-          The <var>time drift</var> produced by pausing can be calculated as
-          follows:
+          Pausing and seeking are realised using two additional inputs to the
+          timing model, the <dfn>time drift</dfn> which is exposed as the
+          <code>timeDrift</code> property on the <a>TimedItem</a> interface, and
+          the <dfn>pause start time</dfn> which is internal to the model.
+          Both the <var>time drift</var> and <var>pause start time</var> are
+          initially zero.
         </p>
-        <ol>
-          <li>
-            Let <var>time drift</var> be initially zero.
-          </li>
-          <li>
-            When the pause state is newly true, record the <var>parent iteration
-            time</var> as <var>pause start time</var>.
-          </li>
-          <li>
-            On the next sample, increment <var>time drift</var> by
-            <code><var>parent iteration time</var> - <var>pause start
-            time</var></code>.
-          </li>
-          <li>
-            Update <var>pause start time</var> to <var>parent iteration
-            time</var>.
-          </li>
-          <li>
-            Repeat steps 3 and 4 for each sample while paused and when the pause
-            state is newly false.
-          </li>
-        </ol>
         <p>
-          An important characteristic of the above procedure is that the
-          <var>time drift</var> continues to accumulate while the
-          item is paused.
-          As a result, the <var>time drift</var> must be calculated prior to
-          calculating the <a>item time</a>.
-        </p>
-        <p class="todo">
-          Need to clarify what happens if the item is moved around the tree.
-          Basically, update the drift on bind/unbind, use zero as the parent
-          iteration time when there is none, etc.
+          The pausing behavior is realised through the specific steps defined
+          for calculating and updating the <code>locallyPaused</code> and
+          <code>timeDrift</code> properties of the <a>TimedItem</a> interface.
         </p>
       </section>
       <section>
         <h3>Seeking a timed item</h3>
+        <div class="informative">
+          <p>
+            Seeking, like pausing, has the effect of causing a timed item's
+            time to drift from that of its parent animation group.
+            Consequently, it is also uses the <a>time drift</a> and
+            <a>pause start time</a> concepts on which pausing is based.
+          </p>
+        </div>
         <p>
-          Seeking, like pausing, has the effect of causing a timed item's
-          time to drift from that of its parent animation group.
+          Seeking is performed in response to a change to a timed item's
+          <code>totalTime</code> property and is realised by adjusting the
+          <code>timeDrift</code> property or the internal <a>pause start
+          time</a> of the item as follows:
         </p>
-        <p>
-          When a seek operation is performed, the <var>time drift</var> is set
-          according to the following formula:
+        <ol>
+          <li>Let <var>seek time</var> be the new value to which
+              <code>totalTime</code> should be set.</li>
+          <li>
+            If <code>parentGroup</code> or
+            <code>parentGroup.iterationTime</code> is <code>null</code> (that
+            is, if <code>totalTime</code> is <code>null</code>), throw
+            a DOMException of type <code>InvalidStateError</code> and return.
+          </li>
+          <li>The steps for adjusting the item time depend on the state of the
+              <code>locallyPaused</code> property as follows:
+            <dl class="switch">
+              <dt>If <code>locallyPaused</code> is true,</dt>
+              <dd>
+                Set <a>pause start time</a> to <var>seek time</var>.
+              </dd>
+              <dt>If <code>locallyPaused</code> is false,</dt>
+              <dd>
+                Set the stored value for <code>timeDrift</code> to
+                the result of evaluating
+                <code>parentGroup.iterationTime - startTime -
+                <var>seek time</var></code>.
+              </dd>
+            </dl>
+          </li>
+        </ol>
+        <p class="note">
+          Note that the <code>totalTime</code> property is not actually set
+          directly but is updated to the seek time as a result of the
+          calculation outlined in <a href="#calculating-the-item-time"
+          class="sectionRef"></a>.
         </p>
-        <blockquote>
-          <code><var>time drift</var> = <var>parent iteration time</var>
-            - startTime - <var>seek time</var></code>
-        </blockquote>
-        <p>where:</p>
-        <ul>
-          <li>
-          <var>parent iteration time</var> - is
-            <code>parentGroup.iterationTime</code> if it is not
-            <code>null</code>, otherwise it is zero.
-          </li>
-          <li>
-            <var>seek time</var> - is the time to seek to expressed in the
-            item time space.
-          </li>
-        </ul>
+        <p class="issue">
+          Using this approach you can't seek an item that doesn't have a parent
+          or whose parent isn't <a>in effect</a> since the
+          <code>parentGroup</code> or <code>parentGroup.iterationTime</code>
+          will be <code>null</code>.<br>
+          It is probably useful to be able to seek an item in these
+          circumstances so what we probably want to do is define
+          <code>totalTime</code> so that it is never <code>null</code> by using
+          the <a>effective parent time</a> there and divorcing the
+          <code>totalTime</code> property from the <var>total time</var> that is
+          used in calculated the <var>animation time</var>.
+        </p>
         <p>
           The animation events dispatched when a seek is performed are described
           in <a href="#animation-events" class="sectionRef"></a>.
         </p>
-        <div class="informative">
-          <p>
-            Note that seeking a timed item does not reset the state of the timed
-            item or its children.
-            For example, if an application is configured to produce new
-            animations in response to animation end events, seeking the document
-            timeline backwards will not remove the created animations.
-            As a result, a naive application may create overlapping animations
-            on subsequent replays.  It is the application's responsibility to
-            restore the original state of the document in such situations.
-          </p>
-        </div>
       </section>
     </section>
 
