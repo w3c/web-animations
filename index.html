@@ -1214,7 +1214,7 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
                 half-way through the first iteration.
                 If this value is greater than <code>iterationCount</code> then
                 it is effectively clamped as defined in the definition of
-                <a>iteration start</a>.
+                <a>effective iteration start</a>.
               </p>
               <p>
                 The <var>default value</var> is 0.
@@ -1862,9 +1862,9 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           following common definitions are used.
         </p>
         <ul>
-          <li><dfn>iteration start</dfn> =
-              <code>max(0, min(timing.iterationStart,
-                               timing.iterationCount))</code></li>
+          <li><dfn>effective iteration start</dfn> =
+              <code>min(timing.iterationStart, timing.iterationCount)</code>
+          </li>
           <li><dfn>effective parent time</dfn> =
               <code>parentGroup.iterationTime</code> unless
               <code>parentGroup</code> or <code>parentGroup.iterationTime</code>
@@ -1913,20 +1913,25 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
       <section>
         <h3>Calculating the intrinsic animation duration</h3>
         <p>
+          In order to calculated the <a>intrinsic animation duration</a> we
+          first define the <a>repeated duration</a> as follows:
+        </p>
+        <blockquote>
+          <dfn>repeated duration</dfn> =
+            <code><a>iteration duration</a> *
+                  <a>timing.iterationCount</a></code>
+        </blockquote>
+        <p>
           The <dfn>intrinsic animation duration</dfn> is calculated according to
           the following steps:
         </p>
         <ol>
           <li>
-            Let the <var>repeated duration</var> be <code><a>iteration
-            duration</a> * <a>iteration count</a></code>.
-          </li>
-          <li>
             If <code>timing.playbackRate</code> is zero, return
             <code>Infinity</code>.
           </li>
           <li>
-            Otherwise, return <code><var>repeated duration</var>
+            Otherwise, return <code><a>repeated duration</a>
             / abs(<code>timing.playbackRate</code>)</code>.
           </li>
         </ol>
@@ -2006,15 +2011,36 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
             </dl>
           </li>
         </ol>
+      </section>
+      <section>
+        <h3>Calculating the iteration time</h3>
+        <p>
+          The iteration time is calculated by first applying the animation's
+          <code>playbackRate</code> and <code>iterationStart</code> properties
+          to produce the <a>adjsuted animation time</a>
+          The <a>adjusted animation time</a> is then divided into intervals
+          resulting in the <a>unscaled iteration time</a>.
+          Following this, timing manipulations specified on the timed item are
+          applied to the <a>unscaled iteration time</a> to produce the
+          <a>iteration time</a>.
+        </p>
         <section>
           <h4>Calculating the adjusted animation time</h4>
           <p>
-            Before the <a>animation time</a> can be converted to an
-            <var>iteration time</var>
-            we must factor in the animation's <var>playback rate</var> and
-            <a>iteration start</a>. This is called the <a>adjusted
-            animation time</a>.
+            Before the <a>animation time</a> can be converted to an <a>iteration
+            time</a> we must factor in the animation's <var>playback rate</var>
+            and <var>iteration start</var>.
+            This is called the <a>adjusted animation time</a>.
           </p>
+          <p>
+            In order to calculated the <a>adjusted animation time</a> we first
+            define the <a>start offset</a> as follows:
+          </p>
+          <blockquote>
+            <dfn>start offset</dfn> =
+              <code><a>effective iteration start</a> *
+                    <a>iteration duration</a></code>
+          </blockquote>
           <p>
             The <dfn>adjusted animation time</dfn> is calculated according to
             the following steps:
@@ -2025,10 +2051,6 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
               <code>null</code>.
             </li>
             <li>
-              Let the <var>start offset</var> be <code><a>iteration start</a>
-              * <a>iteration duration</a></code>.
-            </li>
-            <li>
               Return the adjusted animation time based on the
               <code>timing.playbackRate</code> as follows,
               <dl class="switch">
@@ -2036,27 +2058,16 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
                 <dd>
                 Return <code>(<a>animation time</a> -
                               animDuration) * timing.playbackRate
-                        + <var>start offset</var></code>.
+                        + <a>start offset</a></code>.
                 </dd>
                 <dt>Otherwise,</dt>
                 <dd>
                   Return <code><a>animation time</a> * timing.playbackRate
-                  + <var>start offset</var></code>.
+                  + <a>start offset</a></code>.
                 </dd>
             </li>
           </ol>
         </section>
-      </section>
-      <section>
-        <h3>Calculating the iteration time</h3>
-        <p>
-          The iteration time is calculated by first dividing the <a>adjusted
-          animation time</a> into intervals.
-          This is called the <var>unscaled iteration time</var>.
-          Following this, timing manipulations specified on the timed item are
-          applied to the <var>unscaled iteration time</var> to produce the
-          <var>iteration time</var>.
-        </p>
         <section>
           <h4>Calculating the unscaled iteration time</h4>
           <p>
@@ -2072,21 +2083,11 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
               If the <a>iteration duration</a> is zero, return zero.
             </li>
             <li>
-              Calculate the <var>start offset</var> as described in
-              <a href="#calculating-the-adjusted-animation-time"
-              class="sectionRef"></a>.
-            </li>
-            <li>
-              Calculate the <var>repeated duration</var> as described in
-              <a href="#calculating-the-intrinsic-animation-duration"
-              class="sectionRef"></a>.
-            </li>
-            <li>
               If <code><a>adjusted animation time</a> -
                        <a>start offset</a></code> equals the
-              <var>repeated duration</var>, and
-              <code>(<a>iteration count</a> - <a>iteration start</a>) % 1</code>
-              is zero, return the <var>iteration duration</var>.
+              <a>repeated duration</a>, and
+              <code>(timing.iterationCount - <a>effective iteration start</a>)
+              % 1</code> is zero, return the <var>iteration duration</var>.
             </li>
             <li>
               Otherwise, return <code><a>adjusted animation time</a>
@@ -2187,7 +2188,7 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
             </li>
             <li>
               If the <a>iteration duration</a> is zero, return
-              <code>floor(<a>iteration count</a>)</code>.
+              <code>floor(timing.iterationCount)</code>.
             </li>
             <li>
               Return <code>floor(<a>adjusted animation time</a> /
