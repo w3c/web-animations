@@ -1,7 +1,6 @@
 <!-- vim: set expandtab ts=2 sw=2 tw=80: -->
 <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
-  viewBox="0 0 770 275">
+  viewBox="0 0 600 230">
   <defs>
     <style type="text/css">
     svg {
@@ -12,7 +11,7 @@
     /*
      * Line work
      */
-    .line, .arrowLine, .dottedArrow {
+    .line, .arrowLine, .dottedArrow, .doubleArrowLine {
       stroke: black;
       stroke-width: 1.5;
       fill: none;
@@ -23,6 +22,10 @@
     .dottedArrow {
       stroke-dasharray: 4 4;
       stroke-width: 2;
+    }
+    .doubleArrowLine {
+      marker-start: url(#reverseArrow);
+      marker-end: url(#arrow);
     }
     .bracket {
       stroke: black;
@@ -37,46 +40,23 @@
       fill: paleturquoise;
       stroke: black;
     }
-    .animRepeatBoundary {
-      stroke: green;
-      stroke-width: 2;
+    .groupRepeatBoundary, .animRepeatBoundary {
       stroke-dasharray: 4 4;
     }
-    .itemSpan {
-      fill: none;
-      stroke: red;
-      stroke-dasharray: 3 6;
+    .groupRepeatBoundary {
+      stroke: darkgreen;
+      stroke-width: 3;
+    }
+    .animRepeatBoundary {
+      stroke: navy;
       stroke-width: 2;
-      stroke-linecap: round;
     }
 
     /*
      * Text labels
      */
-    .timeLabel, .intervalLabel {
+    .durationLabel {
       text-anchor: middle;
-    }
-
-    /*
-     * Colored brackets
-     */
-    path.itemInterval, .itemInterval path {
-      stroke: red;
-    }
-    text.itemInterval, .itemInterval text {
-      fill: red;
-    }
-    path.animInterval, .animInterval path {
-      stroke: navy;
-    }
-    text.animInterval, .animInterval text {
-      fill: navy;
-    }
-    path.iterInterval, .iterInterval path {
-      stroke: green;
-    }
-    text.iterInterval, .iterInterval text {
-      fill: green;
     }
     </style>
 
@@ -91,18 +71,6 @@
       markerHeight="5">
       <path d="M0-5l10 5l-10 5z" class="blackArrowHead"/>
     </marker>
-
-    <!-- Star -->
-    <style type="text/css">
-      .startTimeStar {
-        stroke: red;
-        stroke-linecap: round;
-        stroke-width: 2;
-        fill: none;
-      }
-    </style>
-    <path d="M-3.5-3.5l7 7M3.5-3.5l-7 7M0-5v10M-5 0h10"
-      class="startTimeStar" id="star"/>
   </defs>
   <!-- Timeline -->
   <g>
@@ -110,58 +78,33 @@
     <line x1="4em" x2="97%" y1="0.8em" y2="0.8em" class="arrowLine"/>
   </g>
   <!-- A single animation -->
-  <g transform="translate(120 50)">
-    <!-- Item span shading -->
-    <g transform="translate(0 40)">
-      <rect x="-2" y="-2" width="544" height="84" class="itemSpan"/>
-    </g>
-    <!-- Start time marker -->
-    <g>
-      <text class="timeLabel">start time</text>
-      <path d="M0 6v15" class="dottedArrow"/>
-      <use y="40" xlink:href="#star"/>
-    </g>
-    <!-- Animation block -->
-    <g transform="translate(140 0)">
-      <!-- Animation interval label -->
-      <g transform="translate(0 30)" class="animInterval">
-        <path d="M0 0s0-10 10-10h180s10 0 10-10c0 0 0 10 10 10h180s10 0 10 10"
-          class="bracket"/>
-        <g transform="translate(200 0)">
-          <text y="-25" class="intervalLabel">animation interval</text>
-        </g>
-      </g>
-      <!-- Animation shaded areas -->
-      <g transform="translate(0 40)">
-        <rect width="400" height="80" class="animatingSpan"/>
-        <path d="M160 0v80m160-80v80" class="animRepeatBoundary"/>
-      </g>
-      <!-- Iteration interval label -->
-      <g transform="translate(0 130)" class="iterInterval">
-        <path d="M2 0s0 10 10 10h58s10 0 10 10c0 0 0-10 10-10h58s10 0 10-10"
-          class="bracket"/>
-        <path d="M162 0s0 10 10 10h58s10 0 10 10c0 0 0-10 10-10h58s10 0 10-10"
-          class="bracket"/>
-        <path d="M322 0s0 10 10 10h58s10 0 10 10c0 0 0-10 10-10h58s10 0 10-10"
-          class="bracket"/>
-        <g transform="translate(0 38)">
-          <text x="80" class="intervalLabel">iteration interval</text>
-          <text x="240" class="intervalLabel">iteration interval</text>
-          <text x="400" class="intervalLabel">iteration interval</text>
-        </g>
-      </g>
-    </g>
-    <!-- Start delay label -->
-    <g transform="translate(0 130)">
-      <path d="M2 0s0 10 10 10h48s10 0 10 10c0 0 0-10 10-10h48s10 0 10-10"
+  <g transform="translate(80 20)">
+    <!-- Animation duration label -->
+    <g transform="translate(0 60)">
+      <path d="M0 0s0-10 10-10h180s10 0 10-10c0 0 0 10 10 10h180s10 0 10 10"
         class="bracket"/>
-      <text x="80" y="38" class="intervalLabel">start delay</text>
+      <g transform="translate(200 0)">
+        <text y="-25" class="durationLabel">animation duration</text>
+      </g>
     </g>
-    <!-- Item interval label -->
-    <g transform="translate(0 180)" class="itemInterval">
-      <path d="M0 0s0 10 10 10h250s10 0 10 10c0 0 0-10 10-10h250s10 0 10-10"
+    <!-- Animation shaded areas -->
+    <g transform="translate(0 70)">
+      <rect width="400" height="80" class="animatingSpan"/>
+      <path d="M160 0v80m160-80v80" class="animRepeatBoundary"/>
+    </g>
+    <!-- Iteration duration label -->
+    <g transform="translate(0 160)">
+      <path d="M2 0s0 10 10 10h58s10 0 10 10c0 0 0-10 10-10h58s10 0 10-10"
         class="bracket"/>
-      <text x="270" y="38" class="intervalLabel">item interval</text>
+      <path d="M162 0s0 10 10 10h58s10 0 10 10c0 0 0-10 10-10h58s10 0 10-10"
+        class="bracket"/>
+      <path d="M322 0s0 10 10 10h58s10 0 10 10c0 0 0-10 10-10h58s10 0 10-10"
+        class="bracket"/>
+      <g transform="translate(0 38)">
+        <text x="80" class="durationLabel">iteration duration</text>
+        <text x="240" class="durationLabel">iteration duration</text>
+        <text x="400" class="durationLabel">iteration duration</text>
+      </g>
     </g>
   </g>
 </svg>
