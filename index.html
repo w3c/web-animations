@@ -2065,10 +2065,28 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
               return <code>null</code>.
             </li>
             <li>
-              Let <var>scaled iteration time</var> be the result of applying any
-              timing function defined for this timed element to the
-              <var>unscaled iteration time</var>. <span class="todo">(Need more
-              detail here, or a link to where this is defined.)</span>
+              Scale the time as follows:
+              <dl class="switch">
+                <dt>If <var>timing.timingFunction</var> is not
+                    <code>null</code>,</dt>
+                <dd>
+                  <p>
+                    Let <var>scaled iteration time</var> be <code>max(0, min(1,
+                    timing.timingFunction.scaleTime(<var>unscaled iteration
+                    time</var>)))</code>.
+                  </p>
+                  <p>
+                    If calling <code>timing.timingFunction.scaleTime</code>
+                    results in an exception being thrown, let <var>scaled
+                    iteration time</var> be <var>unscaled iteration time</var>.
+                  </p>
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  Let <var>scaled iteration time</var> be <var>unscaled
+                  iteration time</var>.
+                </dd>
+              </dl>
             </li>
             <li>
               Calculate the <var>current direction</var> using the first
@@ -2263,25 +2281,106 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
     </section>
 
     <section>
-      <h2>Controlling animation playback rate</h2>
-      <p class="todo">
-        TBD.
-        Need to define timing functions and the ability to provide custom
-        functions to scale a time.
-        Not even sure what this section should be called or if it should be
-        subsection of the previous section.
-        &ldquo;Scaling the time&rdquo;?
-      </p>
-      <h3>The <code>TimingFunc</code> interface</h3>
+      <h2>Scaling the time : timing functions</h2>
       <p class="todo">
         TBD.
       </p>
-      <dl title="interface TimingFunc" class="idl">
-        <dt>TimingFunc clone()</dt>
-        <dd>
-          <p class="todo">Needed for <code>Timing.clone</code>.</p>
-        </dd>
-      </dl>
+      <section>
+        <h3>The <code>TimingFunc</code> interface</h3>
+        <p class="todo">
+          TBD.
+        </p>
+        <dl title="interface TimingFunc" class="idl">
+          <dt>double scaleTime(double time)</dt>
+          <dd>
+            <p>
+              Takes a value in the range [0, 1] and applies some transformation on
+              the value to produces an output value also in the range [0, 1].
+            </p>
+            <p>
+              Output values are clamped to the range [0, 1] as per <a
+              href="#applying-time-manipulations" class="sectionRef"></a>.
+            </p>
+            <p class="todo">
+              Some functions will want to produce different output based on the
+              animation function values.
+              For example, a paced animation function.
+              Rather than make the subclass do all the work of finding the
+              appropriate animation values (especially tricky when it is
+              templatized and cloned), it would be better to pass the
+              information in.
+              Better still, pass in a read-only copy of the data as a very
+              low-level barrier to prevent messing with the model during the
+              callback.
+            </p>
+          </dd>
+          <dt>TimingFunc clone()</dt>
+          <dd>
+            <p>
+              Produces a copy of this object.
+            </p>
+            <p class="todo">
+              Is this actually necessary? I guess only for subclasses that have
+              state. Other subclasses are free to return themself?
+            </p>
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>SplineTimingFunc</code> interface</h3>
+        <p>
+          TBD
+        </p>
+        <dl title="
+[Constructor (DOMString spec),
+ Constructor (sequence&lt;double&gt; points)]
+          interface SplineTimingFunc : TimingFunc" class="idl">
+          <dt>attribute sequence&lt;double&gt; points</dt>
+          <dd>
+            TBD
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>StepTimingFunc</code> interface</h3>
+        <dl title="
+[Constructor (DOMString spec),
+ Constructor (unsigned integer numSteps,
+                optional DOMString position = 'end')]
+          interface StepTimingFunc : TimingFunc" class="idl">
+          <dt>attribute unsigned integer numSteps</dt>
+          <dd>
+            TBD
+          </dd>
+          <dt>attribute DOMString position</dt>
+          <dd>
+            TBD
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>SmoothTimingFunc</code> interface</h3>
+        <dl title="
+[Constructor (sequence&lt;double&gt; points)]
+          interface SmoothTimingFunc : TimingFunc" class="idl">
+          <dt>attribute sequence&lt;double&gt; points</dt>
+          <dd>
+            TBD
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>CustomTimingFunc</code> interface</h3>
+        <dl title="
+[// callback TimingFuncCallback = double (double time);
+ Constructor (TimingFuncCallback func)]
+        interface CustomTimingFunc : TimingFunc" class="idl">
+          <dt>attribute TimingFuncCallback func</dt>
+          <dd>
+            TBD
+          </dd>
+        </dl>
+      </section>
     </section>
 
     <section>
