@@ -2373,8 +2373,9 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           <dt>double scaleTime(double time)</dt>
           <dd>
             <p>
-              Takes a value in the range [0, 1] and applies some transformation
-              on the value to produces an output value also in the range [0, 1].
+              Takes a value in the range [0, 1], that is a <a>time fraction</a>,
+              and applies some transformation on the value to produces an output
+              value also in the range [0, 1].
               Any output values outside this range are clamped as per <a
               href="#applying-time-manipulations" class="sectionRef"></a>.
             </p>
@@ -2401,7 +2402,62 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
       <section>
         <h3>The <code>SplineTimingFunc</code> interface</h3>
         <p>
-          TBD
+          A common method of producing easing effects is to use a cubic Bézier
+          curve to scale the time.
+          The endpoints of the curve are fixed at (0,0) and (1,1) while two
+          control points <var>P1</var> and <var>P2</var> define the shape of the
+          curve.
+          Provided the <var>x</var> values of <var>P1</var> and <var>P2</var>
+          lie within the range [0,1] such a curve produces a function that is
+          used to map input times (the <var>x</var> values) onto output times
+          (the <var>y</var> values).
+          This arrangement is illustrated below.
+        </p>
+        <div class="figure">
+          <img src="img/cubic-bezier-timing-curve.svg" width="500">
+        </div>
+        <p class="caption">
+          A cubic Bézier curve used as a timing function.<br>
+          The shape of the curve is determined by the location of the control
+          points <var>P1</var> and <var>P2</var>.<br>
+          Input time fractions serve as <var>x</var> values of the curve, whilst
+          the <var>y</var> values are the output time fractions.
+        </p>
+        <p>
+          When constructing spline timing functions, the following keywords from
+          CSS Transitions [[CSS3-TRANSITIONS]] are recognised.
+        </p>
+        <dl>
+          <dt>ease</dt>
+          <dd>
+            Corresponds to the points (0.25, 0.1) and (0.25, 1).
+          </dd>
+          <dt>linear</dt>
+          <dd>
+            Corresponds to the points (0, 0) and (1, 1).
+          </dd>
+          <dt>ease-in</dt>
+          <dd>
+            Corresponds to the points (0.42, 0) and (1, 1).
+          </dd>
+          <dt>ease-out</dt>
+          <dd>
+            Corresponds to the points (0, 0) and (0.58, 1).
+          </dd>
+          <dt>ease-in-out</dt>
+          <dd>
+            Corresponds to the points (0.42, 0) and (0.58, 1).
+          </dd>
+        </dl>
+        <p>
+          The resulting curves produced by each of these keywords is illustrated
+          below.
+        </p>
+        <div class="figure">
+          <img src="img/curve-keywords.svg" width="500">
+        </div>
+        <p class="caption">
+          The timing functions produced by each of the keyword values.
         </p>
         <dl title="
 [Constructor (DOMString spec),
@@ -2417,16 +2473,19 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           </dd>
           <dt>attribute sequence&lt;double&gt; points</dt>
           <dd>
-            A sequence of four control points.
+            A sequence of four real numbers representing the coordinates of the
+            two control points in the following sequence
+            <var>&lt;p1-x&gt;</var> <var>&lt;p1-y&gt;</var>
+            <var>&lt;p2-x&gt;</var> <var>&lt;p2-y&gt;</var>.
           </dd>
         </dl>
       </section>
       <section>
         <h3>The <code>StepTimingFunc</code> interface</h3>
+        <!-- XXX Make this use an enum for the position values -->
         <dl title="
-[Constructor (DOMString spec),
- Constructor (unsigned integer numSteps,
-                optional DOMString position = 'end')]
+[Constructor (unsigned integer numSteps,
+              optional DOMString position = 'end')]
           interface StepTimingFunc : TimingFunc" class="idl">
           <dt>attribute unsigned integer numSteps</dt>
           <dd>
