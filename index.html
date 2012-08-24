@@ -2400,7 +2400,7 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
         </dl>
       </section>
       <section>
-        <h3>The <code>SplineTimingFunc</code> interface</h3>
+        <h3>Scaling using a cubic Bézier curve</h3>
         <p>
           A common method of producing easing effects is to use a cubic Bézier
           curve to scale the time.
@@ -2459,33 +2459,66 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
         <p class="caption">
           The timing functions produced by each of the keyword values.
         </p>
-        <dl title="
-[Constructor (DOMString spec),
- Constructor (sequence&lt;double&gt; points)]
-          interface SplineTimingFunc : TimingFunc" class="idl">
-          <dt>double scaleTime(double time)</dt>
-          <dd>
-            TBD.
-          </dd>
-          <dt>TimingFunc clone()</dt>
-          <dd>
-            Returns a copy of this object.
-          </dd>
-          <dt>attribute sequence&lt;double&gt; points</dt>
-          <dd>
-            A sequence of four real numbers representing the coordinates of the
-            two control points in the following sequence
-            <var>&lt;p1-x&gt;</var> <var>&lt;p1-y&gt;</var>
-            <var>&lt;p2-x&gt;</var> <var>&lt;p2-y&gt;</var>.
-          </dd>
-        </dl>
+        <section>
+          <h4>The <code>SplineTimingFunc</code> interface</h4>
+          <p>
+            Cubic bézier curve based timing functions are represented using
+            the <code>SplineTimingFunc</code> interface defined below.
+          </p>
+          <dl title="
+  [Constructor (DOMString spec),
+   Constructor (sequence&lt;double&gt; points)]
+            interface SplineTimingFunc : TimingFunc" class="idl">
+            <dt>double scaleTime(double time)</dt>
+            <dd>
+              Applies the timing function produced by the cubic Bézier curve
+              with points (0,0), (<code>points[0], points[1]</code>),
+              (<code>points[2]</code>, <code>points[3]</code>), (1, 1).
+              Returns the resulting <var>y</var> value when the <var>x</var>
+              value is <code>max(0, min(1, time))</code>.
+            </dd>
+            <dt>TimingFunc clone()</dt>
+            <dd>
+              Returns a copy of this object.
+            </dd>
+            <dt>attribute sequence&lt;double&gt; points</dt>
+            <dd>
+              <p>
+                A sequence of four real numbers representing the coordinates of
+                the two control points in the following sequence
+                <var>&lt;p1-x&gt;</var> <var>&lt;p1-y&gt;</var>
+                <var>&lt;p2-x&gt;</var> <var>&lt;p2-y&gt;</var>.
+              </p>
+              <p>
+                Each of the <var>x</var> values (i.e. <var>p1-x</var> and
+                <var>p2-x</var>) must be in the range [0, 1].
+              </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type <code>IndexSizeError</code></dt>
+                <dd>
+                  Raised on setting if an <var>x</var> value is outside the
+                  range [0, 1].
+                </dd>
+                <dt>DOMException of type
+                    <code>InvalidModificationError</code></dt>
+                <dd>
+                  Raised on attempting to alter the length of
+                  <code>points</code>.
+                </dd>
+              </dl>
+            </dd>
+          </dl>
+        </section>
       </section>
       <section>
         <h3>The <code>StepTimingFunc</code> interface</h3>
         <!-- XXX Make this use an enum for the position values -->
         <dl title="
 [Constructor (unsigned integer numSteps,
-              optional DOMString position = 'end')]
+              optional StepPosition position = 'end')]
           interface StepTimingFunc : TimingFunc" class="idl">
           <dt>attribute unsigned integer numSteps</dt>
           <dd>
