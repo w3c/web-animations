@@ -2577,6 +2577,17 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           <dl title="
 [Constructor (unsigned integer numSteps, optional StepPosition position = 'end')]
             interface StepTimingFunc : TimingFunc" class="idl">
+            <dt>double scaleTime(double time)</dt>
+            <dd>
+              Returns the value of applying the step function defined by
+              <a>numSteps</a> and <a>position</a> with input <var>time</var>.
+              The behavior of the step function is described in <a
+              href="#timing-in-discrete-steps" class="sectionRef"></a>.
+            </dd>
+            <dt>TimingFunc clone()</dt>
+            <dd>
+              Returns a copy of this object.
+            </dd>
             <dt>attribute unsigned integer numSteps</dt>
             <dd>
               <p>
@@ -2633,16 +2644,37 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
       </section>
       <section>
         <h3>The <code>CustomTimingFunc</code> interface</h3>
-        <p class="todo">
-          TBD
+        <p>
+          In addition to the timing functions provided by Web Animations,
+          authors may also provide their own timing functions either by
+          providing an object that implements that <a>TimingFunc</a> interface
+          or by providing a scale function.
+          In the latter case, when a scale function is provided, it represented
+          in the API by <a>CustomTimingFunc</a> interface object used to wrap
+          the function.
+        </p>
+        <p class="feedbackWanted">
+          Is this the right way do to things? Or is it better to use a union
+          type <code>(TimingFunc or TimingFuncCallback)</code>?
         </p>
         <dl title="
 [// callback TimingFuncCallback = double (double time);
  Constructor (TimingFuncCallback func)]
         interface CustomTimingFunc : TimingFunc" class="idl">
+          <dt>double scaleTime(double time)</dt>
+          <dd>
+            Returns the result of calling <code>func(time)</code>.
+          </dd>
+          <dt>TimingFunc clone()</dt>
+          <dd>
+            Returns this object.
+          </dd>
           <dt>attribute TimingFuncCallback func</dt>
           <dd>
-            TBD
+            The function to call to scale the time.
+            The meaning of the parameters and return value are identical to
+            those described for the <code>sampleTime</code> method of the
+            <a>TimingFunc</a> interface.
           </dd>
         </dl>
       </section>
