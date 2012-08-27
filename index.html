@@ -2069,9 +2069,10 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
                     <code>null</code>,</dt>
                 <dd>
                   <p>
-                    Let <var>scaled iteration time</var> be <code>max(0, min(1,
-                    timing.timingFunction.scaleTime(<var>unscaled iteration
-                    time</var>)))</code>.
+                    Let <var>scaled iteration time</var> be
+                    <code>unscaled iteration time *
+                      timing.timingFunction.scaleTime(<var>unscaled iteration
+                      time</var> / <a>iteration duration</a>)))</code>.
                   </p>
                   <p>
                     If calling <code>timing.timingFunction.scaleTime</code>
@@ -2192,6 +2193,12 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           <p>
             The <dfn>time fraction</dfn> is given by dividing the <var>iteration
             time</var> by the <a>iteration duration</a>.
+          </p>
+          <p class="note">
+            Since <a href="#scaling-the-time">timing functions</a> are allowed
+            to produce output times outside the range [0,1] it is possible that
+            the value calculated for a <a>time fraction</a> also lies outside
+            this range.
           </p>
         </section>
         <section>
@@ -2373,11 +2380,9 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
           <dt>double scaleTime(double time)</dt>
           <dd>
             <p>
-              Takes a value in the range [0, 1], that is a <a>time fraction</a>,
-              and applies some transformation on the value to produces an output
-              value also in the range [0, 1].
-              Any output values outside this range are clamped as per <a
-              href="#applying-time-manipulations" class="sectionRef"></a>.
+              Takes a value in the range [0, 1] and applies some transformation
+              on the value to produces an output value (typically, also in the
+              range [0, 1]).
             </p>
             <p class="todo">
               Some functions will want to produce different output based on the
@@ -3483,8 +3488,8 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
                 parameters were the same. 
               </p>
               <p>
-                <code>timeFraction</code> would be a number between 0.0 and 1.0
-                inclusive.
+                <code>timeFraction</code> would be a number typically in the
+                range [0.0, 1.0].
                 <code>null</code> values indicate the function should no longer
                 affect the target.
               </p>
@@ -3742,6 +3747,11 @@ var anim = new Anim(elem, { duration: 3, prop: 'height', to: '30px' });
             <var>animation balue</var> is the <var>end value</var> merged
             with the <var>iteration value</var>, with an interpolation
             parameter equal to the current <var>time fraction</var>
+          </p>
+          <p class="todo">
+            Need to review the following algorithms to check they still make
+            sense now that the iteration fraction is not necessarily in the
+            range [0, 1].
           </p>
         </section>
         <section>              
