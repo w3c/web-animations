@@ -1545,7 +1545,7 @@ berjon.respec.prototype = {
             var inf = w.definition(idl);
             var df = w.makeMarkup();
             idl.parentNode.replaceChild(df, idl);
-            if (inf.type == "interface" || inf.type == "exception" || inf.type == "dictionary" || inf.type == "typedef" || inf.type == "enum" || inf.type == "namedconstructor") infNames.push(inf.id);
+            if (inf.type == "interface" || inf.type == "exception" || inf.type == "dictionary" || inf.type == "typedef" || inf.type == "enum") infNames.push(inf.id);
         }
         document.normalize();
         var ants = document.querySelectorAll("a:not([href])");
@@ -1705,7 +1705,6 @@ berjon.WebIDLProcessor.prototype = {
         str = this.parseExtendedAttributes(str, def);
         if      (str.indexOf("interface") == 0 || str.indexOf("partial") == 0) type = "interface";
         else if (str.indexOf("enum") == 0)			type = "enum";
-        else if (str.indexOf("constructor") == 0)	type = "namedconstructor";
         else if (str.indexOf("exception") == 0)		type = "exception";
         else if (str.indexOf("dictionary") == 0)	type = "dictionary";
         else if (str.indexOf("typedef") == 0)		type = "typedef";
@@ -1792,20 +1791,6 @@ berjon.WebIDLProcessor.prototype = {
     
     enum: function (enm, str, idl) {
         enm.type = "enum";
-        var match = /^\s*enum\s+(\S+)\s*$/.exec(str);
-		enm.id = match[1];
-        if (match) {
-            enm.id = match[1];
-            enm.refId = this._id(enm.id);
-        }
-        else {
-            error("Expected enum, got: " + str);
-        }
-        return enm;
-    },
-    
-    namedconstructor: function (enm, str, idl) {
-        enm.type = "namedconstructor";
         var match = /^\s*enum\s+(\S+)\s*$/.exec(str);
 		enm.id = match[1];
         if (match) {
@@ -2033,6 +2018,40 @@ berjon.WebIDLProcessor.prototype = {
             
         if (this.parseConst(mem, str)) return mem;
             
+        // CONSTRUCTOR
+        match = /^\s*Constructor(?:\s*\(\s*(.*)\s*\))?\s*$/.exec(str);
+        if (match) {
+            mem.type = "constructor";
+            mem.nullable = false;
+            mem.array = false;
+            mem.datatype = "";
+            mem.id = this.parent.id;
+            mem.refId = this._id(mem.id);
+            mem.params = [];
+            var prm = match[1] ? match[1] : [];
+            mem.raises = [];
+            mem.named = false;
+
+            return this.methodMember(mem, excepts, extPrm, prm);
+        }
+
+        // NAMED CONSTRUCTOR
+        match = /^\s*NamedConstructor\s*(?:=\s*)?\b([^(]+)(?:\s*\(\s*(.*)\s*\))?\s*$/.exec(str);
+        if (match) {
+            mem.type = "constructor";
+            mem.nullable = false;
+            mem.array = false;
+            mem.datatype = "";
+            mem.id = match[1];
+            mem.refId = this._id(mem.id);
+            mem.params = [];
+            var prm = match[2] ? match[2] : [];
+            mem.raises = [];
+            mem.named = true;
+
+            return this.methodMember(mem, excepts, extPrm, prm);
+        }
+
         // METHOD
         match = /^\s*\b(.*?)\s+\b(\S+)\s*\(\s*(.*)\s*\)\s*$/.exec(str);
         if (match) {
@@ -2054,124 +2073,128 @@ berjon.WebIDLProcessor.prototype = {
             mem.params = [];
             var prm = match[3];
             mem.raises = [];
-            
-            if (excepts.length) {
-                for (var i = 0; i < excepts.length; i++) {
-                    var el = excepts[i];
-                    var exc = { id: el.getAttribute("title") };
-                    if (el.localName.toLowerCase() == "dl") {
-                        exc.type = "codelist";
-                        exc.description = [];
-                        var dts = sn.findNodes("./dt", el);
-                        for (var j = 0; j < dts.length; j++) {
-                            var dt = dts[j];
-                            var dd = dt.nextElementSibling;
-                            var c = { id: dt.textContent, description: sn.documentFragment() };
-                            sn.copyChildren(dd, c.description);
-                            exc.description.push(c);
-                        }
-                    }
-                    else if (el.localName.toLowerCase() == "div") {
-                        exc.type = "simple";
-                        exc.description = sn.documentFragment();
-                        sn.copyChildren(el, exc.description);
-                    }
-                    else {
-                        error("Do not know what to do with exceptions being raised defined outside of a div or dl.");
-                    }
-                    el.parentNode.removeChild(el);
-                    mem.raises.push(exc);
-                }
-            }
 
-            if (extPrm) {
-                extPrm.parentNode.removeChild(extPrm);
-                var dts = sn.findNodes("./dt", extPrm);
-                for (var i = 0; i < dts.length; i++) {
-                    var dt = dts[i];
-                    var dd = dt.nextElementSibling; // we take a simple road
-                    var prm = dt.textContent;
-                    var p = {};
-                    prm = this.parseExtendedAttributes(prm, p);
-                    var match = /^\s*\b(.+?)\s+([^\s]+)\s*$/.exec(prm);
-                    if (match) {
-                        var type = match[1];
-                        p.nullable = false;
-                        if (/\?$/.test(type)) {
-                            type = type.replace(/\?$/, "");
-                            p.nullable = true;
-                        }
-                        p.array = false;
-                        if (/\[\]$/.test(type)) {
-                            type = type.replace(/\[\]$/, "");
-                            p.array = true;
-                        }
-                        p.datatype = type;
-                        p.id = match[2];
-                        p.refId = this._id(p.id);
-                        p.description = sn.documentFragment();
-                        sn.copyChildren(dd, p.description);
-                        mem.params.push(p);
-                    }
-                    else {
-                        error("Expected parameter definition, got: " + prm);
-                        break;
-                    }
-                }
-            }
-            else {
-                while (prm.length) {
-                    var p = {};
-                    prm = this.parseExtendedAttributes(prm, p);
-                    // either up to end of string, or up to ,
-                    var re = /^\s*(?:in\s+)?\b([^,]+)\s+\b([^,\s]+)\s*(?:,)?\s*/;
-                    var match = re.exec(prm);
-                    if (match) {
-                        prm = prm.replace(re, "");
-                        var type = match[1];
-                        p.nullable = false;
-                        if (/\?$/.test(type)) {
-                            type = type.replace(/\?$/, "");
-                            p.nullable = true;
-                        }
-                        p.array = false;
-                        if (/\[\]$/.test(type)) {
-                            type = type.replace(/\[\]$/, "");
-                            p.array = true;
-                        }
-                        p.datatype = type;
-                        p.id = match[2];
-                        p.refId = this._id(p.id);
-                        mem.params.push(p);
-                    }
-                    else {
-                        error("Expected parameter list, got: " + prm);
-                        break;
-                    }
-                }
-            }
-            
-            // apply optional
-            var isOptional = false;
-            for (var i = 0; i < mem.params.length; i++) {
-                var p = mem.params[i];
-                var pkw = p.datatype.split(/\s+/);
-                var idx = pkw.indexOf("optional");
-                if (idx > -1) {
-                    isOptional = true;
-                    pkw.splice(idx, 1);
-                    p.datatype = pkw.join(" ");
-                }
-                p.optional = isOptional;
-            }
-            
-            return mem;
+            return this.methodMember(mem, excepts, extPrm, prm);
         }
 
         // NOTHING MATCHED
         error("Expected interface member, got: " + str);
     },
-    
+
+    methodMember: function (mem, excepts, extPrm, prm) {
+        if (excepts.length) {
+            for (var i = 0; i < excepts.length; i++) {
+                var el = excepts[i];
+                var exc = { id: el.getAttribute("title") };
+                if (el.localName.toLowerCase() == "dl") {
+                    exc.type = "codelist";
+                    exc.description = [];
+                    var dts = sn.findNodes("./dt", el);
+                    for (var j = 0; j < dts.length; j++) {
+                        var dt = dts[j];
+                        var dd = dt.nextElementSibling;
+                        var c = { id: dt.textContent, description: sn.documentFragment() };
+                        sn.copyChildren(dd, c.description);
+                        exc.description.push(c);
+                    }
+                }
+                else if (el.localName.toLowerCase() == "div") {
+                    exc.type = "simple";
+                    exc.description = sn.documentFragment();
+                    sn.copyChildren(el, exc.description);
+                }
+                else {
+                    error("Do not know what to do with exceptions being raised defined outside of a div or dl.");
+                }
+                el.parentNode.removeChild(el);
+                mem.raises.push(exc);
+            }
+        }
+
+        if (extPrm) {
+            extPrm.parentNode.removeChild(extPrm);
+            var dts = sn.findNodes("./dt", extPrm);
+            for (var i = 0; i < dts.length; i++) {
+                var dt = dts[i];
+                var dd = dt.nextElementSibling; // we take a simple road
+                var prm = dt.textContent;
+                var p = {};
+                prm = this.parseExtendedAttributes(prm, p);
+                var match = /^\s*\b(.+?)\s+([^\s]+)\s*$/.exec(prm);
+                if (match) {
+                    var type = match[1];
+                    p.nullable = false;
+                    if (/\?$/.test(type)) {
+                        type = type.replace(/\?$/, "");
+                        p.nullable = true;
+                    }
+                    p.array = false;
+                    if (/\[\]$/.test(type)) {
+                        type = type.replace(/\[\]$/, "");
+                        p.array = true;
+                    }
+                    p.datatype = type;
+                    p.id = match[2];
+                    p.refId = this._id(p.id);
+                    p.description = sn.documentFragment();
+                    sn.copyChildren(dd, p.description);
+                    mem.params.push(p);
+                }
+                else {
+                    error("Expected parameter definition, got: " + prm);
+                    break;
+                }
+            }
+        }
+        else {
+            while (prm.length) {
+                var p = {};
+                prm = this.parseExtendedAttributes(prm, p);
+                // either up to end of string, or up to ,
+                var re = /^\s*(?:in\s+)?\b([^,]+)\s+\b([^,\s]+)\s*(?:,)?\s*/;
+                var match = re.exec(prm);
+                if (match) {
+                    prm = prm.replace(re, "");
+                    var type = match[1];
+                    p.nullable = false;
+                    if (/\?$/.test(type)) {
+                        type = type.replace(/\?$/, "");
+                        p.nullable = true;
+                    }
+                    p.array = false;
+                    if (/\[\]$/.test(type)) {
+                        type = type.replace(/\[\]$/, "");
+                        p.array = true;
+                    }
+                    p.datatype = type;
+                    p.id = match[2];
+                    p.refId = this._id(p.id);
+                    mem.params.push(p);
+                }
+                else {
+                    error("Expected parameter list, got: " + prm);
+                    break;
+                }
+            }
+        }
+
+        // apply optional
+        var isOptional = false;
+        for (var i = 0; i < mem.params.length; i++) {
+            var p = mem.params[i];
+            var pkw = p.datatype.split(/\s+/);
+            var idx = pkw.indexOf("optional");
+            if (idx > -1) {
+                isOptional = true;
+                pkw.splice(idx, 1);
+                p.datatype = pkw.join(" ");
+            }
+            p.optional = isOptional;
+        }
+
+        return mem;
+    },
+
     parseExtendedAttributes:    function (str, obj) {
         str = str.replace(/^\s*\[([^\]]+)\]\s+/, function (x, m1) { obj.extendedAttributes = m1; return ""; });
         return str;
@@ -2344,7 +2367,7 @@ berjon.WebIDLProcessor.prototype = {
         else if (obj.type == "interface") {
             var df = sn.documentFragment();
             var curLnk = "widl-" + obj.refId + "-";
-            var types = ["attribute", "method", "constant"];
+            var types = ["attribute", "constructor", "method", "constant"];
             for (var i = 0; i < types.length; i++) {
                 var type = types[i];
                 var things = obj.children.filter(function (it) { return it.type == type });
@@ -2364,68 +2387,19 @@ berjon.WebIDLProcessor.prototype = {
                 var dl = sn.element("dl", { "class": type + "s" }, sec);
                 for (var j = 0; j < things.length; j++) {
                     var it = things[j];
-                    var id = (type == "method") ? this.makeMethodID(curLnk, it) : sn.idThatDoesNotExist(curLnk + it.refId);
+                    var id = (type == "method")
+                        ? this.makeMethodID(curLnk, it)
+                        : (type == "constructor")
+                           ? this.makeMethodID("widl-ctor-", it)
+                           : sn.idThatDoesNotExist(curLnk + it.refId);
                     var dt = sn.element("dt", { id: id }, dl);
                     sn.element("code", {}, dt, it.id);
                     var desc = sn.element("dd", {}, dl, [it.description]);
-                    if (type == "method") {
-                        if (it.params.length) {
-                            var table = sn.element("table", { "class": "parameters" }, desc);
-                            var tr = sn.element("tr", {}, table);
-                            ["Parameter", "Type", "Nullable", "Optional", "Description"].forEach(function (tit) { sn.element("th", {}, tr, tit); });
-                            for (var k = 0; k < it.params.length; k++) {
-                                var prm = it.params[k];
-                                var tr = sn.element("tr", {}, table);
-                                sn.element("td", { "class": "prmName" }, tr, prm.id);
-                                var tyTD = sn.element("td", { "class": "prmType" }, tr);
-                                var matched = /^sequence<(.+)>$/.exec(prm.datatype);
-                                if (matched) {
-                                    sn.element("code", {}, tyTD, [  sn.text("sequence<"), 
-                                                                    sn.element("a", {}, null, matched[1]), 
-                                                                    sn.text(">")]);
-                                }
-                                else {
-                                    var cnt = [sn.element("a", {}, null, prm.datatype)];
-                                    if (prm.array) cnt.push(sn.text("[]"));
-                                    sn.element("code", {}, tyTD, cnt);
-                                }
-                                if (prm.nullable) sn.element("td", { "class": "prmNullTrue" }, tr, "\u2714");
-                                else              sn.element("td", { "class": "prmNullFalse" }, tr, "\u2718");
-                                if (prm.optional) sn.element("td", { "class": "prmOptTrue" }, tr, "\u2714");
-                                else              sn.element("td", { "class": "prmOptFalse" }, tr, "\u2718");
-                                var cnt = prm.description ? [prm.description] : "";
-                                sn.element("td", { "class": "prmDesc" }, tr, cnt);
-                            }
-                        }
-                        else {
-                            sn.element("div", {}, desc, [sn.element("em", {}, null, "No parameters.")]);
-                        }
-                        // if (it.raises.length) {
-                        //     var table = sn.element("table", { "class": "exceptions" }, desc);
-                        //     var tr = sn.element("tr", {}, table);
-                        //     ["Exception", "Description"].forEach(function (tit) { sn.element("th", {}, tr, tit); });
-                        //     for (var k = 0; k < it.raises.length; k++) {
-                        //         var exc = it.raises[k];
-                        //         var tr = sn.element("tr", {}, table);
-                        //         sn.element("td", { "class": "excName" }, tr, [sn.element("a", {}, null, exc.id)]);
-                        //         var dtd = sn.element("td", { "class": "excDesc" }, tr);
-                        //         if (exc.type == "simple") {
-                        //             dtd.appendChild(exc.description);
-                        //         }
-                        //         else {
-                        //             var ctab = sn.element("table", { "class": "exceptionCodes" }, dtd );
-                        //             for (var m = 0; m < exc.description.length; m++) {
-                        //                 var cd = exc.description[m];
-                        //                 var tr = sn.element("tr", {}, ctab);
-                        //                 sn.element("td", { "class": "excCodeName" }, tr, [sn.element("code", {}, null, cd.id)]);
-                        //                 sn.element("td", { "class": "excCodeDesc" }, tr, [cd.description]);
-                        //             }
-                        //         }
-                        //     }
-                        // }
-                        // else {
-                        //     sn.element("div", {}, desc, [sn.element("em", {}, null, "No exceptions.")]);
-                        // }
+                    if (type == "constructor") {
+                        this.writeHTMLParams(it, desc);
+                    }
+                    else if (type == "method") {
+                        this.writeHTMLParams(it, desc);
                         var reDiv = sn.element("div", {}, desc);
                         sn.element("em", {}, reDiv, "Return type: ");
                         var matched = /^sequence<(.+)>$/.exec(it.datatype);
@@ -2456,37 +2430,6 @@ berjon.WebIDLProcessor.prototype = {
                         }
                         if (it.readonly) sn.text(", readonly", dt);
                         if (it.nullable) sn.text(", nullable", dt);
-                        
-                        // if (it.raises.length) {
-                        //     var table = sn.element("table", { "class": "exceptions" }, desc);
-                        //     var tr = sn.element("tr", {}, table);
-                        //     ["Exception", "On Get", "On Set", "Description"].forEach(function (tit) { sn.element("th", {}, tr, tit); });
-                        //     for (var k = 0; k < it.raises.length; k++) {
-                        //         var exc = it.raises[k];
-                        //         var tr = sn.element("tr", {}, table);
-                        //         sn.element("td", { "class": "excName" }, tr, [sn.element("a", {}, null, exc.id)]);
-                        //         ["onGet", "onSet"].forEach(function (gs) {
-                        //             if (exc[gs]) sn.element("td", { "class": "excGetSetTrue" }, tr, "\u2714");
-                        //             else         sn.element("td", { "class": "excGetSetFalse" }, tr, "\u2718");
-                        //         });
-                        //         var dtd = sn.element("td", { "class": "excDesc" }, tr);
-                        //         if (exc.type == "simple") {
-                        //             dtd.appendChild(exc.description);
-                        //         }
-                        //         else {
-                        //             var ctab = sn.element("table", { "class": "exceptionCodes" }, dtd );
-                        //             for (var m = 0; m < exc.description.length; m++) {
-                        //                 var cd = exc.description[m];
-                        //                 var tr = sn.element("tr", {}, ctab);
-                        //                 sn.element("td", { "class": "excCodeName" }, tr, [sn.element("code", {}, null, cd.id)]);
-                        //                 sn.element("td", { "class": "excCodeDesc" }, tr, [cd.description]);
-                        //             }
-                        //         }
-                        //     }
-                        // }
-                        // else {
-                        //     sn.element("div", {}, desc, [sn.element("em", {}, null, "No exceptions.")]);
-                        // }
                     }
                     else if (type == "constant") {
                         sn.text(" of type ", dt);
@@ -2508,6 +2451,40 @@ berjon.WebIDLProcessor.prototype = {
                 }, 0);
             }
             return df;
+        }
+    },
+
+    writeHTMLParams: function(it, desc) {
+        if (it.params.length) {
+            var table = sn.element("table", { "class": "parameters" }, desc);
+            var tr = sn.element("tr", {}, table);
+            ["Parameter", "Type", "Nullable", "Optional", "Description"].forEach(function (tit) { sn.element("th", {}, tr, tit); });
+            for (var k = 0; k < it.params.length; k++) {
+                var prm = it.params[k];
+                var tr = sn.element("tr", {}, table);
+                sn.element("td", { "class": "prmName" }, tr, prm.id);
+                var tyTD = sn.element("td", { "class": "prmType" }, tr);
+                var matched = /^sequence<(.+)>$/.exec(prm.datatype);
+                if (matched) {
+                    sn.element("code", {}, tyTD, [  sn.text("sequence<"), 
+                                                    sn.element("a", {}, null, matched[1]), 
+                                                    sn.text(">")]);
+                }
+                else {
+                    var cnt = [sn.element("a", {}, null, prm.datatype)];
+                    if (prm.array) cnt.push(sn.text("[]"));
+                    sn.element("code", {}, tyTD, cnt);
+                }
+                if (prm.nullable) sn.element("td", { "class": "prmNullTrue" }, tr, "\u2714");
+                else              sn.element("td", { "class": "prmNullFalse" }, tr, "\u2718");
+                if (prm.optional) sn.element("td", { "class": "prmOptTrue" }, tr, "\u2714");
+                else              sn.element("td", { "class": "prmOptFalse" }, tr, "\u2718");
+                var cnt = prm.description ? [prm.description] : "";
+                sn.element("td", { "class": "prmDesc" }, tr, cnt);
+            }
+        }
+        else {
+            sn.element("div", {}, desc, [sn.element("em", {}, null, "No parameters.")]);
         }
     },
     
@@ -2560,7 +2537,31 @@ berjon.WebIDLProcessor.prototype = {
         }
         else if (obj.type == "interface") {
             var str = "<span class='idlInterface' id='idl-def-" + obj.refId + "'>";
-            if (obj.extendedAttributes) str += this._idn(indent) + "[<span class='extAttr'>" + obj.extendedAttributes + "</span>]\n";
+            // prepare constructors string
+            var ctors = [];
+            var curLnk = "widl-ctor-";
+            for (var i = 0; i < obj.children.length; i++) {
+                var ch = obj.children[i];
+                if (ch.type == "constructor") {
+                    ctors.push(this.writeCtor(ch, 0, curLnk));
+                }
+            }
+            var ctorStr = (ctors.length)
+                        ? ctors.join(",\n" + this._idn(indent) + " ")
+                        : "";
+
+            // print constructors and extended attributes
+            if (obj.extendedAttributes) {
+                str += this._idn(indent) +
+                       "[<span class='extAttr'>" + obj.extendedAttributes +
+                       "</span>";
+                if (ctorStr.length)
+                    str += "\n " + this._idn(indent) + ctorStr;
+                str += "]\n";
+            } else if (ctorStr.length) {
+                str += this._idn(indent) + "[" + ctorStr + "]\n";
+            }
+
             str += this._idn(indent);
             if (obj.partial) str += "partial ";
             str += "interface <span class='idlInterfaceID'>" + obj.id + "</span>";
@@ -2694,6 +2695,24 @@ berjon.WebIDLProcessor.prototype = {
         str += ";</span>\n";
         return str;
     },
+
+    writeCtor:    function (ctor, indent, curLnk) {
+        var str = "<span class='idlCtor'>";
+        str += this._idn(indent);
+        var id = this.makeMethodID(curLnk, ctor);
+        if (ctor.named) {
+            str += "<span class='idlNamedCtorKeyword'>NamedConstructor</span>=";
+            str += "<a href='#" + id + "'>" + ctor.id + "</a></span>";
+        } else {
+            str += "<span class='idlCtorKeyword'><a href='#" + id +
+                   "'>Constructor</a></span>";
+        }
+        if (ctor.params.length) {
+            str += " (" + this.writeParams(ctor.params) + ")";
+        }
+        str += "</span>";
+        return str;
+    },
     
     writeMethod:    function (meth, max, indent, curLnk) {
         var str = "<span class='idlMethod'>";
@@ -2709,8 +2728,13 @@ berjon.WebIDLProcessor.prototype = {
         var id = this.makeMethodID(curLnk, meth);
         // str += "<span class='idlMethName'><a href='#" + curLnk + meth.refId + "'>" + meth.id + "</a></span> (";
         str += "<span class='idlMethName'><a href='#" + id + "'>" + meth.id + "</a></span> (";
+        str += this.writeParams(meth.params) + ");</span>\n";
+        return str;
+    },
+
+    writeParams:    function (params) {
         var obj = this;
-        str += meth.params.map(function (it) {
+        return params.map(function (it) {
                                     var nullable = it.nullable ? "?" : "";
                                     var optional = it.optional ? "optional " : "";
                                     var arr = it.array ? "[]" : "";
@@ -2723,15 +2747,6 @@ berjon.WebIDLProcessor.prototype = {
                                     return prm;
                                 })
                           .join(", ");
-        str += ")";
-        // if (meth.raises.length) {
-        //     str += " raises ("
-        //     str += meth.raises.map(function (it) { return "<span class='idlRaises'><a>" + it.id + "</a></span>"; })
-        //                       .join(", ");
-        //     str += ")";
-        // }
-        str += ";</span>\n";
-        return str;
     },
     
     writeConst:    function (cons, max, indent, curLnk) {
