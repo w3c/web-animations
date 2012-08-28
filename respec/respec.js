@@ -2151,11 +2151,12 @@ berjon.WebIDLProcessor.prototype = {
                 var p = {};
                 prm = this.parseExtendedAttributes(prm, p);
                 // either up to end of string, or up to ,
-                var re = /^\s*(?:in\s+)?\b([^,]+)\s+\b([^,\s]+)\s*(?:,)?\s*/;
+                var re = /^\s*(optional\s+)?([^,=]+)\s+\b([^,=\s]+)\s*(?:=\s*(.*))?(?:,)?\s*/;
                 var match = re.exec(prm);
                 if (match) {
                     prm = prm.replace(re, "");
-                    var type = match[1];
+                    p.optional = !!match[1];
+                    var type = match[2];
                     p.nullable = false;
                     if (/\?$/.test(type)) {
                         type = type.replace(/\?$/, "");
@@ -2167,8 +2168,9 @@ berjon.WebIDLProcessor.prototype = {
                         p.array = true;
                     }
                     p.datatype = type;
-                    p.id = match[2];
+                    p.id = match[3];
                     p.refId = this._id(p.id);
+                    p.defaultValue = match[4];
                     mem.params.push(p);
                 }
                 else {
@@ -2176,20 +2178,6 @@ berjon.WebIDLProcessor.prototype = {
                     break;
                 }
             }
-        }
-
-        // apply optional
-        var isOptional = false;
-        for (var i = 0; i < mem.params.length; i++) {
-            var p = mem.params[i];
-            var pkw = p.datatype.split(/\s+/);
-            var idx = pkw.indexOf("optional");
-            if (idx > -1) {
-                isOptional = true;
-                pkw.splice(idx, 1);
-                p.datatype = pkw.join(" ");
-            }
-            p.optional = isOptional;
         }
 
         return mem;
@@ -2477,8 +2465,21 @@ berjon.WebIDLProcessor.prototype = {
                 }
                 if (prm.nullable) sn.element("td", { "class": "prmNullTrue" }, tr, "\u2714");
                 else              sn.element("td", { "class": "prmNullFalse" }, tr, "\u2718");
-                if (prm.optional) sn.element("td", { "class": "prmOptTrue" }, tr, "\u2714");
-                else              sn.element("td", { "class": "prmOptFalse" }, tr, "\u2718");
+
+                var optional = sn.element("td", {}, tr);
+                if (prm.optional) {
+                    sn.element("span", { "class": "prmOptTrue" }, optional,
+                               "\u2714");
+                    if (prm.defaultValue) {
+                        sn.text(" (", optional);
+                        sn.element("code", {}, optional, prm.defaultValue);
+                        sn.text(")", optional);
+                    }
+                } else {
+                    sn.addClass(optional, "prmOptFalse");
+                    sn.text("\u2718", optional);
+                }
+
                 var cnt = prm.description ? [prm.description] : "";
                 sn.element("td", { "class": "prmDesc" }, tr, cnt);
             }
@@ -2734,21 +2735,31 @@ berjon.WebIDLProcessor.prototype = {
 
     writeParams:    function (params) {
         var obj = this;
-        return params.map(function (it) {
-                                    var nullable = it.nullable ? "?" : "";
-                                    var optional = it.optional ? "optional " : "";
-                                    var arr = it.array ? "[]" : "";
-                                    var inp = obj.noIDLIn ? "" : "in ";
-                                    var prm = "<span class='idlParam'>";
-                                    if (it.extendedAttributes) prm += "[<span class='extAttr'>" + it.extendedAttributes + "</span>] ";
-                                    prm += inp + optional + "<span class='idlParamType'>" + obj.writeDatatype(it.datatype) + arr + nullable + "</span> " +
-                                    "<span class='idlParamName'>" + it.id + "</span>" +
-                                    "</span>";
-                                    return prm;
-                                })
-                          .join(", ");
+        return params.map(
+            function (it) {
+                var nullable = it.nullable ? "?" : "";
+                var optional = it.optional ? "optional " : "";
+                var arr = it.array ? "[]" : "";
+                var inp = obj.noIDLIn ? "" : "in ";
+                var prm = "<span class='idlParam'>";
+                if (it.extendedAttributes) {
+                    prm += "[<span class='extAttr'>" +
+                           it.extendedAttributes + "</span>] ";
+                }
+                prm += inp + optional + "<span class='idlParamType'>" +
+                       obj.writeDatatype(it.datatype) + arr + nullable +
+                       "</span> ";
+                prm += "<span class='idlParamName'>" + it.id + "</span>";
+                if (it.defaultValue) {
+                    prm += " = <span class='idlParamValue'>" + it.defaultValue +
+                           "</span>";
+                }
+                prm += "</span>";
+                return prm;
+            }
+        ).join(", ");
     },
-    
+
     writeConst:    function (cons, max, indent, curLnk) {
         var str = "<span class='idlConst'>";
         str += this._idn(indent);
