@@ -367,11 +367,91 @@
       <section>
         <h3>The <code>Anim</code> interface</h3>
         <dl title="interface Anim : TimedItem" class="idl">
-          <dt>Constructor (Element? elem, Object? properties,
-                           AnimGroup? parentGroup,
-                           optional double startTime)</dt>
+          <dt>Constructor ()</dt>
           <dd>
-            TBD
+            <p>
+              Creates a new <a>Anim</a> object.
+            </p>
+            <p>
+              Examples of the usage of this constructor are given in <a
+              href="#creating-a-new-anim-object" class="sectionRef"></a>.
+            </p>
+            <dl class="parameters">
+              <dt>Element? elem</dt>
+              <dd>
+                The target element.
+                This may be <code>null</code> for animations that do not target
+                a specific element.
+              </dd>
+              <dt>object animFunc</dt>
+              <dd>
+                The animation function used to set the <code>animFunc</code>
+                property of the newly created <a>Anim</a> object.
+                <p>
+                  If this parameter is an <a>AnimFunc</a> object, it will shared
+                  with any other <a>Anim</a> objects referring to the same
+                  <a>AnimFunc</a> object.
+                  It will <em>not</em> be copied.
+                </p>
+                <p>
+                  Otherwise, if this parameter is any other type of object, it
+                  will be passed to <code>AnimFunc.createFromProperties</code>
+                  and the resulting <code>AnimFunc</code> object used as the
+                  animation function.
+                </p>
+              </dd>
+              <dt>(double or TimingDict or Timing) timing</dt>
+              <dd>
+                The timing properties of the new animation.
+                <p>
+                  If this parameter is a <code>double</code>, then it
+                  specifies the duration of a single iteration of the animation,
+                  that is, the <a>iteration duration</a>, in seconds.
+                  In this case, the <code>timing</code> property of the new
+                  <a>Anim</a> object is set to a new <a>Timing</a> object will
+                  all properties set to their default values except the
+                  <a>duration</a> property which is set to the value specified
+                  here.
+                </p>
+                <p>
+                  If this parameter is of type <a>TimingDict</a>, then the
+                  values of the passed-in dictionary are used to construct a new
+                  <a>Timing</a> object which is then assigned to the
+                  <code>timing</code> property of the new <a>Anim</a> object.
+                </p>
+                <p>
+                  Finally, if this parameter is a <a>Timing</a> object, it is
+                  directly assigned to the <code>timing</code> property of the
+                  new <a>Anim</a> object.
+                  It is <em>not</em> copied.
+                  In this way <a>Timing</a> objects can be shared between
+                  <a>Anim</a> objects.
+                </p>
+              </dd>
+              <dt>optional AnimGroup? parentGroup</dt>
+              <dd>
+                The group to which the newly created animation should be
+                appended as a child.
+                If not specified, the animation will be appended to the document
+                timeline.
+                If <code>null</code>, the animation will not be appended to any
+                group.
+              </dd>
+              <dt>optional double startTime</dt>
+              <dd>
+                The <a>start time</a> of the newly generated animation
+                expressed in seconds in the <a>iteration time space</a> of the
+                <a>AnimGroup</a> to which it is (or will be) appended.
+                <p>
+                  If not specified, the current <a>iteration time</a> of the
+                  <a>AnimGroup</a> to which the animation is appended (as
+                  determined by the <code>parentGroup</code> parameter) will be
+                  used. If <code>parentGroup</code> is <code>null</code>, and
+                  the <code>startTime</code> is not specified, a time of zero
+                  will be used.
+                </p>
+              </dd>
+            </dl>
           </dd>
           <dt>NamedConstructor = LinkedAnim(Element? elem,
                                             AnimTemplate template,
@@ -503,6 +583,62 @@
             </ol>
           </dd>
         </dl>
+        <section class="informative">
+          <h4>Creating a new <code>Anim</code> object</h4>
+          <p>
+            The <a>Anim</a> constructor offers a number of approaches to
+            creating a new <a>Anim</a> object.
+            At its simplest, an <a>Anim</a> object that changes the
+            &lsquo;left&rsquo; property of <var>elem</var> to 100 over three
+            seconds can be achieved as follows:
+          </p>
+          <pre class='example sh_javascript'>
+var anim = new Anim(elem, { left: '100px' }, 3);
+          </pre>
+          <p>
+            To specify further timing properties such as the playback rate,
+            a <a>TimingDict</a> can be used as follows:
+          </p>
+          <pre class='example sh_javascript'>
+var anim = new Anim(elem, { left: '100px' }, { duration: 3, playbackRate: 2 });
+          </pre>
+          <p>
+            To share or re-used timing properties with another animation,
+            a <a>Timing</a> object can be directly passed in as follows:
+          </p>
+          <pre class='example sh_javascript'>
+// Share the timing properties of animB with animA
+var animA = new Anim(elem, { left: '100px' }, animB.timing);
+
+// Re-use the timing properties of animB in animC without sharing
+var animC = new Anim(elem, { left: '100px' }, animB.timing.clone());
+          </pre>
+          <p>
+            The animation function can be used to specify multiple properties or
+            an <a>AnimFunc</a> object.
+          </p>
+          <pre class='example sh_javascript'>
+// Specify multiple properties at once
+var animA = new Anim(elem, { left: '100px', top: '300px' }, 5);
+
+// Share the animation function of another animation
+var animB = new Anim(elem, animA.animFunc, 3);
+
+// Supply a specialized animation function
+var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
+          </pre>
+          <p class="todo">
+            Fill in the parameters for <a>PathAnimFunc</a> above once we have
+            decided on them.
+          </p>
+          <p class="todo">
+            Provide an example of a script-based animation function.
+          </p>
+          <p class="todo">
+            Add examples of specifying the parent group and start time once we
+            resolve the behavior of those.
+          </p>
+        </section>
         <section class="informative">
           <h4>Using anonymous parameter objects</h4>
           <p>

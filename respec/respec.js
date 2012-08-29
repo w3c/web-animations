@@ -2118,69 +2118,61 @@ berjon.WebIDLProcessor.prototype = {
                 var dt = dts[i];
                 var dd = dt.nextElementSibling; // we take a simple road
                 var prm = dt.textContent;
-                var p = {};
-                prm = this.parseExtendedAttributes(prm, p);
-                var match = /^\s*\b(.+?)\s+([^\s]+)\s*$/.exec(prm);
-                if (match) {
-                    var type = match[1];
-                    p.nullable = false;
-                    if (/\?$/.test(type)) {
-                        type = type.replace(/\?$/, "");
-                        p.nullable = true;
-                    }
-                    p.array = false;
-                    if (/\[\]$/.test(type)) {
-                        type = type.replace(/\[\]$/, "");
-                        p.array = true;
-                    }
-                    p.datatype = type;
-                    p.id = match[2];
-                    p.refId = this._id(p.id);
-                    p.description = sn.documentFragment();
-                    sn.copyChildren(dd, p.description);
-                    mem.params.push(p);
-                }
-                else {
-                    error("Expected parameter definition, got: " + prm);
+                var p = this.parseParameter(prm);
+                if (!p) {
+                    error("Expected parameter list, got: " + prm);
                     break;
                 }
+                p = p.param;
+                p.description = sn.documentFragment();
+                sn.copyChildren(dd, p.description);
+                mem.params.push(p);
             }
         }
         else {
             while (prm.length) {
-                var p = {};
-                prm = this.parseExtendedAttributes(prm, p);
-                // either up to end of string, or up to ,
-                var re = /^\s*(optional\s+)?([^,=]+)\s+\b([^,=\s]+)\s*(?:=\s*(.*))?(?:,)?\s*/;
-                var match = re.exec(prm);
-                if (match) {
-                    prm = prm.replace(re, "");
-                    p.optional = !!match[1];
-                    var type = match[2];
-                    p.nullable = false;
-                    if (/\?$/.test(type)) {
-                        type = type.replace(/\?$/, "");
-                        p.nullable = true;
-                    }
-                    p.array = false;
-                    if (/\[\]$/.test(type)) {
-                        type = type.replace(/\[\]$/, "");
-                        p.array = true;
-                    }
-                    p.datatype = type;
-                    p.id = match[3];
-                    p.refId = this._id(p.id);
-                    p.defaultValue = match[4];
-                    mem.params.push(p);
-                }
-                else {
+                var p = this.parseParameter(prm);
+                if (!p) {
                     error("Expected parameter list, got: " + prm);
                     break;
                 }
+                prm = p.str;
+                mem.params.push(p.param);
             }
         }
 
         return mem;
+    },
+
+    parseParameter:    function (str) {
+        var param = {};
+        str = this.parseExtendedAttributes(str, param);
+
+        // either up to end of string, or up to ,
+        var re =
+          /^\s*(optional\s+)?([^,=]+)\s+\b([^,=\s]+)\s*(?:=\s*(.*))?(?:,)?\s*/;
+        var match = re.exec(str);
+        if (!match)
+            return null;
+
+        str = str.replace(re, "");
+        param.optional = !!match[1];
+        var type = match[2];
+        param.nullable = false;
+        if (/\?$/.test(type)) {
+            type = type.replace(/\?$/, "");
+            param.nullable = true;
+        }
+        param.array = false;
+        if (/\[\]$/.test(type)) {
+            type = type.replace(/\[\]$/, "");
+            param.array = true;
+        }
+        param.datatype = type;
+        param.id = match[3];
+        param.refId = this._id(param.id);
+        param.defaultValue = match[4];
+        return { param: param, str: str };
     },
 
     parseExtendedAttributes:    function (str, obj) {
@@ -2286,15 +2278,7 @@ berjon.WebIDLProcessor.prototype = {
                         sn.text(" of type ", dt);
                         if (it.array) sn.text("array of ", dt);
                         var span = sn.element("span", { "class": "idlFieldType" }, dt);
-                        var matched = /^sequence<(.+)>$/.exec(it.datatype);
-                        if (matched) {
-                            sn.text("sequence<", span);
-                            sn.element("a", {}, span, matched[1]);
-                            sn.text(">", span);
-                        }
-                        else {
-                            sn.element("a", {}, span, it.datatype);
-                        }
+                        span.innerHTML = this.writeDatatype(it.datatype);
                         if (it.nullable) sn.text(", nullable", dt);
                     }
                     else if (type == "constant") {
@@ -2334,15 +2318,7 @@ berjon.WebIDLProcessor.prototype = {
                 sn.text(" of type ", dt);
                 if (it.array) sn.text("array of ", dt);
                 var span = sn.element("span", { "class": "idlMemberType" }, dt);
-                var matched = /^sequence<(.+)>$/.exec(it.datatype);
-                if (matched) {
-                    sn.text("sequence<", span);
-                    sn.element("a", {}, span, matched[1]);
-                    sn.text(">", span);
-                }
-                else {
-                    sn.element("a", {}, span, it.datatype);
-                }
+                span.innerHTML = this.writeDatatype(it.datatype);
                 if (it.nullable) sn.text(", nullable", dt);
                 if (it.defaultValue) {
                     sn.text(", defaulting to ", dt);
@@ -2389,33 +2365,19 @@ berjon.WebIDLProcessor.prototype = {
                     else if (type == "method") {
                         this.writeHTMLParams(it, desc);
                         var reDiv = sn.element("div", {}, desc);
-                        sn.element("em", {}, reDiv, "Return type: ");
-                        var matched = /^sequence<(.+)>$/.exec(it.datatype);
-                        if (matched) {
-                            sn.element("code", {}, reDiv, [ sn.text("sequence<"), 
-                                                            sn.element("a", {}, null, matched[1]), 
-                                                            sn.text(">")]);
-                        }
-                        else {
-                            var cnt = [sn.element("a", {}, null, it.datatype)];
-                            if (it.array) cnt.push(sn.text("[]"));
-                            sn.element("code", {}, reDiv, cnt);
-                        }
+                        reDiv.innerHTML =
+                            "<em>Return type: </em>" +
+                            "<code>" +
+                            this.writeDatatype(it.datatype) +
+                            (it.array ? "[]" : "") +
+                            "</code>";
                         if (it.nullable) sn.text(", nullable", reDiv);
                     }
                     else if (type == "attribute") {
                         sn.text(" of type ", dt);
                         if (it.array) sn.text("array of ", dt);
                         var span = sn.element("span", { "class": "idlAttrType" }, dt);
-                        var matched = /^sequence<(.+)>$/.exec(it.datatype);
-                        if (matched) {
-                            sn.text("sequence<", span);
-                            sn.element("a", {}, span, matched[1]);
-                            sn.text(">", span);
-                        }
-                        else {
-                            sn.element("a", {}, span, it.datatype);
-                        }
+                        span.innerHTML = this.writeDatatype(it.datatype);
                         if (it.readonly) sn.text(", readonly", dt);
                         if (it.nullable) sn.text(", nullable", dt);
                     }
@@ -2452,17 +2414,11 @@ berjon.WebIDLProcessor.prototype = {
                 var tr = sn.element("tr", {}, table);
                 sn.element("td", { "class": "prmName" }, tr, prm.id);
                 var tyTD = sn.element("td", { "class": "prmType" }, tr);
-                var matched = /^sequence<(.+)>$/.exec(prm.datatype);
-                if (matched) {
-                    sn.element("code", {}, tyTD, [  sn.text("sequence<"), 
-                                                    sn.element("a", {}, null, matched[1]), 
-                                                    sn.text(">")]);
-                }
-                else {
-                    var cnt = [sn.element("a", {}, null, prm.datatype)];
-                    if (prm.array) cnt.push(sn.text("[]"));
-                    sn.element("code", {}, tyTD, cnt);
-                }
+                tyTD.innerHTML =
+                    "<code>" +
+                    this.writeDatatype(prm.datatype) +
+                    (prm.array ? "[]" : "") +
+                    "</code>";
                 if (prm.nullable) sn.element("td", { "class": "prmNullTrue" }, tr, "\u2714");
                 else              sn.element("td", { "class": "prmNullFalse" }, tr, "\u2718");
 
@@ -2789,17 +2745,47 @@ berjon.WebIDLProcessor.prototype = {
     },
 
     writeDatatype:    function (dt) {
-        // if (/sequence/.test(dt) || /dict/.test(dt)) {
-            console.log(dt);
-        // }
-        var matched = /^sequence<(.+)>$/.exec(dt);
-        if (matched) {
-            console.log("MATCHED!", matched[1])
+        var matched;
+        if (matched = /^sequence<(.+)>$/.exec(dt)) {
             return "sequence&lt;<a>" + matched[1] + "</a>&gt;";
         }
-        else {
-            return "<a>" + dt + "</a>";
+        if (matched = /^\((.+)\)$/.exec(dt)) {
+            var parts = this.splitUnionType(matched[1]);
+            var formattedParts = parts.map(this.writeDatatype, this);
+            return "(" + formattedParts.join(" or ") + ")";
         }
+        return "<a>" + dt + "</a>";
+    },
+
+    splitUnionType:    function (str) {
+        // Splits a string of the form "a or (b or (c or d)) or e" into:
+        // ["a", "(b or (c or d))", "e"]
+        var parts = [];
+        var or = /\s+or\s+/g;
+        var start = str.search(/\S/);
+        while (start !== -1) {
+            if (str[start] == '(') {
+                var end = start+1;
+                var depth = 1;
+                while (depth > 0 && end < str.length) {
+                    if (str[end] == ')')
+                      depth--;
+                    else if (str[end] == '(')
+                      depth++;
+                    end++;
+                }
+                parts.push(str.substring(start,end).trim());
+                or.lastIndex = end;
+                var result = or.exec(str);
+                start = result !== null ? or.lastIndex : -1;
+            } else {
+                var result = or.exec(str);
+                var end = result !== null ? result.index : undefined;
+                parts.push(str.substring(start,end).trim());
+                start = result !== null ? or.lastIndex : -1;
+            }
+        }
+        return parts;
     },
 
     _idn:    function (lvl) {
