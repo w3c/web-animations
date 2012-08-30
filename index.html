@@ -2471,9 +2471,9 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
             </p>
             <p>
               Strings that specify a cubic-bezier timing function result in
-              a new <code>SplineTimingFunc</code> being returned.
+              a new <a>SplineTimingFunc</a> being returned.
               Strings that specify a stepping function produce a new
-              <code>StepTimingFunc</code>.
+              <a>StepTimingFunc</a>.
             </p>
             <p>
               If <code>spec</code> is unrecognized, <code>null</code> is
@@ -2543,7 +2543,31 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
           <dl title="interface SplineTimingFunc : TimingFunc" class="idl">
             <dt>Constructor (sequence&lt;double&gt; points)</dt>
             <dd>
-              TBD.
+              <p>
+                Creates a new <a>SplineTimingFunc</a> object and initializes the
+                <code>points</code> member to the passed in list of
+                <code>points</code>.
+              </p>
+              <p class="annotation">
+                It would be more convenient for authors if the passed in list of
+                points could be longer than four items and we simply read the
+                first four items and ignored the rest.
+                However, applications may begin to depend on that behavior and
+                we could not easily allow this object to take longer lists (to
+                represent more complex curves) in the future without adding
+                a separate constructor for that purpose.
+              </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type <code>IndexSizeError</code></dt>
+                <dd>
+                  Raised if any of the <var>x</var> values in
+                  <code>points</code> is outside the range [0, 1]
+                  or if the length of <code>points</code> is not 4 items.
+                </dd>
+              </dl>
             </dd>
             <dt>double scaleTime(double time, TimedItem? item)</dt>
             <dd>
