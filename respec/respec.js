@@ -2426,7 +2426,7 @@ berjon.WebIDLProcessor.prototype = {
                 if (prm.nullable) sn.element("td", { "class": "prmNullTrue" }, tr, "\u2714");
                 else              sn.element("td", { "class": "prmNullFalse" }, tr, "\u2718");
 
-                var optional = sn.element("td", {}, tr);
+                var optional = sn.element("td", { "class": "prmOpt" }, tr);
                 if (prm.optional) {
                     sn.element("span", { "class": "prmOptTrue" }, optional,
                                "\u2714");
