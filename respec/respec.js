@@ -2659,9 +2659,10 @@ berjon.WebIDLProcessor.prototype = {
         var id = this.makeMethodID(curLnk, ctor);
         if (ctor.named) {
             str += "<span class='idlNamedCtorKeyword'>NamedConstructor</span>=";
-            str += "<a href='#" + id + "'>" + ctor.id + "</a></span>";
+            str += "<span class='idlCtorName'><a href='#" + id + "'>" +
+                   ctor.id + "</a></span>";
         } else {
-            str += "<span class='idlCtorKeyword'><a href='#" + id +
+            str += "<span class='idlCtorName'><a href='#" + id +
                    "'>Constructor</a></span>";
         }
         if (ctor.params.length) {
