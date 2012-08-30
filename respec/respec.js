@@ -2359,6 +2359,9 @@ berjon.WebIDLProcessor.prototype = {
                            : sn.idThatDoesNotExist(curLnk + it.refId);
                     var dt = sn.element("dt", { id: id }, dl);
                     sn.element("code", {}, dt, it.id);
+                    if (it.isStatic) {
+                      sn.text(" [static]", dt);
+                    }
                     var desc = sn.element("dd", {}, dl, [it.description]);
                     if (type == "constructor") {
                         this.writeHTMLParams(it, desc);
