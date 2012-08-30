@@ -1545,7 +1545,11 @@ berjon.respec.prototype = {
             var inf = w.definition(idl);
             var df = w.makeMarkup();
             idl.parentNode.replaceChild(df, idl);
-            if (inf.type == "interface" || inf.type == "exception" || inf.type == "dictionary" || inf.type == "typedef" || inf.type == "enum") infNames.push(inf.id);
+            if (inf.type == "interface" || inf.type == "exception" ||
+                inf.type == "dictionary" || inf.type == "typedef" ||
+                inf.type == "enum" || inf.type == "callback") {
+              infNames.push(inf.id);
+            }
         }
         document.normalize();
         var ants = document.querySelectorAll("a:not([href])");
@@ -1704,11 +1708,12 @@ berjon.WebIDLProcessor.prototype = {
 			type;
         str = this.parseExtendedAttributes(str, def);
         if      (str.indexOf("interface") == 0 || str.indexOf("partial") == 0) type = "interface";
-        else if (str.indexOf("enum") == 0)			type = "enum";
-        else if (str.indexOf("exception") == 0)		type = "exception";
-        else if (str.indexOf("dictionary") == 0)	type = "dictionary";
-        else if (str.indexOf("typedef") == 0)		type = "typedef";
-        else if (/\bimplements\b/.test(str))		type = "implements";
+        else if (str.indexOf("enum") == 0)       type = "enum";
+        else if (str.indexOf("exception") == 0)  type = "exception";
+        else if (str.indexOf("dictionary") == 0) type = "dictionary";
+        else if (str.indexOf("typedef") == 0)    type = "typedef";
+        else if (str.indexOf("callback") == 0)   type = "callback";
+        else if (/\bimplements\b/.test(str))     type = "implements";
         else    error("Expected definition, got: " + str);
 		type && this[type](def, str, idl);
         this.parent.children.push(def); // this should be done at the caller level
@@ -1788,7 +1793,50 @@ berjon.WebIDLProcessor.prototype = {
         }
         return tdf;
     },
-    
+
+    callback:    function (cb, str, idl) {
+        cb.type = "callback";
+        cb.extendedAttributes = null;
+        var match =
+            /^\s*callback\s+(\S+)\s*=\s*(\S.*?)\s*\(([^\)]*)\)\s*$/.exec(str);
+        if (match) {
+            cb.id = match[1];
+            cb.refId = this._id(cb.id);
+
+            var type = match[2];
+            cb.nullable = false;
+            if (/\?$/.test(type)) {
+                type = type.replace(/\?$/, "");
+                cb.nullable = true;
+            }
+            cb.array = false;
+            if (/\[\]$/.test(type)) {
+                type = type.replace(/\[\]$/, "");
+                cb.array = true;
+            }
+            cb.datatype = type;
+            cb.description = sn.documentFragment();
+            sn.copyChildren(idl, cb.description);
+            cb.params = [];
+
+            // Parse parameters
+            var prm = match[3];
+            while (prm.length) {
+                var p = this.parseParameter(prm);
+                if (!p) {
+                    error("Expected parameter list, got: " + prm);
+                    break;
+                }
+                prm = p.str;
+                cb.params.push(p.param);
+            }
+        }
+        else {
+            error("Expected callback, got: " + str);
+        }
+        return cb;
+    },
+
     enum: function (enm, str, idl) {
         enm.type = "enum";
         var match = /^\s*enum\s+(\S+)\s*$/.exec(str);
@@ -2219,6 +2267,10 @@ berjon.WebIDLProcessor.prototype = {
             }
             return sn.element("div", { "class": "idlTypedefDesc" }, null, cnt);
         }
+        else if (obj.type == "callback") {
+            return sn.element("div", { "class": "idlCallbackDesc" }, null,
+                [obj.description]);
+        }
         else if (obj.type == "implements") {
             var cnt;
             if (obj.description && obj.description.childNodes.length) {
@@ -2483,6 +2535,18 @@ berjon.WebIDLProcessor.prototype = {
             return  "<span class='idlTypedef' id='idl-def-" + obj.refId + "'>typedef <span class='idlTypedefType'>" + 
                     this.writeDatatype(obj.datatype) +
                     "</span>" + arr + nullable + " <span class='idlTypedefID'>" + obj.id + "</span>;</span>";
+        }
+        else if (obj.type == "callback") {
+            var nullable = obj.nullable ? "?" : "";
+            var arr = obj.array ? "[]" : "";
+            var str = "<span class='idlCallback' id='idl-def-" + obj.refId +
+                      "'>callback <span class='idlCallbackID'>" + obj.id +
+                      "</span> = <span class='idlCallbackType'>" +
+                      this.writeDatatype(obj.datatype) + "</span>" +
+                      arr + nullable + " (";
+            str += this.writeParams(obj.params);
+            str += ")</span>;";
+            return str;
         }
         else if (obj.type == "enum") {
 			var enm = [];
