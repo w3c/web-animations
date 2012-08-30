@@ -1768,10 +1768,11 @@ berjon.WebIDLProcessor.prototype = {
     
     typedef:    function (tdf, str, idl) {
         tdf.type = "typedef";
-        tdf.extendedAttributes = null; // remove them in case some were there by mistake
-        var match = /^\s*typedef\s+(.+)\s+(\S+)\s*$/.exec(str);
+        var match = /^\s*typedef\s+(?:\[([^\]]+?)\]\s+)?([^\[].*)\s([A-Z_a-z][0-9A-Z_a-z]*)\s*$/.exec(str);
         if (match) {
-            var type = match[1];
+            console.error(match);
+            tdf.extendedAttributes = match[1];
+            var type = match[2];
             tdf.nullable = false;
             if (/\?$/.test(type)) {
                 type = type.replace(/\?$/, "");
@@ -1783,7 +1784,7 @@ berjon.WebIDLProcessor.prototype = {
                 tdf.array = true;
             }
             tdf.datatype = type;
-            tdf.id = match[2];
+            tdf.id = match[3];
             tdf.refId = this._id(tdf.id);
             tdf.description = sn.documentFragment();
             sn.copyChildren(idl, tdf.description);
@@ -2532,9 +2533,16 @@ berjon.WebIDLProcessor.prototype = {
         else if (obj.type == "typedef") {
             var nullable = obj.nullable ? "?" : "";
             var arr = obj.array ? "[]" : "";
-            return  "<span class='idlTypedef' id='idl-def-" + obj.refId + "'>typedef <span class='idlTypedefType'>" + 
-                    this.writeDatatype(obj.datatype) +
-                    "</span>" + arr + nullable + " <span class='idlTypedefID'>" + obj.id + "</span>;</span>";
+            var str = "<span class='idlTypedef' id='idl-def-" + obj.refId +
+                      "'>typedef ";
+            if (obj.extendedAttributes)
+                str += "[<span class='extAttr'>" + obj.extendedAttributes +
+                       "</span>] ";
+            str += "<span class='idlTypedefType'>" +
+                   this.writeDatatype(obj.datatype) +
+                   "</span>" + arr + nullable;
+            str += " <span class='idlTypedefID'>" + obj.id + "</span>;</span>";
+            return str;
         }
         else if (obj.type == "callback") {
             var nullable = obj.nullable ? "?" : "";
