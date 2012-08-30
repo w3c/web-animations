@@ -2053,10 +2053,11 @@ berjon.WebIDLProcessor.prototype = {
         }
 
         // METHOD
-        match = /^\s*\b(.*?)\s+\b(\S+)\s*\(\s*(.*)\s*\)\s*$/.exec(str);
+        match = /^\s*(static\s+)?\b(.*?)\s+\b(\S+)\s*\(\s*(.*)\s*\)\s*$/.exec(str);
         if (match) {
             mem.type = "method";
-            var type = match[1];
+            mem.isStatic = !!match[1];
+            var type = match[2];
             mem.nullable = false;
             if (/\?$/.test(type)) {
                 type = type.replace(/\?$/, "");
@@ -2068,10 +2069,10 @@ berjon.WebIDLProcessor.prototype = {
                 mem.array = true;
             }
             mem.datatype = type;
-            mem.id = match[2];
+            mem.id = match[3];
             mem.refId = this._id(mem.id);
             mem.params = [];
-            var prm = match[3];
+            var prm = match[4];
             mem.raises = [];
 
             return this.methodMember(mem, excepts, extPrm, prm);
@@ -2530,20 +2531,22 @@ berjon.WebIDLProcessor.prototype = {
             str += " {\n";
             // we process attributes and methods in place
             var maxAttr = 0, maxMeth = 0, maxConst = 0, hasRO = false;
+            var hasStatic = false;
             obj.children.forEach(function (it, idx) {
                 var len = it.datatype.length;
-                if (it.nullable) len = len + 1;
-                if (it.array) len = len + 2;
+                if (it.nullable) len++;
+                if (it.array) len += 2;
                 if (it.type == "attribute") maxAttr = (len > maxAttr) ? len : maxAttr;
                 else if (it.type == "method") maxMeth = (len > maxMeth) ? len : maxMeth;
                 else if (it.type == "constant") maxConst = (len > maxConst) ? len : maxConst;
                 if (it.type == "attribute" && it.readonly) hasRO = true;
+                if (it.type == "method" && it.isStatic) hasStatic = true;
             });
             var curLnk = "widl-" + obj.refId + "-";
             for (var i = 0; i < obj.children.length; i++) {
                 var ch = obj.children[i];
                 if (ch.type == "attribute") str += this.writeAttribute(ch, maxAttr, indent + 1, curLnk, hasRO);
-                else if (ch.type == "method") str += this.writeMethod(ch, maxMeth, indent + 1, curLnk);
+                else if (ch.type == "method") str += this.writeMethod(ch, maxMeth, indent + 1, curLnk, hasStatic);
                 else if (ch.type == "constant") str += this.writeConst(ch, maxConst, indent + 1, curLnk);
             }
             str += this._idn(indent) + "};</span>\n";
@@ -2672,7 +2675,7 @@ berjon.WebIDLProcessor.prototype = {
         return str;
     },
     
-    writeMethod:    function (meth, max, indent, curLnk) {
+    writeMethod:    function (meth, max, indent, curLnk, hasStatic) {
         var str = "<span class='idlMethod'>";
         if (meth.extendedAttributes) str += this._idn(indent) + "[<span class='extAttr'>" + meth.extendedAttributes + "</span>]\n";
         str += this._idn(indent);
@@ -2681,7 +2684,12 @@ berjon.WebIDLProcessor.prototype = {
         if (meth.array) pad = pad - 2;
         var nullable = meth.nullable ? "?" : "";
         var arr = meth.array ? "[]" : "";
-        str += "<span class='idlMethType'>" + this.writeDatatype(meth.datatype) + arr + nullable + "</span> ";
+        if (meth.isStatic)
+          str += "static ";
+        else if (hasStatic)
+          str += "       ";
+        str += "<span class='idlMethType'>";
+        str += this.writeDatatype(meth.datatype) + arr + nullable + "</span> ";
         for (var i = 0; i < pad; i++) str += " ";
         var id = this.makeMethodID(curLnk, meth);
         // str += "<span class='idlMethName'><a href='#" + curLnk + meth.refId + "'>" + meth.id + "</a></span> (";
