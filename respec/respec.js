@@ -2331,7 +2331,7 @@ berjon.WebIDLProcessor.prototype = {
         else if (obj.type == "interface") {
             var df = sn.documentFragment();
             var curLnk = "widl-" + obj.refId + "-";
-            var types = ["attribute", "constructor", "method", "constant"];
+            var types = ["constructor", "attribute", "method", "constant"];
             for (var i = 0; i < types.length; i++) {
                 var type = types[i];
                 var things = obj.children.filter(function (it) { return it.type == type });

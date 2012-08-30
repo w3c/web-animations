@@ -408,10 +408,11 @@
                   specifies the duration of a single iteration of the animation,
                   that is, the <a>iteration duration</a>, in seconds.
                   In this case, the <code>timing</code> property of the new
-                  <a>Anim</a> object is set to a new <a>Timing</a> object will
-                  all properties set to their default values except the
-                  <a>duration</a> property which is set to the value specified
-                  here.
+                  <a>Anim</a> object is set to a new <a>Timing</a> object with
+                  all properties set to their default values as specified on the
+                  <a>TimingDict</a> dictionary definition except the
+                  <code>duration</code> property which is set to the value
+                  specified here.
                 </p>
                 <p>
                   If this parameter is of type <a>TimingDict</a>, then the
@@ -931,8 +932,6 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
         <p>
           Timing properties are collected under the <code>Timing</code>
           interface.
-          All properties have a default value associated with them which is the
-          value used when a new <code>Timing</code> object is constructed.
         </p>
         <p>
           If this object is attached to a linked <a>Anim</a> or <a>AnimGroup</a>
@@ -953,6 +952,73 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
         <section>
           <h4>The <code>Timing</code> interface</h4>
           <dl title="interface Timing" class="idl">
+            <dt>Constructor ()</dt>
+            <dd>
+              <p>
+                Creates a new <a>Timing</a> object using the supplied
+                parameters.
+              </p>
+              <p>
+                In most cases the members of the <code>params</code>
+                <a>TimingDict</a> can be assigned directly to the property in
+                the <a>Timing</a> interface of the same name.
+              </p>
+              <p>
+                The one exception is the <code>timingFunc</code> member which in
+                a <a>TimingDict</a> value can also be set to
+                a <code>DOMString</code>.
+                In this case, the <code>DOMString</code> is first passed to
+                <code><a>Timing</a>.createFromString</code> and the
+                returned <a>TimingFunc</a> is assigned to the
+                <code>timingFunc</code> property of the new <a>Timing</a>
+                object.
+              </p>
+              <p>
+              </p>
+              <div class="issue">
+                <p>
+                  Should we make this fail silently here?
+                  Which is better from a forwards compatibility standpoint?
+                </p>
+                <p>
+                  For example:
+                </p>
+                <blockquote>
+                  If any of the values specified on <code>params</code> is
+                  invalid such that setting the corresponding <a>Timing</a>
+                  property would trigger an exception, the property is set to
+                  the default value as specified on the <code>TimingDict</code>
+                  definition.
+                  User agents that provide a debugging feedback SHOULD indicate
+                  that an unrecognised or invalid value was encountered.
+                </blockquote>
+              </div>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type <code>IndexSizeError</code></dt>
+                <dd>
+                  Raised if any of the values specified on <code>params</code>
+                  is out of range.
+                </dd>
+                <dt>DOMException of type <code>SyntaxError</code></dt>
+                <dd>
+                  Raised if <code>params.timingFunc</code> is set to a string
+                  that it not recognised by
+                  <code><a>Timing</a>.createFromString</code> as indicated by
+                  a <code>null</code> return value.
+                </dd>
+              </dl>
+              <dl class="parameters">
+                <dt>TimingDict params</dt>
+                <dd>
+                  The properties to set on the new <a>Timing</a> object.
+                  Unspecified members take on the default values specified in
+                  the <a>TimingDict</a> dictionary definition.
+                </dd>
+              </dl>
+            <dd>
             <dt>attribute double startDelay</dt>
             <dd>
               <p>
@@ -964,9 +1030,6 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                 A non-normative description of the effect of this property on
                 timing is given in <a href="#the-animation-interval"
                 class="sectionRef"></a>.
-              </p>
-              <p>
-                The <var>default value</var> is 0.
               </p>
               <p>
                 Exceptions:
@@ -982,7 +1045,7 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
             <dt>attribute unrestricted double? duration</dt>
             <dd>
               <p>
-                The duration specified for a single iteration.
+                The duration in seconds of a single iteration.
                 This may be <code>null</code> in which case the intrinsic
                 duration will be used.
                 If set, it must be greater than or equal to zero (including
@@ -993,9 +1056,6 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                 defined in <a href="#calculating-the-iteration-duration"
                 class="sectionRef"></a> and described non-normatively in <a
                 href="#animation-repeat-behavior" class="sectionRef"></a>.
-              </p>
-              <p>
-                The <var>default value</var> is <code>null</code>.
               </p>
               <p>
                 Exceptions:
@@ -1019,9 +1079,6 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                 A real number greater than or equal to zero (including positive
                 infinity) representing the number of times to repeat the
                 animation.
-              </p>
-              <p>
-                The <var>default value</var> is 1.
               </p>
               <p>
                 Exceptions:
@@ -1049,9 +1106,6 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                 If this value is greater than <code>iterationCount</code> then
                 it is effectively clamped as defined in the definition of
                 <a>effective iteration start</a>.
-              </p>
-              <p>
-                The <var>default value</var> is 0.
               </p>
               <p>
                 Exceptions:
@@ -1088,9 +1142,6 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                 class="sectionRef"></a>.
               </p>
               <p>
-                The <var>default value</var> is 1.
-              </p>
-              <p>
                 Exceptions:
               </p>
               <dl class="exceptions">
@@ -1108,9 +1159,6 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                 <a>PlaybackDirection</a> enumeration values.
               </p>
               <p>
-                The <var>default value</var> is <code>"normal"</code>.
-              </p>
-              <p>
                 Exceptions:
               </p>
               <dl class="exceptions">
@@ -1121,18 +1169,17 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                 </dd>
               </dl>
             </dd>
-            <dt>attribute TimingFunc timingFunc</dt>
-            <dd class="todo">
-              TBD.
+            <dt>attribute TimingFunc? timingFunc</dt>
+            <dd>
+              An optional timing function used to scale input time to produce
+              timing effects such as easing behavior.
+              See <a href="#scaling-the-time" class="sectionRef"></a>.
             </dd>
             <dt>attribute FillMode fill</dt>
             <dd>
               <p>
-                Fill mode as specified by one of the <a>FillMode</a> enumeration
-                values.
-              </p>
-              <p>
-                The <var>default value</var> is <code>"none"</code>.
+                The <a>fill mode</a> as specified by one of the <a>FillMode</a>
+                enumeration values.
               </p>
               <p>
                 Exceptions:
@@ -1200,6 +1247,100 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
             <dd>
               Even iterations are played in the reverse direction from the way
               they are specified, odd iterations are played as specified.
+            </dd>
+          </dl>
+        </section>
+        <section>
+          <h4>The <code>TimingDict</code> dictionary</h4>
+          <p>
+            To simplify creation of <a>Timing</a> objects
+            a <code>TimingDict</code> can be used.
+          </p>
+          <p>
+            Except where otherwise noted, the acceptable values for each
+            property and their meanings are defined in the <a>Timing</a>
+            interface.
+          </p>
+          <dl title="dictionary TimingDict" class="idl">
+            <dt>double startDelay = 0</dt>
+            <dd>
+              <p>
+                The number of seconds from a timed item's <code>startTime</code>
+                to the start of the <a>animation interval</a>.
+                See <a href="#widl-Timing-startDelay"
+                class="idlType"><code>startDelay</code></a> on the <a>Timing</a>
+                interface.
+              </p>
+            </dd>
+            <dt>unrestricted double duration? = null</dt>
+            <dd>
+              <p>
+                The duration in seconds of a single iteration, that is, the
+                <a>iteration duration</a>.
+                See <a href="#widl-Timing-duration"
+                class="idlType"><code>duration</code></a> on the <a>Timing</a>
+                interface.
+              </p>
+            </dd>
+            <dt>unrestricted double iterationCount = 1.0</dt>
+            <dd>
+              <p>
+                The number of times to repeat the item.
+                See <a href="#widl-Timing-iterationCount"
+                class="idlType"><code>iterationCount</code></a> on the
+                <a>Timing</a> interface.
+              </p>
+            </dd>
+            <dt>double iterationStart = 0.0</dt>
+            <dd>
+              <p>
+                The number of iterations into the item at which to begin.
+                See <a href="#widl-Timing-iterationStart"
+                class="idlType"><code>iterationStart</code></a> on the
+                <a>Timing</a> interface.
+              </p>
+            </dd>
+            <dt>double playbackRate = 1.0</dt>
+            <dd>
+              <p>
+                A multiplier applied to the inherited time potentially causing
+                the item to run at a different rate to its natural speed.
+                See <a href="#widl-Timing-playbackRate"
+                class="idlType"><code>playbackRate</code></a> on the
+                <a>Timing</a> interface.
+              </p>
+            </dd>
+            <dt>PlaybackDirection direction = "normal"</dt>
+            <dd>
+              <p>
+                The direction in which animation proceeds, e.g. "reverse".
+                See <a href="#widl-Timing-direction"
+                class="idlType"><code>direction</code></a> on the <a>Timing</a>
+                interface.
+              </p>
+            </dd>
+            <dt>(DOMString or TimingFunc)? timingFunc = null</dt>
+            <dd>
+              <p>
+                An optional timing function used to scale the time to produce
+                easing effects and the like.
+              </p>
+              <p>
+                Unlike the <a>Timing</a> interface, the member here may be set
+                to either a <a>TimingFunc</a> object or
+                a <code>DOMString</code> corresponding to one of the values
+                recognised by <code><a>TimingFunc</a>.createFromString</code>.
+                <!-- XXX Make the above a link -->
+              </p>
+            </dd>
+            <dt>FillMode fill = "none"</dt>
+            <dd>
+              <p>
+                The <a>fill mode</a> of the animation.
+                See <a href="#widl-Timing-fill"
+                class="idlType"><code>fill</code></a> on the <a>Timing</a>
+                interface.
+              </p>
             </dd>
           </dl>
         </section>
@@ -3428,7 +3569,7 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
               better) a sets of steps on a per-subclass basis.
             </p>
           </dd>
-          <dt>static AnimFunc createFromProperties ()</dt>
+          <dt>static AnimFunc? createFromProperties ()</dt>
           <dd>
             <p>
               Creates an <a>AnimFunc</a> representing the passed-in collection
