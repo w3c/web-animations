@@ -1707,7 +1707,8 @@ berjon.WebIDLProcessor.prototype = {
         	str = idl.getAttribute("title"),
 			type;
         str = this.parseExtendedAttributes(str, def);
-        if      (str.indexOf("interface") == 0 || str.indexOf("partial") == 0) type = "interface";
+        if      (/^\s*(callback\s+|partial\s+)?interface/.test(str))
+                                                 type = "interface";
         else if (str.indexOf("enum") == 0)       type = "enum";
         else if (str.indexOf("exception") == 0)  type = "exception";
         else if (str.indexOf("dictionary") == 0) type = "dictionary";
@@ -1723,10 +1724,11 @@ berjon.WebIDLProcessor.prototype = {
 
     "interface":  function (inf, str, idl) {
         inf.type = "interface";
-        var match = /^\s*(partial\s+)?interface\s+([A-Za-z][A-Za-z0-9]*)(?:\s+:\s*([^{]+)\s*)?/.exec(str);
+        var match = /^(?:(callback\s+)|(partial\s+))?interface\s+([A-Za-z][A-Za-z0-9]*)(?:\s+:\s*([^{]+)\s*)?/.exec(str);
         if (match) {
-            inf.partial = !!match[1];
-            inf.id = match[2];
+            inf.callback = !!match[1];
+            inf.partial  = !!match[2];
+            inf.id = match[3];
             inf.refId = this._id(inf.id);
             if (idl.getAttribute('data-merge')) {
                 inf.merge = [];
@@ -2605,6 +2607,7 @@ berjon.WebIDLProcessor.prototype = {
             }
 
             str += this._idn(indent);
+            if (obj.callback) str += "callback ";
             if (obj.partial) str += "partial ";
             str += "interface <span class='idlInterfaceID'>" + obj.id + "</span>";
             if (obj.superclasses && obj.superclasses.length) str += " : " +

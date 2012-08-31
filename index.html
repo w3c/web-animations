@@ -386,9 +386,10 @@
                 The animation function used to set the <code>animFunc</code>
                 property of the newly created <a>Anim</a> object.
                 <p>
-                  If this parameter is an <a>AnimFunc</a> object, it will shared
-                  with any other <a>Anim</a> objects referring to the same
-                  <a>AnimFunc</a> object.
+                  If this parameter is an <a>AnimFunc</a> object or
+                  <a>CustomAnimFunc</a> object, it will shared with any other
+                  <a>Anim</a> objects referring to the same <a>AnimFunc</a> or
+                  <a>CustomAnimFunc</a> object.
                   It will <em>not</em> be copied.
                 </p>
                 <p>
@@ -466,7 +467,7 @@
           <dd>
             TBD
           </dd>
-          <dt>attribute AnimFunc animFunc</dt>
+          <dt>attribute (AnimFunc or CustomAnimFunc) animFunc</dt>
           <dd>
             <p>
               The animation function to apply (see <a href="#animation-values"
@@ -615,8 +616,8 @@ var animA = new Anim(elem, { left: '100px' }, animB.timing);
 var animC = new Anim(elem, { left: '100px' }, animB.timing.clone());
           </pre>
           <p>
-            The animation function can be used to specify multiple properties or
-            an <a>AnimFunc</a> object.
+            The animation function parameter may specify multiple properties,
+            an <a>AnimFunc</a> object, or even a callback object.
           </p>
           <pre class='example sh_javascript'>
 // Specify multiple properties at once
@@ -627,13 +628,23 @@ var animB = new Anim(elem, animA.animFunc, 3);
 
 // Supply a specialized animation function
 var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
+
+// Supply a custom script-based animation function
+var animC = new Anim(elem,
+  { 
+    sample: function(time) { 
+      if (time !== null) {
+        document.documentElement.currentScale = 1.0 + time * 2.0;
+      } else {
+        document.documentElement.currentScale = 1.0;
+      }
+    },
+    clone: { return this; }
+  }, 3);
           </pre>
           <p class="todo">
             Fill in the parameters for <a>PathAnimFunc</a> above once we have
             decided on them.
-          </p>
-          <p class="todo">
-            Provide an example of a script-based animation function.
           </p>
           <p class="todo">
             Add examples of specifying the parent group and start time once we
@@ -3589,7 +3600,8 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
         </p>
         <p>
           The entry-point to the <em>animation model</em> is the
-          <a>AnimFunc</a> object associated with each <a>Anim</a>.
+          <a>AnimFunc</a> or <a>CustomAnimFunc</a> object associated with each
+          <a>Anim</a>.
           These objects describe how animation values should be calculated for
           the <a>Anim</a> for any given time.
           <a>AnimFunc</a> serves as an abstract interface of which several
@@ -4225,25 +4237,202 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
           </p>
         </section>
       </section>
-      <div class="todo">
-        <p>
-          Need to add:
+      <section>
+        <h3>Custom animation functions</h3>
+        <div class="informative">
+          <p>
+            In some situations the animation functions provided by Web
+            Animations may be insufficient.
+            For example, the animation functions defined here are only able to
+            target certain CSS properties and DOM attributes.
+            They are unable, therefore, to modify the <a
+            href="#http://www.w3.org/TR/SVG11/struct.html#__svg__SVGSVGElement__currentScale"><code>currentScale</code></a>
+            property of an SVG element to smoothly zoom the viewport without
+            affecting the document content.
+          </p>
+          <p>
+            In such cases where the provided animation functions do not provided
+            needed functionality, an animation function defined by script may be
+            used.
+            Such animation functions receive a time fraction from the timing
+            model and are responsible for producing the animation effect
+            corresponding to the specified time.
+          </p>
+          <p>
+            Using an animation function defined in script it is possible to
+            animate not only previously un-animatable attributes and properties,
+            but potentially anything that is accessible via script, including
+            even producing audio or creating vibrations.
+          </p>
+          <p>
+            For example, using an animation function that draws to a <a
+            href="http://www.w3.org/TR/html5/the-canvas-element.html#the-canvas-element"><code>canvas</code></a>
+            element it is possible to produce a complex animated effect
+            featuring patterns that may be difficult to create using CSS or
+            SVG.
+            Compared to using the <a
+            href="http://www.w3.org/TR/animation-timing/">WindowAnimationTiming</a>
+            interface, this approach ensures the animation is frame-rate
+            independent and can be paused, reversed, eased with timing effects,
+            accelerated, synchronized with other animations, and be controlled
+            in the same manner as any other Web Animations animation without any
+            additional programming.
+          </p>
+        </div> <!-- informative -->
+        <div class="annotation">
+          <p>
+            I think we want two types of custom animation functions.
+            Following is the general-purpose animate-anything kind of function.
+            The other type, which is not defined here, is the one that can
+            participate in the animation sandwich just like any other.
+          </p>
+          <p>
+            This, second, native-like animation function, would have the
+            following features:
+          </p>
           <ul>
-            <li>Pace control (e.g. <code>pace="10px/s"</code>?)</li>
-            <li>General functional syntax</li>
-            <li>&lsquo;to&rsquo; animation</li>
+            <li>Shares the same function signature as
+                <code><a>AnimFunc</a>.sample</code></li>
+            <li>Gets passed the underlying value and passes out the animated
+                value.</li>
+            <li>Has a target property and is sorted against other
+                <a>AnimFunc</a> objects (including platform objects)</li>
+            <li>Can be added as a child of a <a>GroupedAnimFunc</a>.</li>
           </ul>
-        </p>
-        <p>
-          Somewhere we need to describe how animated values get stored in the
-          DOM. i.e. can you access them at all? what's the interaction with
-          various override stylesheets etc.
-        </p>
-        <p>
-          Need to add a way for getting animation values of motion-on-a-path
-          animations
-        </p>
-      </div>
+          <p>
+            That's a bit more difficult since you have to be careful that the
+            custom function doesn't do anything naughty while you're in the
+            middle of compositing the animation sandwich.
+            I think we should postpone this until Web Animations 2.
+          </p>
+        </div>
+        <section>
+          <h4>Execution order of custom animation functions</h4>
+          <p>
+            Custom animation functions allow authors to define animation effects
+            using script.
+            Such animation functions are not limited to a single CSS property or
+            DOM attribute and therefore the steps for assessing their order of
+            execution differs from regular animation functions.
+          </p>
+          <p>
+            Custom animation functions are executed after all other
+            <a>AnimFunc</a> objects have completed and applied their effects to
+            their targets.
+          </p>
+          <p class="issue">
+            Need to define this more precisely.
+            Are styles flushed?
+            Presumably they are.
+            Can we suspend reflow for the duration of executing the script-based
+            animation functions and just do it once afterwards?
+          </p>
+          <p>
+            Within the set of custom animation functions, the order of execution
+            is mostly the same as that for other animation functions and is
+            defined in <a href="#the-global-animation-stack"
+            class="sectionRef"></a>.
+            However, custom animation functions may also override this
+            ordering through the <code>priority</code> attribute, which, if
+            defined, specifies the priority of the functions with lower numbers
+            are executed sooner.
+          </p>
+          <p>
+            In deciding which of two <a>CustomAnimFunc</a> functions,
+            <var>A</var> and <var>B</var>, should be executed the following
+            rules are applied.
+          </p>
+          <ol>
+            <li>Sort <var>A</var> and <var>B</var> based on their
+                <code>priority</code> such that lower priorities are sorted
+                first.
+                If either does not have a defined <code>priority</code>,
+                then treat the priority as being positive infinity for the
+                purposes of sorting.</li>
+            <li>If <var>A</var> and <var>B</var> have the same priority,
+                sort according to the <code>startTime</code>s of the
+                <a>TimedItem</a>s with which <var>A</var> and <var>B</var> are
+                associated such that earlier start times are sorted first.
+            <li>If <var>A</var> and <var>B</var> have the same priority and
+                start time, sort by the position of the corresponding
+                <a>Anim</a> objects occur within the animation tree (see issue
+                below).</li>
+          </ol>
+          <p>
+            Items sorted earlier, are executed first.
+          </p>
+          <p class="issue">
+            That last point is quite wrong. I don't think we've specified
+            exactly what script order is in <a
+            href="#the-global-animation-stack" class="sectionRef"></a>.
+            But I wonder if it makes more sense to effectively enumerate all the
+            script-based nodes in the animation tree using some well-defined
+            order and use that index.
+            Can that be done efficiently?
+          </p>
+        </section>
+        <section>
+          <h4>The <code>CustomAnimFunc</code> callback interface</h4>
+          <p>
+            Custom animation functions can be defined in script using the
+            <a>CustomAnimFunc</a> interface.
+          </p>
+          <div title="callback interface CustomAnimFunc" class="idl">
+            <dt>attribute unsigned integer priority</dt>
+            <dd>
+              The order in which this animation function will be executed in
+              relation to other custom animation functions such that items with
+              a lower priority are executed earlier as defined in <a
+              href="#execution-order-of-custom-animation-functions"
+              class="sectionRef"></a>.
+            </dd>
+            <dt>void sample ()</dt>
+            <dd>
+              The callback used to produce the animation effect corresponding to
+              the sample time determined by the timing model.
+              <dl class="parameters">
+                <dt>double? timeFraction</dt>
+                <dd>
+                  The distance within a single iteration of the animation effect
+                  of the current sample.
+                  When this is <code>null</code>, the callback object SHOULD
+                  remove the animation effect.
+                </dd>
+                <dt>double currentIteration</dt>
+                <dd>
+                  The current iteration index beginning with zero for the first
+                  iteration.
+                </dd>
+                <dt>Element? target</dt>
+                <dd>
+                  The element to which the effect should be applied if any.
+                  When this method is called as a result of this object being
+                  associated with an <a>Anim</a> object, it will be
+                  <code><a>Anim</a>.targetElement</code>
+                </dd>
+              </dl>
+            </dd>
+            <dt>CustomAnimFunc clone ()</dt>
+            <dd>
+              Creates an independent copy of this object.
+            </dd>
+          </div>
+          <p class="issue">
+            Do we need to pass in the <a>TimedItem</a> as well?
+            If possible I'd prefer not to but it may necessary for some types of
+            effect.
+            Might be an additional parameter to add later if it proves
+            necessary?
+          </p>
+          <p class="issue">
+            I think we will also need to pass the previous time fraction.
+            Animations will often use this to check if they are paused, playing
+            in reverse etc.
+            They can track this themselves but then you need a separate object
+            everywhere you use it.
+          </p>
+        </section>
+      </section>
     </section>
 
     <section>
@@ -4519,7 +4708,7 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
         <p>
           <dl title="[Constructor] interface AnimTemplate : TimedTemplate"
             class="idl">
-            <dt>attribute AnimFunc animFunc</dt>
+            <dt>attribute (AnimFunc or CustomAnimFunc) animFunc</dt>
             <dd>
               The animation function to apply.
             </dd>
