@@ -1735,7 +1735,7 @@ berjon.WebIDLProcessor.prototype = {
                 var merge = idl.getAttribute('data-merge').split(' ');
                 for (var i = 0; i < merge.length; i++) inf.merge.push(merge[i]);
             }
-            if (match[3]) inf.superclasses = match[3].split(/\s*,\s*/);
+            if (match[4]) inf.superclasses = match[4].split(/\s*,\s*/);
         }
         else {
             error("Expected interface, got: " + str);
