@@ -1816,21 +1816,14 @@ berjon.WebIDLProcessor.prototype = {
                 cb.array = true;
             }
             cb.datatype = type;
-            cb.description = sn.documentFragment();
-            sn.copyChildren(idl, cb.description);
-            cb.params = [];
 
             // Parse parameters
-            var prm = match[3];
-            while (prm.length) {
-                var p = this.parseParameter(prm);
-                if (!p) {
-                    error("Expected parameter list, got: " + prm);
-                    break;
-                }
-                prm = p.str;
-                cb.params.push(p.param);
-            }
+            var extPrm = (sn.findNodes("dl[@class='parameters']", idl))[0];
+            cb.params = this.parseParameterList(extPrm, match[3]);
+
+            // Description
+            cb.description = sn.documentFragment();
+            sn.copyChildren(idl, cb.description);
         }
         else {
             error("Expected callback, got: " + str);
@@ -2161,6 +2154,14 @@ berjon.WebIDLProcessor.prototype = {
             }
         }
 
+        mem.params = mem.params.concat(this.parseParameterList(extPrm, prm));
+
+        return mem;
+    },
+
+    parseParameterList:    function (extPrm, prm) {
+        var params = [];
+
         if (extPrm) {
             extPrm.parentNode.removeChild(extPrm);
             var dts = sn.findNodes("./dt", extPrm);
@@ -2176,7 +2177,7 @@ berjon.WebIDLProcessor.prototype = {
                 p = p.param;
                 p.description = sn.documentFragment();
                 sn.copyChildren(dd, p.description);
-                mem.params.push(p);
+                params.push(p);
             }
         }
         else {
@@ -2187,11 +2188,11 @@ berjon.WebIDLProcessor.prototype = {
                     break;
                 }
                 prm = p.str;
-                mem.params.push(p.param);
+                params.push(p.param);
             }
         }
 
-        return mem;
+        return params;
     },
 
     parseParameter:    function (str) {
@@ -2269,8 +2270,12 @@ berjon.WebIDLProcessor.prototype = {
             return sn.element("div", { "class": "idlTypedefDesc" }, null, cnt);
         }
         else if (obj.type == "callback") {
-            return sn.element("div", { "class": "idlCallbackDesc" }, null,
-                [obj.description]);
+            var df = sn.element("div", { "class": "idlCallbackDesc" }, null,
+                                [obj.description]);
+            this.writeHTMLParams(obj, df);
+            var reDiv = sn.element("div", {}, df);
+            this.writeHTMLReturnType(obj, reDiv);
+            return df;
         }
         else if (obj.type == "implements") {
             var cnt;
@@ -2422,13 +2427,7 @@ berjon.WebIDLProcessor.prototype = {
                     else if (type == "method") {
                         this.writeHTMLParams(it, desc);
                         var reDiv = sn.element("div", {}, desc);
-                        reDiv.innerHTML =
-                            "<em>Return type: </em>" +
-                            "<code>" +
-                            this.writeDatatype(it.datatype) +
-                            (it.array ? "[]" : "") +
-                            "</code>";
-                        if (it.nullable) sn.text(", nullable", reDiv);
+                        this.writeHTMLReturnType(it, reDiv);
                     }
                     else if (type == "attribute") {
                         sn.text(" of type ", dt);
@@ -2501,7 +2500,15 @@ berjon.WebIDLProcessor.prototype = {
             sn.element("div", {}, desc, [sn.element("em", {}, null, "No parameters.")]);
         }
     },
-    
+
+    writeHTMLReturnType:   function(obj, target) {
+        sn.element("em", {}, target, "Return type: ");
+        var code = sn.element("code", {}, target);
+        code.innerHTML = this.writeDatatype(obj.datatype) +
+                         (obj.array ? "[]" : "");
+        if (obj.nullable) sn.text(", nullable", target);
+    },
+
     makeMethodID:    function (cur, obj) {
         var id = cur + obj.refId + "-" + obj.datatype + "-";
         var params = [];

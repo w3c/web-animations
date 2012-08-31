@@ -2755,49 +2755,49 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
         </dl>
       </section>
       <section>
-        <h3>The <code>CustomTimingFunc</code> interface</h3>
+        <h3>The <code>TimingFuncCallback</code> callback</h3>
         <p>
           In addition to the timing functions provided by Web Animations,
-          authors may also provide their own timing functions either by
-          providing an object that implements that <a>TimingFunc</a> interface
-          or by providing a scale function.
-          In the latter case, when a scale function is provided, it represented
-          in the API by <a>CustomTimingFunc</a> interface object used to wrap
-          the function.
+          authors may also provide their own time scaling function.
+          The behavior of this function is defined by the
+          <a>TimingFuncCallback</a> type below.
         </p>
-        <p class="feedbackWanted">
-          Is this the right way do to things? Or is it better to use a union
-          type <code>(TimingFunc or ScaleTimeCallback)</code>?
-        </p>
-        <div
-    title="callback ScaleTimeCallback = double (double time, TimedItem? item)"
-          class="idl">
-          TBD
-        </div>
-        <div
-        title="typedef (TimingFunc or ScaleTimeCallback) TimingFuncOrCallback"
-        class="idl">
-          TBD
-        </div>
-        <dl title="
-[Constructor (ScaleTimeCallback func)]
-        interface CustomTimingFunc : TimingFunc" class="idl">
-          <dt>double scaleTime(double time, TimedItem? item)</dt>
-          <dd>
-            Returns the result of calling <code>func(time)</code>.
-          </dd>
-          <dt>TimingFunc clone()</dt>
-          <dd>
-            Returns this object.
-          </dd>
-          <dt>attribute ScaleTimeCallback func</dt>
-          <dd>
-            The function to call to scale the time.
-            The meaning of the parameters and return value are identical to
-            those described for the <code>sampleTime</code> method of the
+        <div title="callback TimingFuncCallback = double ()" class="idl">
+          <p>
+            A <a>TimingFuncCallback</a> function has the same behavior as
+            defined for the <code>scaleTime</code> method on the
             <a>TimingFunc</a> interface.
-          </dd>
-        </dl>
+            That is, it takes an input time fraction, applies some scaling
+            operation to it, and returns an output time fraction.
+          </p>
+          <p>
+            For the same input <code>time</code> and <code>item</code>, this
+            function MUST return the same output.
+          </p>
+          <p>
+            As a result, a user agent MAY cache the results returned by
+            a <a>TimingFuncCallback</a> as an optimization.
+            Note, however, that if the <code>item</code> object is changed, this
+            consitutes different input to the function and hence the user agent
+            MUST NOT cache the results of the callback if the <code>item</code>
+            object changes.
+            Given the requirement that callback functions do not change
+            <code>item</code>, a user agent can expect that it is safe to cache
+            the output of a <a>TimingFuncCallback</a> for at least the duration
+            of a sample.
+          </p>
+          <dl class="parameters">
+            <dt>double time</dt>
+            <dd>
+              The input time fraction in the range [0.0, 1.0].
+            </dd>
+            <dt>TimedItem? item</dt>
+            <dd>
+              The <a>TimedItem</a> for which the scaling is being performed.
+              This object MUST NOT be modified.
+            </dd>
+          </dl>
+        </div>
       </section>
     </section>
 
