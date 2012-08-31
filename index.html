@@ -2382,7 +2382,7 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
         <p>
           Such timing functions can be applied to an iteration of an animation
           as a whole via the <a>TimedItem</a> interface or to a segment of
-          a keyframe animation via the <a>KeyframesAnimFunc</a> interface.
+          a keyframe animation via the <a>KeyframeAnimFunc</a> interface.
         </p>
       </div>
       <section>
@@ -3598,7 +3598,7 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
       </div>
       <section>
         <h3>The <code>AnimFunc</code> interface</h3>
-        <dl title="[Constructor] interface AnimFunc" class="idl">
+        <dl title="interface AnimFunc" class="idl">
           <dt>attribute CompositeOperation operation</dt>
           <dd>
             <p>
@@ -3739,7 +3739,7 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                       in <var>animation properties</var>.</li>
                   <li>Let <var>value</var> be the value of
                       <code>properties.<var>name</var></code>.</li>
-                  <li>Return a new <a>KeyframesAnimFunc</a> object according to
+                  <li>Return a new <a>KeyframeAnimFunc</a> object according to
                       the steps in part 3 below based on <var>name</var> and
                       <var>value</var>.</li>
                 </ol>
@@ -3757,7 +3757,7 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                     <ol>
                       <li>Let <var>value</var> be the value of
                           <code>properties.<var>name</var></code>.</li>
-                      <li>Create a new <a>KeyframesAnimFunc</a>,
+                      <li>Create a new <a>KeyframeAnimFunc</a>,
                           <var>function</var> object according to the steps in
                           part 3 below based on <var>name</var> and
                           <var>value</var>.</li>
@@ -3768,20 +3768,20 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                 </ol>
               </dd>
             </dl>
-            <p><strong>Part 3 &ndash; Create each <a>KeyframesAnimFunc</a>
+            <p><strong>Part 3 &ndash; Create each <a>KeyframeAnimFunc</a>
                object</strong></p>
             <p>
               Based on a given <var>name</var> and <var>value</var>, a new
-              <a>KeyframesAnimFunc</a> is created depending on the type of
+              <a>KeyframeAnimFunc</a> is created depending on the type of
               <var>value</var>.
               In effect, <var>value</var> is treated as having type
               <code>(DOMString or sequence&lt;DOMString&gt; or
-              sequence&lt;<a>AnimFrameDict</a>&gt;)</code>.
+              sequence&lt;<a>KeyframeDict</a>&gt;)</code>.
             </p>
             <ol>
               <li>
                 Let <var>function</var> be a newly constructed
-                <a>KeyframesAnimFunc</a> object.
+                <a>KeyframeAnimFunc</a> object.
               </li>
               <li>
                 Set <code><var>function</var>.property</code> to
@@ -3792,7 +3792,7 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                 <dl class="switch">
                   <dt>If <var>value</var> is a <code>DOMString</code>,</dt>
                   <dd>
-                    Create a new <a>AnimFrame</a> with the <code>value</code>
+                    Create a new <a>Keyframe</a> with the <code>value</code>
                     property set to <var>value</var> and <code>offset</code>
                     set to 1.0 and append it to
                     <code><var>function</var>.frames</code>.
@@ -3803,7 +3803,7 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                     For each <var>item</var> in <var>value</var>:
                     <ol>
                       <li>
-                        Let <var>frame</var> be a new <a>AnimFrame</a>
+                        Let <var>frame</var> be a new <a>Keyframe</a>
                         object.
                       </li>
                       <li>
@@ -3827,13 +3827,13 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                     </p>
                   </dd>
                   <dt>If <var>value</var> is a sequence of
-                      <a>AnimFrameDict</a> objects,</dt>
+                      <a>KeyframeDict</a> objects,</dt>
                   <dd>
                     For each <var>item</var> in <var>value</var>:
                     <ol>
                       <li>
                         Let <var>frame</var> be the result of calling <code>new
-                        <a>AnimFrame</a>(<var>item</var>)</code>.
+                        <a>Keyframe</a>(<var>item</var>)</code>.
                       </li>
                       <li>
                         Append <code>frame</code> to
@@ -3841,8 +3841,8 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                       </li>
                     </ol>
                     <p class="todo">
-                      Define a constructor for <a>AnimFrame</a> that takes an
-                      <a>AnimFrameDict</a>.
+                      Define a constructor for <a>Keyframe</a> that takes an
+                      <a>KeyframeDict</a>.
                     </p>
                   </dd>
                   <dt>Otherwise,
@@ -3891,7 +3891,7 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
         </dl>
       </section>
       <section>
-        <h3>The <code>KeyframesAnimFunc</code> interface</h3>
+        <h3>The <code>KeyframeAnimFunc</code> interface</h3>
         <div class="todo">
           <p>
             Need to define convenience ctors here. I think you want to support
@@ -3921,7 +3921,7 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
   ]
 }</pre>
           <p>
-            As a bonus, the ctor for <a>KeyframesAnimFunc</a> should also be
+            As a bonus, the ctor for <a>KeyframeAnimFunc</a> should also be
             nice to support the following arrangement:
           </p>
           <pre class="sh_javascript">
@@ -3934,14 +3934,14 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
           Need to define exceptions when this is a read-only object.
         </p>
         <p>
-          <dl title="[Constructor] interface KeyframesAnimFunc : AnimFunc"
+          <dl title="[Constructor] interface KeyframeAnimFunc : AnimFunc"
             class="idl">
             <dt>attribute DOMString property</dt>
             <dd>
               The target attribute / property. <code>property</code> is probably
               a reserved word we should avoid though.
             </dd>
-            <dt>attribute AnimFrameList frames</dt>
+            <dt>attribute KeyframeList frames</dt>
             <dd>
               The series of values that make up this function sorted by their
               offset within the iteration duration of the animation.
@@ -3950,9 +3950,9 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
         </p>
       </section>
       <section>
-        <h3>The <code>AnimFrame</code> interface</h3>
+        <h3>The <code>Keyframe</code> interface</h3>
         <p>
-          <dl title="[Constructor] interface AnimFrame" class="idl">
+          <dl title="[Constructor] interface Keyframe" class="idl">
             <dt>attribute any value</dt>
             <dd>
               The attribute / property value for the given frame
@@ -3983,23 +3983,23 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
         </p>
       </section>
       <section>
-        <h3>The <code>AnimFrameList</code> interface</h3>
-        <dl title="interface AnimFrameList" class="idl">
+        <h3>The <code>KeyframeList</code> interface</h3>
+        <dl title="interface KeyframeList" class="idl">
           <dt>readonly attribute unsigned long length</dt>
           <dd>
             The number of frames in the list.
           </dd>
-          <dt>AnimFrameList? item(unsigned long index)</dt>
+          <dt>KeyframeList? item(unsigned long index)</dt>
           <dd>
             Returns the frame at <code>index</code> if it exists or null.
           </dd>
-          <dt>AnimFrameList? add(AnimFrame frame)</dt>
+          <dt>KeyframeList? add(Keyframe frame)</dt>
           <dd>
             Adds <code>frame</code> to the list such that the list is sorted
             by the offset of the frames. If there's already a frame with the
             same offset? This one comes after?
           </dd>
-          <dt>AnimFrameList? remove(unsigned long index)</dt>
+          <dt>KeyframeList? remove(unsigned long index)</dt>
           <dd>
             Adds <code>frame</code> to the list such that the list is sorted
             by the offset of the frames. If there's already a frame with the
@@ -4009,7 +4009,7 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
         <p>
           Not sure about the <code>remove</code> method. Do we want:
           <ul>
-            <li><code>remove(AnimFrame frame)</code>?</li>
+            <li><code>remove(Keyframe frame)</code>?</li>
             <li><code>removeAtOffset(unsigned long offset)</code>?</li>
             <li><code>itemAtOffset(unsigned long offset)</code>?</li>
           </ul>
@@ -4104,10 +4104,10 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
         </section>
         <section>              
           <h4>Calculating the iteration value for a 
-            <code>KeyframesAnimFunc</code></h4>
+            <code>KeyframeAnimFunc</code></h4>
           <p>
             When an <code>AnimTemplate</code> contains a pointer to a
-            <code>KeyframesAnimFunc</code> <var>keyframes</var>, the
+            <code>KeyframeAnimFunc</code> <var>keyframes</var>, the
             <var>animation value</var> for that animation at given current time
             <var>t</var> is calculated according to the following steps:
           </p>
@@ -4118,8 +4118,8 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
             </li>
             <li>
               Generate a <var>sorted frame list</var> by sorting the list of
-              <code>AnimFrame</code> objects contained within the
-              <code>AnimFrameList</code> object stored in <var>keyframes.frames</var> 
+              <code>Keyframe</code> objects contained within the
+              <code>KeyframeList</code> object stored in <var>keyframes.frames</var> 
               by their <var>offset</var>.
               If there are no frames in the <var>sorted frame list</var>
               then no animation occurs and the <var>iteration value</var> is
@@ -4128,7 +4128,7 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
             <li>
               Otherwise, find the <var>after frame</var> by iterating through
               the <var>sorted frame list</var> until the last
-              <code>AnimFrame</code> with an <var>offset</var>
+              <code>Keyframe</code> with an <var>offset</var>
               larger than the <var>time fraction</var> is
               encountered.
             </li>
