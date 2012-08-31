@@ -2003,11 +2003,13 @@ berjon.WebIDLProcessor.prototype = {
         var match;
         
         // ATTRIBUTE
-        match = /^\s*(?:(readonly)\s+)?attribute\s+\b(.*?)\s+(\S+)\s*$/.exec(str);
+        match = /^\s*(stringifier\s+)?(?:(inherit\s+)|(readonly\s+))?attribute\s+(.*?)\s+(\S+)\s*$/.exec(str);
         if (match) {
             mem.type = "attribute";
-            mem.readonly = (match[1] == "readonly");
-            var type = match[2];
+            mem.stringifier = !!match[1];
+            mem.inherit = !!match[2];
+            mem.readonly = !!match[3];
+            var type = match[4];
             mem.nullable = false;
             if (/\?$/.test(type)) {
                 type = type.replace(/\?$/, "");
@@ -2019,7 +2021,7 @@ berjon.WebIDLProcessor.prototype = {
                 mem.array = true;
             }
             mem.datatype = type;
-            mem.id = match[3];
+            mem.id = match[5];
             mem.refId = this._id(mem.id);
             mem.raises = [];
             if (sgrs.length) {

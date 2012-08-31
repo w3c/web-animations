@@ -1173,7 +1173,7 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                 </dd>
               </dl>
             </dd>
-            <dt>attribute TimingFunc? timingFunc</dt>
+            <dt>attribute (TimingFunc or TimingFuncCallback)? timingFunc</dt>
             <dd>
               An optional timing function used to scale input time to produce
               timing effects such as easing behavior.
@@ -1323,7 +1323,8 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                 interface.
               </p>
             </dd>
-            <dt>(DOMString or TimingFunc)? timingFunc = null</dt>
+            <dt>(DOMString or TimingFunc or TimingFuncCallback)? timingFunc
+                = null</dt>
             <dd>
               <p>
                 An optional timing function used to scale the time to produce
@@ -1331,9 +1332,9 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
               </p>
               <p>
                 Unlike the <a>Timing</a> interface, the member here may be set
-                to either a <a>TimingFunc</a> object or
-                a <code>DOMString</code> corresponding to one of the values
-                recognized by <a
+                to either a <a>TimingFunc</a> object, <a>TimingFuncCallback</a>
+                function or a <code>DOMString</code> corresponding to one of the
+                values recognized by <a
                 href="#widl-TimingFunc-createFromString-TimingFunc-DOMString-spec"
                 class="idlType"><code>Timing.createFromString</code></a>.
               </p>
@@ -2094,8 +2095,8 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
             <li>
               Scale the time as follows:
               <dl class="switch">
-                <dt>If <var>timing.timingFunction</var> is not
-                    <code>null</code>,</dt>
+                <dt>If <var>timing.timingFunction</var> is a <a>TimingFunc</a>
+                    object,</dt>
                 <dd>
                   <p>
                     Let <var>scaled iteration time</var> be
@@ -2103,22 +2104,29 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                       timing.timingFunction.scaleTime(<var>unscaled iteration
                       time</var> / <a>iteration duration</a>)))</code>.
                   </p>
-                  <!-- XXX Need to update this -->
+                </dd>
+                <dt>If <var>timing.timingFunction</var> is
+                    a <a>TimingFuncCallback</a> function,</dt>
+                <dd>
                   <p>
-                    If calling <code>timing.timingFunction.scaleTime</code>
+                    Let <var>scaled iteration time</var> be
+                    <code>unscaled iteration time *
+                      timing.timingFunction(<var>unscaled iteration
+                      time</var> / <a>iteration duration</a>)))</code>.
+                  </p>
+                  <p>
+                    If calling <code>timing.timingFunction</code>
                     results in an exception being thrown, let <var>scaled
                     iteration time</var> be <var>unscaled iteration time</var>.
                   </p>
                   <div class="todo">
                     <p>
-                      Note that this may be calling into external code which
-                      could potentially do anything.
                       Need to consider:
                     </p>
                     <ul>
                       <li>Is there any way to lock down the model during this
                           step? i.e. make everything read-only?
-                          (of course it's not fully possible, but can we do
+                          (Of course it's not fully possible, but can we do
                           enough that it's meaningful?)
                           Maybe implementations can just display something in
                           the console: "If you're changing stuff in a timing
@@ -2133,8 +2141,6 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                           For example, does querying
                           <code>TimedItem.iterationTime</code> result in the
                           script being executed every time?
-                          Or can implementations cache this value for a given
-                          sample if no parameters change?
                           <p>
                           Possibly could define things such that iteration time
                           is evaluated on each sample (need to define sampling)
@@ -2148,12 +2154,12 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
                           state of the model after calling.</li>
                       <li>Do we need some disclaimer saying, "if the script has
                           side effects all bets are off"</li>
-                      <li>I think script-defined timing functions might get
-                          punted to v2</li>
                       <li>Also need to be careful that the callback doesn't call
                           anything that triggers calculating the iteration time
                           (e.g. <code>TimedItem.iterationTime</code> should use
                           a cached value in that case)</li>
+                      <li>I think script-defined timing functions might get
+                          punted to v2</li>
                     </ul>
                   </div>
                 </dd>
