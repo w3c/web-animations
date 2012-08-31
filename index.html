@@ -1379,26 +1379,29 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
           <dt>attribute double? currentTime</dt>
           <dd>
             <p>
-              Returns the <a>item time</a> of this item in seconds as calculated
-              using the procedure described in <a
-              href="#calculating-the-item-time" class="sectionRef"></a>.
+              Returns the effective item time of the timed item.
             </p>
+            <p>
+              This differs from the definition of <a>item time</a> used
+              elsewhere in the model in that when the parent iteration time is
+              <code>null</code> (e.g. because <code>parentGroup</code> is
+              <code>null</code>, or because the parent is not <a>in effect</a>)
+              a parent time of zero is used.
+              This allows the item to be seeked prior to being attached to
+              a group.
+            </p>
+            <p>
+              The value returned is calculated as follows:
+            </p>
+            <blockquote>
+              <code>currentTime =
+                    <a>effective parent time</a> - startTime - timeDrift</code>
+            </blockquote>
             <p>
               Setting this value performs a seek operation according to the
               steps described in described in <a href="#seeking-a-timed-item"
               class="sectionRef"></a>.
             </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>InvalidStateError</code></dt>
-              <dd>
-                Raised on setting if <code>parentGroup</code> is
-                <code>null</code> or <code>parentGroup.iterationTime</code> is
-                <code>null</code>.
-              </dd>
-            </dl>
           </dd>
           <dt>attribute unrestricted double animDuration</dt>
           <dd>
@@ -2320,12 +2323,6 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
         <ol>
           <li>Let <var>seek time</var> be the new value to which
               <code>currentTime</code> should be set.</li>
-          <li>
-            If <code>parentGroup</code> or
-            <code>parentGroup.iterationTime</code> is <code>null</code> (that
-            is, if <code>currentTime</code> is <code>null</code>), throw
-            a DOMException of type <code>InvalidStateError</code> and return.
-          </li>
           <li>The steps for adjusting the item time depend on the state of the
               <code>locallyPaused</code> property as follows:
             <dl class="switch">
@@ -2337,8 +2334,8 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
               <dd>
                 Set the stored value for <code>timeDrift</code> to
                 the result of evaluating
-                <code>parentGroup.iterationTime - startTime -
-                <var>seek time</var></code>.
+                <code><a>effective parent time</a> - startTime -
+                      <var>seek time</var></code>.
               </dd>
             </dl>
           </li>
@@ -2346,20 +2343,8 @@ var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
         <p class="note">
           Note that the <code>currentTime</code> property is not actually set
           directly but is updated to the seek time as a result of the
-          calculation outlined in <a href="#calculating-the-item-time"
-          class="sectionRef"></a>.
-        </p>
-        <p class="issue">
-          Using this approach you can't seek an item that doesn't have a parent
-          or whose parent isn't <a>in effect</a> since the
-          <code>parentGroup</code> or <code>parentGroup.iterationTime</code>
-          will be <code>null</code>.<br>
-          It is probably useful to be able to seek an item in these
-          circumstances so what we probably want to do is define
-          <code>currentTime</code> so that it is never <code>null</code> by
-          using the <a>effective parent time</a> there and divorcing the
-          <code>currentTime</code> property from the <var>item time</var> that
-          is used in calculated the <var>animation time</var>.
+          calculation outlined in the decsription of the
+          <code>currentTime</code> property on the <a>TimedItem</a> interface.
         </p>
         <p>
           The animation events dispatched when a seek is performed are described
