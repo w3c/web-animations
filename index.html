@@ -3504,6 +3504,94 @@ var animC = new Anim(elem,
           </p>
           <dl title="interface ParAnimGroup : AnimGroup"
             class="idl">
+            <dt>Constructor ()</dt>
+            <dd>
+              <dl class="parameters">
+                <dt>sequence&lt;TimedItem&gt;? children</dt>
+                <dd>
+                  <p>
+                    A sequence of timed items to add as children of this group.
+                  </p>
+                  <p>
+                    These children are appended in sequence using the semantics
+                    as the <code><a>AnimGroup</a>.add</code> method.
+                  </p>
+                </dd>
+                <dt>optional (double or TimingDict or Timing)? timing</dt>
+                <dd>
+                  <p>
+                    The timing properties of the new animation group.
+                  </p>
+                  <p>
+                    If this parameter is a <code>double</code>, then it
+                    specifies the duration of a single iteration of the
+                    animation group, that is, the <a>iteration duration</a>, in
+                    seconds.
+                    In this case, the <code>timing</code> property of the new
+                    <a>ParAnimGroup</a> object is set to a new <a>Timing</a>
+                    object with all properties set to their default values as
+                    specified on the <a>TimingDict</a> dictionary definition
+                    except the <code>duration</code> property which is set to
+                    the value specified here.
+                  </p>
+                  <p>
+                    Similarly, if this parameter is <code>null</code>, the
+                    <code>timing</code> property is set to a new <a>Timing</a>
+                    object with the <code>duration</code> property set to
+                    <code>null</code>.
+                  </p>
+                  <p class="issue">
+                    The constructor for <a>Anim</a> should probably allow this
+                    parameter to be <code>null</code> as well.
+                  </p>
+                  <p>
+                    If this parameter is of type <a>TimingDict</a>, then the
+                    passed-in dictionary is used to construct a new
+                    <a>Timing</a> object which is then assigned to the
+                    <code>timing</code> property of the new <a>ParAnimGroup</a>
+                    object.
+                  </p>
+                  <p>
+                    If this parameter is a <a>Timing</a> object, it is directly
+                    assigned to the <code>timing</code> property of the new
+                    <a>ParAnimGroup</a> object.
+                    It is <em>not</em> copied.
+                    In this way <a>Timing</a> objects can be shared between
+                    <a>TimedItem</a> objects.
+                  </p>
+                  <p>
+                    Finally, if this parameter is not specified, it is as if
+                    a value of <code>null</code> were specified.
+                  </p>
+                </dd>
+                <dt>optional AnimGroup? parentGroup</dt>
+                <dd>
+                  The group to which the newly created animation group should be
+                  appended as a child.
+                  If not specified, the animation will be appended to the
+                  document timeline.
+                  If <code>null</code>, the animation group will not be appended
+                  to any group.
+                </dd>
+                <dt>optional double startTime</dt>
+                <dd>
+                  <p>
+                    The <a>start time</a> of the newly generated animation group
+                    expressed in seconds in the <a>iteration time space</a> of
+                    the <a>AnimGroup</a> to which it is (or will be) appended.
+                  </p>
+                  <p>
+                    If not specified, the current <a>iteration time</a> of the
+                    <a>AnimGroup</a> to which the animation is appended (as
+                    determined by the <code>parentGroup</code> parameter) will
+                    be used.
+                    If <code>parentGroup</code> is <code>null</code>, and
+                    the <code>startTime</code> is not specified, a time of zero
+                    will be used.
+                  </p>
+                </dd>
+              </dl>
+            </dd>
           </dl>
         </section>
       </section>
@@ -3585,6 +3673,17 @@ var animC = new Anim(elem,
           </p>
           <dl title="interface SeqAnimGroup : AnimGroup"
             class="idl">
+            <dt>
+            Constructor (sequence&lt;TimedItem&gt;? children,
+                         optional (double or TimingDict or Timing)? timing,
+                         optional AnimGroup? parentGroup,
+                         optional double startTime)
+            </dt>
+            <dd>
+              The meaning and handling of each of the parameters in this
+              constructor is identical to the constructor for
+              <a>ParAnimGroup</a>.
+            </dd>
           </dl>
         </section>
       </section>
