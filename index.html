@@ -360,19 +360,20 @@
     <section>
       <h2>Animations in the timeline</h2>
       <p>
-        Animations in the timeline are represented by <code>Anim</code> objects.
+        Animations in the timeline are represented by <code>Animation</code>
+        objects.
       </p>
       <section>
-        <h3>The <code>Anim</code> interface</h3>
-        <dl title="interface Anim : TimedItem" class="idl">
+        <h3>The <code>Animation</code> interface</h3>
+        <dl title="interface Animation : TimedItem" class="idl">
           <dt>Constructor ()</dt>
           <dd>
             <p>
-              Creates a new <a>Anim</a> object.
+              Creates a new <a>Animation</a> object.
             </p>
             <p>
               Examples of the usage of this constructor are given in <a
-              href="#creating-a-new-anim-object" class="sectionRef"></a>.
+              href="#creating-a-new-animation-object" class="sectionRef"></a>.
             </p>
             <dl class="parameters">
               <dt>Element? elem</dt>
@@ -384,12 +385,12 @@
               <dt>object animFunc</dt>
               <dd>
                 The animation function used to set the <code>animFunc</code>
-                property of the newly created <a>Anim</a> object.
+                property of the newly created <a>Animation</a> object.
                 <p>
                   If this parameter is an <a>AnimFunc</a> object or
                   <a>CustomAnimFunc</a> object, it will shared with any other
-                  <a>Anim</a> objects referring to the same <a>AnimFunc</a> or
-                  <a>CustomAnimFunc</a> object.
+                  <a>Animation</a> objects referring to the same <a>AnimFunc</a>
+                  or <a>CustomAnimFunc</a> object.
                   It will <em>not</em> be copied.
                 </p>
                 <p>
@@ -409,9 +410,9 @@
                   specifies the duration of a single iteration of the animation,
                   that is, the <a>iteration duration</a>, in seconds.
                   In this case, the <code>timing</code> property of the new
-                  <a>Anim</a> object is set to a new <a>Timing</a> object with
-                  all properties set to their default values as specified on the
-                  <a>TimingDict</a> dictionary definition except the
+                  <a>Animation</a> object is set to a new <a>Timing</a> object
+                  with all properties set to their default values as specified
+                  on the <a>TimingDict</a> dictionary definition except the
                   <code>duration</code> property which is set to the value
                   specified here.
                 </p>
@@ -419,15 +420,15 @@
                   If this parameter is of type <a>TimingDict</a>, then the
                   passed-in dictionary is used to construct a new <a>Timing</a>
                   object which is then assigned to the <code>timing</code>
-                  property of the new <a>Anim</a> object.
+                  property of the new <a>Animation</a> object.
                 </p>
                 <p>
                   Finally, if this parameter is a <a>Timing</a> object, it is
                   directly assigned to the <code>timing</code> property of the
-                  new <a>Anim</a> object.
+                  new <a>Animation</a> object.
                   It is <em>not</em> copied.
                   In this way <a>Timing</a> objects can be shared between
-                  <a>Anim</a> objects.
+                  <a>Animation</a> objects.
                 </p>
               </dd>
               <dt>optional AnimGroup? parentGroup</dt>
@@ -455,15 +456,16 @@
               </dd>
             </dl>
           </dd>
-          <dt>NamedConstructor = LinkedAnim(Element? elem,
-                                            AnimTemplate template,
-                                            optional double startTime)</dt>
+          <dt>NamedConstructor = LinkedAnimation(Element? elem,
+                                                 AnimTemplate template,
+                                                 optional double startTime)</dt>
           <dd>
             TBD
           </dd>
-          <dt>NamedConstructor = ClonedAnim(Element? elem, Anim cloneSource,
-                                            AnimGroup? parentGroup,
-                                            optional double startTime)
+          <dt>NamedConstructor = ClonedAnimation(Element? elem,
+                                                 Animation cloneSource,
+                                                 AnimGroup? parentGroup,
+                                                 optional double startTime)
           <dd>
             TBD
           </dd>
@@ -586,23 +588,23 @@
           </dd>
         </dl>
         <section class="informative">
-          <h4>Creating a new <code>Anim</code> object</h4>
+          <h4>Creating a new <code>Animation</code> object</h4>
           <p>
-            The <a>Anim</a> constructor offers a number of approaches to
-            creating a new <a>Anim</a> object.
-            At its simplest, an <a>Anim</a> object that changes the
+            The <a>Animation</a> constructor offers a number of approaches to
+            creating a new <a>Animation</a> object.
+            At its simplest, an <a>Animation</a> object that changes the
             &lsquo;left&rsquo; property of <var>elem</var> to 100 over three
             seconds can be achieved as follows:
           </p>
           <pre class='example sh_javascript'>
-var anim = new Anim(elem, { left: '100px' }, 3);
+var anim = new Animation(elem, { left: '100px' }, 3);
           </pre>
           <p>
             To specify further timing properties such as the playback rate,
             a <a>TimingDict</a> can be used as follows:
           </p>
           <pre class='example sh_javascript'>
-var anim = new Anim(elem, { left: '100px' }, { duration: 3, playbackRate: 2 });
+var anim = new Animation(elem, { left: '100px' }, { duration: 3, playbackRate: 2 });
           </pre>
           <p>
             To share or re-used timing properties with another animation,
@@ -610,10 +612,10 @@ var anim = new Anim(elem, { left: '100px' }, { duration: 3, playbackRate: 2 });
           </p>
           <pre class='example sh_javascript'>
 // Share the timing properties of animB with animA
-var animA = new Anim(elem, { left: '100px' }, animB.timing);
+var animA = new Animation(elem, { left: '100px' }, animB.timing);
 
 // Re-use the timing properties of animB in animC without sharing
-var animC = new Anim(elem, { left: '100px' }, animB.timing.clone());
+var animC = new Animation(elem, { left: '100px' }, animB.timing.clone());
           </pre>
           <p>
             The animation function parameter may specify multiple properties,
@@ -621,16 +623,16 @@ var animC = new Anim(elem, { left: '100px' }, animB.timing.clone());
           </p>
           <pre class='example sh_javascript'>
 // Specify multiple properties at once
-var animA = new Anim(elem, { left: '100px', top: '300px' }, 5);
+var animA = new Animation(elem, { left: '100px', top: '300px' }, 5);
 
 // Share the animation function of another animation
-var animB = new Anim(elem, animA.animFunc, 3);
+var animB = new Animation(elem, animA.animFunc, 3);
 
 // Supply a specialized animation function
-var animC = new Anim(elem, new PathAnimFunc( ... ), 3);
+var animC = new Animation(elem, new PathAnimFunc( ... ), 3);
 
 // Supply a custom script-based animation function
-var animC = new Anim(elem,
+var animC = new Animation(elem,
   { 
     sample: function(time) { 
       if (time !== null) {
@@ -945,14 +947,14 @@ var animC = new Anim(elem,
           interface.
         </p>
         <p>
-          If this object is attached to a linked <a>Anim</a> or <a>AnimGroup</a>
-          (see <a href="#animation-templates" class="sectionRef"></a>) then it
-          is readonly and attempting to set any of its properties will result in
-          a DOMException of type <code>NoModificationAllowedError</code> being
-          thrown.
+          If this object is attached to a linked <a>Animation</a> or
+          <a>AnimGroup</a> (see <a href="#animation-templates"
+          class="sectionRef"></a>) then it is readonly and attempting to set any
+          of its properties will result in a DOMException of type
+          <code>NoModificationAllowedError</code> being thrown.
           In order to modify the properties of a readonly object, it is
           necessary to first call the <code>unlink</code> method on the
-          corresponding <a>Anim</a> or <a>AnimGroup</a> object.
+          corresponding <a>Animation</a> or <a>AnimGroup</a> object.
         </p>
         <p>
           When throwing a DOMException as a result of attempting to set
@@ -3457,9 +3459,9 @@ var animC = new Anim(elem,
               Returns the previous value of <code>template</code>.
             </p>
           </dd>
-          <dt>sequence&lt;Anim&gt; getActiveAnimations ()</dt>
+          <dt>sequence&lt;Animation&gt; getActiveAnimations ()</dt>
           <dd>
-            Returns all descendent <code>Anim</code> objects
+            Returns all descendent <code>Animation</code> objects
             that are <a>in effect</a>.
             The returned sequence is a snapshot (i.e. not live) representing the
             state of animations that corresponds to the time returned by the
@@ -3467,9 +3469,10 @@ var animC = new Anim(elem,
             <code>AnimGroup</code> object when this method was
             called.
           </dd>
-          <dt>sequence&lt;Anim&gt; getAnimationsForElement (Element elem)</dt>
+          <dt>sequence&lt;Animation&gt; getAnimationsForElement (Element
+          elem)</dt>
           <dd>
-            Returns all descendent <code>Anim</code> objects
+            Returns all descendent <code>Animation</code> objects
             whose <code>targetElement</code> is <code>elem</code>.
             As with <code>getActiveAnimations</code>, the returned sequence is
             a snapshot (i.e. not live) representing the state of animation
@@ -3541,8 +3544,8 @@ var animC = new Anim(elem,
                     <code>null</code>.
                   </p>
                   <p class="issue">
-                    The constructor for <a>Anim</a> should probably allow this
-                    parameter to be <code>null</code> as well.
+                    The constructor for <a>Animation</a> should probably allow
+                    this parameter to be <code>null</code> as well.
                   </p>
                   <p>
                     If this parameter is of type <a>TimingDict</a>, then the
@@ -3695,8 +3698,8 @@ var animC = new Anim(elem,
         <p>
           The Web Animations <em>animation model</em> takes the <a>time
           fraction</a>s produced by the <em>timing model</em> for a given
-          <a>Anim</a> and applies it as the input to the <em>animation
-          function</em> defined for the <a>Anim</a> object.
+          <a>Animation</a> and applies it as the input to the <em>animation
+          function</em> defined for the <a>Animation</a> object.
           The output of each <em>animation function</em> is then combined using
           a global animation stack before being applied to the target property
           (see <a href="#combining-animations" class="sectionRef"></a>).
@@ -3704,9 +3707,9 @@ var animC = new Anim(elem,
         <p>
           The entry-point to the <em>animation model</em> is the
           <a>AnimFunc</a> or <a>CustomAnimFunc</a> object associated with each
-          <a>Anim</a>.
+          <a>Animation</a>.
           These objects describe how animation values should be calculated for
-          the <a>Anim</a> for any given time.
+          the <a>Animation</a> for any given time.
           <a>AnimFunc</a> serves as an abstract interface of which several
           concrete subclasses are provided.
         </p>
@@ -3840,8 +3843,8 @@ var animC = new Anim(elem,
               <dd>
                 return <code>null</code>.
                 <p class="todo">
-                  Make <code>Anim.animFunc</code> nullable since otherwise we
-                  won't be able to create an <a>Anim</a> function
+                  Make <code>Animation.animFunc</code> nullable since otherwise
+                  we won't be able to create an <a>Animation</a> function
                   corresponding to a bit of CSS / SVG syntax that refers to
                   a property that can't be animated in a given implementation
                   (e.g. <code>-moz-xxx</code>).
@@ -4273,7 +4276,7 @@ var animC = new Anim(elem,
               The <var>local time function</var> is the
               <var>timingFunc</var> of the <var>before frame</var>, if 
               it exists; otherwise the <var>timingFunc</var> of the
-              <code>Anim</code> interface's <var>timing</var> attribute.
+              <code>Animation</code> interface's <var>timing</var> attribute.
             </li>
             <li>
               Find the <var>local time fraction</var> by subtracting
@@ -4458,8 +4461,8 @@ var animC = new Anim(elem,
                 associated such that earlier start times are sorted first.
             <li>If <var>A</var> and <var>B</var> have the same priority and
                 start time, sort by the position of the corresponding
-                <a>Anim</a> objects occur within the animation tree (see issue
-                below).</li>
+                <a>Animation</a> objects occur within the animation tree (see
+                issue below).</li>
           </ol>
           <p>
             Items sorted earlier, are executed first.
@@ -4514,8 +4517,8 @@ var animC = new Anim(elem,
                 <dd>
                   The element to which the effect should be applied if any.
                   When this method is called as a result of this object being
-                  associated with an <a>Anim</a> object, it will be
-                  <code><a>Anim</a>.targetElement</code>
+                  associated with an <a>Animation</a> object, it will be
+                  <code><a>Animation</a>.targetElement</code>
                 </dd>
               </dl>
             </dd>
@@ -4775,9 +4778,10 @@ var animC = new Anim(elem,
       </p>
       <p>
         In concrete terms, an <a>AnimTemplate</a> object is used to create
-        multiple <a>Anim</a> objects each of which maintains a link back to the
-        template via its <code>template</code> property.
-        Such <a>Anim</a> objects are said to be <dfn>linked</dfn> to a template.
+        multiple <a>Animation</a> objects each of which maintains a link back to
+        the template via its <code>template</code> property.
+        Such <a>Animation</a> objects are said to be <dfn>linked</dfn> to
+        a template.
       </p>
       <p>
         The timing and animation parameters of <a>linked</a> animations cannot
@@ -4792,8 +4796,8 @@ var animC = new Anim(elem,
         Note that run-time properties of a <a>linked</a> animation such as its
         <var>start time</var> and <var>time drift</var> can still be modified.
         Only those properties attached to the <code>timing</code> and
-        <code>animFunc</code> properties of a <a>linked</a> <a>Anim</a> object
-        are read-only.
+        <code>animFunc</code> properties of a <a>linked</a> <a>Animation</a>
+        object are read-only.
       </p>
       <p>
         Unlinked animations can be linked to a template by:
@@ -4803,7 +4807,7 @@ var animC = new Anim(elem,
         <a>AnimTemplate</a> <span class="todo">(Is this right? Are we going to
         do this?)</span>, or</li>
         <li>calling <code>templatize</code> to create a new <a>AnimTemplate</a>
-        with properties set to reflect the current state of the <a>Anim</a>
+        with properties set to reflect the current state of the <a>Animation</a>
         object on which it is called.</li>
       </ul>
       <p class="todo">
@@ -4826,7 +4830,7 @@ var animC = new Anim(elem,
         <h3>The <code>TimedTemplate</code> interface</h3>
         <p>
           Both the timing of an <code>AnimTemplate</code> and the methods for
-          creating an <code>Anim</code> from
+          creating an <code>Animation</code> from
           an <code>AnimTemplate</code> are specified on the
           <code>TimedTemplate</code> since this behavior is shared with
           animation groups (see <a href="#group-templates"
@@ -5012,13 +5016,13 @@ var animC = new Anim(elem,
         </p>
         <ol>
           <li>
-            Create an empty sequence of <code>Anim</code> objects.
+            Create an empty sequence of <code>Animation</code> objects.
           </li>
           <li>
             For each <var>element</var> in the list of target elements:
             <ol>
               <li>
-                Create a new <code>Anim</code> object, <var>anim</var>.
+                Create a new <code>Animation</code> object, <var>anim</var>.
               </li>
               <li>
                 Set the <code>timing</code> and <code>animFunc</code> properties
@@ -5034,13 +5038,13 @@ var animC = new Anim(elem,
                 Append <var>element</var> to <var>parentGroup</var>.
               </li>
               <li>
-                Append <var>element</var> to the sequence of <code>Anim</code>
-                objects.
+                Append <var>element</var> to the sequence of
+                <code>Animation</code> objects.
               </li>
             </ol>
           </li>
           <li>
-            Return the sequence of <code>Anim</code> objects.
+            Return the sequence of <code>Animation</code> objects.
           </li>
         </ol>
       </section>
