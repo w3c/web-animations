@@ -1189,8 +1189,7 @@ var animC = new Animation(elem,
                 </dd>
               </dl>
             </dd>
-            <dt>attribute (TimingFunction or TimingFunctionCallback)?
-              timingFunction</dt>
+            <dt>attribute TimingFunction?  timingFunction</dt>
             <dd>
               An optional timing function used to scale input time to produce
               timing effects such as easing behavior.
@@ -1340,8 +1339,7 @@ var animC = new Animation(elem,
                 interface.
               </p>
             </dd>
-            <dt>(DOMString or TimingFunction or TimingFunctionCallback)?
-               timingFunction = null</dt>
+            <dt>(DOMString or TimingFunction)? timingFunction = null</dt>
             <dd>
               <p>
                 An optional timing function used to scale the time to produce
@@ -1349,9 +1347,9 @@ var animC = new Animation(elem,
               </p>
               <p>
                 Unlike the <a>Timing</a> interface, the member here may be set
-                to either a <a>TimingFunction</a> object, <a>TimingFunctionCallback</a>
-                function or a <code>DOMString</code> corresponding to one of the
-                values recognized by <a
+                to either a <a>TimingFunction</a> object or
+                a <code>DOMString</code> corresponding to one of the values
+                recognized by <a
                 href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
                 class="idlType"><code>Timing.createFromString</code></a>.
               </p>
@@ -2129,64 +2127,6 @@ var animC = new Animation(elem,
                       time</var> / <a>iteration duration</a>)))</code>.
                   </p>
                 </dd>
-                <dt>If <var>timing.timingFunction</var> is
-                    a <a>TimingFunctionCallback</a> function,</dt>
-                <dd>
-                  <p>
-                    Let <var>scaled iteration time</var> be
-                    <code>unscaled iteration time *
-                      timing.timingFunction(<var>unscaled iteration
-                      time</var> / <a>iteration duration</a>)))</code>.
-                  </p>
-                  <p>
-                    If calling <code>timing.timingFunction</code>
-                    results in an exception being thrown, let <var>scaled
-                    iteration time</var> be <var>unscaled iteration time</var>.
-                  </p>
-                  <div class="todo">
-                    <p>
-                      Need to consider:
-                    </p>
-                    <ul>
-                      <li>Is there any way to lock down the model during this
-                          step? i.e. make everything read-only?
-                          (Of course it's not fully possible, but can we do
-                          enough that it's meaningful?)
-                          Maybe implementations can just display something in
-                          the console: "If you're changing stuff in a timing
-                          function you're going to have a bad time"</li>
-                      <li>Can we cache some values before calling to ensure that
-                          at least this procedure will complete as
-                          expected?</li>
-                      <li>Need to define exactly when this procedure is
-                          performed since both the timing and the number of
-                          times it is called could produce different results if
-                          the script has side effects.
-                          For example, does querying
-                          <code>TimedItem.iterationTime</code> result in the
-                          script being executed every time?
-                          <p>
-                          Possibly could define things such that iteration time
-                          is evaluated on each sample (need to define sampling)
-                          and then only if <code>iterationTime</code> is
-                          explicitly requested (i.e. no caching there)... what
-                          about other operations that rely on iteration time
-                          being up to date? what are they?
-                          </p>
-                      </li>
-                      <li>At points where this is called we need to check the
-                          state of the model after calling.</li>
-                      <li>Do we need some disclaimer saying, "if the script has
-                          side effects all bets are off"</li>
-                      <li>Also need to be careful that the callback doesn't call
-                          anything that triggers calculating the iteration time
-                          (e.g. <code>TimedItem.iterationTime</code> should use
-                          a cached value in that case)</li>
-                      <li>I think script-defined timing functions might get
-                          punted to v2</li>
-                    </ul>
-                  </div>
-                </dd>
                 <dt>Otherwise,</dt>
                 <dd>
                   Let <var>scaled iteration time</var> be <var>unscaled
@@ -2767,62 +2707,6 @@ var animC = new Animation(elem,
             TBD
           </dd>
         </dl>
-      </section>
-      <section>
-        <h3>The <code>TimingFunctionCallback</code> callback</h3>
-        <p>
-          In addition to the timing functions provided by Web Animations,
-          authors may also provide their own time scaling function.
-          The behavior of this function is defined by the
-          <a>TimingFunctionCallback</a> type below.
-        </p>
-        <div title="callback TimingFunctionCallback = double ()" class="idl">
-          <p>
-            A <a>TimingFunctionCallback</a> function has the same behavior as
-            defined for the <code>scaleTime</code> method on the
-            <a>TimingFunction</a> interface.
-            That is, it takes an input time fraction, applies some scaling
-            operation to it, and returns an output time fraction.
-          </p>
-          <p>
-            For the same input <code>time</code> and <code>item</code>, this
-            function MUST return the same output.
-          </p>
-          <p>
-            As a result, a user agent MAY cache the results returned by
-            a <a>TimingFunctionCallback</a> as an optimization.
-            Note, however, that if the <code>item</code> object is changed, this
-            consitutes different input to the function and hence the user agent
-            MUST NOT cache the results of the callback if the <code>item</code>
-            object changes.
-            Given the requirement that callback functions do not change
-            <code>item</code>, a user agent can expect that it is safe to cache
-            the output of a <a>TimingFunctionCallback</a> for at least the
-            duration of a sample.
-          </p>
-          <div class="issue">
-            <p>
-              Is it important to be able to differentiate between when the
-              scaling is being applied to an iteration as a whole or simply to
-              a segment of a keyframe animation?
-            </p>
-            <p>
-              I suspect it probably is and that that would consitute different
-              input to the function.
-            </p>
-          </div>
-          <dl class="parameters">
-            <dt>double time</dt>
-            <dd>
-              The input time fraction in the range [0.0, 1.0].
-            </dd>
-            <dt>TimedItem? item</dt>
-            <dd>
-              The <a>TimedItem</a> for which the scaling is being performed.
-              This object MUST NOT be modified.
-            </dd>
-          </dl>
-        </div>
       </section>
     </section>
 

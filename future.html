@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<!-- vim: set expandtab ts=2 sw=2 tw=80: -->
+<html>
+  <head>
+    <title>Web Animations Future</title>
+    <meta charset="utf-8">
+    <script src="respec/respec.js" class="remove"></script>
+    <script
+      src="http://dev.w3.org/2009/dap/ReSpec.js/js/lang/sh_javascript.min.js"
+      class="remove"></script>
+    <script class="remove">
+      var respecConfig = {
+        // specification status (e.g. WD, LCWD, NOTE, etc.). If in doubt use
+        // ED.
+        specStatus: "unofficial",
+
+        // the specification's short name, as in
+        // http://www.w3.org/TR/short-name/
+        // shortName:            "web-anim",
+
+        // if your specification has a subtitle that goes below the main
+        // formal title, define it here
+        // subtitle   :  "an excellent document",
+
+        // if you wish the publication date to be other than today, set this
+        // publishDate:  "2009-08-06",
+
+        // if the specification's copyright date is a range of years, specify
+        // the start date here:
+        // copyrightStart: "2012"
+
+        // if there is a previously published draft, uncomment this and set
+        // its YYYY-MM-DD date and its maturity status
+        // previousPublishDate: "1977-03-15",
+        // previousMaturity: "WD",
+
+        // if there a publicly available Editor's Draft, this is the link
+        // edDraftURI:
+        // "https://dvcs.w3.org/hg/FXTF/raw-file/tip/web-anim/index.html",
+
+        // if this is a LCWD, uncomment and set the end of its review period
+        // lcEnd: "2009-08-05",
+
+        // if you want to have extra CSS, append them to this list
+        // it is recommended that the respec.css stylesheet be kept
+        extraCSS: ["respec/respec.css",
+                   "web-animations.css"],
+
+        // Turning off inlineCSS for now since if extraCSS points to
+        // a relative URL your testing from a file URL the XHR will fail.
+        // Probably should turn this back on once this is hosted on a server
+        // somewhere.
+        inlineCSS: false,
+
+        // editors, add as many as you like
+        // only "name" is required
+        editors:  [
+          { name: "Web Animations editors" }
+        ],
+
+        // authors, add as many as you like.
+        // This is optional, uncomment if you have authors as well as editors.
+        // only "name" is required. Same format as editors.
+
+        //authors:  [
+        //    { name: "Your Name", url: "http://example.org/",
+        //      company: "Your Company", companyURL: "http://example.com/" },
+        //],
+
+        // XXX If we continue using ReSpec then we need to tweak it to support
+        // multiple working groups. It includes updating the patent section
+        // prose to say "groups" instead of "group" etc.
+        // name of the WG
+        wg: "CSS Working Group (part of the Style Activity) and the SVG " +
+            "Working Group (part of the Graphics Activity)",
+
+        // URI of the public WG page
+        // wgURI: "http://www.w3.org/Graphics/fx/",
+
+        // name (without the @w3c.org) of the public mailing to which comments
+        // are due
+        wgPublicList: "public-fx",
+
+        // URI of the patent status for this WG, for Rec-track documents
+        // !!!! IMPORTANT !!!!
+        // This is important for Rec-track documents, do not copy a patent URI
+        // from a random document unless you know what you're doing. If in
+        // doubt ask your friendly neighbourhood Team Contact.
+        wgPatentURI:  "",
+
+        noIDLSorting: true,
+        noIDLIn: true
+      };
+    </script>
+  </head>
+  <body>
+    <section id='abstract'>
+      This is the abstract for your specification.
+    </section>
+    <section>
+      <h2>Scaling the time</h2>
+      <section>
+        <h3>The <code>TimingFunctionCallback</code> callback</h3>
+        <p>
+          In addition to the timing functions provided by Web Animations,
+          authors may also provide their own time scaling function.
+          The behavior of this function is defined by the
+          <a>TimingFunctionCallback</a> type below.
+        </p>
+        <div title="callback TimingFunctionCallback = double ()" class="idl">
+          <p>
+            A <a>TimingFunctionCallback</a> function has the same behavior as
+            defined for the <code>scaleTime</code> method on the
+            <a>TimingFunction</a> interface.
+            That is, it takes an input time fraction, applies some scaling
+            operation to it, and returns an output time fraction.
+          </p>
+          <p>
+            For the same input <code>time</code> and <code>item</code>, this
+            function MUST return the same output.
+          </p>
+          <p>
+            As a result, a user agent MAY cache the results returned by
+            a <a>TimingFunctionCallback</a> as an optimization.
+            Note, however, that if the <code>item</code> object is changed, this
+            consitutes different input to the function and hence the user agent
+            MUST NOT cache the results of the callback if the <code>item</code>
+            object changes.
+            Given the requirement that callback functions do not change
+            <code>item</code>, a user agent can expect that it is safe to cache
+            the output of a <a>TimingFunctionCallback</a> for at least the
+            duration of a sample.
+          </p>
+          <div class="issue">
+            <p>
+              Is it important to be able to differentiate between when the
+              scaling is being applied to an iteration as a whole or simply to
+              a segment of a keyframe animation?
+            </p>
+            <p>
+              I suspect it probably is and that that would consitute different
+              input to the function.
+            </p>
+          </div>
+          <dl class="parameters">
+            <dt>double time</dt>
+            <dd>
+              The input time fraction in the range [0.0, 1.0].
+            </dd>
+            <dt>TimedItem? item</dt>
+            <dd>
+              The <a>TimedItem</a> for which the scaling is being performed.
+              This object MUST NOT be modified.
+            </dd>
+          </dl>
+        </div>
+        <section>
+          <h4>Applying time manipulations</h4>
+          <p>Needs to be adjusted as follows:</p>
+          <ol>
+            <li>&hellip;</li>
+            <li>
+              Scale the time as follows:
+              <dl class="switch">
+                <dt>If <var>timing.timingFunction</var> is
+                    a <a>TimingFunction</a> object,</dt>
+                <dd>
+                  <p>
+                    Let <var>scaled iteration time</var> be
+                    <code>unscaled iteration time *
+                      timing.timingFunction.scaleTime(<var>unscaled iteration
+                      time</var> / <a>iteration duration</a>)))</code>.
+                  </p>
+                </dd>
+                <dt>If <var>timing.timingFunction</var> is
+                    a <a>TimingFunctionCallback</a> function,</dt>
+                <dd>
+                  <p>
+                    Let <var>scaled iteration time</var> be
+                    <code>unscaled iteration time *
+                      timing.timingFunction(<var>unscaled iteration
+                      time</var> / <a>iteration duration</a>)))</code>.
+                  </p>
+                  <p>
+                    If calling <code>timing.timingFunction</code>
+                    results in an exception being thrown, let <var>scaled
+                    iteration time</var> be <var>unscaled iteration time</var>.
+                  </p>
+                  <div class="todo">
+                    <p>
+                      Need to consider:
+                    </p>
+                    <ul>
+                      <li>Is there any way to lock down the model during this
+                          step? i.e. make everything read-only?
+                          (Of course it's not fully possible, but can we do
+                          enough that it's meaningful?)
+                          Maybe implementations can just display something in
+                          the console: "If you're changing stuff in a timing
+                          function you're going to have a bad time"</li>
+                      <li>Can we cache some values before calling to ensure that
+                          at least this procedure will complete as
+                          expected?</li>
+                      <li>Need to define exactly when this procedure is
+                          performed since both the timing and the number of
+                          times it is called could produce different results if
+                          the script has side effects.
+                          For example, does querying
+                          <code>TimedItem.iterationTime</code> result in the
+                          script being executed every time?
+                          <p>
+                          Possibly could define things such that iteration time
+                          is evaluated on each sample (need to define sampling)
+                          and then only if <code>iterationTime</code> is
+                          explicitly requested (i.e. no caching there)... what
+                          about other operations that rely on iteration time
+                          being up to date? what are they?
+                          </p>
+                      </li>
+                      <li>At points where this is called we need to check the
+                          state of the model after calling.</li>
+                      <li>Do we need some disclaimer saying, "if the script has
+                          side effects all bets are off"</li>
+                      <li>Also need to be careful that the callback doesn't call
+                          anything that triggers calculating the iteration time
+                          (e.g. <code>TimedItem.iterationTime</code> should use
+                          a cached value in that case)</li>
+                      <li>I think script-defined timing functions might get
+                          punted to v2</li>
+                    </ul>
+                  </div>
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  Let <var>scaled iteration time</var> be <var>unscaled
+                  iteration time</var>.
+                </dd>
+              </dl>
+            </li>
+            <li>&hellip;</li>
+          </ol>
+        </section>
+      </section>
+    </section>
+  </body>
+</html>
