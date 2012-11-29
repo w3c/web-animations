@@ -431,7 +431,7 @@
                   <a>Animation</a> objects.
                 </p>
               </dd>
-              <dt>optional AnimGroup? parentGroup</dt>
+              <dt>optional AnimationGroup? parentGroup</dt>
               <dd>
                 The group to which the newly created animation should be
                 appended as a child.
@@ -444,10 +444,10 @@
               <dd>
                 The <a>start time</a> of the newly generated animation
                 expressed in seconds in the <a>iteration time space</a> of the
-                <a>AnimGroup</a> to which it is (or will be) appended.
+                <a>AnimationGroup</a> to which it is (or will be) appended.
                 <p>
                   If not specified, the current <a>iteration time</a> of the
-                  <a>AnimGroup</a> to which the animation is appended (as
+                  <a>AnimationGroup</a> to which the animation is appended (as
                   determined by the <code>parentGroup</code> parameter) will be
                   used. If <code>parentGroup</code> is <code>null</code>, and
                   the <code>startTime</code> is not specified, a time of zero
@@ -464,7 +464,7 @@
           </dd>
           <dt>NamedConstructor = ClonedAnimation(Element? elem,
                                                  Animation cloneSource,
-                                                 AnimGroup? parentGroup,
+                                                 AnimationGroup? parentGroup,
                                                  optional double startTime)
           <dd>
             TBD
@@ -948,13 +948,13 @@ var animC = new Animation(elem,
         </p>
         <p>
           If this object is attached to a linked <a>Animation</a> or
-          <a>AnimGroup</a> (see <a href="#animation-templates"
+          <a>AnimationGroup</a> (see <a href="#animation-templates"
           class="sectionRef"></a>) then it is readonly and attempting to set any
           of its properties will result in a DOMException of type
           <code>NoModificationAllowedError</code> being thrown.
           In order to modify the properties of a readonly object, it is
           necessary to first call the <code>unlink</code> method on the
-          corresponding <a>Animation</a> or <a>AnimGroup</a> object.
+          corresponding <a>Animation</a> or <a>AnimationGroup</a> object.
         </p>
         <p>
           When throwing a DOMException as a result of attempting to set
@@ -1563,7 +1563,7 @@ var animC = new Animation(elem,
               <code><var>t</var> - startTime - timing.startDelay</code>.
             </p>
           </dd>
-          <dt>readonly attribute AnimGroup parentGroup</dt>
+          <dt>readonly attribute AnimationGroup parentGroup</dt>
           <dd>
             The parent animation group.
           </dd>
@@ -3176,7 +3176,7 @@ var animC = new Animation(elem,
             to the <code>Document</code> interface are required.
           </p>
           <dl title="partial interface Document" class="idl">
-            <dt>readonly attribute ParAnimGroup animationTimeline</dt>
+            <dt>readonly attribute ParGroup animationTimeline</dt>
             <dd>
               The animation group corresponding to the root of the document.
               This group exhibits the special behavior described for the root
@@ -3207,16 +3207,16 @@ var animC = new Animation(elem,
         </section>
       </section>
       <section>
-        <h3>The <code>AnimGroup</code> interface</h3>
+        <h3>The <code>AnimationGroup</code> interface</h3>
         <p>
           Represents a list of timed items.
         </p>
         <p>
-          The <code>AnimGroup</code> interface supports indexed
+          The <code>AnimationGroup</code> interface supports indexed
           properties with indices in the range 0 &le; <var>index</var> &lt;
           <code>group.size</code>. 
         </p>
-        <dl title="interface AnimGroup : TimedItem"
+        <dl title="interface AnimationGroup : TimedItem"
           class="idl">
           <dt>readonly attribute unsigned long length</dt>
           <dd>
@@ -3466,7 +3466,7 @@ var animC = new Animation(elem,
             The returned sequence is a snapshot (i.e. not live) representing the
             state of animations that corresponds to the time returned by the
             <code>iterationTime</code> property of this
-            <code>AnimGroup</code> object when this method was
+            <code>AnimationGroup</code> object when this method was
             called.
           </dd>
           <dt>sequence&lt;Animation&gt; getAnimationsForElement (Element
@@ -3500,13 +3500,12 @@ var animC = new Animation(elem,
           </p>
         </section>
         <section>
-          <h4>The <code>ParAnimGroup</code> interface</h4>
+          <h4>The <code>ParGroup</code> interface</h4>
           <p>
-            Parallel animation groups are represented by
-            <code>ParAnimGroup</code> objects.
+            Parallel animation groups are represented by <code>ParGroup</code>
+            objects.
           </p>
-          <dl title="interface ParAnimGroup : AnimGroup"
-            class="idl">
+          <dl title="interface ParGroup : AnimationGroup" class="idl">
             <dt>Constructor ()</dt>
             <dd>
               <dl class="parameters">
@@ -3517,7 +3516,7 @@ var animC = new Animation(elem,
                   </p>
                   <p>
                     These children are appended in sequence using the semantics
-                    as the <code><a>AnimGroup</a>.add</code> method.
+                    as the <code><a>AnimationGroup</a>.add</code> method.
                   </p>
                 </dd>
                 <dt>optional (double or TimingDict or Timing)? timing</dt>
@@ -3531,7 +3530,7 @@ var animC = new Animation(elem,
                     animation group, that is, the <a>iteration duration</a>, in
                     seconds.
                     In this case, the <code>timing</code> property of the new
-                    <a>ParAnimGroup</a> object is set to a new <a>Timing</a>
+                    <a>ParGroup</a> object is set to a new <a>Timing</a>
                     object with all properties set to their default values as
                     specified on the <a>TimingDict</a> dictionary definition
                     except the <code>duration</code> property which is set to
@@ -3551,13 +3550,13 @@ var animC = new Animation(elem,
                     If this parameter is of type <a>TimingDict</a>, then the
                     passed-in dictionary is used to construct a new
                     <a>Timing</a> object which is then assigned to the
-                    <code>timing</code> property of the new <a>ParAnimGroup</a>
+                    <code>timing</code> property of the new <a>ParGroup</a>
                     object.
                   </p>
                   <p>
                     If this parameter is a <a>Timing</a> object, it is directly
                     assigned to the <code>timing</code> property of the new
-                    <a>ParAnimGroup</a> object.
+                    <a>ParGroup</a> object.
                     It is <em>not</em> copied.
                     In this way <a>Timing</a> objects can be shared between
                     <a>TimedItem</a> objects.
@@ -3567,7 +3566,7 @@ var animC = new Animation(elem,
                     a value of <code>null</code> were specified.
                   </p>
                 </dd>
-                <dt>optional AnimGroup? parentGroup</dt>
+                <dt>optional AnimationGroup? parentGroup</dt>
                 <dd>
                   The group to which the newly created animation group should be
                   appended as a child.
@@ -3581,11 +3580,12 @@ var animC = new Animation(elem,
                   <p>
                     The <a>start time</a> of the newly generated animation group
                     expressed in seconds in the <a>iteration time space</a> of
-                    the <a>AnimGroup</a> to which it is (or will be) appended.
+                    the <a>AnimationGroup</a> to which it is (or will be)
+                    appended.
                   </p>
                   <p>
                     If not specified, the current <a>iteration time</a> of the
-                    <a>AnimGroup</a> to which the animation is appended (as
+                    <a>AnimationGroup</a> to which the animation is appended (as
                     determined by the <code>parentGroup</code> parameter) will
                     be used.
                     If <code>parentGroup</code> is <code>null</code>, and
@@ -3669,23 +3669,23 @@ var animC = new Animation(elem,
           </p>
         </section>
         <section>
-          <h4>The <code>SeqAnimGroup</code> interface</h4>
+          <h4>The <code>SeqGroup</code> interface</h4>
           <p>
-            Sequence animation groups are represented by
-            <code>SeqAnimGroup</code> objects.
+            Sequence animation groups are represented by <code>SeqGroup</code>
+            objects.
           </p>
-          <dl title="interface SeqAnimGroup : AnimGroup"
+          <dl title="interface SeqGroup : AnimationGroup"
             class="idl">
             <dt>
             Constructor (sequence&lt;TimedItem&gt;? children,
                          optional (double or TimingDict or Timing)? timing,
-                         optional AnimGroup? parentGroup,
+                         optional AnimationGroup? parentGroup,
                          optional double startTime)
             </dt>
             <dd>
               The meaning and handling of each of the parameters in this
               constructor is identical to the constructor for
-              <a>ParAnimGroup</a>.
+              <a>ParGroup</a>.
             </dd>
           </dl>
         </section>
@@ -4874,13 +4874,13 @@ var animC = new Animation(elem,
                 <p>
                   The start time for the generated animations
                   expressed in seconds in the iteration time space of the
-                  <code>AnimGroup</code> to which it is
+                  <code>AnimationGroup</code> to which it is
                   appended (see <a href="#time-spaces" class="sectionRef"></a>).
                 </p>
                 <p>
                   If this parameter is not specified it will default to the
                   current iteration time of the
-                  <code>AnimGroup</code> to which it is
+                  <code>AnimationGroup</code> to which it is
                   appended if it is not <code>null</code>, otherwise it will
                   default to zero.
                 </p>
@@ -4944,7 +4944,7 @@ var animC = new Animation(elem,
               <dd>
                 As with <code>animate</code>.
               </dd>
-              <dt>AnimGroup? parentGroup</dt>
+              <dt>AnimationGroup? parentGroup</dt>
               <dd>
                 The animation group to which animations should be appended.
               </dd>
@@ -4953,7 +4953,7 @@ var animC = new Animation(elem,
                 <p>
                   The start time for the generated animations
                   expressed in seconds in the iteration time space of the
-                  <code>AnimGroup</code> to which it is
+                  <code>AnimationGroup</code> to which it is
                   appended (see <a href="#time-spaces" class="sectionRef"></a>).
                 </p>
                 <p>
@@ -4967,11 +4967,11 @@ var animC = new Animation(elem,
           </dd>
           <dt>sequence&lt;TimedItem&gt; animateWithParent (
             sequence&lt;Node&gt; targets,
-            AnimGroup? parentGroup,
+            AnimationGroup? parentGroup,
             optional double startTime)</dt>
           <dd>
             As with <code>animateWithParent(Element target,
-              AnimGroup? parentGroup,
+              AnimationGroup? parentGroup,
               optional double startTime)</code> except
             one <code>TimedItem</code> is created for each
             <code>Node</code> in <code>target</code> that is of type
@@ -4992,14 +4992,14 @@ var animC = new Animation(elem,
             live.
           </dd>
           <dt>TimedItem animateLiveWithParent
-            (Element target, AnimGroup? parentGroup,
+            (Element target, AnimationGroup? parentGroup,
              optional double startTime)</dt>
           <dd>
             As with <code>animateWithParent</code> with the exception that the
             animations generated by this method are live.
           </dd>
           <dt>sequence&lt;TimedItem&gt; animateLiveWithParent
-            (sequence&lt;Node&gt; targets, AnimGroup? parentGroup,
+            (sequence&lt;Node&gt; targets, AnimationGroup? parentGroup,
              optional double startTime)</dt>
           <dd>
             As with <code>animateWithParent</code> with the exception that the
@@ -5087,7 +5087,7 @@ var animC = new Animation(elem,
             </p>
             <p>
               The behavior of this method is identical to
-              the equivalent setter in <code>AnimGroup</code>
+              the equivalent setter in <code>AnimationGroup</code>
               except that DOMExceptions of type HierarchyRequestError are not
               thrown.
             </p>
@@ -5131,14 +5131,14 @@ var animC = new Animation(elem,
               during the addition step).
             </p>
             <p>
-              As with <code>AnimGroup.slice</code> the operation of
+              As with <code>AnimationGroup.slice</code> the operation of
               slice is based on <a
               href="http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262%205th%20edition%20December%202009.pdf#page=140">ECMAScript
               5's Array.prototype.splice</a>.
             </p>
             <p>
               The operation of this method is identical to that of
-              <code>AnimGroup.slice</code> with the notable difference
+              <code>AnimationGroup.slice</code> with the notable difference
               that DOMExceptions of type HierarchyRequestError are not thrown
               since there is no <code>AnimGroupTemplate</code> corresponding to
               a document timeline.
@@ -5216,30 +5216,30 @@ var animC = new Animation(elem,
           TBD. This is probably all wrong.
         </p>
         <p>
-          The procedure for creating an <code>AnimGroup</code> from
+          The procedure for creating an <code>AnimationGroup</code> from
           an <code>AnimGroupTemplate</code>, <var>template</var>,
           given a list of target elements, and optionally given a <var>parent
           group</var> follows.
         </p>
         <p>
           Note that <code>ParAnimGroupTemplate</code> objects produce
-          <code>ParAnimGroup</code> objects and likewise 
+          <code>ParGroup</code> objects and likewise 
           <code>SeqAnimGroupTemplate</code> objects produce
-          <code>SeqAnimGroup</code> objects.
+          <code>SeqGroup</code> objects.
           In the following description the <code>AnimGroupTemplate</code> and
-          <code>AnimGroup</code> types should be substituted with the
+          <code>AnimationGroup</code> types should be substituted with the
           concrete types in use.
         </p>
         <ol>
           <li>
             Create an empty sequence to hold the generated
-            <code>AnimGroup</code> objects.
+            <code>AnimationGroup</code> objects.
           </li>
           <li>
             For each <var>element</var> in the list of target elements:
             <ol>
               <li>
-                Create a new <code>AnimGroup</code> object,
+                Create a new <code>AnimationGroup</code> object,
                 <var>group</var>.
               </li>
               <li>
@@ -5265,12 +5265,12 @@ var animC = new Animation(elem,
               </li>
               <li>
                 Append <var>group</var> to the sequence of
-                <code>AnimGroup</code> objects.
+                <code>AnimationGroup</code> objects.
               </li>
             </ol>
           </li>
           <li>
-            Return the sequence of <code>AnimGroup</code> objects.
+            Return the sequence of <code>AnimationGroup</code> objects.
           </li>
         </ol>
       </section>
