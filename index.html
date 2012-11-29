@@ -382,23 +382,25 @@
                 This may be <code>null</code> for animations that do not target
                 a specific element.
               </dd>
-              <dt>object animFunc</dt>
+              <dt>object animationFunction</dt>
               <dd>
-                The animation function used to set the <code>animFunc</code>
-                property of the newly created <a>Animation</a> object.
+                The animation function used to set the
+                <code>animationFunction</code> property of the newly created
+                <a>Animation</a> object.
                 <p>
-                  If this parameter is an <a>AnimFunc</a> object or
-                  <a>CustomAnimFunc</a> object, it will shared with any other
-                  <a>Animation</a> objects referring to the same <a>AnimFunc</a>
-                  or <a>CustomAnimFunc</a> object.
+                  If this parameter is an <a>AnimationFunction</a> object or
+                  <a>CustomAnimationFunction</a> object, it will shared with any
+                  other <a>Animation</a> objects referring to the same
+                  <a>AnimationFunction</a> or <a>CustomAnimationFunction</a>
+                  object.
                   It will <em>not</em> be copied.
                 </p>
                 <p>
                   Otherwise, if this parameter is any other type of object, it
                   will be passed to <a
-                  href="#widl-AnimFunc-createFromProperties-AnimFunc-object-properties"
-                  class="idlType"><code>AnimFunc.createFromProperties</code></a>
-                  and the resulting <a>AnimFunc</a> object used as the
+                  href="#widl-AnimationFunction-createFromProperties-AnimationFunction-object-properties"
+                  class="idlType"><code>AnimationFunction.createFromProperties</code></a>
+                  and the resulting <a>AnimationFunction</a> object used as the
                   animation function.
                 </p>
               </dd>
@@ -469,7 +471,8 @@
           <dd>
             TBD
           </dd>
-          <dt>attribute (AnimFunc or CustomAnimFunc) animFunc</dt>
+          <dt>attribute (AnimationFunction or CustomAnimationFunction)
+              animationFunction</dt>
           <dd>
             <p>
               The animation function to apply (see <a href="#animation-values"
@@ -511,8 +514,8 @@
                 <ol>
                   <li>Set <code>timing</code> to <code><var>new
                       template</var>.timing.clone()</code>.</li>
-                  <li>Set <code>animFunc</code> to <code><var>new
-                      template</var>.animFunc.clone()</code>.</li>
+                  <li>Set <code>animationFunction</code> to <code><var>new
+                      template</var>.animationFunction.clone()</code>.</li>
                   <li>Set <code>template</code> to <code><var>new
                       template</var></code>.</li>
                 </ol>
@@ -552,8 +555,8 @@
                   <var>template</var>.</li>
               <li>Set <code><var>template</var>.timing</code> to
                   <code><var>source</var>.timing.clone()</code>.</li>
-              <li>Set <code><var>template</var>.animFunc</code> to
-                  <code><var>source</var>.animFunc.clone()</code>.</li>
+              <li>Set <code><var>template</var>.animationFunction</code> to
+                  <code><var>source</var>.animationFunction.clone()</code>.</li>
               <li>Set <code><var>source</var>.template</code> to
                   <var>template</var>.</li>
               <li>Return <var>template</var>.</li>
@@ -579,8 +582,8 @@
               <li>Let <var>old template</var> be <code>template</code>.</li>
               <li>Set <code>timing</code> to
                   <code>template.timing.clone()</code>.</li>
-              <li>Set <code>animFunc</code> to
-                  <code>template.animFunc.clone()</code>.</li>
+              <li>Set <code>animationFunction</code> to
+                  <code>template.animationFunction.clone()</code>.</li>
               <li>Set <code>template</code> to <code>null</code> (but do not
                   recursively call this function).</li>
               <li>Return <var>old template</var>.</li>
@@ -619,17 +622,17 @@ var animC = new Animation(elem, { left: '100px' }, animB.timing.clone());
           </pre>
           <p>
             The animation function parameter may specify multiple properties,
-            an <a>AnimFunc</a> object, or even a callback object.
+            an <a>AnimationFunction</a> object, or even a callback object.
           </p>
           <pre class='example sh_javascript'>
 // Specify multiple properties at once
 var animA = new Animation(elem, { left: '100px', top: '300px' }, 5);
 
 // Share the animation function of another animation
-var animB = new Animation(elem, animA.animFunc, 3);
+var animB = new Animation(elem, animA.animationFunction, 3);
 
 // Supply a specialized animation function
-var animC = new Animation(elem, new PathAnimFunc( ... ), 3);
+var animC = new Animation(elem, new PathAnimationFunction( ... ), 3);
 
 // Supply a custom script-based animation function
 var animC = new Animation(elem,
@@ -645,8 +648,8 @@ var animC = new Animation(elem,
   }, 3);
           </pre>
           <p class="todo">
-            Fill in the parameters for <a>PathAnimFunc</a> above once we have
-            decided on them.
+            Fill in the parameters for <a>PathAnimationFunction</a> above once
+            we have decided on them.
           </p>
           <p class="todo">
             Add examples of specifying the parent group and start time once we
@@ -2400,7 +2403,8 @@ var animC = new Animation(elem,
         <p>
           Such timing functions can be applied to an iteration of an animation
           as a whole via the <a>TimedItem</a> interface or to a segment of
-          a keyframe animation via the <a>KeyframeAnimFunc</a> interface.
+          a keyframe animation via the <a>KeyframeAnimationFunction</a>
+          interface.
         </p>
       </div>
       <section>
@@ -3708,17 +3712,17 @@ var animC = new Animation(elem,
         </p>
         <p>
           The entry-point to the <em>animation model</em> is the
-          <a>AnimFunc</a> or <a>CustomAnimFunc</a> object associated with each
-          <a>Animation</a>.
+          <a>AnimationFunction</a> or <a>CustomAnimationFunction</a> object
+          associated with each <a>Animation</a>.
           These objects describe how animation values should be calculated for
           the <a>Animation</a> for any given time.
-          <a>AnimFunc</a> serves as an abstract interface of which several
-          concrete subclasses are provided.
+          <a>AnimationFunction</a> serves as an abstract interface of which
+          several concrete subclasses are provided.
         </p>
       </div>
       <section>
-        <h3>The <code>AnimFunc</code> interface</h3>
-        <dl title="interface AnimFunc" class="idl">
+        <h3>The <code>AnimationFunction</code> interface</h3>
+        <dl title="interface AnimationFunction" class="idl">
           <dt>attribute CompositeOperation operation</dt>
           <dd>
             <p>
@@ -3772,7 +3776,7 @@ var animC = new Animation(elem,
               </p>
             </div>
           </dd>
-          <dt>AnimFunc clone ()</dt>
+          <dt>AnimationFunction clone ()</dt>
           <dd>
             <p>
               Creates and returns a new object of the same type as this object's
@@ -3784,11 +3788,11 @@ var animC = new Animation(elem,
               better) a sets of steps on a per-subclass basis.
             </p>
           </dd>
-          <dt>static AnimFunc? createFromProperties ()</dt>
+          <dt>static AnimationFunction? createFromProperties ()</dt>
           <dd>
             <p>
-              Creates an <a>AnimFunc</a> representing the passed-in collection
-              of properties.
+              Creates an <a>AnimationFunction</a> representing the passed-in
+              collection of properties.
             </p>
             <div class="note">
               <p>
@@ -3834,22 +3838,22 @@ var animC = new Animation(elem,
                   </p>
               </li>
             </ol>
-            <p><strong>Part 2 &ndash; Create the <a>AnimFunc</a>
+            <p><strong>Part 2 &ndash; Create the <a>AnimationFunction</a>
                objects</strong></p>
             <p>
-              The <a>AnimFunc</a> object produced depends on the length of
-              <var>animation properties</var> as follows:
+              The <a>AnimationFunction</a> object produced depends on the length
+              of <var>animation properties</var> as follows:
             </p>
             <dl class="switch">
               <dt>If <var>animation properties</var> is of zero length,</dt>
               <dd>
                 return <code>null</code>.
                 <p class="todo">
-                  Make <code>Animation.animFunc</code> nullable since otherwise
-                  we won't be able to create an <a>Animation</a> function
-                  corresponding to a bit of CSS / SVG syntax that refers to
-                  a property that can't be animated in a given implementation
-                  (e.g. <code>-moz-xxx</code>).
+                  Make <code>Animation.animationFunction</code> nullable since
+                  otherwise we won't be able to create an <a>Animation</a>
+                  function corresponding to a bit of CSS / SVG syntax that
+                  refers to a property that can't be animated in a given
+                  implementation (e.g. <code>-moz-xxx</code>).
                 </p>
               </dd>
               <dt>If <var>animation properties</var> has only one element,</dt>
@@ -3859,16 +3863,16 @@ var animC = new Animation(elem,
                       in <var>animation properties</var>.</li>
                   <li>Let <var>value</var> be the value of
                       <code>properties.<var>name</var></code>.</li>
-                  <li>Return a new <a>KeyframeAnimFunc</a> object according to
-                      the steps in part 3 below based on <var>name</var> and
-                      <var>value</var>.</li>
+                  <li>Return a new <a>KeyframeAnimationFunction</a> object
+                      according to the steps in part 3 below based on
+                      <var>name</var> and <var>value</var>.</li>
                 </ol>
               </dd>
               <dt>Otherwise,</dt>
               <dd>
                 <ol>
                   <li>Let <var>group</var> be a newly constructed
-                      <a>GroupedAnimFunc</a>.</li>
+                      <a>GroupedAnimationFunction</a>.</li>
                   <li>Sort <var>animation properties</var> lexicographically by
                       the Unicode codepoints that define each property
                       name.</li>
@@ -3877,7 +3881,7 @@ var animC = new Animation(elem,
                     <ol>
                       <li>Let <var>value</var> be the value of
                           <code>properties.<var>name</var></code>.</li>
-                      <li>Create a new <a>KeyframeAnimFunc</a>,
+                      <li>Create a new <a>KeyframeAnimationFunction</a>,
                           <var>function</var> object according to the steps in
                           part 3 below based on <var>name</var> and
                           <var>value</var>.</li>
@@ -3888,12 +3892,12 @@ var animC = new Animation(elem,
                 </ol>
               </dd>
             </dl>
-            <p><strong>Part 3 &ndash; Create each <a>KeyframeAnimFunc</a>
-               object</strong></p>
+            <p><strong>Part 3 &ndash; Create each
+               <a>KeyframeAnimationFunction</a> object</strong></p>
             <p>
               Based on a given <var>name</var> and <var>value</var>, a new
-              <a>KeyframeAnimFunc</a> is created depending on the type of
-              <var>value</var>.
+              <a>KeyframeAnimationFunction</a> is created depending on the type
+              of <var>value</var>.
               In effect, <var>value</var> is treated as having type
               <code>(DOMString or sequence&lt;DOMString&gt; or
               sequence&lt;<a>KeyframeDict</a>&gt;)</code>.
@@ -3901,7 +3905,7 @@ var animC = new Animation(elem,
             <ol>
               <li>
                 Let <var>function</var> be a newly constructed
-                <a>KeyframeAnimFunc</a> object.
+                <a>KeyframeAnimationFunction</a> object.
               </li>
               <li>
                 Set <code><var>function</var>.property</code> to
@@ -4006,12 +4010,12 @@ var animC = new Animation(elem,
             The meaning of merge is dependent on the type of animation.
             The duration of the merge is the calculated animation duration
             of the <code>AnimationTemplate</code> containing this
-            <code>AnimFunc</code>.
+            <code>AnimationFunction</code>.
           </dd>
         </dl>
       </section>
       <section>
-        <h3>The <code>KeyframeAnimFunc</code> interface</h3>
+        <h3>The <code>KeyframeAnimationFunction</code> interface</h3>
         <div class="todo">
           <p>
             Need to define convenience ctors here. I think you want to support
@@ -4030,8 +4034,8 @@ var animC = new Animation(elem,
             That assumes they're in order though.
           </p>
           <p>
-            Also, ideally the ctor for <a>GroupedAnimFunc</a> would accept
-            the above input as well as the below.
+            Also, ideally the ctor for <a>GroupedAnimationFunction</a> would
+            accept the above input as well as the below.
           </p>
           <pre class="sh_javascript">
 {
@@ -4041,8 +4045,8 @@ var animC = new Animation(elem,
   ]
 }</pre>
           <p>
-            As a bonus, the ctor for <a>KeyframeAnimFunc</a> should also be
-            nice to support the following arrangement:
+            As a bonus, the ctor for <a>KeyframeAnimationFunction</a> should
+            also be nice to support the following arrangement:
           </p>
           <pre class="sh_javascript">
 {
@@ -4054,8 +4058,8 @@ var animC = new Animation(elem,
           Need to define exceptions when this is a read-only object.
         </p>
         <p>
-          <dl title="[Constructor] interface KeyframeAnimFunc : AnimFunc"
-            class="idl">
+          <dl title="[Constructor] interface KeyframeAnimationFunction
+            : AnimationFunction" class="idl">
             <dt>attribute DOMString property</dt>
             <dd>
               The target attribute / property. <code>property</code> is probably
@@ -4083,7 +4087,7 @@ var animC = new Animation(elem,
               the iteration duration of the animation where this value should
               appear. Ignored if we're using paced timing?<br>
               What happens if you change it? The array returned by the
-              <code>AnimFunc</code> is updated? I guess that's fine
+              <code>AnimationFunction</code> is updated? I guess that's fine
               if it's just an array. Any already-returned arrays wouldn't need
               to be updated.<br>
               What happens if you have two values with the same offset? It would
@@ -4136,8 +4140,9 @@ var animC = new Animation(elem,
         </p>
       </section>
       <section>
-        <h3>The <code>PathAnimFunc</code> interface</h3>
-        <dl title="[Constructor] interface PathAnimFunc : AnimFunc" class="idl">
+        <h3>The <code>PathAnimationFunction</code> interface</h3>
+        <dl title="[Constructor] interface PathAnimationFunction
+          : AnimationFunction" class="idl">
           <dt>attribute SVGPathSegList segments</dt>
           <dd>
             The list of segments that make up this path.
@@ -4151,23 +4156,23 @@ var animC = new Animation(elem,
         </dl>
       </section>
       <section>
-        <h3>The <code>GroupedAnimFunc</code> interface</h3>
+        <h3>The <code>GroupedAnimationFunction</code> interface</h3>
         <p>
-          The <code>GroupedAnimFunc</code> interface represents a
+          The <code>GroupedAnimationFunction</code> interface represents a
           set of animation functions that share the same
           <code>AnimationTemplate</code> parent.
         </p>
-        <dl title="[Constructor] interface GroupedAnimFunc : AnimFunc"
-          class="idl">
+        <dl title="[Constructor] interface GroupedAnimationFunction
+          : AnimationFunction" class="idl">
           <dt>readonly attribute unsigned long length</dt>
           <dd>
             The number of animation functions in the group.
           </dd>
-          <dt>AnimFunc? item(unsigned long index)</dt>
+          <dt>AnimationFunction? item(unsigned long index)</dt>
           <dd>
             Returns the function at <code>index</code> if it exists, or null.
           </dd>
-          <dt>void add(AnimFunc func)</dt>
+          <dt>void add(AnimationFunction func)</dt>
           <dd>
             Adds <code>func</code> to the group.
           </dd>
@@ -4224,17 +4229,18 @@ var animC = new Animation(elem,
         </section>
         <section>              
           <h4>Calculating the iteration value for a 
-            <code>KeyframeAnimFunc</code></h4>
+            <code>KeyframeAnimationFunction</code></h4>
           <p>
             When an <code>AnimationTemplate</code> contains a pointer to a
-            <code>KeyframeAnimFunc</code> <var>keyframes</var>, the
+            <code>KeyframeAnimationFunction</code> <var>keyframes</var>, the
             <var>animation value</var> for that animation at given current time
             <var>t</var> is calculated according to the following steps:
           </p>
           <ol>
             <li>
               Convert <var>t</var> to the <var>time fraction</var> 
-              (see <a href="#calculating-the-time-fraction" class="sectionRef"></a>).
+              (see <a href="#calculating-the-time-fraction"
+              class="sectionRef"></a>).
             </li>
             <li>
               Generate a <var>sorted frame list</var> by sorting the list of
@@ -4301,10 +4307,10 @@ var animC = new Animation(elem,
         </section>
         <section>
           <h4>Calculating the iteration value for a 
-            <code>PathAnimFunc</code></h4>
+            <code>PathAnimationFunction</code></h4>
           <p>
             When an <code>AnimationTemplate</code> contains a pointer to a
-            <code>PathAnimFunc</code> and <var>rotate</var> is set
+            <code>PathAnimationFunction</code> and <var>rotate</var> is set
             to false, the <var>animation value</var> for that animation at
             given current time <var>t</var> is the transform defined by a
             translation equal to the location on the path at <var>t</var>.
@@ -4331,15 +4337,15 @@ var animC = new Animation(elem,
         </section>
         <section>
           <h4>Calculating the iteration value for a 
-            <code>GroupedAnimFunc</code></h4>
+            <code>GroupedAnimationFunction</code></h4>
           <p>
             When an <code>AnimationTemplate</code> contains a pointer to a
-            <code>GroupedAnimFunc</code>, the <var>animation
+            <code>GroupedAnimationFunction</code>, the <var>animation
             value</var> for that animation at given current time <var>t</var> 
             is calculated by following the procedure outlined in
             <a href="#resolving-animation-stacks" class="sectionRef"></a>, 
-            treating the list of <code>AnimFunc</code> objects 
-            contained within the <code>GroupedAnimFunc</code> as 
+            treating the list of <code>AnimationFunction</code> objects 
+            contained within the <code>GroupedAnimationFunction</code> as 
             the animation stack and using an initial animation value 
             of 0 for all simple properties and id for transform.
           </p>
@@ -4400,12 +4406,14 @@ var animC = new Animation(elem,
           </p>
           <ul>
             <li>Shares the same function signature as
-                <code><a>AnimFunc</a>.sample</code></li>
+                <code><a>AnimationFunction</a>.sample</code></li>
             <li>Gets passed the underlying value and passes out the animated
                 value.</li>
             <li>Has a target property and is sorted against other
-                <a>AnimFunc</a> objects (including platform objects)</li>
-            <li>Can be added as a child of a <a>GroupedAnimFunc</a>.</li>
+                <a>AnimationFunction</a> objects (including platform
+                objects)</li>
+            <li>Can be added as a child of
+                a <a>GroupedAnimationFunction</a>.</li>
           </ul>
           <p>
             That's a bit more difficult since you have to be careful that the
@@ -4425,8 +4433,8 @@ var animC = new Animation(elem,
           </p>
           <p>
             Custom animation functions are executed after all other
-            <a>AnimFunc</a> objects have completed and applied their effects to
-            their targets.
+            <a>AnimationFunction</a> objects have completed and applied their
+            effects to their targets.
           </p>
           <p class="issue">
             Need to define this more precisely.
@@ -4446,7 +4454,7 @@ var animC = new Animation(elem,
             are executed sooner.
           </p>
           <p>
-            In deciding which of two <a>CustomAnimFunc</a> functions,
+            In deciding which of two <a>CustomAnimationFunction</a> functions,
             <var>A</var> and <var>B</var>, should be executed the following
             rules are applied.
           </p>
@@ -4480,16 +4488,16 @@ var animC = new Animation(elem,
           </p>
         </section>
         <section>
-          <h4>The <code>CustomAnimFunc</code> callback interface</h4>
+          <h4>The <code>CustomAnimationFunction</code> callback interface</h4>
           <p>
             Custom animation functions can be defined in script using the
-            <a>CustomAnimFunc</a> interface.
+            <a>CustomAnimationFunction</a> interface.
           </p>
           <p class="issue">
             Should this be a dictionary?
             I'd like to make <code>clone</code> optional.
           </p>
-          <div title="callback interface CustomAnimFunc" class="idl">
+          <div title="callback interface CustomAnimationFunction" class="idl">
             <dt>attribute unsigned integer priority</dt>
             <dd>
               The order in which this animation function will be executed in
@@ -4524,7 +4532,7 @@ var animC = new Animation(elem,
                 </dd>
               </dl>
             </dd>
-            <dt>CustomAnimFunc clone ()</dt>
+            <dt>CustomAnimationFunction clone ()</dt>
             <dd>
               Creates an independent copy of this object.
             </dd>
@@ -4586,7 +4594,7 @@ var animC = new Animation(elem,
         <p>
           Other operations also generate animation stacks - for example, 
           grouping multiple animations using a 
-          <code>GroupedAnimFunc</code>.
+          <code>GroupedAnimationFunction</code>.
         </p>
         <p>
           An animation stack may be thought of as a single stack with all
@@ -4622,7 +4630,7 @@ var animC = new Animation(elem,
           working up, as animation results are encountered for an element
           and property, these are merged into the cumulative animation result
           using the animation combinator stored in the 
-          <code>AnimFunc</code> that generated the result.
+          <code>AnimationFunction</code> that generated the result.
           Once all animation results in the stack are processed, the resulting
           cumulative animation values are the current animation values for
           each property of each element that is animated.
@@ -4678,7 +4686,7 @@ var animC = new Animation(elem,
             <code>(currentTime - parent.startTime)
             / parent.animDuration</code>, where <code>parent</code> is the
             <code>AnimationTemplate</code> which references the
-            <code>AnimFunc</code> that is being composited.
+            <code>AnimationFunction</code> that is being composited.
           </p>
           <p>
             When a path animation <code>a</code> is composited over a
@@ -4798,8 +4806,8 @@ var animC = new Animation(elem,
         Note that run-time properties of a <a>linked</a> animation such as its
         <var>start time</var> and <var>time drift</var> can still be modified.
         Only those properties attached to the <code>timing</code> and
-        <code>animFunc</code> properties of a <a>linked</a> <a>Animation</a>
-        object are read-only.
+        <code>animationFunction</code> properties of a <a>linked</a>
+        <a>Animation</a> object are read-only.
       </p>
       <p>
         Unlinked animations can be linked to a template by:
@@ -4821,8 +4829,8 @@ var animC = new Animation(elem,
         <p>
           <dl title="[Constructor] interface AnimationTemplate : TimedTemplate"
             class="idl">
-            <dt>attribute (AnimFunc or CustomAnimFunc) animFunc</dt>
-            <dd>
+            <dt>attribute (AnimationFunction or CustomAnimationFunction)
+            animationFunction</dt> <dd>
               The animation function to apply.
             </dd>
           </dl>
@@ -5027,9 +5035,10 @@ var animC = new Animation(elem,
                 Create a new <code>Animation</code> object, <var>anim</var>.
               </li>
               <li>
-                Set the <code>timing</code> and <code>animFunc</code> properties
-                of <var>anim</var> to copies <code>template.timing</code>
-                and <code>template.animFunc</code>.
+                Set the <code>timing</code> and <code>animationFunction</code>
+                properties of <var>anim</var> to copies
+                <code>template.timing</code> and
+                <code>template.animationFunction</code>.
               </li>
               <li>
                 If <var>parentGroup</var> is not specified, let
