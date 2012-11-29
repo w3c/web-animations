@@ -977,15 +977,15 @@ var animC = new Animation(elem,
                 the <a>Timing</a> interface of the same name.
               </p>
               <p>
-                The one exception is the <code>timingFunc</code> member which in
-                a <a>TimingDict</a> value can also be set to
+                The one exception is the <code>timingFunction</code> member
+                which in a <a>TimingDict</a> value can also be set to
                 a <code>DOMString</code>.
                 In this case, the <code>DOMString</code> is first passed to
                 <a
-                href="#widl-TimingFunc-createFromString-TimingFunc-DOMString-spec"
-                class="idlType"><code>TimingFunc.createFromString</code></a> and
-                the returned <a>TimingFunc</a> is assigned to the
-                <code>timingFunc</code> property of the new <a>Timing</a>
+                href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
+                class="idlType"><code>TimingFunction.createFromString</code></a> and
+                the returned <a>TimingFunction</a> is assigned to the
+                <code>timingFunction</code> property of the new <a>Timing</a>
                 object.
               </p>
               <p>
@@ -1019,10 +1019,10 @@ var animC = new Animation(elem,
                 </dd>
                 <dt>DOMException of type <code>SyntaxError</code></dt>
                 <dd>
-                  Raised if <code>params.timingFunc</code> is set to a string
-                  that it not recognized by
+                  Raised if <code>params.timingFunction</code> is set to
+                  a string that it not recognized by
                   <a
-                  href="#widl-TimingFunc-createFromString-TimingFunc-DOMString-spec"
+                  href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
                   class="idlType"><code>Timing.createFromString</code></a> as
                   indicated by a <code>null</code> return value.
                 </dd>
@@ -1186,7 +1186,8 @@ var animC = new Animation(elem,
                 </dd>
               </dl>
             </dd>
-            <dt>attribute (TimingFunc or TimingFuncCallback)? timingFunc</dt>
+            <dt>attribute (TimingFunction or TimingFunctionCallback)?
+              timingFunction</dt>
             <dd>
               An optional timing function used to scale input time to produce
               timing effects such as easing behavior.
@@ -1214,8 +1215,8 @@ var animC = new Animation(elem,
               <p>
                 Creates a new <a>Timing</a> object with each of its properties
                 set to the same value as this object with the exception of the
-                <code>timingFunc</code> property which is set to
-                <code>timingFunc.clone()</code>.
+                <code>timingFunction</code> property which is set to
+                <code>timingFunction.clone()</code>.
               </p>
             </dd>
           </dl>
@@ -1336,8 +1337,8 @@ var animC = new Animation(elem,
                 interface.
               </p>
             </dd>
-            <dt>(DOMString or TimingFunc or TimingFuncCallback)? timingFunc
-                = null</dt>
+            <dt>(DOMString or TimingFunction or TimingFunctionCallback)?
+               timingFunction = null</dt>
             <dd>
               <p>
                 An optional timing function used to scale the time to produce
@@ -1345,10 +1346,10 @@ var animC = new Animation(elem,
               </p>
               <p>
                 Unlike the <a>Timing</a> interface, the member here may be set
-                to either a <a>TimingFunc</a> object, <a>TimingFuncCallback</a>
+                to either a <a>TimingFunction</a> object, <a>TimingFunctionCallback</a>
                 function or a <code>DOMString</code> corresponding to one of the
                 values recognized by <a
-                href="#widl-TimingFunc-createFromString-TimingFunc-DOMString-spec"
+                href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
                 class="idlType"><code>Timing.createFromString</code></a>.
               </p>
             </dd>
@@ -2115,8 +2116,8 @@ var animC = new Animation(elem,
             <li>
               Scale the time as follows:
               <dl class="switch">
-                <dt>If <var>timing.timingFunction</var> is a <a>TimingFunc</a>
-                    object,</dt>
+                <dt>If <var>timing.timingFunction</var> is
+                    a <a>TimingFunction</a> object,</dt>
                 <dd>
                   <p>
                     Let <var>scaled iteration time</var> be
@@ -2126,7 +2127,7 @@ var animC = new Animation(elem,
                   </p>
                 </dd>
                 <dt>If <var>timing.timingFunction</var> is
-                    a <a>TimingFuncCallback</a> function,</dt>
+                    a <a>TimingFunctionCallback</a> function,</dt>
                 <dd>
                   <p>
                     Let <var>scaled iteration time</var> be
@@ -2403,12 +2404,12 @@ var animC = new Animation(elem,
         </p>
       </div>
       <section>
-        <h3>The <code>TimingFunc</code> interface</h3>
+        <h3>The <code>TimingFunction</code> interface</h3>
         <p>
           The timing functions provided by Web Animations share a common
-          <a>TimingFunc</a> interface as defined below.
+          <a>TimingFunction</a> interface as defined below.
         </p>
-        <dl title="interface TimingFunc" class="idl">
+        <dl title="interface TimingFunction" class="idl">
           <dt>double scaleTime()</dt>
           <dd>
             <p>
@@ -2446,7 +2447,7 @@ var animC = new Animation(elem,
               </dd>
             </dl>
           </dd>
-          <dt>TimingFunc clone()</dt>
+          <dt>TimingFunction clone()</dt>
           <dd>
             <p>
               For implementations of this interface that have local state,
@@ -2454,10 +2455,10 @@ var animC = new Animation(elem,
               For implementations without local state, returns the same object.
             </p>
           </dd>
-          <dt>static TimingFunc? createFromString(DOMString spec)</dt>
+          <dt>static TimingFunction? createFromString(DOMString spec)</dt>
           <dd>
             <p>
-              Creates a new <a>TimingFunc</a> object based on a string-based
+              Creates a new <a>TimingFunction</a> object based on a string-based
               specification (e.g. "ease-in").
             </p>
             <p>
@@ -2477,9 +2478,9 @@ var animC = new Animation(elem,
             </p>
             <p>
               Strings that specify a cubic-bezier timing function result in
-              a new <a>SplineTimingFunc</a> being returned.
+              a new <a>SplineTimingFunction</a> being returned.
               Strings that specify a stepping function produce a new
-              <a>StepTimingFunc</a>.
+              <a>StepTimingFunction</a>.
             </p>
             <p>
               If <code>spec</code> is unrecognized, <code>null</code> is
@@ -2489,10 +2490,10 @@ var animC = new Animation(elem,
             </p>
             <p class="issue">
               So the string <code>cubic-bezier(...)</code> produces
-              a <a>SplineTimingFunc</a>.
+              a <a>SplineTimingFunction</a>.
               That's a bit confusing.
-              But <code>CubicBezierTimingFunc</code> is a lot to type and not
-              very user-friendly.
+              But <code>CubicBezierTimingFunction</code> is a lot to type and
+              not very user-friendly.
             </p>
             <p class="issue">
               Should we make the &lsquo;linear&rsquo; keyword return
@@ -2530,7 +2531,7 @@ var animC = new Animation(elem,
         </p>
         <p>
           The curves produced by the keywords accepted by the
-          <a href="#widl-TimingFunc-createFromString-TimingFunc-DOMString-spec"
+          <a href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
           class="idlType"><code>Timing.createFromString</code></a>
           method are illustrated below.
         </p>
@@ -2541,17 +2542,18 @@ var animC = new Animation(elem,
           The timing functions produced by each of the keyword values.
         </p>
         <section>
-          <h4>The <code>SplineTimingFunc</code> interface</h4>
+          <h4>The <code>SplineTimingFunction</code> interface</h4>
           <p>
             Cubic bézier curve based timing functions are represented using
-            the <code>SplineTimingFunc</code> interface defined below.
+            the <code>SplineTimingFunction</code> interface defined below.
           </p>
-          <dl title="interface SplineTimingFunc : TimingFunc" class="idl">
+          <dl title="interface SplineTimingFunction : TimingFunction"
+            class="idl">
             <dt>Constructor (sequence&lt;double&gt; points)</dt>
             <dd>
               <p>
-                Creates a new <a>SplineTimingFunc</a> object and initializes the
-                <code>points</code> member to the passed in list of
+                Creates a new <a>SplineTimingFunction</a> object and initializes
+                the <code>points</code> member to the passed in list of
                 <code>points</code>.
               </p>
               <p class="annotation">
@@ -2612,7 +2614,7 @@ var animC = new Animation(elem,
               Returns the resulting <var>y</var> value when the <var>x</var>
               value is <code>max(0, min(1, time))</code>.
             </dd>
-            <dt>TimingFunc clone()</dt>
+            <dt>TimingFunction clone()</dt>
             <dd>
               Returns a copy of this object.
             </dd>
@@ -2674,18 +2676,18 @@ var animC = new Animation(elem,
           </dl>
         </section>
         <section>
-          <h4>The <code>StepTimingFunc</code> interface</h4>
+          <h4>The <code>StepTimingFunction</code> interface</h4>
           <p>
-            Step timing functions are represented by the <a>StepTimingFunc</a>
-            interface.
+            Step timing functions are represented by the
+            <a>StepTimingFunction</a> interface.
           </p>
-          <dl title="interface StepTimingFunc : TimingFunc" class="idl">
+          <dl title="interface StepTimingFunction : TimingFunction" class="idl">
             <dt>Constructor (unsigned integer numSteps,
                              optional StepPosition position = 'end')</dt>
             <dd>
               <p>
-                Creates a new <a>StepTimingFunc</a> with the specified number of
-                steps and transition point.
+                Creates a new <a>StepTimingFunction</a> with the specified
+                number of steps and transition point.
               </p>
               <p>
                 Exceptions:
@@ -2725,7 +2727,7 @@ var animC = new Animation(elem,
               The behavior of the step function is described in <a
               href="#timing-in-discrete-steps" class="sectionRef"></a>.
             </dd>
-            <dt>TimingFunc clone()</dt>
+            <dt>TimingFunction clone()</dt>
             <dd>
               Returns a copy of this object.
             </dd>
@@ -2733,7 +2735,7 @@ var animC = new Animation(elem,
         </section>
       </section>
       <section>
-        <h3>The <code>SmoothTimingFunc</code> interface</h3>
+        <h3>The <code>SmoothTimingFunction</code> interface</h3>
         <div class="todo">
           <p>
             Need help from someone who knows math.
@@ -2755,7 +2757,7 @@ var animC = new Animation(elem,
         </div>
         <dl title="
 [Constructor (sequence&lt;double&gt; points)]
-          interface SmoothTimingFunc : TimingFunc" class="idl">
+          interface SmoothTimingFunction : TimingFunction" class="idl">
           <dt>attribute sequence&lt;double&gt; points</dt>
           <dd>
             TBD
@@ -2763,18 +2765,18 @@ var animC = new Animation(elem,
         </dl>
       </section>
       <section>
-        <h3>The <code>TimingFuncCallback</code> callback</h3>
+        <h3>The <code>TimingFunctionCallback</code> callback</h3>
         <p>
           In addition to the timing functions provided by Web Animations,
           authors may also provide their own time scaling function.
           The behavior of this function is defined by the
-          <a>TimingFuncCallback</a> type below.
+          <a>TimingFunctionCallback</a> type below.
         </p>
-        <div title="callback TimingFuncCallback = double ()" class="idl">
+        <div title="callback TimingFunctionCallback = double ()" class="idl">
           <p>
-            A <a>TimingFuncCallback</a> function has the same behavior as
+            A <a>TimingFunctionCallback</a> function has the same behavior as
             defined for the <code>scaleTime</code> method on the
-            <a>TimingFunc</a> interface.
+            <a>TimingFunction</a> interface.
             That is, it takes an input time fraction, applies some scaling
             operation to it, and returns an output time fraction.
           </p>
@@ -2784,15 +2786,15 @@ var animC = new Animation(elem,
           </p>
           <p>
             As a result, a user agent MAY cache the results returned by
-            a <a>TimingFuncCallback</a> as an optimization.
+            a <a>TimingFunctionCallback</a> as an optimization.
             Note, however, that if the <code>item</code> object is changed, this
             consitutes different input to the function and hence the user agent
             MUST NOT cache the results of the callback if the <code>item</code>
             object changes.
             Given the requirement that callback functions do not change
             <code>item</code>, a user agent can expect that it is safe to cache
-            the output of a <a>TimingFuncCallback</a> for at least the duration
-            of a sample.
+            the output of a <a>TimingFunctionCallback</a> for at least the
+            duration of a sample.
           </p>
           <div class="issue">
             <p>
@@ -4089,7 +4091,7 @@ var animC = new Animation(elem,
               in the air (since the more you leave undefined, the more you let
               the Web define it for you).
             </dd>
-            <dt>attribute TimingFunc timingFunc</dt>
+            <dt>attribute TimingFunction timingFunction</dt>
             <dd>
               The function to use for this segment. Would a string do here? E.g.
               "ease" or "cubic-bezier(1 0 0.3 1)"? Probably not. It's a little
@@ -4274,8 +4276,8 @@ var animC = new Animation(elem,
             </li>
             <li>
               The <var>local time function</var> is the
-              <var>timingFunc</var> of the <var>before frame</var>, if 
-              it exists; otherwise the <var>timingFunc</var> of the
+              <var>timingFunction</var> of the <var>before frame</var>, if 
+              it exists; otherwise the <var>timingFunction</var> of the
               <code>Animation</code> interface's <var>timing</var> attribute.
             </li>
             <li>
