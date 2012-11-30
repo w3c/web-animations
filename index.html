@@ -1928,6 +1928,32 @@ var animC = new Animation(elem,
           href="#the-intrinsic-duration-of-a-media-item"
           class="sectionRef"></a>.
         </p>
+        <div class="informative">
+          <p>
+            Since the intrinsic duration of an animation is zero, and the
+            default <code>fillMode</code> when constructing an
+            <code>Animation</code> is <em>forwards</em>, it is possible to
+            create animations that simply set a property without any
+            interpolation as follows,
+          </p>
+          <pre class='example sh_javascript'>
+new Animation(elem, { display: 'none' });
+          </pre>
+          <p>
+            This is particularly useful in combination with other animations or
+            timed items. For example, fading an element before switching
+            &lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
+            follows,
+          </p>
+          <pre class='example sh_javascript'>
+new SeqGroup(
+  [
+    new Animation(elem, { opacity: '0%' }, 1),
+    new Animation(elem, { display: 'none' })
+  ]
+);
+          </pre>
+        </div>
       </section>
       <section>
         <h3>Calculating the intrinsic animation duration</h3>
@@ -2036,7 +2062,7 @@ var animC = new Animation(elem,
         <p>
           The iteration time is calculated by first applying the animation's
           <code>playbackRate</code> and <code>iterationStart</code> properties
-          to produce the <a>adjsuted animation time</a>
+          to produce the <a>adjusted animation time</a>
           The <a>adjusted animation time</a> is then divided into intervals
           resulting in the <a>unscaled iteration time</a>.
           Following this, timing manipulations specified on the timed item are
@@ -2201,9 +2227,42 @@ var animC = new Animation(elem,
         <section>
           <h4>Calculating the time fraction</h4>
           <p>
-            The <dfn>time fraction</dfn> is given by dividing the <var>iteration
-            time</var> by the <a>iteration duration</a>.
+            The <dfn>time fraction</dfn> is calculated according to the
+            following steps:
           </p>
+          <dl class="switch">
+            <dt>
+              If the <a>iteration duration</a> is zero,
+            </dt>
+            <dd>
+              <p>
+                the <a>time fraction</a> is as follows.
+              </p>
+              <dl class="switch">
+                <dt>
+                  If <a>item time</a> &lt; <code>timing.startDelay</code>,
+                </dt>
+                <dd>
+                  Return the result of recalculating the iteration time using an
+                  item time of zero and an iteration duration of 1.
+                </dd>
+                <dt>
+                  Otherwise,
+                </dt>
+                <dd>
+                  Return the result of recalculating the iteration time using an
+                  item time of <code>timing.iterationCount</code> and an
+                  iteration duration of 1.
+                </dd>
+              </dl>
+            </dd>
+            <dt>
+              Otherwise,
+            </dt>
+            <dd>
+              Return <a>iteration time</a> / <a>iteration duration</a>.
+            </dd>
+          </dl>
           <p class="note">
             Since <a href="#scaling-the-time">timing functions</a> are allowed
             to produce output times outside the range [0,1] it is possible that
