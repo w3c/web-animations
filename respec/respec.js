@@ -999,6 +999,7 @@ berjon.respec.prototype = {
         var sotd;
         var mat = (this.status2maturity[this.specStatus]) ? this.status2maturity[this.specStatus] : this.specStatus;
         var custom = document.getElementById("sotd");
+        var multipleGroups = isArray(this.wg) && this.wg.length > 1;
 
         if (this.specStatus == "unofficial") {
             sotd = "<section id='sotd' class='introductory'><h2>Status of This Document</h2>" +
@@ -1035,12 +1036,27 @@ berjon.respec.prototype = {
             if (isArray(this.wg)) {
                 var wgs = [];
                 for (var i = 0, n = this.wg.length; i < n; i++) {
-                    wgs.push("<a href='" + this.wgURI[i] + "'>" + this.wg[i] + "</a>")
+                    var wgLink =
+                        "<a href='" + this.wgURI[i] + "'>" +
+                        this.wg[i] + "</a>";
+                    if (this.wgActivity && isArray(this.wgActivity) &&
+                        this.wgActivity.length > i &&
+                        isArray(this.wgActivity[i])) {
+                        wgLink += " (part of the <a href='" +
+                            this.wgActivity[i][1] + "'>" +
+                            this.wgActivity[i][0] + " Activity</a>)";
+                    }
+                    wgs.push(wgLink);
                 }
                 sotd += joinAnd(wgs);
             }
             else {
                 sotd += "<a href='" + this.wgURI + "'>" + this.wg + "</a>";
+                if (this.wgActivity && isArray(this.wgActivity)) {
+                    sotd += " (part of the <a href='" +
+                        this.wgActivity[1] + "'>" +
+                        this.wgActivity[0] + " Activity</a>)";
+                }
             }
             sotd += " as " + art + this.status2long[this.specStatus] + ".";
             if (this.isRecTrack && this.specStatus != "REC") sotd += " This document is intended to become a W3C Recommendation.";
@@ -1064,13 +1080,17 @@ berjon.respec.prototype = {
                         "relevant technical requirements and is sufficiently stable to advance through the Technical Recommendation process.</p>";
             if (this.specStatus != "IG-NOTE") {
                 sotd +=
-                    "<p>This document was produced by a group operating under the <a href='http://www.w3.org/Consortium/Patent-Policy-20040205/'>5 February " +
+                    "<p>This document was produced by " +
+                    (multipleGroups ? "groups" : "a group") +
+                    " operating under the <a href='http://www.w3.org/Consortium/Patent-Policy-20040205/'>5 February " +
                     "2004 W3C Patent Policy</a>.";
             }
 
-			if (!this.isRecTrack && mat == "WD")
-				sotd += " The group does not expect this document to become a W3C Recommendation.";
-			
+            if (!this.isRecTrack && mat == "WD")
+                sotd +=
+                    (multipleGroups ? " The groups do " : " The group does") +
+                    " not expect this document to become a W3C Recommendation.";
+
             if (this.specStatus != "IG-NOTE") {
                 if (isArray(this.wgPatentURI)) {
                     sotd += " W3C maintains a public list of any patent disclosures (";
@@ -1083,8 +1103,10 @@ berjon.respec.prototype = {
                 else {
                     sotd += " W3C maintains a <a href='" + this.wgPatentURI + "' rel='disclosure'>public list of any patent disclosures</a> ";
                 }
-    			sotd +=
-                    "made in connection with the deliverables of the group; that page also includes instructions for disclosing a patent. An " +
+                sotd +=
+                    "made in connection with the deliverables of " +
+                    (multipleGroups ? "each group" : "the group") +
+                    "; that page also includes instructions for disclosing a patent. An " +
                     "individual who has actual knowledge of a patent which the individual believes contains " +
                     "<a href='http://www.w3.org/Consortium/Patent-Policy-20040205/#def-essential'>Essential Claim(s)</a> must disclose the " +
                     "information in accordance with <a href='http://www.w3.org/Consortium/Patent-Policy-20040205/#sec-Disclosure'>section " +
@@ -1094,7 +1116,10 @@ berjon.respec.prototype = {
                 // XXX
                 if (!this.charterDisclosureURI) error("IG-NOTEs must link to charter's disclosure section using charterDisclosureURI");
                 else {
-                    sotd += "<p>The disclosure obligations of the Participants of this group are described in the <a href='" + this.charterDisclosureURI + "'>charter</a>. </p>";
+                    sotd +=
+                        "<p>The disclosure obligations of the Participants of "+
+                        (multipleGroups ? "each group" : "this group") +
+                        " are described in the <a href='" + this.charterDisclosureURI + "'>charter</a>. </p>";
                 }
             }
             if (this.addPatentNote) sotd += "<p>" + this.addPatentNote + "</p>";
