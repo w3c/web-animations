@@ -4046,7 +4046,7 @@ new SeqGroup(
           <dt>Keyframe add(Keyframe frame)</dt>
           <dd>
             <p>
-              Adds <code>frame</code> to the list such that the list remains
+              Adds <var>frame</var> to the list such that the list remains
               sorted by the offset of the frames.
             </p>
             <p>
@@ -4054,6 +4054,25 @@ new SeqGroup(
               <code><var>frame</var>.offset</code>, the newly added
               <var>frame</var> will appear in the list <em>after</em> the
               already existing frames in the list with the same offset.
+            </p>
+            <p>
+              If <var>frame</var> is already part of another <a>KeyframeList</a>
+              it is first removed from that list before being added.
+            </p>
+            <p class="issue">
+              This exclusive-ownership of frames is not strictly necessary but
+              it probably makes implementation a lot simpler since otherwise it
+              would be possible to add a frame to the <em>same</em> list
+              multiple times. Is this ok?
+            </p>
+            <p class="issue">
+              It would be really neat if you could add <a>KeyframeDictionary</a>
+              objects here directly and have this construct the <a>Keyframe</a>
+              object for you.
+              However, we can't simply overload this method or use a union since
+              a dictionary is not distinguishable from an interface in WebIDL.
+              We could add <code>addNew (<a>KeyframesDictionary</a> dict)</code>
+              but is it worth it?
             </p>
           </dd>
           <dt>Keyframe? remove(unsigned long index)</dt>
@@ -4121,7 +4140,7 @@ new SeqGroup(
         <div class="issue">
           <p>
             Currently a <a>Keyframe</a> can only target a single property which
-            is defined on the <a>KeyframesAnimationFunction</a>.
+            is defined on the <a>KeyframeAnimationFunction</a>.
             This is different to CSS.
             Is this something we want to change?
             It would complicate the API, of course, but is it worth it?
