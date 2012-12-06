@@ -4025,36 +4025,50 @@ new SeqGroup(
       </section>
       <section>
         <h3>The <code>KeyframeList</code> interface</h3>
+        <p>
+          The <a>KeyframeList</a> object is a collection of <a>Keyframe</a>
+          objects sorted by the offset of each <a>Keyframe</a>.
+        </p>
         <dl title="interface KeyframeList" class="idl">
           <dt>readonly attribute unsigned long length</dt>
           <dd>
             The number of frames in the list.
           </dd>
-          <dt>KeyframeList? item(unsigned long index)</dt>
+          <dt>void clear ()</dt>
           <dd>
-            Returns the frame at <code>index</code> if it exists or null.
+            Removes all frames from this list.
           </dd>
-          <dt>KeyframeList? add(Keyframe frame)</dt>
+          <dt>getter Keyframe? (unsigned long index)</dt>
           <dd>
-            Adds <code>frame</code> to the list such that the list is sorted
-            by the offset of the frames. If there's already a frame with the
-            same offset? This one comes after?
+            Returns the frame at <code>index</code> if it exists or
+            <code>null</code> otherwise.
           </dd>
-          <dt>KeyframeList? remove(unsigned long index)</dt>
+          <dt>Keyframe add(Keyframe frame)</dt>
           <dd>
-            Adds <code>frame</code> to the list such that the list is sorted
-            by the offset of the frames. If there's already a frame with the
-            same offset? This one comes after?
+            <p>
+              Adds <code>frame</code> to the list such that the list remains
+              sorted by the offset of the frames.
+            </p>
+            <p>
+              If there already exists a frame in this list with offset
+              <code><var>frame</var>.offset</code>, the newly added
+              <var>frame</var> will appear in the list <em>after</em> the
+              already existing frames in the list with the same offset.
+            </p>
+          </dd>
+          <dt>Keyframe? remove(unsigned long index)</dt>
+          <dd>
+            Removes the frame at position <var>index</var> and returns it.
+            If index is outside the range [0, length), then <code>null</code> is
+            returned.
+          </dd>
+          <dt>long indexOf(Keyframe frame)</dt>
+          <dd>
+            Returns the index of <var>frame</var> within the list. If
+            <var>frame</var> is not a member of the list, returns
+            <code>-1</code>.
           </dd>
         </dl>
-        <p>
-          Not sure about the <code>remove</code> method. Do we want:
-          <ul>
-            <li><code>remove(Keyframe frame)</code>?</li>
-            <li><code>removeAtOffset(unsigned long offset)</code>?</li>
-            <li><code>itemAtOffset(unsigned long offset)</code>?</li>
-          </ul>
-        </p>
       </section>
       <section>
         <h3>The <code>Keyframe</code> interface</h3>
