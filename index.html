@@ -3786,6 +3786,12 @@ new SeqGroup(
                     significant to the outcome as <var>animation
                     properties</var> will be sorted before being iterated over.
                   </p>
+                  <p class="issue">
+                    How do we handle <code>operation</code> and
+                    <code>compositeOperation</code>? We'd like to be able to
+                    list them in the same property bag but that would mean we
+                    could never animate properties of the same name.
+                  </p>
               </li>
             </ol>
             <p><strong>Part 2 &ndash; Create the <a>AnimationFunction</a>
@@ -3826,6 +3832,11 @@ new SeqGroup(
                   <li>Sort <var>animation properties</var> lexicographically by
                       the Unicode codepoints that define each property
                       name.</li>
+                  <li>For user agents that support both a prefixed and an
+                      unprefixed version of some CSS properties, remove all
+                      prefixed properties from <var>animation properties</var>
+                      where the corresponding unprefixed version is also
+                      present.</li>
                   <li>Iterate through <var>animation properties</var>. For each
                       <var>name</var> in <var>animation properties</var>:
                     <ol>
@@ -4009,7 +4020,7 @@ new SeqGroup(
                 <dt>Otherwise (<var>frame</var> is a DOMString),</dt>
                 <dd>
                   <p class="todo">
-                    Dealing with this properly relies on letting offset by
+                    Dealing with this properly relies on letting offset be
                     <code>null</code> unless we just set the offset here to
                     <code>i / (frames.length - 1)</code>.
                   </p>
