@@ -4060,34 +4060,80 @@ new SeqGroup(
         <h3>The <code>Keyframe</code> interface</h3>
         <p>
           <dl title="[Constructor] interface Keyframe" class="idl">
-            <dt>attribute any value</dt>
+            <dt>attribute DOMString value</dt>
             <dd>
-              The attribute / property value for the given frame
+              The value to assign to the target attribute or property at the
+              given offset.
             </dd>
             <dt>attribute double offset</dt>
             <dd>
-              A value between 0 and 1 (inclusive) representing the offset within
-              the iteration duration of the animation where this value should
-              appear. Ignored if we're using paced timing?<br>
-              What happens if you change it? The array returned by the
-              <code>AnimationFunction</code> is updated? I guess that's fine
-              if it's just an array. Any already-returned arrays wouldn't need
-              to be updated.<br>
-              What happens if you have two values with the same offset? It would
-              be nice if the result was deterministic rather than just left up
-              in the air (since the more you leave undefined, the more you let
-              the Web define it for you).
+              <p>
+                A value between 0 and 1 (inclusive) representing the offset
+                within the iteration duration of the animation where this value
+                should appear.
+              </p>
+              <p>
+                If this keyframe belongs to a <a>KeyframeList</a>, changes to
+                this value cause the <a>KeyframeList</a> to be immediately
+                re-sorted using a stable sort such that all children are ordered
+                by their offset but children with identical offsets retain their
+                relative position in the list.
+              </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type <code>IndexSizeError</code></dt>
+                <dd>
+                  Raised on setting a value outside the range [0,1].
+                </dd>
+              </dl>
             </dd>
-            <dt>attribute TimingFunction timingFunction</dt>
+            <dt>attribute TimingFunction? timingFunction</dt>
             <dd>
-              The function to use for this segment. Would a string do here? E.g.
-              "ease" or "cubic-bezier(1 0 0.3 1)"? Probably not. It's a little
-              too CSS-specific for a start, and we want to allow this to
-              potentially be a function pointer.<br>
-              Ignored if we're using paced timing
+              <p>
+                The timing function to apply between this keyframe and the
+                next keyframe in any <a>KeyframeList</a> in which this object
+                appears.
+              </p>
+              <p>
+                May be <code>null</code> in which case linear interpolation will
+                be used.
+              </p>
             </dd>
           </dl>
         </p>
+      </section>
+      <section>
+        <h3>The <code>KeyframeDictionary</code> dictionary</h3>
+        <p>
+          To simplify creation of <a>Keyframe</a> objects
+          a <code>KeyframeDictionary</code> can be used.
+        </p>
+        <p>
+          The members of the dictionary correspond to attributes in the
+          <a>Keyframe</a> interface which provides a more complete description
+          of their meaning and usage.
+        </p>
+        <dl title="dictionary KeyframeDictionary" class="idl">
+          <dt>DOMString value</dt>
+          <dd>
+            The value to assign to the target attribute or property at the given
+            offset.
+          </dd>
+          <dt>double offset</dt>
+          <dd>
+            A value between 0 and 1 (inclusive) representing the offset within
+            the iteration duration of the animation where this value should
+            appear.
+          </dd>
+          <dt>TimingFunction? timingFunction = null</dt>
+          <dd>
+            The timing function to apply between this keyframe and the
+            next keyframe in any <a>KeyframeList</a> in which this object
+            appears.
+          </dd>
+        </dl>
       </section>
       <section>
         <h3>The <code>PathAnimationFunction</code> interface</h3>
