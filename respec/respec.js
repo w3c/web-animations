@@ -2124,7 +2124,7 @@ berjon.WebIDLProcessor.prototype = {
         }
 
         // METHOD
-        match = /^\s*(static\s+)?\b(.*?)\s+\b(\S+)\s*\(\s*(.*)\s*\)\s*$/.exec(str);
+        match = /^\s*(static\s+)?\b(.*?)\s+\b(\S+?)\s*\(\s*(.*)\s*\)\s*$/.exec(str);
         if (match) {
             mem.type = "method";
             mem.isStatic = !!match[1];

@@ -4022,7 +4022,7 @@ new SeqGroup(
                 <dt>DOMException of type <code>IndexSizeError</code></dt>
                 <dd>
                   Raised if the offset of any of the <a>KeyframeDictionary</a>
-                  objects is is outside the range [0,1] or missing.
+                  objects is outside the range [0,1] or missing.
                 </dd>
               </dl>
             </dd>
@@ -4058,11 +4058,17 @@ new SeqGroup(
             Returns the frame at <code>index</code> if it exists or
             <code>null</code> otherwise.
           </dd>
-          <dt>Keyframe add(Keyframe frame)</dt>
+          <dt>Keyframe add((Keyframe or KeyframeDictionary) frame)</dt>
           <dd>
             <p>
               Adds <var>frame</var> to the list such that the list remains
               sorted by the offset of the frames.
+            </p>
+            <p>
+              If <var>frame</var> is of type <a>KeyframeDictionary</a> then
+              a <a>Keyframe</a> object is first constructed by calling
+              <code>Keyframe(<var>frame</var>)</code> before adding the
+              newly constructed <a>Keyframe</a> to the list.
             </p>
             <p>
               If there already exists a frame in this list with offset
@@ -4072,7 +4078,8 @@ new SeqGroup(
             </p>
             <p>
               If <var>frame</var> is already part of another <a>KeyframeList</a>
-              it is first removed from that list before being added.
+              it is first removed from that list before being added to this
+              list.
             </p>
             <p class="issue">
               This exclusive-ownership of frames is not strictly necessary but
@@ -4080,11 +4087,16 @@ new SeqGroup(
               would be possible to add a frame to the <em>same</em> list
               multiple times. Is this ok?
             </p>
-            <p class="issue">
-              It would be really neat if you could add <a>KeyframeDictionary</a>
-              objects here directly and have this construct the <a>Keyframe</a>
-              object for you. We should overload this.
+            <p>
+              Exceptions:
             </p>
+            <dl class="exceptions">
+              <dt>DOMException of type <code>IndexSizeError</code></dt>
+              <dd>
+                Raised if <var>frame</var> is a <a>KeyframeDictionary</a> whose
+                offset is outside the range [0,1] or missing.
+              </dd>
+            </dl>
           </dd>
           <dt>Keyframe? remove(unsigned long index)</dt>
           <dd>
@@ -4155,6 +4167,18 @@ new SeqGroup(
             This is different to CSS.
             Is this something we want to change?
             It would complicate the API, of course, but is it worth it?
+          </p>
+        </div>
+        <div class="issue">
+          <p>
+            There is really no value in being able to create <a>Keyframe</a>
+            objects directly.
+            You can use <a>KeyframeDictionary</a> objects everywhere and they're
+            a lot more convenient.
+            Perhaps we can drop this constructor and just make <a>Keyframe</a>
+            something the UA uses to represent the constructed frames.
+            That would simplify a number of places where we take a union of
+            either a <a>Keyframe</a> or a <a>KeyframeDictionary</a>.
           </p>
         </div>
         <p>
