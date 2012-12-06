@@ -3852,6 +3852,15 @@ new SeqGroup(
               <code>(DOMString or sequence&lt;DOMString&gt; or
               sequence&lt;<a>KeyframeDictionary</a>&gt;)</code>.
             </p>
+            <p class="issue">
+              AFAICT, <code>sequence&lt;A&gt;</code> and
+              <code>sequence&lt;B&gt;</code> are not distinguishable in WebIDL
+              so this won't work.
+              We probably need to use <code>sequence&lt;(DOMString or
+              KeyframeDictionary)&gt;</code> but in that case the values to
+              assign to offset are less obvious unless we allow offset to be
+              <code>null</code>.
+            </p>
             <ol>
               <li>
                 Let <var>function</var> be a newly constructed
@@ -3889,6 +3898,10 @@ new SeqGroup(
                         <code><var>i</var> / (<var>value</var>.length - 1)
                         </code> where <var>i</var> is the zero-based index of
                         <var>item</var> within <var>value</var>.
+                        <p class="issue">
+                          What if <code><var>value</var>.length</code> is 1?
+                          I think offset should be 1 in that case.
+                        </p>
                       </li>
                       <li>
                         Append <code>frame</code> to
@@ -4008,14 +4021,55 @@ new SeqGroup(
           Need to define exceptions when this is a read-only object.
         </p>
         <p>
-          <dl title="[Constructor] interface KeyframeAnimationFunction
-            : AnimationFunction" class="idl">
+          <dl title="interface KeyframeAnimationFunction : AnimationFunction"
+            class="idl">
+            <dt>Constructor (DOMString property,
+              sequence&lt;(KeyframeDictionary or DOMString)&gt; frames,
+              optional CompositeOperation operation = "replace",
+              optional CompositeOperation compositeOperation = "replace")</dt>
+            <dd>
+              <p>
+                Creates a new <a>KeyframeAnimationFunction</a> object for the
+                specified property from the given list of keyframes.
+              </p>
+              <p>
+                The <var>property</var>, <var>operation</var> and
+                <var>compositeOperation</var> arguments are assigned to the
+                attributes of the same names.
+              </p>
+              <p>
+                The <var>frames</var> argument is processed by iterating over
+                each <var>frame</var> in the sequence and adding it to the new
+                <a>KeyframesAnimationFunction</a> as follows:
+              </p>
+              <dl class="switch">
+                <dt>If <var>frame</var> is a <a>KeyframeDictionary</a>
+                    object,</dt>
+                <dd>Call <code>frames.add(<var>frame</var>)</code> on the new
+                    <a>KeyframeAnimationFunction</a>.</dd>
+                <dt>Otherwise (<var>frame</var> is a DOMString),</dt>
+                <dd class="todo">
+                    Dealing with this properly relies on letting offset by
+                    <code>null</code> unless we just set the offset here to
+                    <code>i / (frames.length - 1)</code>.
+                </dd>
+              </dl>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type <code>IndexSizeError</code></dt>
+                <dd>
+                  Raised if the offset of any of the <a>KeyframeDictionary</a>
+                  objects is is outside the range [0,1] or missing.
+                </dd>
+              </dl>
+            </dd>
             <dt>attribute DOMString property</dt>
             <dd>
-              The target attribute / property. <code>property</code> is probably
-              a reserved word we should avoid though.
+              The name of the target property or attribute.
             </dd>
-            <dt>attribute KeyframeList frames</dt>
+            <dt>readonly attribute KeyframeList frames</dt>
             <dd>
               The series of values that make up this function sorted by their
               offset within the iteration duration of the animation.
@@ -4068,11 +4122,7 @@ new SeqGroup(
             <p class="issue">
               It would be really neat if you could add <a>KeyframeDictionary</a>
               objects here directly and have this construct the <a>Keyframe</a>
-              object for you.
-              However, we can't simply overload this method or use a union since
-              a dictionary is not distinguishable from an interface in WebIDL.
-              We could add <code>addNew (<a>KeyframesDictionary</a> dict)</code>
-              but is it worth it?
+              object for you. We should overload this.
             </p>
           </dd>
           <dt>Keyframe? remove(unsigned long index)</dt>

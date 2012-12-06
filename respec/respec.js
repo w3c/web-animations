@@ -2229,8 +2229,12 @@ berjon.WebIDLProcessor.prototype = {
         str = this.parseExtendedAttributes(str, param);
 
         // either up to end of string, or up to ,
+        // (This regex doesn't handle commas in quotes, e.g.
+        //  optional arg = "hello, my friend", but that's hopefully fairly rare.
+        //  Otherwise we can rewrite it exploiting the fact that an optional
+        //  argument must be followed by another optional argument or the end)
         var re =
-          /^\s*(optional\s+)?([^,=]+)\s+\b([^,=\s]+)\s*(?:=\s*(.*))?(?:,)?\s*/;
+          /^\s*(optional\s+)?([^,=]+)\s+\b([^,=\s]+)\s*(?:=\s*([^,]*))?(?:,)?\s*/;
         var match = re.exec(str);
         if (!match)
             return null;
@@ -2868,7 +2872,8 @@ berjon.WebIDLProcessor.prototype = {
     writeDatatype:    function (dt) {
         var matched;
         if (matched = /^sequence<(.+)>$/.exec(dt)) {
-            return "sequence&lt;<a>" + matched[1] + "</a>&gt;";
+            return "sequence&lt;<a>" + this.writeDatatype(matched[1]) +
+                   "</a>&gt;";
         }
         if (matched = /^\((.+)\)$/.exec(dt)) {
             var parts = this.splitUnionType(matched[1]);
