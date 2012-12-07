@@ -2774,18 +2774,23 @@ berjon.WebIDLProcessor.prototype = {
 
     writeCtor:    function (ctor, indent, curLnk) {
         var str = "<span class='idlCtor'>";
+        var paramIndent = indent + 2; // Keep track of how far to indent
+                                      // parameters for when we wrap long lines
         str += this._idn(indent);
         var id = this.makeMethodID(curLnk, ctor);
         if (ctor.named) {
             str += "<span class='idlNamedCtorKeyword'>NamedConstructor</span>=";
             str += "<span class='idlCtorName'><a href='#" + id + "'>" +
                    ctor.id + "</a></span>";
+            paramIndent += "NamedConstructor=".length + ctor.id.length;
         } else {
             str += "<span class='idlCtorName'><a href='#" + id +
                    "'>Constructor</a></span>";
+            paramIndent += "Constructor".length;
         }
         if (ctor.params.length) {
-            str += " (" + this.writeParams(ctor.params) + ")";
+            paramIndent += " (".length;
+            str += " (" + this.writeParams(ctor.params, paramIndent) + ")";
         }
         str += "</span>";
         return str;
@@ -2808,14 +2813,16 @@ berjon.WebIDLProcessor.prototype = {
         str += this.writeDatatype(meth.datatype) + arr + nullable + "</span> ";
         for (var i = 0; i < pad; i++) str += " ";
         var id = this.makeMethodID(curLnk, meth);
-        // str += "<span class='idlMethName'><a href='#" + curLnk + meth.refId + "'>" + meth.id + "</a></span> (";
         str += "<span class='idlMethName'><a href='#" + id + "'>" + meth.id + "</a></span> (";
         str += this.writeParams(meth.params) + ");</span>\n";
         return str;
     },
 
-    writeParams:    function (params) {
+    writeParams:    function (params, hangingIndent) {
         var obj = this;
+        var maxWidth = 90;
+        var indentStr = hangingIndent ? Array(hangingIndent).join(" ") : "";
+        var pos = hangingIndent ? hangingIndent : 0;
         return params.map(
             function (it) {
                 var nullable = it.nullable ? "?" : "";
@@ -2823,19 +2830,31 @@ berjon.WebIDLProcessor.prototype = {
                 var arr = it.array ? "[]" : "";
                 var inp = obj.noIDLIn ? "" : "in ";
                 var prm = "<span class='idlParam'>";
+                var plaintextLen = 0;
                 if (it.extendedAttributes) {
                     prm += "[<span class='extAttr'>" +
                            it.extendedAttributes + "</span>] ";
+                    plaintextLen += "[]".length + it.extendedAttributes.length;
                 }
                 prm += inp + optional + "<span class='idlParamType'>" +
                        obj.writeDatatype(it.datatype) + arr + nullable +
                        "</span> ";
+                plaintextLen +=
+                  (inp + optional + it.datatype + arr + nullable).length;
                 prm += "<span class='idlParamName'>" + it.id + "</span>";
+                plaintextLen += it.id.length;
                 if (it.defaultValue) {
                     prm += " = <span class='idlParamValue'>" + it.defaultValue +
                            "</span>";
+                  plaintextLen += " = ".length + it.defaultValue.length;
                 }
                 prm += "</span>";
+                if (hangingIndent && pos + plaintextLen > maxWidth) {
+                  prm = "\n" + indentStr + prm;
+                  pos = hangingIndent + plaintextLen;
+                } else {
+                  pos += plaintextLen;
+                }
                 return prm;
             }
         ).join(", ");
