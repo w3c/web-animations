@@ -2890,13 +2890,24 @@ berjon.WebIDLProcessor.prototype = {
         var or = /\s+or\s+/g;
         var start = str.search(/\S/);
         while (start !== -1) {
+            var startDelim = null;
+            var endDelim = null;
+            var end = null;
             if (str[start] == '(') {
-                var end = start+1;
+                startDelim = '(';
+                endDelim = ')';
+                end = start+1;
+            } else if (str.indexOf('sequence<', start) === start) {
+                startDelim = '<';
+                endDelim = '>';
+                end = start + 'sequence<'.length;
+            }
+            if (startDelim) {
                 var depth = 1;
                 while (depth > 0 && end < str.length) {
-                    if (str[end] == ')')
+                    if (str[end] == endDelim)
                       depth--;
-                    else if (str[end] == '(')
+                    else if (str[end] == startDelim)
                       depth++;
                     end++;
                 }

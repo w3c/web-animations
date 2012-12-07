@@ -3868,99 +3868,22 @@ elem.animate(
                <a>KeyframeAnimationFunction</a> object</strong></p>
             <p>
               Based on a given <var>name</var> and <var>value</var>, a new
-              <a>KeyframeAnimationFunction</a> is created depending on the type
-              of <var>value</var>.
-              In effect, <var>value</var> is treated as having type
-              <code>(DOMString or sequence&lt;DOMString&gt; or
-              sequence&lt;<a>KeyframeDictionary</a>&gt;)</code>.
+              <a>KeyframeAnimationFunction</a> is created as follows:
             </p>
-            <p class="issue">
-              AFAICT, <code>sequence&lt;A&gt;</code> and
-              <code>sequence&lt;B&gt;</code> are not distinguishable in WebIDL
-              so this won't work.
-              We probably need to use <code>sequence&lt;(DOMString or
-              KeyframeDictionary)&gt;</code> but in that case the values to
-              assign to offset are less obvious unless we allow offset to be
-              <code>null</code>.
-            </p>
-            <ol>
-              <li>
-                Let <var>function</var> be a newly constructed
-                <a>KeyframeAnimationFunction</a> object.
-              </li>
-              <li>
-                Set <code><var>function</var>.property</code> to
-                <var>name</var>.
-              </li>
-              <li>Create the key frames based on the type of <var>value</var> as
-                follows:
-                <dl class="switch">
-                  <dt>If <var>value</var> is a <code>DOMString</code>,</dt>
-                  <dd>
-                    Create a new <a>Keyframe</a> with the <code>value</code>
-                    property set to <var>value</var> and <code>offset</code>
-                    set to 1.0 and append it to
-                    <code><var>function</var>.frames</code>.
-                  </dd>
-                  <dt>If <var>value</var> is a sequence of
-                      <code>DOMString</code>s,</dt>
-                  <dd>
-                    For each <var>item</var> in <var>value</var>:
-                    <ol>
-                      <li>
-                        Let <var>frame</var> be a new <a>Keyframe</a>
-                        object.
-                      </li>
-                      <li>
-                        Set <code><var>frame</var>.value</code> to
-                        <var>item</var>.
-                      </li>
-                      <li>
-                        Set <code><var>frame</var>.offset</code> to
-                        <code><var>i</var> / (<var>value</var>.length - 1)
-                        </code> where <var>i</var> is the zero-based index of
-                        <var>item</var> within <var>value</var>.
-                        <p class="issue">
-                          What if <code><var>value</var>.length</code> is 1?
-                          I think offset should be 1 in that case.
-                        </p>
-                      </li>
-                      <li>
-                        Append <code>frame</code> to
-                        <code><var>function</var>.frames</code>.
-                      </li>
-                    </ol>
-                    <p class="todo">
-                      This can probably be tightened up significantly after we
-                      define constructors for all these things.
-                    </p>
-                  </dd>
-                  <dt>If <var>value</var> is a sequence of
-                      <a>KeyframeDictionary</a> objects,</dt>
-                  <dd>
-                    For each <var>item</var> in <var>value</var>:
-                    <ol>
-                      <li>
-                        Let <var>frame</var> be the result of calling <code>new
-                        <a>Keyframe</a>(<var>item</var>)</code>.
-                      </li>
-                      <li>
-                        Append <code>frame</code> to
-                        <code><var>function</var>.frames</code>.
-                      </li>
-                    </ol>
-                    <p class="todo">
-                      Define a constructor for <a>Keyframe</a> that takes an
-                      <a>KeyframeDictionary</a>.
-                    </p>
-                  </dd>
-                  <dt>Otherwise,
-                  <dd>
-                    Throw a <code>TypeError</code> as defined by [[!ECMA-262]].
-                  </dd>
-                </dl>
-              </li>
-            </ol>
+            <dl class="switch">
+              <dt>If <var>value</var> is not of type <code>(DOMString or
+              sequence&lt;(<a>KeyframeDictionary</a> or
+              DOMString)&gt;)</code>,</dt>
+              <dd>
+                Throw a <code>TypeError</code> as defined by [[!ECMA-262]].
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                Construct a new <a>KeyframeAnimationFunction</a> by calling
+                <code>KeyframeAnimationFunction(<var>name</var>,
+                <var>value</var>)</code>.
+              </dd>
+            </dl>
             <dl class="parameters">
               <dt>object properties</dt>
               <dd>
@@ -3972,10 +3895,6 @@ elem.animate(
             </dl>
           </dd>
         </dl>
-        <p class="todo">
-          Need to add exception behavior for this interface and all its
-          subclasses for when it is linked to a template.
-        </p>
       </section>
       <section>
         <h3>The <code>CompositeOperation</code> enumeration</h3>
@@ -4005,13 +3924,26 @@ elem.animate(
           <dl title="interface KeyframeAnimationFunction : AnimationFunction"
             class="idl">
             <dt>Constructor (DOMString property,
-              sequence&lt;(KeyframeDictionary or DOMString)&gt; frames,
-              optional CompositeOperation operation = "replace",
-              optional CompositeOperation compositeOperation = "replace")</dt>
+        (DOMString or sequence&lt;(KeyframeDictionary or DOMString)&gt;) frames,
+        optional CompositeOperation operation = "replace",
+        optional CompositeOperation compositeOperation = "replace")</dt>
             <dd>
               <p>
                 Creates a new <a>KeyframeAnimationFunction</a> object for the
                 specified property from the given list of keyframes.
+              </p>
+              <p>
+                The list of keyframes may be a sequence of
+                <a>KeyframeDictionary</a> dictionaries, a sequence of
+                <code>DOMString</code>s, a combination of both, or
+                a single <code>DOMString</code>.
+              </p>
+              <p>
+                <code>DOMString</code>s are used to create keyframes with an
+                offset of 1.
+                When the list of keyframes is a sequence consisting entirely of
+                <code>DOMString</code>s the offsets of the newly created
+                <a>Keyframe</a>s are distributed evenly from 0 to 1.
               </p>
               <p>
                 The <var>property</var>, <var>operation</var> and
@@ -4019,34 +3951,86 @@ elem.animate(
                 attributes of the same names.
               </p>
               <p>
-                The <var>frames</var> argument is processed by iterating over
-                each <var>frame</var> in the sequence and adding it to the new
-                <a>KeyframesAnimationFunction</a> as follows:
+                The <var>frames</var> argument is processed as follows:
               </p>
-              <dl class="switch">
-                <dt>If <var>frame</var> is a <a>KeyframeDictionary</a>
-                    object,</dt>
-                <dd>Call <code>frames.add(<var>frame</var>)</code> on the new
-                    <a>KeyframeAnimationFunction</a>.</dd>
-                <dt>Otherwise (<var>frame</var> is a DOMString),</dt>
-                <dd>
-                  <p class="todo">
-                    Dealing with this properly relies on letting offset be
-                    <code>null</code> unless we just set the offset here to
-                    <code>i / (frames.length - 1)</code>.
+              <ol>
+                <li>Let <var>function</var> be the
+                <a>KeyframeAnimationFunction</a> currently under construction.
+                </li>
+                <li>
+                  <p>
+                    The processing of <var>frames</var> depends on its type as
+                    follows:
                   </p>
-                </dd>
-              </dl>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type <code>IndexSizeError</code></dt>
-                <dd>
-                  Raised if the offset of any of the <a>KeyframeDictionary</a>
-                  objects is outside the range [0,1] or missing.
-                </dd>
-              </dl>
+                  <dl class="switch">
+                    <dt>If <var>frames</var> is a <code>DOMString</code>,</dt>
+                    <dd>
+                      <ol>
+                        <li>
+                          Let <var>frame</var> be a new <a>Keyframe</a>
+                          constructed from a <a>KeyframeDictionary</a> whose
+                          <code>value</code> member is set to
+                          <var>frames</var> and whose other members are set
+                          to their default values.
+                        </li>
+                        <li>
+                          Call
+                  <code><var>function</var>.frames.add(<var>frame</var>)</code>.
+                        </li>
+                      </ol>
+                    </dd>
+                    <dt>If <var>frames</var> is a sequence of <code>(DOMString
+                        or <a>KeyframeDictionary</a>)</code>,</dt>
+                    <dd>
+                      <ol>
+                        <li>Set a flag <var>all strings</var> to
+                            <code>true</code>.</li>
+                        <li>
+                          For each <var>item</var> in <var>frames</var>:
+                          <ol>
+                            <li>
+                              <dl class="switch">
+                                <dt>If <var>item</var> is
+                                    a <code>DOMString</code>,</dt>
+                                <dd>
+                                  Let <var>frame</var> be a new <a>Keyframe</a>
+                                  constructed from a <a>KeyframeDictionary</a>
+                                  whose <code>value</code> member is set to
+                                  <var>item</var> and whose other members are
+                                  set to their default values.
+                                </dd>
+                                <dt>Otherwise (<var>item</var> is
+                                    a <a>KeyframeDictionary</a>),</dt>
+                                <dd>
+                                  <ol>
+                                    <li>
+                                      Let <var>frame</var> be a new
+                                      <a>Keyframe</a> constructed by calling
+                                      <code>Keyframe(<var>item</var>)</code>.
+                                    </li>
+                                    <li>
+                                      Set <var>all strings</var> to
+                                      <code>false</code>.
+                                    </li>
+                                  </ol>
+                                </dd>
+                              </dl>
+                            </li>
+                            <li>
+                              Call
+                  <code><var>function</var>.frames.add(<var>frame</var>)</code>.
+                            </li>
+                          </ol>
+                        </li>
+                        <li>If flag <var>all strings</var> is
+                            <code>true</code> call
+                          <code><var>function</var>.frames.distribute()</code>.
+                        </li>
+                      </ol>
+                    </dd>
+                  </dl>
+                </li>
+              </ol>
             </dd>
             <dt>attribute DOMString property</dt>
             <dd>
@@ -4213,15 +4197,9 @@ elem.animate(
                 specified in <var>dictionary</var>.
               </p>
               <p>
-                Exceptions:
+                <code><var>dictionary</var>.offset</code> is clamped to the
+                range [0, 1] before setting.
               </p>
-              <dl class="exceptions">
-                <dt>DOMException of type <code>IndexSizeError</code></dt>
-                <dd>
-                  Raised if <code><var>dictionary</var>.offset</code> is outside
-                  the range [0,1].
-                </dd>
-              </dl>
             </dd>
             <dt>attribute DOMString value</dt>
             <dd>
