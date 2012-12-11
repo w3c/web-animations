@@ -381,31 +381,30 @@
                 This may be <code>null</code> for animations that do not target
                 a specific element.
               </dd>
-              <dt>object? animationFunction</dt>
+              <dt>object? effect</dt>
               <dd>
-                The animation function used to set the
-                <code>animationFunction</code> property of the newly created
-                <a>Animation</a> object.
+                The animation effect used to set the <code>effect</code>
+                property of the newly created <a>Animation</a> object.
                 <p>
-                  If this parameter is an <a>AnimationFunction</a> object or
-                  <a>CustomAnimationFunction</a> object, it will shared with any
+                  If this parameter is an <a>AnimationEffect</a> object or
+                  <a>CustomAnimationEffect</a> object, it will shared with any
                   other <a>Animation</a> objects referring to the same
-                  <a>AnimationFunction</a> or <a>CustomAnimationFunction</a>
+                  <a>AnimationEffect</a> or <a>CustomAnimationEffect</a>
                   object.
                   It will <em>not</em> be copied.
                 </p>
                 <p>
                   If this parameter is <code>null</code>, the newly created
                   <a>Animation</a> will also have a <code>null</code> animation
-                  function.
+                  effect.
                 </p>
                 <p>
                   Otherwise, if this parameter is any other type of object, it
                   will be passed to <a
-                  href="#widl-AnimationFunction-createFromProperties-AnimationFunction-object-properties"
-                  class="idlType"><code>AnimationFunction.createFromProperties</code></a>
-                  and the resulting <a>AnimationFunction</a> object used as the
-                  animation function.
+                  href="#widl-AnimationEffect-createFromProperties-AnimationEffect-object-properties"
+                  class="idlType"><code>AnimationEffect.createFromProperties</code></a>
+                  and the resulting <a>AnimationEffect</a> object used as the
+                  animation effect.
                 </p>
               </dd>
               <dt>optional (double or TimingDictionary or Timing)? timing</dt>
@@ -485,11 +484,10 @@
           <dd>
             TBD
           </dd>
-          <dt>attribute (AnimationFunction or CustomAnimationFunction)?
-              animationFunction</dt>
+          <dt>attribute (AnimationEffect or CustomAnimationEffect)? effect</dt>
           <dd>
             <p>
-              The animation function to apply (see <a
+              The animation effect to apply (see <a
               href="#animation-values" class="sectionRef"></a>).
               May be <code>null</code> in which case the animation will produce
               no noticeable effect other than dispatching events.
@@ -530,8 +528,8 @@
                 <ol>
                   <li>Set <code>timing</code> to <code><var>new
                       template</var>.timing.clone()</code>.</li>
-                  <li>Set <code>animationFunction</code> to <code><var>new
-                      template</var>.animationFunction.clone()</code>.</li>
+                  <li>Set <code>effect</code> to <code><var>new
+                      template</var>.effect.clone()</code>.</li>
                   <li>Set <code>template</code> to <code><var>new
                       template</var></code>.</li>
                 </ol>
@@ -571,8 +569,8 @@
                   <var>template</var>.</li>
               <li>Set <code><var>template</var>.timing</code> to
                   <code><var>source</var>.timing.clone()</code>.</li>
-              <li>Set <code><var>template</var>.animationFunction</code> to
-                  <code><var>source</var>.animationFunction.clone()</code>.</li>
+              <li>Set <code><var>template</var>.effect</code> to
+                  <code><var>source</var>.effect.clone()</code>.</li>
               <li>Set <code><var>source</var>.template</code> to
                   <var>template</var>.</li>
               <li>Return <var>template</var>.</li>
@@ -598,8 +596,8 @@
               <li>Let <var>old template</var> be <code>template</code>.</li>
               <li>Set <code>timing</code> to
                   <code>template.timing.clone()</code>.</li>
-              <li>Set <code>animationFunction</code> to
-                  <code>template.animationFunction.clone()</code>.</li>
+              <li>Set <code>effect</code> to
+                  <code>template.effect.clone()</code>.</li>
               <li>Set <code>template</code> to <code>null</code> (but do not
                   recursively call this function).</li>
               <li>Return <var>old template</var>.</li>
@@ -637,20 +635,20 @@ var animA = new Animation(elem, { left: '100px' }, animB.timing);
 var animC = new Animation(elem, { left: '100px' }, animB.timing.clone());
           </pre>
           <p>
-            The animation function parameter may specify multiple properties,
-            an <a>AnimationFunction</a> object, or even a callback object.
+            The animation effect parameter may specify multiple properties,
+            an <a>AnimationEffect</a> object, or even a callback object.
           </p>
           <pre class='example sh_javascript'>
 // Specify multiple properties at once
 var animA = new Animation(elem, { left: '100px', top: '300px' }, 5);
 
-// Share the animation function of another animation
-var animB = new Animation(elem, animA.animationFunction, 3);
+// Share the animation effect of another animation
+var animB = new Animation(elem, animA.effect, 3);
 
-// Supply a specialized animation function
-var animC = new Animation(elem, new PathAnimationFunction( ... ), 3);
+// Supply a specialized animation effect
+var animC = new Animation(elem, new PathAnimationEffect( ... ), 3);
 
-// Supply a custom script-based animation function
+// Supply a custom script-based animation effect
 var animC = new Animation(elem,
   { 
     sample: function(time) { 
@@ -664,7 +662,7 @@ var animC = new Animation(elem,
   }, 3);
           </pre>
           <p class="todo">
-            Fill in the parameters for <a>PathAnimationFunction</a> above once
+            Fill in the parameters for <a>PathAnimationEffect</a> above once
             we have decided on them.
           </p>
           <p class="todo">
@@ -2418,7 +2416,7 @@ new SeqGroup(
         <p>
           Such timing functions can be applied to an iteration of an animation
           as a whole via the <a>TimedItem</a> interface or to a segment of
-          a keyframe animation via the <a>KeyframeAnimationFunction</a>
+          a keyframe animation via the <a>KeyframeAnimationEffect</a>
           interface.
         </p>
       </div>
@@ -3660,24 +3658,24 @@ new SeqGroup(
           The Web Animations <em>animation model</em> takes the <a>time
           fraction</a>s produced by the <em>timing model</em> for a given
           <a>Animation</a> and applies it as the input to the <em>animation
-          function</em> defined for the <a>Animation</a> object.
-          The output of each <em>animation function</em> is then combined using
+          effect</em> defined for the <a>Animation</a> object.
+          The output of each <em>animation effect</em> is then combined using
           a global animation stack before being applied to the target property
           (see <a href="#combining-animations" class="sectionRef"></a>).
         </p>
         <p>
           The entry-point to the <em>animation model</em> is the
-          <a>AnimationFunction</a> or <a>CustomAnimationFunction</a> object
+          <a>AnimationEffect</a> or <a>CustomAnimationEffect</a> object
           associated with each <a>Animation</a>.
           These objects describe how animation values should be calculated for
           the <a>Animation</a> for any given time.
-          <a>AnimationFunction</a> serves as an abstract interface of which
+          <a>AnimationEffect</a> serves as an abstract interface of which
           several concrete subclasses are provided.
         </p>
       </div>
       <section>
-        <h3>The <code>AnimationFunction</code> interface</h3>
-        <dl title="interface AnimationFunction" class="idl">
+        <h3>The <code>AnimationEffect</code> interface</h3>
+        <dl title="interface AnimationEffect" class="idl">
           <dt>attribute CompositeOperation operation</dt>
           <dd>
             <p>
@@ -3731,7 +3729,7 @@ new SeqGroup(
               </p>
             </div>
           </dd>
-          <dt>AnimationFunction clone ()</dt>
+          <dt>AnimationEffect clone ()</dt>
           <dd>
             <p>
               Creates and returns a new object of the same type as this object's
@@ -3743,10 +3741,10 @@ new SeqGroup(
               better) a sets of steps on a per-subclass basis.
             </p>
           </dd>
-          <dt>static AnimationFunction? createFromProperties ()</dt>
+          <dt>static AnimationEffect? createFromProperties ()</dt>
           <dd>
             <p>
-              Creates an <a>AnimationFunction</a> representing the passed-in
+              Creates an <a>AnimationEffect</a> representing the passed-in
               collection of properties.
             </p>
             <div class="note">
@@ -3799,10 +3797,10 @@ new SeqGroup(
                   </p>
               </li>
             </ol>
-            <p><strong>Part 2 &ndash; Create the <a>AnimationFunction</a>
+            <p><strong>Part 2 &ndash; Create the <a>AnimationEffect</a>
                objects</strong></p>
             <p>
-              The <a>AnimationFunction</a> object produced depends on the length
+              The <a>AnimationEffect</a> object produced depends on the length
               of <var>animation properties</var> as follows:
             </p>
             <dl class="switch">
@@ -3812,13 +3810,13 @@ new SeqGroup(
                 <div class="note">
                   <p>
                     This behaviour of returning <code>null</code> allows
-                    alternative animation functions to be provided based on the
+                    alternative animation effects to be provided based on the
                     capabilities of the user agent as follows:
                   </p>
                   <pre class="example sh_javascript">
 elem.animate(
-  AnimationFunction.createFromProperties({ transform: 'translate(-100px)' }) ||
-  AnimationFunction.createFromProperties({ top: '-100px' }),
+  AnimationEffect.createFromProperties({ transform: 'translate(-100px)' }) ||
+  AnimationEffect.createFromProperties({ top: '-100px' }),
   3);
                   </pre>
                 </div>
@@ -3830,7 +3828,7 @@ elem.animate(
                       in <var>animation properties</var>.</li>
                   <li>Let <var>value</var> be the value of
                       <code>properties.<var>name</var></code>.</li>
-                  <li>Return a new <a>KeyframeAnimationFunction</a> object
+                  <li>Return a new <a>KeyframeAnimationEffect</a> object
                       according to the steps in part 3 below based on
                       <var>name</var> and <var>value</var>.</li>
                 </ol>
@@ -3839,7 +3837,7 @@ elem.animate(
               <dd>
                 <ol>
                   <li>Let <var>group</var> be a newly constructed
-                      <a>GroupedAnimationFunction</a>.</li>
+                      <a>GroupedAnimationEffect</a>.</li>
                   <li>Sort <var>animation properties</var> lexicographically by
                       the Unicode codepoints that define each property
                       name.</li>
@@ -3853,11 +3851,11 @@ elem.animate(
                     <ol>
                       <li>Let <var>value</var> be the value of
                           <code>properties.<var>name</var></code>.</li>
-                      <li>Create a new <a>KeyframeAnimationFunction</a>,
-                          <var>function</var> object according to the steps in
+                      <li>Create a new <a>KeyframeAnimationEffect</a>,
+                          <var>effect</var> object according to the steps in
                           part 3 below based on <var>name</var> and
                           <var>value</var>.</li>
-                      <li>Append <var>function</var> to <var>group</var>.
+                      <li>Append <var>effect</var> to <var>group</var>.
                     </ol>
                   </li>
                   <li>Return <var>group</var>.
@@ -3865,10 +3863,10 @@ elem.animate(
               </dd>
             </dl>
             <p><strong>Part 3 &ndash; Create each
-               <a>KeyframeAnimationFunction</a> object</strong></p>
+               <a>KeyframeAnimationEffect</a> object</strong></p>
             <p>
               Based on a given <var>name</var> and <var>value</var>, a new
-              <a>KeyframeAnimationFunction</a> is created as follows:
+              <a>KeyframeAnimationEffect</a> is created as follows:
             </p>
             <dl class="switch">
               <dt>If <var>value</var> is not of type <code>(DOMString or
@@ -3879,8 +3877,8 @@ elem.animate(
               </dd>
               <dt>Otherwise,</dt>
               <dd>
-                Construct a new <a>KeyframeAnimationFunction</a> by calling
-                <code>KeyframeAnimationFunction(<var>name</var>,
+                Construct a new <a>KeyframeAnimationEffect</a> by calling
+                <code>KeyframeAnimationEffect(<var>name</var>,
                 <var>value</var>)</code>.
               </dd>
             </dl>
@@ -3914,14 +3912,14 @@ elem.animate(
             The meaning of merge is dependent on the type of animation.
             The duration of the merge is the calculated animation duration
             of the <code>AnimationTemplate</code> containing this
-            <code>AnimationFunction</code>.
+            <code>AnimationEffect</code>.
           </dd>
         </dl>
       </section>
       <section>
-        <h3>The <code>KeyframeAnimationFunction</code> interface</h3>
+        <h3>The <code>KeyframeAnimationEffect</code> interface</h3>
         <p>
-          <dl title="interface KeyframeAnimationFunction : AnimationFunction"
+          <dl title="interface KeyframeAnimationEffect : AnimationEffect"
             class="idl">
             <dt>Constructor (DOMString property,
         (DOMString or sequence&lt;(KeyframeDictionary or DOMString)&gt;) frames,
@@ -3929,7 +3927,7 @@ elem.animate(
         optional CompositeOperation compositeOperation = "replace")</dt>
             <dd>
               <p>
-                Creates a new <a>KeyframeAnimationFunction</a> object for the
+                Creates a new <a>KeyframeAnimationEffect</a> object for the
                 specified property from the given list of keyframes.
               </p>
               <p>
@@ -3954,8 +3952,8 @@ elem.animate(
                 The <var>frames</var> argument is processed as follows:
               </p>
               <ol>
-                <li>Let <var>function</var> be the
-                <a>KeyframeAnimationFunction</a> currently under construction.
+                <li>Let <var>effect</var> be the
+                    <a>KeyframeAnimationEffect</a> currently under construction.
                 </li>
                 <li>
                   <p>
@@ -3975,7 +3973,7 @@ elem.animate(
                         </li>
                         <li>
                           Call
-                  <code><var>function</var>.frames.add(<var>frame</var>)</code>.
+                  <code><var>effect</var>.frames.add(<var>frame</var>)</code>.
                         </li>
                       </ol>
                     </dd>
@@ -4018,13 +4016,13 @@ elem.animate(
                             </li>
                             <li>
                               Call
-                  <code><var>function</var>.frames.add(<var>frame</var>)</code>.
+                  <code><var>effect</var>.frames.add(<var>frame</var>)</code>.
                             </li>
                           </ol>
                         </li>
                         <li>If flag <var>all strings</var> is
                             <code>true</code> call
-                          <code><var>function</var>.frames.distribute()</code>.
+                          <code><var>effect</var>.frames.distribute()</code>.
                         </li>
                       </ol>
                     </dd>
@@ -4038,7 +4036,7 @@ elem.animate(
             </dd>
             <dt>readonly attribute KeyframeList frames</dt>
             <dd>
-              The series of values that make up this function sorted by their
+              The series of values that make up this effect sorted by their
               offset within the iteration duration of the animation.
             </dd>
           </dl>
@@ -4143,7 +4141,7 @@ elem.animate(
         <div class="issue">
           <p>
             Currently a <a>Keyframe</a> can only target a single property which
-            is defined on the <a>KeyframeAnimationFunction</a>.
+            is defined on the <a>KeyframeAnimationEffect</a>.
             This is different to CSS.
             Is this something we want to change?
             It would complicate the API, of course, but is it worth it?
@@ -4238,9 +4236,9 @@ elem.animate(
         </dl>
       </section>
       <section>
-        <h3>The <code>PathAnimationFunction</code> interface</h3>
-        <dl title="[Constructor] interface PathAnimationFunction
-          : AnimationFunction" class="idl">
+        <h3>The <code>PathAnimationEffect</code> interface</h3>
+        <dl title="[Constructor] interface PathAnimationEffect
+          : AnimationEffect" class="idl">
           <dt>attribute SVGPathSegList segments</dt>
           <dd>
             The list of segments that make up this path.
@@ -4254,29 +4252,29 @@ elem.animate(
         </dl>
       </section>
       <section>
-        <h3>The <code>GroupedAnimationFunction</code> interface</h3>
+        <h3>The <code>GroupedAnimationEffect</code> interface</h3>
         <p>
-          The <code>GroupedAnimationFunction</code> interface represents a
-          set of animation functions that share the same
+          The <code>GroupedAnimationEffect</code> interface represents a
+          set of animation effects that share the same
           <code>AnimationTemplate</code> parent.
         </p>
-        <dl title="[Constructor] interface GroupedAnimationFunction
-          : AnimationFunction" class="idl">
+        <dl title="[Constructor] interface GroupedAnimationEffect
+          : AnimationEffect" class="idl">
           <dt>readonly attribute unsigned long length</dt>
           <dd>
-            The number of animation functions in the group.
+            The number of animation effects in the group.
           </dd>
-          <dt>AnimationFunction? item(unsigned long index)</dt>
+          <dt>AnimationEffect? item(unsigned long index)</dt>
           <dd>
-            Returns the function at <code>index</code> if it exists, or null.
+            Returns the effect at <code>index</code> if it exists, or null.
           </dd>
-          <dt>void add(AnimationFunction func)</dt>
+          <dt>void add(AnimationEffect func)</dt>
           <dd>
             Adds <code>func</code> to the group.
           </dd>
           <dt>void remove(unsigned long index)</dt>
           <dd>
-            Removes the function at <code>index</code> if it exists.
+            Removes the effect at <code>index</code> if it exists.
           </dd>
         </dl>
       </section>
@@ -4285,7 +4283,7 @@ elem.animate(
         <div class="todo">
           This section needs more detail on when sampling is done.
           It also needs to be specified that an <a>Animation</a> with
-          a <code>null</code> <a>AnimationFunction</a> still fires events.
+          a <code>null</code> <a>AnimationEffect</a> still fires events.
         </div>
         <section>
           <h4>Calculating the animation value from an iteration value</h4>
@@ -4332,10 +4330,10 @@ elem.animate(
         </section>
         <section>              
           <h4>Calculating the iteration value for a 
-            <code>KeyframeAnimationFunction</code></h4>
+            <code>KeyframeAnimationEffect</code></h4>
           <p>
             When an <code>AnimationTemplate</code> contains a pointer to a
-            <code>KeyframeAnimationFunction</code> <var>keyframes</var>, the
+            <code>KeyframeAnimationEffect</code> <var>keyframes</var>, the
             <var>animation value</var> for that animation at given current time
             <var>t</var> is calculated according to the following steps:
           </p>
@@ -4410,10 +4408,10 @@ elem.animate(
         </section>
         <section>
           <h4>Calculating the iteration value for a 
-            <code>PathAnimationFunction</code></h4>
+            <code>PathAnimationEffect</code></h4>
           <p>
             When an <code>AnimationTemplate</code> contains a pointer to a
-            <code>PathAnimationFunction</code> and <var>rotate</var> is set
+            <code>PathAnimationEffect</code> and <var>rotate</var> is set
             to false, the <var>animation value</var> for that animation at
             given current time <var>t</var> is the transform defined by a
             translation equal to the location on the path at <var>t</var>.
@@ -4440,27 +4438,27 @@ elem.animate(
         </section>
         <section>
           <h4>Calculating the iteration value for a 
-            <code>GroupedAnimationFunction</code></h4>
+            <code>GroupedAnimationEffect</code></h4>
           <p>
             When an <code>AnimationTemplate</code> contains a pointer to a
-            <code>GroupedAnimationFunction</code>, the <var>animation
+            <code>GroupedAnimationEffect</code>, the <var>animation
             value</var> for that animation at given current time <var>t</var> 
             is calculated by following the procedure outlined in
             <a href="#resolving-animation-stacks" class="sectionRef"></a>, 
-            treating the list of <code>AnimationFunction</code> objects 
-            contained within the <code>GroupedAnimationFunction</code> as 
+            treating the list of <code>AnimationEffect</code> objects 
+            contained within the <code>GroupedAnimationEffect</code> as 
             the animation stack and using an initial animation value 
             of 0 for all simple properties and id for transform.
           </p>
         </section>
       </section>
       <section>
-        <h3>Custom animation functions</h3>
+        <h3>Custom animation effects</h3>
         <div class="informative">
           <p>
-            In some situations the animation functions provided by Web
-            Animations may be insufficient.
-            For example, the animation functions defined here are only able to
+            In some situations the animation effects provided by Web Animations
+            may be insufficient.
+            For example, the animation effects defined here are only able to
             target certain CSS properties and DOM attributes.
             They are unable, therefore, to modify the <a
             href="#http://www.w3.org/TR/SVG11/struct.html#__svg__SVGSVGElement__currentScale"><code>currentScale</code></a>
@@ -4468,21 +4466,21 @@ elem.animate(
             affecting the document content.
           </p>
           <p>
-            In such cases where the provided animation functions do not provided
-            needed functionality, an animation function defined by script may be
+            In such cases where the provided animation effects do not provided
+            needed functionality, an animation effect defined by script may be
             used.
-            Such animation functions receive a time fraction from the timing
+            Such animation effects receive a time fraction from the timing
             model and are responsible for producing the animation effect
             corresponding to the specified time.
           </p>
           <p>
-            Using an animation function defined in script it is possible to
+            Using an animation effect defined in script it is possible to
             animate not only previously un-animatable attributes and properties,
             but potentially anything that is accessible via script, including
             even producing audio or creating vibrations.
           </p>
           <p>
-            For example, using an animation function that draws to a <a
+            For example, using an animation effect that draws to a <a
             href="http://www.w3.org/TR/html5/the-canvas-element.html#the-canvas-element"><code>canvas</code></a>
             element it is possible to produce a complex animated effect
             featuring patterns that may be difficult to create using CSS or
@@ -4498,45 +4496,45 @@ elem.animate(
         </div> <!-- informative -->
         <div class="annotation">
           <p>
-            I think we want two types of custom animation functions.
-            Following is the general-purpose animate-anything kind of function.
+            I think we want two types of custom animation effects.
+            Following is the general-purpose animate-anything kind of effect.
             The other type, which is not defined here, is the one that can
             participate in the animation sandwich just like any other.
           </p>
           <p>
-            This, second, native-like animation function, would have the
+            This, second, native-like animation effect, would have the
             following features:
           </p>
           <ul>
             <li>Shares the same function signature as
-                <code><a>AnimationFunction</a>.sample</code></li>
+                <code><a>AnimationEffect</a>.sample</code></li>
             <li>Gets passed the underlying value and passes out the animated
                 value.</li>
             <li>Has a target property and is sorted against other
-                <a>AnimationFunction</a> objects (including platform
+                <a>AnimationEffect</a> objects (including platform
                 objects)</li>
             <li>Can be added as a child of
-                a <a>GroupedAnimationFunction</a>.</li>
+                a <a>GroupedAnimationEffect</a>.</li>
           </ul>
           <p>
             That's a bit more difficult since you have to be careful that the
-            custom function doesn't do anything naughty while you're in the
+            custom effect doesn't do anything naughty while you're in the
             middle of compositing the animation sandwich.
             I think we should postpone this until Web Animations 2.
           </p>
         </div>
         <section>
-          <h4>Execution order of custom animation functions</h4>
+          <h4>Execution order of custom animation effects</h4>
           <p>
-            Custom animation functions allow authors to define animation effects
+            Custom animation effects allow authors to define animation effects
             using script.
-            Such animation functions are not limited to a single CSS property or
+            Such animation effects are not limited to a single CSS property or
             DOM attribute and therefore the steps for assessing their order of
-            execution differs from regular animation functions.
+            execution differs from regular animation effects.
           </p>
           <p>
-            Custom animation functions are executed after all other
-            <a>AnimationFunction</a> objects have completed and applied their
+            Custom animation effects are executed after all other
+            <a>AnimationEffect</a> objects have completed and applied their
             effects to their targets.
           </p>
           <p class="issue">
@@ -4544,20 +4542,20 @@ elem.animate(
             Are styles flushed?
             Presumably they are.
             Can we suspend reflow for the duration of executing the script-based
-            animation functions and just do it once afterwards?
+            animation effects and just do it once afterwards?
           </p>
           <p>
-            Within the set of custom animation functions, the order of execution
-            is mostly the same as that for other animation functions and is
+            Within the set of custom animation effects, the order of execution
+            is mostly the same as that for other animation effects and is
             defined in <a href="#the-global-animation-stack"
             class="sectionRef"></a>.
-            However, custom animation functions may also override this
+            However, custom animation effects may also override this
             ordering through the <code>priority</code> attribute, which, if
-            defined, specifies the priority of the functions with lower numbers
+            defined, specifies the priority of the effects with lower numbers
             are executed sooner.
           </p>
           <p>
-            In deciding which of two <a>CustomAnimationFunction</a> functions,
+            In deciding which of two <a>CustomAnimationEffect</a> objects,
             <var>A</var> and <var>B</var>, should be executed the following
             rules are applied.
           </p>
@@ -4591,22 +4589,22 @@ elem.animate(
           </p>
         </section>
         <section>
-          <h4>The <code>CustomAnimationFunction</code> callback interface</h4>
+          <h4>The <code>CustomAnimationEffect</code> callback interface</h4>
           <p>
-            Custom animation functions can be defined in script using the
-            <a>CustomAnimationFunction</a> interface.
+            Custom animation effects can be defined in script using the
+            <a>CustomAnimationEffect</a> interface.
           </p>
           <p class="issue">
             Should this be a dictionary?
             I'd like to make <code>clone</code> optional.
           </p>
-          <div title="callback interface CustomAnimationFunction" class="idl">
+          <div title="callback interface CustomAnimationEffect" class="idl">
             <dt>attribute unsigned integer priority</dt>
             <dd>
-              The order in which this animation function will be executed in
-              relation to other custom animation functions such that items with
+              The order in which this animation effect will be executed in
+              relation to other custom animation effects such that items with
               a lower priority are executed earlier as defined in <a
-              href="#execution-order-of-custom-animation-functions"
+              href="#execution-order-of-custom-animation-effects"
               class="sectionRef"></a>.
             </dd>
             <dt>void sample ()</dt>
@@ -4635,7 +4633,7 @@ elem.animate(
                 </dd>
               </dl>
             </dd>
-            <dt>CustomAnimationFunction clone ()</dt>
+            <dt>CustomAnimationEffect clone ()</dt>
             <dd>
               Creates an independent copy of this object.
             </dd>
@@ -4697,7 +4695,7 @@ elem.animate(
         <p>
           Other operations also generate animation stacks - for example, 
           grouping multiple animations using a 
-          <code>GroupedAnimationFunction</code>.
+          <code>GroupedAnimationEffect</code>.
         </p>
         <p>
           An animation stack may be thought of as a single stack with all
@@ -4733,7 +4731,7 @@ elem.animate(
           working up, as animation results are encountered for an element
           and property, these are merged into the cumulative animation result
           using the animation combinator stored in the 
-          <code>AnimationFunction</code> that generated the result.
+          <code>AnimationEffect</code> that generated the result.
           Once all animation results in the stack are processed, the resulting
           cumulative animation values are the current animation values for
           each property of each element that is animated.
@@ -4789,7 +4787,7 @@ elem.animate(
             <code>(currentTime - parent.startTime)
             / parent.animationDuration</code>, where <code>parent</code> is the
             <code>AnimationTemplate</code> which references the
-            <code>AnimationFunction</code> that is being composited.
+            <code>AnimationEffect</code> that is being composited.
           </p>
           <p>
             When a path animation <code>a</code> is composited over a
@@ -4909,8 +4907,8 @@ elem.animate(
         Note that run-time properties of a <a>linked</a> animation such as its
         <var>start time</var> and <var>time drift</var> can still be modified.
         Only those properties attached to the <code>timing</code> and
-        <code>animationFunction</code> properties of a <a>linked</a>
-        <a>Animation</a> object are read-only.
+        <code>effect</code> properties of a <a>linked</a> <a>Animation</a>
+        object are read-only.
       </p>
       <p>
         Unlinked animations can be linked to a template by:
@@ -4932,9 +4930,9 @@ elem.animate(
         <p>
           <dl title="[Constructor] interface AnimationTemplate : TimedTemplate"
             class="idl">
-            <dt>attribute (AnimationFunction or CustomAnimationFunction)
-            animationFunction</dt> <dd>
-              The animation function to apply.
+            <dt>attribute (AnimationEffect or CustomAnimationEffect)
+              effect</dt> <dd>
+              The animation effect to apply.
             </dd>
           </dl>
         </p>
@@ -5138,10 +5136,10 @@ elem.animate(
                 Create a new <code>Animation</code> object, <var>anim</var>.
               </li>
               <li>
-                Set the <code>timing</code> and <code>animationFunction</code>
+                Set the <code>timing</code> and <code>effect</code>
                 properties of <var>anim</var> to copies
                 <code>template.timing</code> and
-                <code>template.animationFunction</code>.
+                <code>template.effect</code>.
               </li>
               <li>
                 If <var>parentGroup</var> is not specified, let
