@@ -381,7 +381,7 @@
                 This may be <code>null</code> for animations that do not target
                 a specific element.
               </dd>
-              <dt>object animationFunction</dt>
+              <dt>object? animationFunction</dt>
               <dd>
                 The animation function used to set the
                 <code>animationFunction</code> property of the newly created
@@ -393,6 +393,11 @@
                   <a>AnimationFunction</a> or <a>CustomAnimationFunction</a>
                   object.
                   It will <em>not</em> be copied.
+                </p>
+                <p>
+                  If this parameter is <code>null</code>, the newly created
+                  <a>Animation</a> will also have a <code>null</code> animation
+                  function.
                 </p>
                 <p>
                   Otherwise, if this parameter is any other type of object, it
@@ -480,12 +485,14 @@
           <dd>
             TBD
           </dd>
-          <dt>attribute (AnimationFunction or CustomAnimationFunction)
+          <dt>attribute (AnimationFunction or CustomAnimationFunction)?
               animationFunction</dt>
           <dd>
             <p>
-              The animation function to apply (see <a href="#animation-values"
-              class="sectionRef"></a>).
+              The animation function to apply (see <a
+              href="#animation-values" class="sectionRef"></a>).
+              May be <code>null</code> in which case the animation will produce
+              no noticeable effect other than dispatching events.
             </p>
             <p>
               Exceptions:
@@ -3802,13 +3809,6 @@ new SeqGroup(
               <dt>If <var>animation properties</var> is of zero length,</dt>
               <dd>
                 return <code>null</code>.
-                <p class="todo">
-                  Make <code>Animation.animationFunction</code> nullable since
-                  otherwise we won't be able to create an <a>Animation</a>
-                  function corresponding to a bit of CSS / SVG syntax that
-                  refers to a property that can't be animated in a given
-                  implementation (e.g. <code>-moz-xxx</code>).
-                </p>
                 <div class="note">
                   <p>
                     This behaviour of returning <code>null</code> allows
@@ -4282,6 +4282,11 @@ elem.animate(
       </section>
       <section>
         <h3>Calculating animation values</h3>
+        <div class="todo">
+          This section needs more detail on when sampling is done.
+          It also needs to be specified that an <a>Animation</a> with
+          a <code>null</code> <a>AnimationFunction</a> still fires events.
+        </div>
         <section>
           <h4>Calculating the animation value from an iteration value</h4>
           <p>
