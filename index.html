@@ -4258,23 +4258,59 @@ elem.animate(
           set of animation effects that share the same
           <code>AnimationTemplate</code> parent.
         </p>
-        <dl title="[Constructor] interface GroupedAnimationEffect
-          : AnimationEffect" class="idl">
+        <p class="todo">
+          If the group contains multiple effects that target the same property
+          does order in the group matter? If so, we need to add a means for
+          re-ordering the group other than popping and pushing. For example,
+          <code>insertBefore</code>.
+        </p>
+        <dl title="interface GroupedAnimationEffect : AnimationEffect"
+          class="idl">
+          <dt>Constructor (object properties)</dt>
+          <dd>
+            <p class="todo">
+              TBD whilst we decide whether we need this interface or whether we
+              can merge it with <a>KeyframeAnimationEffect</a> somehow.
+            </p>
+          </dd>
           <dt>readonly attribute unsigned long length</dt>
           <dd>
             The number of animation effects in the group.
           </dd>
-          <dt>AnimationEffect? item(unsigned long index)</dt>
+          <dt>void clear()</dt>
           <dd>
-            Returns the effect at <code>index</code> if it exists, or null.
+            Removes all effects from this group.
           </dd>
-          <dt>void add(AnimationEffect func)</dt>
+          <dt>getter AnimationEffect? (unsigned long index)</dt>
           <dd>
-            Adds <code>func</code> to the group.
+            Returns the effect at <var>index</var> if it exists, or
+            <code>null</code> otherwise.
           </dd>
-          <dt>void remove(unsigned long index)</dt>
+          <dt>AnimationEffect add(AnimationEffect effect)</dt>
           <dd>
-            Removes the effect at <code>index</code> if it exists.
+            <p>
+              Appends <code>effect</code> to the end of the group such that
+              <code>group.indexOf(<var>effect</var>)</code> equals
+              <code>group.length - 1</code>.
+            </p>
+            <p class="todo">
+              I'm assuming that <a>AnimationEffect</a>s can be shared amongst
+              animations and groups.
+              Or does <var>effect</var> need to be removed from any previous
+              <a>AnimationEffect</a>s or <a>Animation</a>s first?
+            </p>
+          </dd>
+          <dt>AnimationEffect? remove(unsigned long index)</dt>
+          <dd>
+            Removes the effect at <code>index</code> and returns it. If
+            <var>index</var> is outside the range [0, <code>length</code>), then
+            <code>null</code> is returned.
+          </dd>
+          <dt>long indexOf(AnimationEffect effect)</dt>
+          <dd>
+            Returns the index of <var>effect</var> within the group.
+            If <var>effect</var> is not a member of the group, returns
+            <code>-1</code>.
           </dd>
         </dl>
       </section>
