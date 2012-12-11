@@ -25,7 +25,6 @@
 //      . make processor aware of some extended attributes (e.g. Constructor)
 //      . support variadic params
 //      . support arrays
-//      . support special operations: getter, setter, creator, deleter, caller, omittable
 //      . support stringifiers
 //  - add support for a test variant of the specification, based on the ideas in P+C
 //  - some refactoring is in order
@@ -2124,11 +2123,13 @@ berjon.WebIDLProcessor.prototype = {
         }
 
         // METHOD
-        match = /^\s*(static\s+)?\b(.*?)\s+\b(\S+?)\s*\(\s*(.*)\s*\)\s*$/.exec(str);
+        match = /^\s*(?:(?:(static)|(getter|setter|creator|deleter|legacycaller))\s+)?\b(.*?)(?:\s+\b(\S+?))?\s*\(\s*(.*)\s*\)\s*$/.exec(str);
+
         if (match) {
             mem.type = "method";
             mem.isStatic = !!match[1];
-            var type = match[2];
+            mem.special = match[2];
+            var type = match[3];
             mem.nullable = false;
             if (/\?$/.test(type)) {
                 type = type.replace(/\?$/, "");
@@ -2140,10 +2141,10 @@ berjon.WebIDLProcessor.prototype = {
                 mem.array = true;
             }
             mem.datatype = type;
-            mem.id = match[3];
-            mem.refId = this._id(mem.id);
+            mem.id = match[4];
+            mem.refId = this._id(mem.id ? mem.id : "");
             mem.params = [];
-            var prm = match[4];
+            var prm = match[5];
             mem.raises = [];
 
             return this.methodMember(mem, excepts, extPrm, prm);
@@ -2449,9 +2450,18 @@ berjon.WebIDLProcessor.prototype = {
                            ? this.makeMethodID("widl-ctor-", it)
                            : sn.idThatDoesNotExist(curLnk + it.refId);
                     var dt = sn.element("dt", { id: id }, dl);
-                    sn.element("code", {}, dt, it.id);
+                    var name = it.id
+                             ? it.id
+                             : it.special ? it.special
+                                          : "«anonymous»";
+                    sn.element("code", {}, dt, name);
                     if (it.isStatic) {
                       sn.text(" [static]", dt);
+                    }
+                    if (it.special) {
+                      sn.text(" [", dt);
+                      sn.element("em", {}, dt, "index");
+                      sn.text("]", dt);
                     }
                     var desc = sn.element("dd", {}, dl, [it.description]);
                     if (type == "constructor") {
@@ -2543,7 +2553,9 @@ berjon.WebIDLProcessor.prototype = {
     },
 
     makeMethodID:    function (cur, obj) {
-        var id = cur + obj.refId + "-" + obj.datatype + "-";
+        var refId = obj.refId ? obj.refId
+                              : obj.special ? obj.special : "anon";
+        var id = cur + refId + "-" + obj.datatype + "-";
         var params = [];
         for (var i = 0, n = obj.params.length; i < n; i++) {
             var prm = obj.params[i];
@@ -2646,10 +2658,12 @@ berjon.WebIDLProcessor.prototype = {
                                                                 .join(", ");
             str += " {\n";
             // we process attributes and methods in place
-            var maxAttr = 0, maxMeth = 0, maxConst = 0, hasRO = false;
-            var hasStatic = false;
+            var maxAttr = 0, maxMeth = 0, maxConst = 0, hasRO = false,
+                hasStatic = false;
             obj.children.forEach(function (it, idx) {
                 var len = it.datatype.length;
+                if (it.type == "method" && it.special)
+                  len += it.special.length + " ".length;
                 if (it.nullable) len++;
                 if (it.array) len += 2;
                 if (it.type == "attribute") maxAttr = (len > maxAttr) ? len : maxAttr;
@@ -2809,24 +2823,41 @@ berjon.WebIDLProcessor.prototype = {
         // Initial indent
         str += this._idn(indent);
         paramIndent += this._idn(indent).length;
-        // Static keyword (or space if other methods use static)
+        // Static keyword
         if (meth.isStatic)
           str += "static ";
         else if (hasStatic)
           str += "       ";
         paramIndent += hasStatic ? "static ".length : 0;
-        // Datatype
+        // Datatype (includes special keywords like 'getter')
+        var pad = max;
+        if (meth.special) {
+          if (!meth.id) {
+            var id = this.makeMethodID(curLnk, meth);
+            str += "<span class='idlMethName'><a href='#" + id + "'>" +
+                   meth.special + "</a></span> ";
+          } else {
+            str += meth.special + " ";
+          }
+          pad -= (meth.special + " ").length;
+        }
         var nullable = meth.nullable ? "?" : "";
         var arr = meth.array ? "[]" : "";
-        var pad = max - meth.datatype.length - nullable.length - arr.length;
+        pad -= (meth.datatype.length + nullable.length + arr.length);
         str += "<span class='idlMethType'>";
         str += this.writeDatatype(meth.datatype) + arr + nullable + "</span> ";
         str += Array(pad + 1).join(" ");
         paramIndent += max + " ".length;
         // Method name
-        var id = this.makeMethodID(curLnk, meth);
-        str += "<span class='idlMethName'><a href='#" + id + "'>" + meth.id + "</a></span> (";
-        paramIndent += meth.id.length + " (".length;
+        if (meth.id) {
+          var id = this.makeMethodID(curLnk, meth);
+          str += "<span class='idlMethName'><a href='#" + id + "'>" + meth.id +
+                 "</a></span> ";
+          paramIndent += meth.id.length + " ".length;
+        }
+        // Opening brace
+        str += "(";
+        paramIndent += "(".length;
         // Parameters and end
         str += this.writeParams(meth.params, paramIndent) + ");</span>\n";
         return str;
