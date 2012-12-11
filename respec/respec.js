@@ -2774,9 +2774,10 @@ berjon.WebIDLProcessor.prototype = {
 
     writeCtor:    function (ctor, indent, curLnk) {
         var str = "<span class='idlCtor'>";
-        var paramIndent = indent + 2; // Keep track of how far to indent
+        var paramIndent = "[".length; // Keep track of how far to indent
                                       // parameters for when we wrap long lines
         str += this._idn(indent);
+        paramIndent += this._idn(indent).length;
         var id = this.makeMethodID(curLnk, ctor);
         if (ctor.named) {
             str += "<span class='idlNamedCtorKeyword'>NamedConstructor</span>=";
@@ -2798,30 +2799,43 @@ berjon.WebIDLProcessor.prototype = {
     
     writeMethod:    function (meth, max, indent, curLnk, hasStatic) {
         var str = "<span class='idlMethod'>";
-        if (meth.extendedAttributes) str += this._idn(indent) + "[<span class='extAttr'>" + meth.extendedAttributes + "</span>]\n";
+        var paramIndent = 0; // Keep track of how far to indent
+                             // parameters for when we wrap long lines
+        // Extended attributes
+        if (meth.extendedAttributes) {
+          str += this._idn(indent) + "[<span class='extAttr'>" +
+                 meth.extendedAttributes + "</span>]\n";
+        }
+        // Initial indent
         str += this._idn(indent);
-        var pad = max - meth.datatype.length;
-        if (meth.nullable) pad = pad - 1;
-        if (meth.array) pad = pad - 2;
-        var nullable = meth.nullable ? "?" : "";
-        var arr = meth.array ? "[]" : "";
+        paramIndent += this._idn(indent).length;
+        // Static keyword (or space if other methods use static)
         if (meth.isStatic)
           str += "static ";
         else if (hasStatic)
           str += "       ";
+        paramIndent += hasStatic ? "static ".length : 0;
+        // Datatype
+        var nullable = meth.nullable ? "?" : "";
+        var arr = meth.array ? "[]" : "";
+        var pad = max - meth.datatype.length - nullable.length - arr.length;
         str += "<span class='idlMethType'>";
         str += this.writeDatatype(meth.datatype) + arr + nullable + "</span> ";
-        for (var i = 0; i < pad; i++) str += " ";
+        str += Array(pad + 1).join(" ");
+        paramIndent += max + " ".length;
+        // Method name
         var id = this.makeMethodID(curLnk, meth);
         str += "<span class='idlMethName'><a href='#" + id + "'>" + meth.id + "</a></span> (";
-        str += this.writeParams(meth.params) + ");</span>\n";
+        paramIndent += meth.id.length + " (".length;
+        // Parameters and end
+        str += this.writeParams(meth.params, paramIndent) + ");</span>\n";
         return str;
     },
 
     writeParams:    function (params, hangingIndent) {
         var obj = this;
         var maxWidth = 90;
-        var indentStr = hangingIndent ? Array(hangingIndent).join(" ") : "";
+        var indentStr = hangingIndent ? Array(hangingIndent + 1).join(" ") : "";
         var pos = hangingIndent ? hangingIndent : 0;
         return params.map(
             function (it) {
