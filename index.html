@@ -1501,7 +1501,8 @@ var animC = new Animation(elem,
           </dd>
           <dt>readonly attribute unsigned long? currentIteration</dt>
           <dd>
-            The number of iterations that have completed as described in <a
+            The current iteration index beginning with zero for the first
+            iteration as described in <a
               href="#calculating-the-current-iteration" class="sectionRef"></a>.
           </dd>
           <dt>readonly attribute unrestricted double duration</dt>
@@ -2298,7 +2299,12 @@ new SeqGroup(
             </li>
             <li>
               If the <a>iteration duration</a> is zero, return
-              <code>floor(timing.iterationCount)</code>.
+              <code>floor(timing.iterationStart + timing.iterationCount)</code>.
+            </li>
+            <li>
+              If the <a>unscaled iteration time</a> equals the <a>iteration
+              duration</a>, return <code>timing.iterationStart
+              + timing.iterationCount - 1</code>.
             </li>
             <li>
               Return <code>floor(<a>adjusted animation time</a> /
