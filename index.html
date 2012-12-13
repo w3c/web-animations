@@ -1137,9 +1137,20 @@ var animC = new Animation(elem,
                 the number of iterations into the animation at which to begin.
                 For example, a value of 0.5 would cause the animation to begin
                 half-way through the first iteration.
-                If this value is greater than <code>iterationCount</code> then
-                it is effectively clamped as defined in the definition of
-                <a>effective iteration start</a>.
+              </p>
+              <p>
+                The <code>iterationCount</code> is effectively <em>added</em> to
+                the <code>iterationStart</code> such that an animation with an
+                <code>iterationStart</code> of &lsquo;0.5&rsquo; and
+                <code>iterationCode</code> of &lsquo;2&rsquo; would still
+                repeat twice however it would begin and end half-way through
+                the animation's <a>iteration interval</a>.
+              </p>
+              <p>
+                Setting the <code>iterationStart</code> to a value greater than
+                or equal to one is typically only useful in combination with an
+                animation effect that has an <code>accumulateOperation</code>
+                other than &lsquo;replace&rsquo;.
               </p>
               <p>
                 Exceptions:
@@ -1885,9 +1896,6 @@ var animC = new Animation(elem,
           following common definitions are used.
         </p>
         <ul>
-          <li><dfn>effective iteration start</dfn> =
-              <code>min(timing.iterationStart, timing.iterationCount)</code>
-          </li>
           <li><dfn>effective parent time</dfn> =
               <code>parentGroup.iterationTime</code> unless
               <code>parentGroup</code> or <code>parentGroup.iterationTime</code>
@@ -2082,13 +2090,12 @@ new SeqGroup(
             This is called the <a>adjusted animation time</a>.
           </p>
           <p>
-            In order to calculated the <a>adjusted animation time</a> we first
+            In order to calculate the <a>adjusted animation time</a> we first
             define the <a>start offset</a> as follows:
           </p>
           <blockquote>
             <dfn>start offset</dfn> =
-              <code><a>effective iteration start</a> *
-                    <a>iteration duration</a></code>
+              <code>iterationStart * <a>iteration duration</a></code>
           </blockquote>
           <p>
             The <dfn>adjusted animation time</dfn> is calculated according to
@@ -2133,9 +2140,9 @@ new SeqGroup(
             </li>
             <li>
               If <code><a>adjusted animation time</a> -
-                       <a>start offset</a></code> equals the
-              <a>repeated duration</a>, and
-              <code>(timing.iterationCount - <a>effective iteration start</a>)
+                       <a>start offset</a></code> is equal to
+                       the <a>repeated duration</a>, and
+              <code>(timing.iterationCount + timing.iterationStart)
               % 1</code> is zero, return the <var>iteration duration</var>.
             </li>
             <li>
