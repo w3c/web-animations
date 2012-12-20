@@ -490,7 +490,8 @@
               The animation effect to apply (see <a
               href="#animation-values" class="sectionRef"></a>).
               May be <code>null</code> in which case the animation will produce
-              no noticeable effect other than dispatching events.
+              no noticeable effect other than dispatching events (see <a
+              href="#timing-events" class="sectionRef"></a>).
             </p>
             <p>
               Exceptions:
@@ -1212,7 +1213,7 @@ var animC = new Animation(elem,
                 </dd>
               </dl>
             </dd>
-            <dt>attribute TimingFunction?  timingFunction</dt>
+            <dt>attribute TimingFunction? timingFunction</dt>
             <dd>
               An optional timing function used to scale input time to produce
               timing effects such as easing behavior.
@@ -1403,7 +1404,7 @@ var animC = new Animation(elem,
           a <code>Timing</code> object to an actor in the animation timeline
           is represented by the <code>TimedItem</code> interface.
         </p>
-        <dl title="interface TimedItem" class="idl">
+        <dl title="interface TimedItem : EventTarget" class="idl">
           <dt>attribute Timing timing</dt>
           <dd>
             <p>
@@ -1681,6 +1682,26 @@ var animC = new Animation(elem,
             <code>locallyPaused</code> property of this object <em>or one of its
             ancestor animation groups</em> is <code>true</code>.
           </dd>
+          <dt>[TreatNonCallableAsNull] attribute Function? onstart</dt>
+          <dd>
+            The event handler for the <em>timingstart</em> event
+            (see <a href="#timing-events" class="sectionRef"></a>).
+          </dd>
+          <dt>[TreatNonCallableAsNull] attribute Function? oniteration</dt>
+          <dd>
+            The event handler for the <em>timingiteration</em> event
+            (see <a href="#timing-events" class="sectionRef"></a>).
+          </dd>
+          <dt>[TreatNonCallableAsNull] attribute Function? onend</dt>
+          <dd>
+            The event handler for the <em>timingend</em> event
+            (see <a href="#timing-events" class="sectionRef"></a>).
+          </dd>
+          <dt>[TreatNonCallableAsNull] attribute Function? oncancel</dt>
+          <dd>
+            The event handler for the <em>timingcancel</em> event
+            (see <a href="#timing-events" class="sectionRef"></a>).
+          </dd>
           <dt>void pause ()</dt>
           <dd>
             Sets the <code>locallyPaused</code> property to <code>true</code> by
@@ -1862,9 +1883,41 @@ var animC = new Animation(elem,
           <dt>void cancel ()</dt>
           <dd>
             <p>
-              Removes the timed item from its parent group. As a result, the
-              timed item will no longer affect its target.
+              Removes the timed item from its parent group.
+              As a result, the timed item will no longer affect its target.
             </p>
+            <p class="annotation">
+              We will need to make this actually disassociate from its
+              TimeSource once we introduce that concept.
+            </p>
+            <p>
+              When cancelling a timed item, a <em>timingcancel</em> event is
+              also fired at the item and its descendents using the following
+              procedure:
+            </p>
+            <ol>
+              <li>If <code>parentGroup</code> is <code>null</code>, return
+                  immediately.
+                  <span class="todo">(Is this right? Should be just dispatch the
+                  event anyway with <code>null</code> <code>documentTime</code>
+                  and <code>localTime</code>?)</span>
+                  </li>
+              <li>Record <code>parentGroup.currentTime</code> as <var>local
+                  time</var>.</li>
+              <li>Record the document time as <var>document time</var>
+                  <span class="todo">(the concept of document time will be
+                  explained properly once we introduce
+                  <a>DocumentTimeSource</a>)</span>.</li>
+              <li>Record the <code>currentIteration</code> as <var>iteration
+                  index</var>.</li>
+              <li>Remove this timed item from <code>parentGroup</code>
+                  but do not dispatch a <em>timingend</em> event on this timed
+                  item or any of its descendents.</li>
+              <li>Dispatch a <em>timingcancel</em> event at this timed item and
+                  its descendents with using the stored values for
+                  <var>local time</var>, <var>document time</var>, and
+                  <var>iteration index</var>.</li>
+            </ol>
             <p>
               Exceptions:
             </p>
@@ -2396,7 +2449,7 @@ new SeqGroup(
         </p>
         <p>
           The animation events dispatched when a seek is performed are described
-          in <a href="#animation-events" class="sectionRef"></a>.
+          in <a href="#event-dispatch-during-seeking" class="sectionRef"></a>.
         </p>
       </section>
     </section>
@@ -5455,117 +5508,523 @@ elem.animate(
     </section>
 
     <section>
-      <h2>Animation events</h2>
-      <div class="todo">
+      <h2>Timing events</h2>
+      <p>
+        As timed items play they report changes to their status through
+        <a>TimingEvent</a>s.
+      </p>
+      <div class="annotation">
+        <p><strong>Relationship to CSS and SVG events</strong></p>
         <p>
-          Need to consider how to align with existing
-          <code>TransitionEvent</code>s, <code>AnimationEvent</code>s and
-          <code>TimeEvent</code>s. It might make sense to have our events
-          inherit from one or more of these interfaces or have implementations
-          dispatch both (especially if their synchronization properties differ).
+          CSS defines <code>AnimationEvent</code>s and
+          <code>TransitionEvent</code>s and SVG defines <code>TimeEvent</code>s.
+          The proposal here is to dispatch <a>TimingEvent</a>s in parallel to
+          these events.
+          This has the following properties:
+        </p>
+        <ul>
+          <li>It is possible to register for <em>just</em> CSS animation events,
+          or <em>just</em> CSS transition events, or <em>just</em> SVG time
+          events, or <em>all</em> animation-related events
+          (by registering for the timing events defined here).</li>
+          <li>Backwards compatibility&mdash;existing content continues to work
+          as is.</li>
+        </ul>
+        <p>
+          An alternative is to make CSS and SVG events subclass
+          <a>TimingEvent</a> and just fire the one event.
+          Two issues arrive with this.
+          Firstly, the event type would change on the subclasses so it wouldn't
+          be possible to catch all "start" events, for example.
+          Secondly, the propagation path for SVG events is different since they
+          are fired at the animation template element rather than the animation
+          target element.
         </p>
         <p>
-          I think we might also want a seek event? It seems like a lot of
-          applications will want to do bookkeeping when there's
-          a seek&mdash;especially a backwards seek. It might also be necessary
-          for the SVG bindings so you can clear certain events on a backwards
-          seek as required by SMIL.
-        </p>
-        <p>
-          Talk about what events are dispatched on a seek.
-          It's probably important that we don't dispatch intermediate events
-          during a seek as then implementations will be required to step through
-          each interval and it breaks the fact that skipping around the model is
-          constant time.
-          It's also not what SVG does, i.e. SVG skips events during a seek.
-          I think you just want to record the animating vs non-animating state
-          of each item before the seek, then compare to after the seek and fire
-          the appropriate event.
-          (Do groups fire events?)
+          Nevertheless, there may be alternative approaches here such as
+          augmenting CSS Animation events only and firing them from the API
+          (although that may cause compatibility issues when SVG animations
+          start reporting events to content expecting only CSS animations).
         </p>
       </div>
       <section>
-        <h3>Synchronizing event handlers</h3>
-        <div class="todo">
+        <h3>The <code>TimingEvent</code> interface</h3>
+        <dl title="interface TimingEvent : Event" class="idl">
+          <dt>Constructor
+              (DOMString type, optional TimingEventInit eventInitDict)</dt>
+          <dd>
+            Constructs a new <a>TimingEvent</a> object as described in <a
+            href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#constructing-events">Constructing
+            events</a> [[!DOM4]].
+          </dd>
+          <dt>attribute double documentTime</dt>
+          <dd>
+            <p>
+              The <code>currentTime</code> of the <a>DocumentTimeSource</a> with
+              which the <a>TimedItem</a> is associated when the event was
+              dispatched.
+            </p>
+            <div class="annotation">
+              <p>
+                I think document time will be much more useful than global time.
+                For the rarer case that you want to synchronise animations
+                between documents using events, I anticipate
+                <a>DocumentTimeSource</a> will have a method to convert
+                a document to global time and vice-versa and/or convert times
+                from one <a>DocumentTimeSource</a> to another
+                <a>DocumentTimeSource</a>.
+              </p>
+              <p>
+                When we come to define animations that aren't necessarily linked
+                to a document time source we'll need to make this nullable or
+                redefine it to mean "root time source".
+              </p>
+            </div>
+          </dd>
+          <dt>attribute double localTime</dt>
+          <dd>
+            <p>
+              The <code>iterationTime</code> of the <a>TimeSource</a> with which
+              the <a>TimedItem</a> is associated when the event was dispatched.
+              For animations that do not belong to an <a>AnimationGroup</a> this
+              will be equal to <code>documentTime</code>.
+            </p>
+            <p class="annotation">
+              If we allow animations to be associated with, for example,
+              MediaControllers, we'll need to revise the above description to
+              cover more than just <a>AnimationGroup</a>s.
+            </p>
+            <p class="annotation">
+              If we rename <a>item time</a> to local time we'll need to rename
+              this.
+              Note that the time given here is in <em>parent iteration
+              time</em>.
+              This is the same time space used for <code>startTime</code> and
+              <code>endTime</code>.
+              This is the most useful time space if, for example, you receive
+              a timing event and want to add a new animation that synchronises
+              with the item that dispatched the event by adding it to the same
+              time source (e.g. group).
+            </p>
+          </dd>
+          <dt>attribute unsigned long? iterationIndex</dt>
+          <dd>
+            The value of <code>currentIteration</code> on the target
+            <a>TimedItem</a> when the event was dispatched.
+          </dd>
+        </dl>
+        <p class="issue">
+          Suggestions for naming? CSS has taken <code>AnimationEvent</code> and
+          <code>TransitionEvent</code> and SVG has <code>TimeEvent</code>.
+          Call it <code>SyncEvent</code>?
+          Or we could just augment <code>AnimationEvent</code> since it has
+          a similar propagation path.
+        </p>
+        <dl title="dictionary TimingEventInit" class="idl">
+          <dt>double documentTime = 0</dt>
+          <dd></dd>
+          <dt>double localTime = 0</dt>
+          <dd></dd>
+          <dt>double iterationIndex = 0</dt>
+          <dd></dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Types of <a>TimingEvent</a></h3>
+          <dt>timingstart</dl>
+          <dd>
+            Occurs at the moment when an item enters an <a>animation
+            interval</a> (from either direction).
+            <ul>
+              <li>Bubbles: yes</li>
+              <li>Cancelable: no</li>
+            </ul>
+          </dd>
+          <dt>timingiteration</dl>
+          <dd>
+            Occurs at the moment when a repeating item's
+            <code>currentIteration</code> changes excluding changes to and from
+            <code>null</code>.
+            <ul>
+              <li>Bubbles: yes</li>
+              <li>Cancelable: no</li>
+            </ul>
+          </dd>
+          <dt>timingend</dl>
+          <dd>
+            Occurs at the moment when an item leaves an <a>animation
+            interval</a> (from either direction).
+            <ul>
+              <li>Bubbles: yes</li>
+              <li>Cancelable: no</li>
+            </ul>
+          </dd>
+          <dt>timingcancel</dl>
+          <dd>
+            Occurs when <code>TimedItem.cancel</code> is called.
+            In this case, a <em>timingend</em> event is not fired
+            (see the description of
+             <a href="#widl-TimedItem-cancel-void">TimedItem.cancel</a>).
+            <ul>
+              <li>Bubbles: yes</li>
+              <li>Cancelable: no</li>
+            </ul>
+          </dd>
+        </dl>
+        <p class="annotation">
+          The naming here is not great.
+          Would <code>syncstart</code> be any better?
+          If we augment <code>AnimationEvent</code> then at least we could use
+          <code>animationstart</code> etc.
+        </p>
+        <div class="issue">
           <p>
-            The proposal to-date is as follows.
-            Requirements for dispatch of animation events:
+            Other potential event types for a later version:
           </p>
-          <ol>
-            <li>
-              Animations triggered by an event handler appear to have started at
-              the time the event was scheduled to be triggered.
+          <ul>
+            <li><em>pause</em> &mdash;
+              fires whenever <code>paused</code> is newly true.<br>
+              Use case: show a graphic overlay to mark a cartoon as paused.<br>
+              Likewise <em>unpause</em>.</li>
+            <li><em>seek</em> &mdash;
+              fires whenever <code>currentTime</code> is set on the item or an
+              ancestor.<br>
+              Use case: Acts as a signal that intermediate events may have been
+              dropped (see <a href="#event-dispatch-during-seeking"
+              class="sectionRef"></a>).
+              For example, if you have an iteration event handler that assumes
+              it will get one call per iteration, then a seek event would be
+              a cue that you need to check <code>iterationIndex</code> and
+              adjust.
+              Also, if you were implementing something like SVG's syncbase
+              timing with script you often need to do some bookkeeping on
+              a seek.
             </li>
-            <li>
-              No effect of an animation for any time 't' can be reflected in
-              style, DOM or animation object until any animation event handlers
-              associated with dispatch times at or before 't' have returned from
-              execution.
+            <li><em>directionchange</em> &mdash;
+              fires whenever the effective direction of the item changes (due to
+              the direction attribute, changes to playbackRate, calling reverse
+              etc. on either the item or an ancestor)<br>
+              Use case: update UI to represent rewinding;
+              stop audio when playing backwards to prevent secretly encoded
+              messages being revealed.
             </li>
-          </ol>
-          <p>In effect this is roughly the same as saying:</p>
-          <blockquote>
-            When event handlers due to  animation events run, the state of the
-            world (DOM properties etc.) so  far as it is influenced by
-            animation, is as if the current time was the time when the event was
-            scheduled to be triggered.
-          </blockquote>
+            <li><em>newanimation</em> &mdash;
+              fires whenever a new <a>Animation</a> object is created.
+              Use case: a timeline debugger. You want to show all animations
+              that are playing or yet-to-play.
+              Using this event (and <code>document.getActiveAnimations</code>?)
+              you could build up a timegraph.
+              <p>
+                I think this sort of event and this sort of use case would fit
+                the MutationObserver pattern well.
+                We could introduce a whole class of mutation records targetted
+                at debugging (e.g. <em>timewindowchange</em>)
+              </p>
+          </ul>
           <p>
-            There may be many ways to realise this, including:
+            Also, although this is a bit different to a regular event (since
+            it's qualified by a parameter), it seems like it might be nice to be
+            able to do something like:
+          </p>
+          <pre class='example sh_javascript'>
+            anim.onprogress(0.8,
+             function() {
+              // Issue a request to prefetch the next episode
+             });
+          </pre>
+          <p>
+            It would be called whenever you got a sample where
+            <code>iterationTime</code> &ge; <var>progress</var> was newly true.
+          </p>
+        </div>
+        <p>
+          The <a
+          href="http://www.w3.org/TR/DOM-Level-3-Events/#glossary-propagation-path">propagation
+          path</a> for all events depends on the <a>TimedItem</a> where the
+          status change took place.
+          If the item is an <a>Animation</a> with an <a>AnimationEffect</a>
+          <var>effect</var>, and <code><var>effect</var>.targetElement</code> is
+          not <code>null</code>, the propagation path follows the usual <a
+          href="http://www.w3.org/TR/DOM-Level-3-Events/#event-flow">DOM event
+          flow</a> from <code>DefaultView</code> down the parent chain to
+          <code><var>effect</var>.targetElement</code> and finally to the
+          <a>TimedItem</a> where the status change took place.
+          Otherwise, the propagation path is simply the <code>TimedItem</code>
+          object itself.
+        </p>
+        <p class="note">
+          Note that unlike <code>AnimationEvent</code>s and
+          <code>TransitionEvent</code>s in CSS, and <code>TimeEvent</code>s in
+          SVG which target an Element, the target of a <a>TimingEvent</a> is
+          a <a>TimedItem</a>.
+        </p>
+        <p>
+          Since Web Animations makes no guarantees about the time between
+          successive frames of animation, it is possible that the time when
+          a change in state that should produce an event is scheduled to occur
+          does not line up with a frame.
+        </p>
+        <p>
+          As such, the events that should be dispatched when sampling the model
+          is based on the interval between samples as follows.
+        </p>
+        <ul>
+          <li>
+            Let <var>previous sample</var> be the moment when the timing model
+            was last sampled, recorded in document time.
+            If there was no previous sample, then let <var>previous sample</var>
+            be -1.
+          </li>
+          <li>
+            Let <var>current sample</var> be the current document time.
+          </li>
+          <li>
+            Let <var>progress interval</var> be the interval (<var>previous
+            sample</var>, <var>current sample</var>].
+          </li>
+        </ul>
+        <p>
+          The events to be dispatched are therefore those whose document time
+          lies within <var>progress interval</var>.
+        </p>
+        <div class="issue">
+          <p>
+            This description fails to account for newly-added animations,
+            removed animations, and other tree surgery.
+            For example, if I have a sample at t=3s, I add an animation whose
+            animation interval starts at t=2s, and then conduct another sample
+            at t=4s, the <em>timingstart</em> event should fire even though the
+            event's document time lies outside the progress interval.
+          </p>
+          <p>
+            We could possibly fix this by making the previous sample times and
+            current sample times per-<a>TimedItem</a> but that won't work for
+            repeating groups.
+            Needs work.
+          </p>
+        </div>
+        <div class="issue">
+          <p>
+            This last part here requires calculating document times (both for
+            testing against the progress interval and also for filling in the
+            <code>documentTime</code> property of the event) and that's hard to
+            calculate since our current model allows non-invertible timing
+            functions on groups.
+            That means you can't easily just traverse the descendants (by child
+            and iteration) and generate a list of interval and iteration
+            boundaries then filter out the ones that don't fit in the interval
+            because you can't easily convert from local time to document time.
+          </p>
+          <p>
+            You can, of course, convert from document time to local time
+            and while that's probably enough to tell if there was an interval or
+            iteration edge or not, it's not enough to determine the exact time
+            at which it occurred (to fill in the event parameters).
+          </p>
+          <p>
+            A complex example is where you have an group whose iteration time
+            goes from 0 to 1.5 to 0.7 back to 1.
+            Suppose you have a child animation that finishes its animation
+            interval at 80% of the way through the parent's iteration interval.
+            It would then finish, do nothing, then start reversing part-way,
+            then finish again.
+            In that case I think you expect to get: start, finish, start,
+            finish.
+          </p>
+          <p>
+            It's probably not impossible, so long as we allow for the fact that
+            the inverse may have several (even equal) roots but it sounds tricky
+            and possibly expensive to calculate on each iteration.
+          </p>
+          <p>
+            I think we might need to re-consider allowing non-invertible timing
+            functions on groups.
+            Alternatively we could say that the children of a group with
+            a non-interval timing function don't generate events.
+            Or, alternatively again, that they occur on the non-transformed
+            times.
+          </p>
+          <p>
+            This final options of making event times untransformed times is not
+            such a bad option, especially if we split time transformations into
+            a separate step and perhaps even a separate interface.
+            It's similar to some vector graphics editing programs that provide
+            bitmap filter effects&mdash;often the bounding box of the filtered
+            shape reflects the dimensions of the vector shape and not that of
+            the bitmapped result.
+          </p>
+          <p>
+            Also, in the case of an animation that bounces back and forth before
+            resting at its final value, it's probably more useful to get just
+            one end event when it finally rests than lots of little end/start
+            events each time it crosses the 1.0 iteration time boundary.
+          </p>
+        </div>
+        <div class="issue">
+          <p>
+            One implementation issue with events is that sometimes you find you
+            suddenly have a large backlog of events to dispatch and this may
+            have an adverse impact on performance.
+            Some such situations include:
           </p>
           <ul>
             <li>
-              dispatching animation events synchronously
+              You have a short iteration duration, e.g. 50ms, then you get put
+              in a background tab and throttled really low.
+              On the next sample, you might have hundreds of iteration events to
+              dispatch.
             </li>
             <li>
-              careful updating of the animation time (after waiting for
-              corresponding animation events to return)
-            </li>
-            <li>
-              pausing the world
+              You have an arrangement of animations such that they keep spawning
+              new ones for ever.
+              You can easily get this in SVG using syncbase timing or in the
+              model here by using repeating groups.
+              In this case, you can have a lot of events to dispatch if you get
+              throttled low.
+              Once you have a global clock, you also encounter this situation
+              when the computer goes to sleep since when it wakes up it will
+              have a lot of start/end/iteration events to catch up on.
             </li>
           </ul>
           <p>
-            Shane and Tab feel that this approach is not very webby, and might
-            be going to too much effort in order to support a programming
-            model that should be discouraged.
+            It seems like the Mutation Observer pattern might help here except,
+            firstly, that might prevent simple usage such as:
+          </p>
+          <pre class='example sh_javascript'>
+elem.animate({ opacity: '0%' }, 1).onend =
+   function() { elem.parentNode.removeChild(elem); };
+          </pre>
+          <p>
+            Secondly, even using the observer pattern doesn't relieve the
+            implementation of having to walk through the model and determine
+            all the mutations that have occured and their corresponding times
+            and this could be expensive if the computer has been asleep for
+            a few days.
           </p>
           <p>
-            In the current model, the animation timeline is essentially
-            static unless modified by script, which means that interrogating
-            this timeline for information should be safe even in the absence
-            of enforced synchronization.
-            So if correct handling of an event requires precise knowledge
-            about which animations have started or finished, then the timeline
-            can be inspected at the time given in the event. 
+            Another option might be to set some implementation requirements that
+            allow dropping events or automatic pausing when the time between
+            samples is protracted (such as the device going to sleep).
           </p>
-          <p>
-            Furthermore, triggering animations off complex functions involving
-            current animation state is probably not the right way to go - 
-            instead some kind of model of the state should be used and the
-            animations derived from that.
-          </p>
-          <p>
-            In short, in the absence of strong use cases for synchronous events
-            we feel we should go with a simpler model.
-          </p>
-          <p>
-            Some alternative approaches are:
-          </p>
-          <ul>
-            <li>
-              Standard asynchronous events with no guarantees about the
-              state of the world when event handlers are called.
-            </li>
-            <li>
-              Event logs like those proposed to replace DOM events.
-            </li>
         </div>
+      </section>
+      <section>
+        <h3>Event dispatch during seeking</h3>
+        <p>
+          The previous description of event dispatch applies when the timing
+          model is sampled during normal playback (whether forwards or
+          backwards).
+          However, when a seek is performed by setting the
+          <code>currentTime</code> of a <a>TimedItem</a>,
+          a different behavior is employed.
+          In effect, event dispatch is supressed until the seek is completed.
+          After the seek has completed, events are dispatched based on comparing
+          the before and after state of each <a>TimedItem</a> affected by the
+          seek.
+          Iteration events are not dispatched.
+        </p>
+        <p class="annotation">
+          Supressing events during seeking is necessary to provide performant
+          seeking.
+          It is also arguably the more intuitive behavior as, for example,
+          when rewinding a cartoon one probably does not expect a bucketload of
+          events to arrive as a result of traversing backwards over each
+          <a>TimedItem</a>.
+        </p>
+        <p class="issue">
+          Should iteration events be dispatched?
+        </p>
+        <p>
+          The procedure is as follows:
+        </p>
+        <ol>
+          <li>Define a <a>TimedItem</a> as <dfn>active</dfn> if and only if
+            <code>currentTime</code> &ge; <code>timing.startDelay</code> and
+            <code>currentTime</code> &lt; <code>timing.startDelay</code> +
+                                          <code>animationDuration</code>.</li>
+          <dd></dd>
+          <li>Prior to performing the seek on <var>item</var>,
+              record whether it is <a>active</a> or not.</li>
+          <li>If <var>item</var> is an <a>AnimationGroup</a> record whether each
+              descendent <a>TimedItem</a> is <a>active</a> or not.</li>
+          <li>Perform the seek as described in <a href="#seeking-a-timed-item"
+            class="sectionRef"></a>.</li>
+          <li>For each <a>TimedItem</a> considered in steps 2 and 3, compare
+              whether the item was <a>active</a> before the seek and
+              whether it is <a>active</a> now and dispatch events as follows:
+              <dl class="switch">
+                <dt>If the item was previously <a>active</a> but, after seeking,
+                    is no longer <a>active</a>,</dt>
+                <dd>Dispatch a new <code>timingend</code> event with
+                  <a>localTime</a> set to <code>endTime</code> and
+                  <a>documentTime</a> set to the corresponding document
+                  time.
+                  <span class="todo">(Obviously this depends on being able
+                    to convert from a local time to a document time as
+                    discussed in the previous section.)
+                </dd>
+                <dt>If the item was previously not <a>active</a> but, after
+                    seeking, is now <a>active</a>,</dt>
+                <dd>Dispatch a new <code>timingstart</code> event with
+                  <a>localTime</a> set to <code>startTime
+                  + timing.startDelay + timeDrift</code> and
+                  <a>documentTime</a> set to the corresponding document
+                  time.
+                </dd>
+              </dl>
+          </li>
+        </ol>
+        <p>
+          The sequence of dispatched events is identical to that of events
+          dispatched during regular sampling (see <a href="#sequence-of-events"
+            class="sectionRef"></a>).
+        </p>
+      </section>
+      <section>
+        <h3>Sequence of events</h3>
+        <p>
+          <a>TimingEvent</a>s are categories as <a
+          href="http://www.w3.org/TR/DOM-Level-3-Events/#sync-async">synchronous
+          events</a> whose sequence is as follows:
+        </p>
+        <ol>
+          <li>Events are ordered by <code>documentTime</code></li>
+          <li>For events with the same <code>documentTime</code>,
+              sort by event type from first to last as follows:
+              <em>timingcancel</em>, <em>timingend</em>,
+              <em>timingiteration</em>, <em>timingstart</em>.
+              <p class="note">
+                Note that sorting end events before start events is consistent
+                with the end-point exclusive nature of timing in Web
+                Animations (see <a href="#interval-timing"
+                class="sectionRef"></a>).
+                When animation A ends at the same time as animation B begins,
+                we can imagine that animation A ends an incredibly short amount
+                of time before animation B begins such that there is no overlap.
+              </p>
+          </li>
+          <li>
+            For events with the same <code>documentTime</code> and type,
+            if the target <a>TimedItem</a>s participate in a tree made up of
+            <a>AnimationGroup</a>s then the events are dispatched as if the tree
+            was sampled breadth-first such that events attached to ancestor
+            <a>TimedItem</a>s are dispatched first.
+          </li>
+        </ol>
+        <p class="issue">
+          What if the order is still unresolved, is it okay to leave it
+          undefined?
+          Can we use document order or script order here?
+          It's tempting to use the same order as we use for compositing but
+          remember that not everything that is timed is composited (e.g.
+          groups).
+        </p>
       </section>
     </section>
 
     <section>
       <h2>Animation of common data types</h2>
+      <div class="todo">
       <p>
         Need to describe how to interpolate/add both:
         <ol>
@@ -5584,6 +6043,7 @@ elem.animate(
       <p>
         Need to provide facility for smooth interpolation of arbitrary paths.
       </p>
+    </div>
     </section>
 
     <section>
