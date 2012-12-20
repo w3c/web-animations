@@ -375,9 +375,9 @@
               href="#creating-a-new-animation-object" class="sectionRef"></a>.
             </p>
             <dl class="parameters">
-              <dt>Element? elem</dt>
+              <dt>AnimationTarget? elem</dt>
               <dd>
-                The target element.
+                The target element or pseudo-element.
                 This may be <code>null</code> for animations that do not target
                 a specific element.
               </dd>
@@ -471,13 +471,13 @@
               </dd>
             </dl>
           </dd>
-          <dt>NamedConstructor = LinkedAnimation(Element? elem,
+          <dt>NamedConstructor = LinkedAnimation(AnimationTarget? elem,
                                                  AnimationTemplate template,
                                                  optional double startTime)</dt>
           <dd>
             TBD
           </dd>
-          <dt>NamedConstructor = ClonedAnimation(Element? elem,
+          <dt>NamedConstructor = ClonedAnimation(AnimationTarget? elem,
                                                  Animation cloneSource,
                                                  AnimationGroup? parentGroup,
                                                  optional double startTime)
@@ -537,12 +537,12 @@
               </li>
             </ol>
           </dd>
-          <dt>readonly attribute Element? targetElement</dt>
+          <dt>readonly attribute AnimationTarget? targetElement</dt>
           <dd>
             <p>
-              The element being animated by this object.
+              The element or pseudo-element being animated by this object.
               This may be <code>null</code> for animations that do not target
-              a <code>Element</code> such as an animation that produces a sound
+              a specific element such as an animation that produces a sound
               using an audio API.
             </p>
           </dd>
@@ -670,6 +670,115 @@ var animC = new Animation(elem,
             Add examples of specifying the parent group and start time once we
             resolve the behavior of those.
           </p>
+        </section>
+      </section>
+      <section>
+        <h3>Animation targets and pseudo-elements</h3>
+        <p>
+          Animations may target not only regular elements but also
+          pseudo-elements such as <code>::before</code> and
+          <code>::first-line</code> [[!SELECT]].
+        </p>
+        <p>
+          To represent pseudo-elements, we introduce the <a>PseudoElement</a>
+          interface.
+        </p>
+        <dl title="interface PseudoElement" class="idl">
+          <dt>Constructor (Element element, DOMString pseudoElement)</dt>
+          <dd>
+            Creates a new pseudo-element using <var>element</var> as the <a
+            href="http://www.w3.org/TR/css3-selectors/#subject">subject</a>
+            and <var>pseudoElement</var> as the pseudo-element to match (e.g.
+            &lsquo;<code>::first-line</code>&rsquo;).
+          </dd>
+          <dt>attribute Element element</dt>
+          <dd>
+            The element used as the <a
+            href="http://www.w3.org/TR/css3-selectors/#subject">subject</a> for
+            matching a pseudo-element.
+            <p>Exceptions:</p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised on setting if this object is a readonly object.
+              </dd>
+            </dl>
+          </dd>
+          <dt>attribute DOMString pseudoElement</dt>
+          <dd>
+            The pseudo-element including the initial colon(s). For example,
+            &lsquo;<code>::after</code>&rsquo;.
+            <p>Exceptions:</p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised on setting if this object is a readonly object.
+              </dd>
+            </dl>
+          </dd>
+        </dl>
+        <div class="feedbackWanted">
+          <p>
+            This is an interface that may be useful in other specifications and
+            so there are a few considerations to bear in mind:
+          </p>
+          <ul>
+            <li>
+              <p>
+                Currently no validation is performed at all.
+                You can set <code>pseudoElement</code> to
+                &lsquo;<code>::batman</code>&rsquo; and we'll just ignore it
+                when compositing (still need to define this).
+              </p>
+              <p>
+                This is in order to provide better fallback.
+                For example, if a UA doesn't support a particular pseudo-element
+                it will still run the animation in terms of occupying time and
+                firing events.
+                There simply won't be any visual effect.
+              </p>
+              <p>
+                Also, we have a general pattern in this specification that
+                constructors don't throw.
+              </p>
+              <p>
+                So while this works for this API, is this behavior useful in
+                other specifications?
+              </p>
+            </li>
+            <li>
+              <p>
+                The other issue is that we could just make <a>PseudoElement</a>
+                have an optional <code>pseudoElement</code> attribute and use
+                that everywhere instead of a union of <a>Element</a> or
+                <a>PseudoElement</a> (see <a>AnimationTarget</a>).
+              </p>
+              <p>
+                The reason we don't is that it complicates the 99% case where
+                you're not using pseudo-elements. For example, you have to type
+                <code>anim.effect.targetElement.element</code> which is
+                what so many people don't like about SVG.
+              </p>
+              <p>
+                So, again, this works for this specification, but is it ok for
+                others?
+              </p>
+            </li>
+            <li>
+              While we're at it, should we enforce using double-colons somehow?
+            </li>
+          </ul>
+        </div>
+        <section>
+          <h4>The <a>AnimationTarget</a> typedef</h4>
+          <div class="idl"
+            title="typedef (Element or PseudoElement) AnimationTarget">
+            For simplicity, throughout this specification <a>AnimationTarget</a>
+            is used wherever either an <a>Element</a> or a <a>PseudoElement</a>
+            can be used.
+          </div>
         </section>
       </section>
     </section>
@@ -3499,7 +3608,7 @@ new SeqGroup(
             <code>AnimationGroup</code> object when this method was
             called.
           </dd>
-          <dt>sequence&lt;Animation&gt; getAnimationsForElement (Element
+          <dt>sequence&lt;Animation&gt; getAnimationsForElement (AnimationTarget
           elem)</dt>
           <dd>
             Returns all descendent <code>Animation</code> objects
@@ -3767,7 +3876,7 @@ new SeqGroup(
             </p>
           </dd>
           <dt>any sample (double? timeFraction, double currentIteration,
-                          Element? target, any underlyingValue)</dt>
+                          AnimationTarget? target, any underlyingValue)</dt>
           <dd>
             <div class="todo">
               <p>
@@ -4727,7 +4836,7 @@ elem.animate(
                   The current iteration index beginning with zero for the first
                   iteration.
                 </dd>
-                <dt>Element? target</dt>
+                <dt>AnimationTarget? target</dt>
                 <dd>
                   The element to which the effect should be applied if any.
                   When this method is called as a result of this object being
@@ -5079,9 +5188,9 @@ elem.animate(
               class="sectionRef"></a>.
             </p>
             <dl class="parameters">
-              <dt>Element target</dt>
+              <dt>AnimationTarget target</dt>
               <dd>
-                The <code>Element</code> to be targetted.
+                The element or pseudo-element to be targetted.
               </dd>
               <dt>optional double startTime</dt>
               <dd>
@@ -5106,9 +5215,9 @@ elem.animate(
             <p>
               Creates a series of independent <code>TimedItem</code>
               objects, one for each element in <code>target</code>.
-              As with <code>animate(Element target, double startTime)</code>
-              each such <code>TimedItem</code> object is appended
-              to <code>element.ownerDocument.animationTimeline</code>.
+              As with <code>animate(AnimationTarget target, double
+              startTime)</code> each such <code>TimedItem</code> object is
+              appended to <code>element.ownerDocument.animationTimeline</code>.
             </p>
             <p>
               This allows the following sort of usage:
@@ -5136,7 +5245,7 @@ elem.animate(
               </dd>
               <dt>optional double startTime</dt>
               <dd>
-                As with <code>animate(Element target, optional double
+                As with <code>animate(AnimationTarget target, optional double
                   startTime)</code>.
               </dd>
             </dl>
@@ -5154,7 +5263,7 @@ elem.animate(
               group.
             </p>
             <dl class="parameters">
-              <dt>Element target</dt>
+              <dt>AnimationTarget target</dt>
               <dd>
                 As with <code>animate</code>.
               </dd>
@@ -5184,14 +5293,14 @@ elem.animate(
             AnimationGroup? parentGroup,
             optional double startTime)</dt>
           <dd>
-            As with <code>animateWithParent(Element target,
+            As with <code>animateWithParent(AnimationTarget target,
               AnimationGroup? parentGroup,
               optional double startTime)</code> except
             one <code>TimedItem</code> is created for each
             <code>Node</code> in <code>target</code> that is of type
             <code>ELEMENT_NODE</code>.
           </dd>
-          <dt>TimedItem animateLive (Element target,
+          <dt>TimedItem animateLive (AnimationTarget target,
             optional double startTime)</dt>
           <dd>
             As with <code>animate</code> with the exception that the
@@ -5206,7 +5315,7 @@ elem.animate(
             live.
           </dd>
           <dt>TimedItem animateLiveWithParent
-            (Element target, AnimationGroup? parentGroup,
+            (AnimationTarget target, AnimationGroup? parentGroup,
              optional double startTime)</dt>
           <dd>
             As with <code>animateWithParent</code> with the exception that the
