@@ -322,9 +322,51 @@
           Furthermore, since time has a common source, it is easy to synchronize
           otherwise independent animations.
         </p>
-        <p>
-          The nodes in this hierarchy of time are called time sources.
-        </p>
+      </section>
+    </section>
+
+    <section>
+      <h2>Time sources</h2>
+      <p>
+        In Web Animations timing is based on a hierarchy of time relationships
+        where the nodes are called time sources.
+        Time sources provide a time value for the purpose of deriving further
+        time sources and for eventual input into the animation model.
+      </p>
+      <p class="annotation">
+        A future version or module may offer time sources based on UI gestures
+        or other quantities that are less related to time.
+      </p>
+      <p>
+        Time sources are represented in the Web Animations <acronym
+        title="Application Programming Interface">API</acronym> by the
+        <a>TimeSource</a> interface.
+      </p>
+      <section>
+        <h3>The <code>TimeSource</code> interface</h3>
+        <dl title="interface TimeSource" class="idl">
+          <dt>readonly attribute double? currentTime</dt>
+          <dd>
+            <p>
+              The current time value of this time source in seconds.
+              This value is updated each time the model is sampled (see <a
+              href="#interaction-with-script" class="sectionRef"></a>).
+            </p>
+            <p>
+              Note that current time will be <code>null</code> if the time
+              source cannot currently produce a time value.
+              For example, a time source that derives its time from another time
+              source will return <code>null</code> if the parent time source is
+              not provided, is unavailable, or if the parent time source reports
+              <code>null</code> as its <code>currentTime</code>.
+            </p>
+            <p class="note">
+              Note that while <code>currentTime</code> is read-only in this
+              interface, it is writeable in the derived interface
+              <a>TimedItem</a>.
+            </p>
+          </dd>
+        </dl>
       </section>
     </section>
 
@@ -6173,6 +6215,16 @@ elem.animate({ opacity: '0%' }, 1).onend =
         Need to provide facility for smooth interpolation of arbitrary paths.
       </p>
     </div>
+    </section>
+
+    <section>
+      <h2>Interaction with script</h2>
+      <div class="todo">
+        <p>
+          Need to document when the model is updated. e.g. currentTime doesn't
+          change within a script block unless you set it.
+        </p>
+      </div>
     </section>
 
     <section>
