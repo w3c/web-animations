@@ -330,8 +330,8 @@
       <p>
         In Web Animations timing is based on a hierarchy of time relationships
         where the nodes are called time sources.
-        Time sources provide a time value for the purpose of deriving further
-        time sources and for eventual input into the animation model.
+        Time sources provide a <dfn>time value</dfn> for the purpose of deriving
+        further time sources and for eventual input into the animation model.
       </p>
       <p class="annotation">
         A future version or module may offer time sources based on UI gestures
@@ -348,7 +348,7 @@
           <dt>readonly attribute double? currentTime</dt>
           <dd>
             <p>
-              The current time value of this time source in seconds.
+              The current <a>time value</a> of this time source in seconds.
               This value is updated each time the model is sampled (see <a
               href="#interaction-with-script" class="sectionRef"></a>).
             </p>
@@ -365,6 +365,205 @@
               interface, it is writeable in the derived interface
               <a>TimedItem</a>.
             </p>
+          </dd>
+        </dl>
+      </section>
+    </section>
+
+    <section>
+      <h2>The document timeline</h2>
+      <p>
+        Towards the root of the time hierarchy is the document time source.
+        A document time source is associated with a <a
+        href="http://www.w3.org/TR/html51/dom.html#the-document-object">Document</a>
+        [[HTML5]]
+        object and provides a monotonically increasing time value that begins at
+        zero when the Document <a>begins to play</a>.
+      </p>
+      <p>
+        A document time source <dfn>begins to play</dfn> at the earliest of the
+        following possible moments:
+      </p>
+      <ol>
+        <li>When a call is made to <code>play</code> on the
+            <a>DocumentTimeSource</a>.</li>
+        <li>The moment immediately prior to dispatching the "load" event of the
+            document with which it is associated if the <code>autoplay</code>
+            attribute on the <a>DocumentTimeSource</a> is <code>true</code> at
+            that moment.
+            <p>
+              For HTML documents, this is the moment after the <a
+              href="http://www.w3.org/TR/html51/dom.html#current-document-readiness
+              ">current document readiness</a> has changed to "complete" but
+              before dispatching the load event.
+              In terms of the timings defined in [[NAVIGATION-TIMING]], this
+              occurs between the <em>domComplete</em> and
+              <em>loadEventStart</em> timings.
+            </p>
+        <li>When the <code>autoplay</code> attribute is made newly
+            <code>true</code> at a moment after opportunity 2.</li>
+      </ol>
+      <p>
+        Before a document time source <a>begins to play</a>, its <a>time
+        value</a> is <code>null</code>.
+        Once a document time source has begun to play its immediate time value
+        is zero and from that point onwards, it reports the number of seconds
+        since it <a title="begins to play">begun to play</a> subject to the
+        constraints on updating the time value in <a
+        href="#interaction-with-script" class="sectionRef"></a>.
+      </p>
+      <p>
+        Once a document time source has begun to play it cannot be restarted or
+        paused and continues to be non-<code>null</code> for the remainder of
+        its lifetime.
+      </p>
+      <section>
+        <h3>The <a>DocumentTimeSource</a> interface</h3>
+        <dl title="interface DocumentTimeSource : TimeSource" class="idl">
+          <dt>attribute boolean autoplay</dt>
+          <dd>
+            <p>
+              Indicates if the document time source should <a title="begins to
+              play">begin to play</a> automatically at the moment immediately
+              before the "load" event is fired.
+              Initially <code>true</code>.
+            </p>
+          </dd>
+          <dt>void play ()</dt>
+          <dd>
+            If the document time source has not already <a title="begins to
+            play">begun to play</a> causes it to begin immediately.
+          </dd>
+          <dt>double? toDocumentTime (double documentTime,
+                                      DocumentTimeSource other)</dt>
+          <dd>
+            <p>
+              Returns the time value from another <a>DocumentTimeSource</a>,
+              <em>other</em>, converted to a time value relative to the when
+              this document time source began.
+            </p>
+            <p>
+              Returns <code>null</code> if <em>documentTime</em> time represents
+              a time earlier than when this document time source <a
+              title="begins to play">began to play</a> or if this document time
+              source has not yet begun to play.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type <code>IndexSizeError</code></dt>
+              <dd>
+                Raised if <em>documentTime</em> is less than zero.
+              </dd>
+            </dl>
+          </dd>
+          <dt>double? toDocumentTime (Event event)</dt>
+          <dd>
+            <p>
+              Returns the number of seconds between when <em>event</em> was
+              fired and when this document time source began.
+            </p>
+            <p>
+              Since the <code>timeStamp</code> attribute of the
+              <code>Event</code> interface specified in [[DOM-LEVEL-3-EVENTS]]
+              is not guaranteed to be monotonically increasing implementations
+              SHOULD record alongside each event a suitable monotonically
+              increasing timestamp that can be used to convert to an appropriate
+              time value here.
+            </p>
+            <p>
+              Returns <code>null</code> if the time of the event precedes when
+              this document time source <a title="begins to play">began to
+              play</a> or if this document time source has not yet begun to
+              play.
+            </p>
+            <p class="issue">
+              This might be deferred to a later version.
+            </p>
+          </dd>
+          <dt>double? fromDocumentTime (double documentTime,
+                                        TimeSource other)</dt>
+          <dd>
+            <p>
+              Returns the corresponding time value for a given time source,
+              <em>other</em>, for a time value relative to this document time
+              source using the following procedure.
+            </p>
+            <ol>
+              <li>Define the <dfn>parent time source</dfn> of time source A as
+                  being the value of a <code>timeline</code> property on A if
+                  such a property exists and refers to a <a>TimeSource</a>
+                  object.</li>
+              <li>Define an <dfn>ancestor time source</dfn> of time source A as
+                  any time source that appears in the chain of parent time
+                  sources constructed starting with the <a>parent time
+                  source</a> of A and continuing with each subsequent parent
+                  up to and including a document time source or until there are
+                  no further parent time sources.</li>
+              <li>Define a time source A as being <dfn>derived from another time
+                  source</dfn> B if B is an <a>ancestor time source</a> of
+                  A.</li>
+              <li>Determine <var>local document time</var> as follows:
+                <dl class="switch">
+                  <dt>If <em>other</em> is not <a title="derived from another
+                  time source">derived from</a> this document time source,</dt>
+                  <dd>
+                    <ol>
+                      <li>
+                        Let <var>remote document</var> be the document time
+                        source that is an <a>ancestor time source</a> of
+                        <em>other</em> if such a document time source exists.
+                      </li>
+                      <li>
+                        If there is no such <var>remote document</var> raise
+                        a <code>DOMException</code> of type
+                        <code>HierarchyRequestError</code>.
+                      </li>
+                      <li>
+                        Let <var>local document time</var> be the result of
+                        calling <code>toDocumentTime(<em>documentTime</em>,
+                        <var>remote document</var>)</code> on this object.
+                      </li>
+                    </ol>
+                  </dd>
+                  <dt>Otherwise,</dt>
+                  <dd>
+                    Let <var>local document time</var> be <em>documentTime</em>.
+                  </dd>
+                </dl>
+              </li>
+              <li>
+                Calculate the <code>currentTime</code> of <em>other</em> by
+                following the steps described <span
+                class="todo">somewhere...</span>
+              </li>
+            </ol>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type <code>HierarchyRequestError</code></dt>
+              <dd>
+                Raised if <em>other</em> does not have an <a>ancestor time
+                source</a> that is a document time source object.
+              </dd>
+            </dl>
+            <p class="issue">
+              Is this needed? And is the automatic cross-document time source
+              negotation required?
+            </p>
+          </dd>
+        </dl>
+        <p>
+          As document time sources are associated with a Document object, the
+          following extension is required to the Document interface defined in
+          [[HTML5]].
+        </p>
+        <dl title="partial interface Document" class="idl">
+          <dt>readonly attribute DocumentTimeSource timeline</dt>
+          <dd>
+            The <a>DocumentTimeSource</a> associated with the document.
           </dd>
         </dl>
       </section>
