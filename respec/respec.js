@@ -2658,8 +2658,8 @@ berjon.WebIDLProcessor.prototype = {
                                                                 .join(", ");
             str += " {\n";
             // we process attributes and methods in place
-            var maxAttr = 0, maxMeth = 0, maxConst = 0, hasRO = false,
-                hasStatic = false;
+            var maxAttr = 0, maxMeth = 0, maxConst = 0, hasInherit = false,
+                hasRO = false, hasStatic = false;
             obj.children.forEach(function (it, idx) {
                 var len = it.datatype.length;
                 if (it.type == "method" && it.special)
@@ -2669,13 +2669,14 @@ berjon.WebIDLProcessor.prototype = {
                 if (it.type == "attribute") maxAttr = (len > maxAttr) ? len : maxAttr;
                 else if (it.type == "method") maxMeth = (len > maxMeth) ? len : maxMeth;
                 else if (it.type == "constant") maxConst = (len > maxConst) ? len : maxConst;
+                if (it.type == "attribute" && it.inherit) hasInherit = true;
                 if (it.type == "attribute" && it.readonly) hasRO = true;
                 if (it.type == "method" && it.isStatic) hasStatic = true;
             });
             var curLnk = "widl-" + obj.refId + "-";
             for (var i = 0; i < obj.children.length; i++) {
                 var ch = obj.children[i];
-                if (ch.type == "attribute") str += this.writeAttribute(ch, maxAttr, indent + 1, curLnk, hasRO);
+                if (ch.type == "attribute") str += this.writeAttribute(ch, maxAttr, indent + 1, curLnk, hasInherit, hasRO);
                 else if (ch.type == "method") str += this.writeMethod(ch, maxMeth, indent + 1, curLnk, hasStatic);
                 else if (ch.type == "constant") str += this.writeConst(ch, maxConst, indent + 1, curLnk);
             }
@@ -2746,7 +2747,7 @@ berjon.WebIDLProcessor.prototype = {
         return str;
     },
 
-    writeAttribute:    function (attr, max, indent, curLnk, hasRO) {
+    writeAttribute:    function (attr, max, indent, curLnk, hasInherit, hasRO) {
         var sets = [], gets = [];
         if (attr.raises.length) {
             for (var i = 0; i < attr.raises.length; i++) {
@@ -2759,9 +2760,16 @@ berjon.WebIDLProcessor.prototype = {
         var str = "<span class='idlAttribute'>";
         if (attr.extendedAttributes) str += this._idn(indent) + "[<span class='extAttr'>" + attr.extendedAttributes + "</span>]\n";
         str += this._idn(indent);
+        if (attr.readonly && attr.inherit) {
+          console.warn("Both read-only and inherit set");
+        }
         if (hasRO) {
-            if (attr.readonly) str += "readonly ";
-            else               str += "         ";
+            if (attr.readonly)      str += "readonly ";
+            else if (attr.inherit)  str += "inherit  ";
+            else                    str += "         ";
+        } else if (hasInherit) {
+            if (attr.inherit) str += "inherit ";
+            else              str += "        ";
         }
         str += "attribute ";
         var pad = max - attr.datatype.length;

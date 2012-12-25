@@ -623,7 +623,7 @@
           and <a>active duration</a> is illustrated below.
         </p>
         <div class="figure">
-          <img src="img/animation-interval-examples.svg" width="600">
+          <img src="img/active-interval-examples.svg" width="600">
         </div>
         <p class="caption">
           Examples of the effect of the <a>start delay</a> on the endpoints of
@@ -636,8 +636,350 @@
           item is brought forward by the delay.
         </p>
       </section>
+      <section class="informative">
+        <h3>Local time and inherited time</h3>
+        <p>
+          In Web Animations all times are relative to some point of reference.
+          These different points of reference produce different <a>time
+          spaces</a>.
+        </p>
+        <p>
+          This can be compared to coordinate spaces as used in computer
+          graphics.
+          The zero time of a time space is analogous to the origin of
+          a coordinate space.
+        </p>
+        <p>
+          For example, since a timed item can specify its own start time, the
+          time values produced by a timed item will be offset from those of its
+          time source.
+          As a result we say that the timed item establishes a new time space
+          which we call <em>local time</em> as illustrated below.
+        </p>
+        <div class="figure">
+          <img src="img/local-time.svg" width="600">
+        </div>
+        <p class="caption">
+          Inherited time and local time.<br>
+          At time <var>t</var>, the inherited time is 2.5.<br>
+          For timed item (a), the local time is 1.5.<br>
+          For timed item (b), the local time is also 1.5 since local time is
+          based on a timed item's start time only, and not on its start delay.
+        </p>
+        <p>
+          From the point of a view of a given timed item we can talk about the
+          following time spaces:
+        </p>
+        <dl>
+          <dt><dfn>Local time space</dfn></dt>
+          <dd>
+            A time space whose zero time is the start time of the timed item.
+          </dd>
+          <dt><dfn>Inherited time space</dfn></dt>
+          <dd>
+            A time space that corresponds to the output of the timed item's time
+            source.
+          </dd>
+        </dl>
+        <p>
+          In addition to these time spaces, for timed items that allow
+          repeating, we can also describe <a>iteration time space</a> (see <a
+          href="#repeating" class="sectionRef"></a>).
+        </p>
+      </section>
       <section>
         <h3>The <a>TimedItem</a> interface</h3>
+        <p>
+          Timed items are represented in the Web Animations API by the
+          <a>TimedItem</a> interface.
+        </p>
+        <dl title="interface TimedItem : EventTarget" class="idl">
+          <dt>attribute double startTime</dt>
+          <dd>
+            <p>
+              The time which, when combined with the <code>startDelay</code>,
+              defines the lower bound of the <a>active interval</a>.
+              It is expressed in seconds in the <a>inherited time space</a>.
+            </p>
+            <p>
+              When this item is the child of a sequence animation group, any
+              previously set value for <code>startTime</code> is ignored and
+              instead the value of this property is determined by the procedure
+              defined in <a
+              href="#the-start-time-of-children-of-a-sequence-animation-group"
+              class="sectionRef"></a>.
+              Furthermore, attempts to set this property will raise a
+              <code>DOMException</code> of type <code>InvalidStateError</code>.
+              If this item is later removed from the sequence animation group,
+              any previously set value will be restored.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type <code>InvalidStateError</code></dt>
+              <dd>
+                Raised on setting if this item is the child of a sequence
+                animation group (see <a
+                href="#the-start-time-of-children-of-a-sequence-animation-group"
+                class="sectionRef"></a>).
+              </dd>
+            </dl>
+          </dd>
+          <dt>attribute double startDelay</dt>
+          <dd>
+            <p>
+              The number of seconds which, when added to the timed item's
+              <code>startTime</code>, defines the lower bound of the timed
+              item's <a>active interval</a>.
+            </p>
+            <p>
+              A non-normative description of the effect of this property on
+              timing is given in <a href="#the-active-interval"
+              class="sectionRef"></a>.
+            </p>
+          </dd>
+          <dt>attribute unrestricted double activeDuration</dt>
+          <dd>
+            <p>
+              The length in seconds of the <a>active interval</a>.
+            </p>
+            <p>
+              Initially, this attribute will reflect the <a>intrinsic active
+              duration</a>.
+              Changes to the model that cause the <a>intrinsic active
+              duration</a> to change are reflected in the value returned here.
+            </p>
+            <p>
+              The <a>intrinsic active duration</a> may be overridden by
+              setting this attribute to any real number.
+            </p>
+            <p class="issue">
+              How can you restore the active duration to reflecting the
+              intrinsic active duration?
+              Previously we said that setting it to <code>undefined</code> did
+              this but we had some feedback that this was un-javascript-like.
+              Do we add <code>resetDuration()</code>? Or just say, &ldquo;you
+              can't&rdquo;?
+            </p>
+            <p class="issue">
+              Call this simply <code>duration</code>?
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type <code>IndexSizeError</code></dt>
+              <dd>
+                Raised on setting if the value to set is a real number that is
+                less than zero.
+              </dd>
+            </dl>
+          </dd>
+          <dt>readonly attribute unrestricted double endTime</dt>
+          <dd>
+            <p>
+              The upper bound of the <a>active interval</a> expressed in
+              seconds relative to the <a>inherited time space</a> of
+              <code>timeline</code>.
+            </p>
+            <p>
+              <code>endTime</code> is calculated as follows:
+            </p>
+            <dl class="switch">
+              <dt>If <code>locallyPaused</code> is <code>true</code>,</dt>
+              <dd>
+                <code>endTime</code> is positive infinity.
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                <code>endTime</code> is the result of evaluating
+                <code>startTime + startDelay +
+                      activeDuration + timeDrift</code>.
+              </dd>
+            </dl>
+            <p class="note">
+              Note that while the <code>endTime</code> is read-only, it can be
+              set indirectly by overriding the <code>activeDuration</code>
+              property.
+              For example, to set <code>endTime</code> to time <var>t</var> in
+              <a>inherited time space</a>, set <code>activeDuration</code> to
+              <code><var>t</var> - startTime - startDelay - timeDrift</code>.
+            </p>
+            <div class="issue">
+              <p>
+                Make this writeable?
+                We could make it just do the above calculation and set
+                <code>activeDuration</code>, the caveat being that setting
+                <code>endTime</code> &lt; <code>startTime</code> would fail
+                (even if the next line of code fixed <code>startTime</code> to
+                make it valid).
+              </p>
+              <p>
+                Alternatively we could allow <code>endTime</code> to be less
+                than <code>startTime</code> and add logic to ignore such
+                intervals elsewhere.
+              </p>
+            </div>
+          </dd>
+          <dt>readonly attribute TimeSource? timeline</dt>
+          <dd>
+            <p>
+              The time source upon which this timed item's timing is based.
+              The output time values of this time source provide the
+              <a>inherited time space</a> for this timed item.
+            </p>
+            <p>
+              May be <code>null</code> if this timed item is not associated with
+              a time source.
+              Animations without a time source do not affect their target.
+            </p>
+            <p class="issue">
+              Is this right? It's probably useful to be able to put animations
+              in a state where they have no effect on their target such as when
+              calling <code>cancel</code>.
+              Should we just set <code>targetElement</code> to <code>null</code>
+              in that case?
+            </p>
+          </dd>
+        </dl>
+      </section>
+    </section>
+
+    <section>
+      <h2>Playback control: seeking, pausing and cancelling</h2>
+      <p>
+      </p>
+      <section class="informative">
+        <h3>Seeking a timed item</h3>
+      </section>
+      <section class="informative">
+        <h3>Pausing a timed item</h3>
+      </section>
+      <section class="informative">
+        <h3>Cancelling a timed item</h3>
+      </section>
+      <section>
+        <h3>Playback control interface members</h3>
+        <dl title="partial interface TimedItem" class="idl">
+          <dt>inherit attribute double? currentTime</dt>
+          <dd>
+            <p>
+              Returns the <a>effective local time</a> of the timed item.
+            </p>
+            <p>
+              This differs from the definition of <a>local time</a> used
+              elsewhere in the model in that when the parent iteration time is
+              <code>null</code> (e.g. because <code>parentGroup</code> is
+              <code>null</code>, or because the parent is not <a>in effect</a>)
+              a parent time of zero is used.
+              This allows the item to be seeked prior to being attached to
+              a group.
+            </p>
+            <p>
+              The value returned is calculated as follows:
+            </p>
+            <blockquote>
+              <code>currentTime =
+                    <a>effective parent time</a> - startTime - timeDrift</code>
+            </blockquote>
+            <p>
+              Setting this value performs a seek operation according to the
+              steps described in described in <a href="#seeking-a-timed-item"
+              class="sectionRef"></a>.
+            </p>
+          </dd>
+          <dt>readonly attribute double timeDrift</dt>
+          <dd>
+            <p>
+              The number of seconds that the actual <a>item time</a> of this
+              item lags behind its scheduled time as a result of pausing and
+              seeking this item.
+            </p>
+            <p>
+              The <code>timeDrift</code> property is both a stored and a
+              calculated value.
+              When this timed item is paused, the value is calculated from the
+              <a>pause start time</a>.
+              When the timed item is not paused, the value stored for the
+              property is used.
+              The stored value is initially zero, and is updated when the item
+              is unpaused or seeked.
+            </p>
+            <p>
+              The value returned is as follows:
+            </p>
+            <dl class="switch">
+              <dt>If <code>locallyPaused</code> is <code>false</code>,</dt>
+              <dd>
+                Return the stored value for this property.
+              </dd>
+              <dt>If <code>locallyPaused</code> is <code>true</code>,</dt>
+              <dd>
+                Return the result of 
+                <code><a>effective parent time</a> - startTime - <a>pause start
+                time</a></code>.
+              </dd>
+            </dl>
+          </dd>
+          <dt>void cancel ()</dt>
+          <dd>
+            <p>
+              Disassociates this timed item from its <a>TimeSource</a>
+              (represented by <code>timeline</code>).
+              Removes the timed item from its parent group.
+              As a result, the timed item will no longer affect its target.
+            </p>
+            <p class="annotation">
+              We will need to make this actually disassociate from its
+              TimeSource once we introduce that concept.
+            </p>
+            <p>
+              When cancelling a timed item, a <em>timingcancel</em> event is
+              also fired at the item and its descendents using the following
+              procedure:
+            </p>
+            <ol>
+              <li>If <code>timeline</code> is <code>null</code>, return
+                  immediately.
+                  <span class="todo">(Is this right? Should be just dispatch the
+                  event anyway with <code>null</code> <code>documentTime</code>
+                  and <code>localTime</code>?)</span>
+                  </li>
+              <li>Record <code>parentGroup.currentTime</code> as <var>local
+                  time</var>.</li>
+              <li>Record the document time as <var>document time</var>
+                  <span class="todo">(the concept of document time will be
+                  explained properly once we introduce
+                  <a>DocumentTimeSource</a>)</span>.</li>
+              <li>Record the <code>currentIteration</code> as <var>iteration
+                  index</var>.</li>
+              <li>Remove this timed item from <code>parentGroup</code>
+                  but do not dispatch a <em>timingend</em> event on this timed
+                  item or any of its descendents.</li>
+              <li>Dispatch a <em>timingcancel</em> event at this timed item and
+                  its descendents with using the stored values for
+                  <var>local time</var>, <var>document time</var>, and
+                  <var>iteration index</var>.</li>
+            </ol>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised if this item is a linked item, that is, if
+                <code>template</code> is not <code>null</code>
+                (see <a href="#animation-templates" class="sectionRef"></a>).
+              </dd>
+            </dl>
+            <p class="feedbackWanted">
+              Is this exception necessary? It will depend how we approach group
+              templates.
+            </p>
+          </dd>
+        </dl>
       </section>
     </section>
 
