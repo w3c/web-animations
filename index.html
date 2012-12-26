@@ -1377,9 +1377,141 @@
       <h2>Repeating</h2>
       <section class="informative">
         <h3>Iteration intervals</h3>
+        <p>
+          It is possible to specify that a timed item should repeat
+          a fixed number of times or even indefinitely.
+          This repetition occurs <em>within</em> the <a>active interval</a>.
+          The span of time during which a single repetition takes place is
+          called an <dfn>iteration interval</dfn>.
+        </p>
+        <p>
+          Unlike the <a>active interval</a>, a timed item can have multiple
+          <a>iteration interval</a>s although typically only the interval
+          corresponding to the <a>current iteration</a> is of interest.
+        </p>
+        <p>
+          The length of a single iteration is called the <a>iteration
+          duration</a>. Comparing the <a>iteration duration</a> and the
+          <a>active duration</a> we have:
+        </p>
+        <dl>
+          <dt>Iteration duration</dt>
+          <dd>
+            The time taken for a single iteration of the timed item to complete.
+          </dd>
+          <dt>Active duration</dt>
+          <dd>
+            The time taken for the entire timed item to complete, including
+            repetitions.
+            This may be longer or shorter than the <a>iteration duration</a>.
+          </dd>
+        </dl>
+        <p>
+          The relationship between the <a>iteration duration</a> and
+          <a>active duration</a> is illustrated below.
+        </p>
+        <div class="figure">
+          <img src="img/iteration-intervals.svg" width="600">
+        </div>
+        <p class="caption">
+          A comparison of the iteration and active durations for a timed item
+          with an iteration count of 2.5.
+          Note that the iteration duration for the final iteration does not
+          change, it is simply cut-off by the active duration.
+        </p>
       </section>
       <section class="informative">
-        <h3>Time spaces</h3>
+        <h3>Iteration time space</h3>
+        <p>
+          We have already encountered different time spaces in describing
+          <a>local time and inherited time</a>.
+          Repetition introduces yet another time space: the iteration time
+          space.
+        </p>
+        <p>
+          <dfn>Iteration time space</dfn> is a time space whose zero time is the
+          beginning of a timed item's current iteration.
+        </p>
+        <p>
+          Within the Web Animations model we also refer to <dfn>active
+          time</dfn> which is a time relative to the beginning of the active
+          interval.
+          This time space, however, is not used in the API.
+        </p>
+        <p>
+          These time spaces are illustrated below.
+        </p>
+        <div class="figure">
+          <img src="img/time-spaces.svg" width="600">
+        </div>
+        <p class="caption">
+          A comparison of item time, animation time, and iteration time for an
+          animation with a iteration duration of 1s and an iteration count of
+          2.5.
+        </p>
+        <p class="note">
+          Note that while the time spaces themselves are not bounded, Web
+          Animations defines <a>active time</a> and <a>iteration
+          time</a> such that they are clamped to a set range as shown in the
+          diagram.
+          For example, whilst a time of -1 second is a valid time in
+          <a>active time space</a>, the procedure for calculating the
+          <a>active time</a> defined in <a
+          href="#calculating-the-active-time" class="sectionRef"></a> will
+          never return a negative value.
+        </p>
+        <p>
+          In addition to these time spaces we can also refer to the
+          <dfn>document time space</dfn> which is equivalent to the <a>local
+          time</a> of the <a>DocumentTimeSource</a> of the <a
+          href="http://www.w3.org/TR/html5/browsers.html#active-document">active
+          document</a>.
+        </p>
+      </section>
+      <section class="informative">
+        <h3>Interval timing</h3>
+        <p>
+          When a timed item repeats we must define the behavior at the iteration
+          boundaries.
+          For this and indeed for all interval-timing, Web Animations uses an
+          endpoint-exclusive timing model.
+          This means that whilst the begin time of an interval
+          is included in the interval, the end time time is not.
+          In interval notation this can written <code>[begin,end)</code>.
+          This model provides sensible behavior when intervals are repeated and
+          sequenced since there is no overlap between the intervals.
+        </p>
+        <p>
+          In the examples below, for the repeated item, at active time 1s,
+          the iteration time is 0.
+          For the sequenced items, in the absence of any <a>fill mode</a>,
+          at inherited time 1s, only item B can will be <a>in effect</a>; there
+          is no overlap.
+        </p>
+        <div class="figure">
+          <img src="img/endpoint-exclusive-timing.svg" width="600">
+        </div>
+        <p class="caption">
+          Illustration of end-point exclusive timing. For both repeated and
+          sequenced timed items there is no overlap at the boundaries between
+          intervals.
+        </p>
+        <p>
+          An exception to this behavior is that when performing a <a
+          href="#fill-behavior">fill</a>, if the fill begins at an
+          interval endpoint, the endpoint is used.
+          This behavior falls out of the algorithm given in <a
+          href="#calculating-the-unscaled-iteration-time"
+          class="sectionRef"></a> and is illustrated below.
+        </p>
+        <div class="figure">
+          <img src="img/endpoint-exclusive-timing-and-fill.svg" width="600">
+        </div>
+        <p class="caption">
+          After one iteration, the iteration time is 0, but after two iterations
+          (and thereonwards), the iteration time is equal to the iteration
+          duration due to the special behavior defined when a timed item fills.
+        </p>
       </section>
       <section>
         <h3>Iteration control interface members</h3>
@@ -1410,11 +1542,6 @@
               Exceptions:
             </p>
             <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
-              <dd>
-                Raised on setting if this object is readonly.
-              </dd>
               <dt>DOMException of type <code>IndexSizeError</code></dt>
               <dd>
                 Raised on setting if the value to set is a real number less
@@ -1427,17 +1554,12 @@
             <p>
               A real number greater than or equal to zero (including positive
               infinity) representing the number of times to repeat the
-              animation.
+              timed item.
             </p>
             <p>
               Exceptions:
             </p>
             <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
-              <dd>
-                Raised on setting if this object is readonly.
-              </dd>
               <dt>DOMException of type <code>IndexSizeError</code></dt>
               <dd>
                 Raised on setting if the value to set is a real number less
@@ -1445,49 +1567,35 @@
               </dd>
             </dl>
           </dd>
-          <dt>attribute unrestricted double? iterationDuration</dt>
+          <dt>attribute unrestricted double iterationDuration</dt>
           <dd>
             <p>
               The duration in seconds of a single iteration.
-              This may be <code>null</code> in which case the <a>intrinsic
-              duration</a> will be used.
+              Unless set, this will reflect the <a>intrinsic duration</a> of the
+              timed item.
               If set, it must be greater than or equal to zero (including
               positive infinity).
             </p>
             <p>
-              This property corresponds to the <a>iteration duration</a>
-              defined in <a href="#calculating-the-iteration-duration"
-              class="sectionRef"></a> and described non-normatively in <a
-              href="#animation-repeat-behavior" class="sectionRef"></a>.
-            </p>
-            <p>
-              The <a>iteration duration</a> calculated for this item.
-              If <code>timing.duration</code> is set and greater than or
-              equal to zero, this will match <code>timing.duration</code>.
-              Otherwise, this will reflect the calculated <a>intrinsic
-              duration</a>.
-            </p>
-            <p>
-              This property corresponds to the <a>iteration duration</a>
-              defined in <a href="#calculating-the-iteration-duration"
-              class="sectionRef"></a> and described non-normatively in <a
-              href="#animation-repeat-behavior" class="sectionRef"></a>.
+              After setting, this attribute can be restored to reflecting the
+              <a>intrinsic duration</a> of the timed item by calling
+              <code>resetIterationDuration</code>.
             </p>
             <p>
               Exceptions:
             </p>
             <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
-              <dd>
-                Raised on setting if this object is readonly.
-              </dd>
               <dt>DOMException of type <code>IndexSizeError</code></dt>
               <dd>
                 Raised on setting if the value to set is a real number less
                 than zero.
               </dd>
             </dl>
+            <p class="issue">
+              This used to be called <code>duration</code> for consistency with
+              CSS and SVG.
+              Which is better?
+            </p>
           </dd>
           <dt>readonly attribute double? iterationTime</dt>
           <dd>
@@ -1496,28 +1604,40 @@
               duration using the steps described in <a
               href="#calculating-the-iteration-time" class="sectionRef"></a>.
               As a result of that definition, this property will be
-              non-<code>null</code> if and only if the animation is in
+              non-<code>null</code> if and only if the timed item is in
               <a>in effect</a>.
             </p>
             <p>
               This property corresponds to the <a>iteration time</a> described
-              in <a href="#time-spaces" class="sectionRef"></a>.
+              in <a href="#iteration-time-space" class="sectionRef"></a>.
             </p>
             <p class="annotation">
-              This is not writeable since doing so would basically require doing
-              a reverse conversion from the value to set into to item time space
-              and then updating the <code>currentTime</code> accordingly.
+              This attribute is not writeable since doing so would require
+              begin able to do a reverse conversion from the value to set into
+              to local time space and then updating the <code>currentTime</code>
+              accordingly.
               However, that's not possible since timing functions may be applied
               and some of them are not invertible.
             </p>
           </dd>
+          <dt>readonly attribute unsigned long? currentIteration</dt>
+          <dd>
+            The current iteration index beginning with zero for the first
+            iteration as described in <a
+              href="#calculating-the-current-iteration" class="sectionRef"></a>.
+          </dd>
+          <dt>unrestricted double resetIterationDuration()</dt>
+          <dd>
+            <p>
+              Causes the <code>iterationDuration</code> attribute to reflect the
+              <a>intrinsic duration</a> of the timed item, discarding
+              any previously set value for the attribute.
+            </p>
+            <p>
+              Returns the <a>intrinsic duration</a> of the timed item.
+            </p>
+          </dd>
         </dl>
-        <dt>readonly attribute unsigned long? currentIteration</dt>
-        <dd>
-          The current iteration index beginning with zero for the first
-          iteration as described in <a
-            href="#calculating-the-current-iteration" class="sectionRef"></a>.
-        </dd>
       </section>
     </section>
 
@@ -2352,173 +2472,6 @@ var animC = new Animation(elem,
 
     <section>
       <h2>Timing animations</h2>
-      <section class="informative">
-        <h3>Animation repeat behavior</h3>
-        <p>
-          It is possible to specify that an animation's effect should repeat
-          a fixed number of times or even indefinitely.
-          This repetition occurs <em>within</em> the <a>animation
-          interval</a>.
-          The span of time during which a single repetition takes place is
-          called an <dfn>iteration interval</dfn>.
-        </p>
-        <p>
-          Unlike the <a>animation interval</a>, an animation can have multiple
-          <a>iteration interval</a>s although typically only the interval
-          corresponding to the <a>current iteration</a> is of interest.
-        </p>
-        <p>
-          The length of a single iteration is called the <a>iteration
-          duration</a>. Comparing the <a>iteration duration</a> and the
-          <a>animation duration</a> we have:
-        </p>
-        <dl>
-          <dt>Iteration duration</dt>
-          <dd>
-            The time taken for a single iteration of the animation to complete.
-          </dd>
-          <dt>Animation duration</dt>
-          <dd>
-            The time taken for the entire animation effect to complete,
-            including repetitions.
-            This may be longer or shorter than the iteration duration.
-          </dd>
-        </dl>
-        <p>
-          The relationship between the <a>iteration duration</a> and
-          <a>animation duration</a> is illustrated below.
-        </p>
-        <div class="figure">
-          <img src="img/iteration-intervals.svg" width="600">
-        </div>
-        <p class="caption">
-          A comparison of the iteration and animation durations for an animation
-          with an iteration count of 2.5.
-          Note that the iteration duration for the final iteration does not
-          change, it is simply cut-off by the animation duration.
-        </p>
-      </section>
-      <section class="informative">
-        <h3>Time spaces</h3>
-        <p>
-          Times in Web Animations are relative to some point of reference. These
-          different points of reference produce different time spaces.
-        </p>
-        <p>
-          This can be compared to coordinate spaces as used in computer
-          graphics.
-          The zero time of a time space is analogous to the origin of
-          a coordinate space.
-        </p>
-        <p>
-          Within Web Animations, some of the common time spaces are:
-        </p>
-        <dl>
-          <dt><dfn>Document time space</dfn></dt>
-          <dd>
-            A time space whose zero time is the <a title="begins to play">start
-            time of the document time source</a>.
-          </dd>
-          <dt><dfn>Item time space</dfn></dt>
-          <dd>
-            A time space whose zero time is the start of the animation's
-            <a>start time</a>.<br>
-          </dd>
-          <dt><dfn>Animation time space</dfn></dt>
-          <dd>
-            A time space whose zero time is the beginning of the animation's
-            <a>animation interval</a>.<br>
-          </dd>
-          <dt><dfn>Iteration time space</dfn></dt>
-          <dd>
-            A time space whose zero time is the beginning of the <a>current
-            iteration</a>.
-          </dd>
-        </dl>
-        <p>
-          In addition to these time spaces, when animation groups are used (see
-          <a href="#grouping-and-synchronization" class="sectionRef"></a>) we
-          can talk about the <dfn>parent iteration time space</dfn>.
-          The zero time of <a>parent iteration time space</a> is the beginning
-          of the parent animation group's <a>current iteration</a>.
-          When animation groups are not used, this is equivalent to <a>document
-          time space</a>.
-        </p>
-        <p>
-          Typically, <a>item time space</a> is used for operations confined to
-          a single animation such as <a href="#seeking-a-timed-item">seeking</a>
-          and <a href="pausing-a-timed-item">pausing</a> whilst <a>parent
-          iteration time space</a> is used to synchronize animations in a group
-          and hence is the time space used to represent an animation's start and
-          end time.
-          <a>Animation time space</a> is not used directly in the Web Animations
-          interfaces.
-        </p>
-        <p>
-          Some of these time spaces are illustrated below.
-        </p>
-        <div class="figure">
-          <img src="img/time-spaces.svg" width="600">
-        </div>
-        <p class="caption">
-          A comparison of item time, animation time, and iteration time for an
-          animation with a iteration duration of 1s and an iteration count of
-          2.5.
-        </p>
-        <p class="note">
-          Note that while the time spaces themselves are not bounded, Web
-          Animations defines <a>animation time</a> and <a>iteration
-          time</a> such that they are clamped to a set range as shown in the
-          diagram.
-          For example, whilst a time of -1 second is a valid time in
-          <a>animation time space</a>, the procedure for calculating the
-          <a>animation time</a> defined in <a
-          href="#calculating-the-animation-time" class="sectionRef"></a> will
-          never return a negative value.
-        </p>
-      </section>
-      <section class="informative">
-        <h3>Interval timing</h3>
-        <p>
-          For intervals of time, Web Animations uses an endpoint-exclusive
-          timing model. This means that whilst the begin time of an interval
-          is included in the interval, the end time time is not. In interval
-          notation this can written <code>[begin,end)</code>. This model
-          provides sensible behavior when intervals are repeated and sequenced
-          since there is no overlap between the intervals.
-        </p>
-        <p>
-          In the examples below, for the repeated animation, at animation time
-          1s, the iteration time is 0.
-          For the sequenced animation, in the absence of any fill mode,
-          at parent iteration time 1s, only animation B can affect its target;
-          there is no overlap.
-        </p>
-        <div class="figure">
-          <img src="img/endpoint-exclusive-timing.svg" width="600">
-        </div>
-        <p class="caption">
-          Illustration of end-point exclusive timing. For both repeated and
-          sequenced animations there is no overlap at the boundaries between
-          intervals.
-        </p>
-        <p>
-          An exception to this behavior is that when performing a <a
-          href="#animation-fill-behavior">fill</a>, if the fill begins at an
-          interval endpoint, the endpoint is used.
-          This behavior falls out of the algorithm given in <a
-          href="#calculating-the-unscaled-iteration-time"
-          class="sectionRef"></a> and is illustrated below.
-        </p>
-        <div class="figure">
-          <img src="img/endpoint-exclusive-timing-and-fill.svg" width="600">
-        </div>
-        <p class="caption">
-          After one iteration, the first frame of the animation is shown, but
-          after two iterations (and thereonwards), the last frame is shown due
-          to the special behavior defined when an animation fills.
-        </p>
-      </section>
       <section>
         <h3>Timing model common definitions</h3>
         <p>
@@ -4218,7 +4171,7 @@ new SeqGroup(
                 return <code>null</code>.
                 <div class="note">
                   <p>
-                    This behaviour of returning <code>null</code> allows
+                    This behavior of returning <code>null</code> allows
                     alternative animation effects to be provided based on the
                     capabilities of the user agent as follows:
                   </p>
