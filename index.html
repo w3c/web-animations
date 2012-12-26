@@ -1004,7 +1004,7 @@
                   defined in <a href="#calculating-the-time-drift"
                   class="sectionRef"></a>.
                 </dd>
-                <dt>If <a>local pause state</a> is false,</dt>
+                <dt>Otherwise,</dt>
                 <dd>
                   Record the current value of <code>currentTime</code> as
                   <a>pause start time</a>.
@@ -1041,15 +1041,16 @@
             at a given moment as follows:
           </p>
           <dl class="switch">
-            <dt>If the <a>local pause state</a> is false,</dt>
-            <dd>
-              Return the stored value for this property.
-            </dd>
-            <dt>If the <a>local pause state</a> is true,</dt>
+            <dt>If the <a>local pause state</a> is true or
+                the <a>run-time playback rate</a> is zero,</dt>
             <dd>
               Return the result of 
               <code><a>effective inherited time</a> - startTime -
               max(<a>pause start time</a>, <a>earliest moment</a>)</code>.
+            </dd>
+            <dt>Otherwise,</dt>
+            <dd>
+              Return the stored value for this property.
             </dd>
           </dl>
         </section>
@@ -1644,122 +1645,209 @@
     <section>
       <h2>Speed control</h2>
       <section>
+        <h3>Speed control parameters</h3>
+        <div class="informative">
+          <p>
+            The rate of play of a timed item can be controlled by setting its
+            <em>playback rate</em>.
+            For example, setting a playback rate of 2 will cause the item to run
+            twice as fast.
+            Likewise, a playback rate of -1 will cause the item to run
+            backwards.
+          </p>
+          <p>
+            The playback rate is applied only to the <a>active interval</a> of
+            a timed item and not to the time while it is delayed or filling.
+          </p>
+          <p>
+            Setting a negative playback rate also has the effect of inverting
+            the <a>fill mode</a>.
+          </p>
+          <p>
+            There are two side of effects of changing the playback rate of
+            a timed item that may be unexpected.
+          </p>
+          <ul>
+            <li>Changing the playback rate of an item in play can cause it to
+                jump in position.
+                For example, doubling the playback rate of an item that is
+                a quarter of the way through its <a>active interval</a> will
+                cause it to jump to the half-way point.</li>
+            <li>Changing the playback rate of an item can change its
+                <a>intrinsic active duration</a>.
+                For example, doubling the playback rate of an item with an
+                active interval that usually takes 3 seconds make the active
+                interval 1.5 seconds.
+                This can cause knock-on effects if other timed items depend on
+                this timed item's duration such as other children of a sequence
+                timing group.</li>
+          </ul>
+          <p>
+            Since sometimes these side effects are undesirable Web Animations
+            provides two means for controlling a timed item's playback rate.
+          </p>
+          <dl>
+            <dt>Default playback rate</dt>
+            <dd>
+              A static parameter to the model that exhibits the side effects
+              described above.
+              This is the parameter used to calculate a timed item's
+              <a>intrinsic active duration</a> and for scheduling the children
+              of a timing group.
+              It is also the most suitable parameter for serializing and is the
+              only parameter copied when cloning.
+            </dd>
+            <dt>Run-time playback rate</dt>
+            <dd>
+              An override parameter used to adjust the playback rate without
+              affecting the <a>intrinsic active duration</a>.
+            </dd>
+          </dl>
+          <p class="annotation">
+            These parameters and the corresponding API attributes are intended
+            to parallel (somewhat imprecisely) the attributes on the
+            <code>HTMLMediaElement</code> interface.
+          </p>
+        </div>
+        <p>
+          In order to support speed control, timed items track the following two
+          values:
+        </p>
+        <dl>
+          <dt><dfn>default playback rate</dfn></dt>
+          <dd>
+            A real number that acts as a multiplier on the item's rate of
+            play.
+            Initially 1.
+            Exposed in the API as <code>defaultPlaybackRate</code>.
+          </dd>
+          <dt><dfn>run-time playback rate</dfn></dt>
+          <dd>
+            An additional rate of play that, when defined, overrides the default
+            playback rate for the purposes of calculating the <a>iteration
+            time</a>.
+            Initially undefined.
+            Not exposed in the API.
+          </dd>
+        </dl>
+        <p>
+          In addition, we define the <a>effective run-time playback rate</a> as
+          follows:
+        </p>
+        <blockquote>
+          The value of the <dfn>effective run-time playback rate</dfn> is the
+          <a>run-time playback rate</a> if it is defined.
+          If the <a>run-time playback rate</a> the value of the effective
+          run-time playback rate is that of the <a>default playback rate</a>.
+        </blockquote>
+      </section>
+      <section>
+        <h3>Performing run-time speed control</h3>
+        <p>
+          The following procedure adjusts the <a>run-time playback rate</a>
+          to <var>new rate</var> whilst maintaining the current <a>adjusted
+          active time</a>.  If the current <a>local time</a> is outside the
+          active interval the distance from the interval is scaled according to
+          the change in speed.
+        </p>
+        <ol>
+          <li>Let <var>previous rate</var> be the value of
+              <a>effective run-time playback rate</a> prior to making any
+              changes.</li>
+          <li>Let <var>previous local time</var> be the current value of
+              <code>currentTime</code>.</li>
+          <li>Update <a>run-time playback rate</a> to <var>new rate</var>.</li>
+          <li>Perform the steps corresponding to the first matching condition
+              of the following.
+            <dl class="switch">
+              <dt>If <var>previous rate</var> is zero,</dt>
+              <dd>
+                Perform a seek to <a>pause start time</a> using the procedure
+                described in <a href="#seeking-a-timed-item"
+                class="sectionRef"></a>.
+              </dd>
+              <dt>If <var>new rate</var> is zero,</dt>
+              <dd>
+                Set <a>pause start time</a> to <var>previous local time</var>.
+              </dd>
+              <dt>If <a>local time</a> is <code>null</code>,</dt>
+              <dd>
+                Return immediately.
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                <ol>
+                  <li>Re-calculate the value of <a>active duration</a>.</li>
+                  <li>Calculate the <var>seek adjustment</var> according to the
+                      following formula:
+                      <code><var>seek adjustment</var> =
+                      (<a>local time</a> - <code>startDelay</code>) *
+                      (1 - <var>previous rate</var> / <var>new
+                      rate</var>)</code>.  </li>
+                  <li>If the sign of <var>new rate</var> and <var>previous
+                      rate</var> differs, subtract from <span
+                      class="todo"><var>seek adjustment</var> (is that right?
+                      a word seemed to be missing from this sentence)</span> the
+                      updated value of <a>active duration</a>.</li>
+                  <li>Let <var>seek time</var> be the result of the following
+                      formula:
+                      <code><a>item time</a>
+                        - <var>seek adjustment</var></code>.</li>
+                  <li>Seek to <var>seek time</var> using the procedure defined
+                      in <a href="#seeking-a-timed-item"
+                      class="sectionRef"></a>.</li>
+                </ol>
+              </dd>
+            </dl>
+          </li>
+        </ol>
+      </section>
+      <section>
         <h3>Speed control interface members</h3>
         <dl title="partial interface TimedItem" class="idl">
-          <dt>attribute double playbackRate</dt>
+          <dt>attribute double defaultPlaybackRate</dt>
           <dd>
             <p>
               A real number that acts as a multiplier on the item's rate of
               play.
-              For example, a value of 2.0 will cause the item to run at twice
-              its usual speed.
-              A value of -1.0 will cause the item to play backwards.
-              The <code>playbackRate</code> is applied to the item's
-              <a>animation time</a> and hence has no effect on the <a>start
-              time</a> (see <a href="#time-spaces" class="sectionRef"></a>).
+              This attribute reflects the <a>default playback rate</a> value
+              described in <a href="#speed-control-parameters"
+              class="sectionRef"></a>. 
             </p>
             <p>
-              Setting this attribute will affect the item's <a>intrinsic
-              animation duration</a>.
+              The <code>playbackRate</code> attribute, when set, explicitly
+              overrides this attribute for the purpose of calculating the
+              <a>iteration time</a>.
             </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
-              <dd>
-                Raised on setting if this object is readonly.
-              </dd>
-            </dl>
           </dd>
-          <dt>void changePlaybackRate (double playbackRate)</dt>
+          <dt>attribute double playbackRate</dt>
           <dd>
             <p>
-              Updates the speed of the timed item such that it produces a smooth
-              change.
+              Run-time playback control.
+              Setting this attribute allows overriding the playback rate in such
+              a way that the <a>active duration</a> does not change and performs
+              a compensatory seek so that the position of the timed item does
+              not jump.
             </p>
             <p>
-              In particular:
+              The attribute returns the <a>effective run-time playback rate</a>
+              and as such will initially equal <code>defaultPlaybackRate</code>.
             </p>
-            <ul>
-              <li>the <a>adjusted animation time</a> will not change,</li>
-              <li>if the direction changes, <code>timing.fillMode</code> will be
-                  inverted to prevent sudden jumps in output, and</li>
-              <li>if the current <a>item time</a> is outside the animation
-                  interval the distance from the interval is scaled according
-                  to the change in speed.</li>
-            </ul>
             <p>
-              The smooth change is achieved using the following steps:
+              Setting this value updates the <a>run-time playback rate</a> which
+              in turn will be used as input when calculating the <a>iteration
+              time</a>.
             </p>
-            <ol>
-              <li>Let <var>previous rate</var> be the value of
-                  <code>timing.playbackRate</code> prior to updating it.</li>
-              <li>Update <code>timing.playbackRate</code> to the passed-in
-                  <code>playbackRate</code> parameter.</li>
-              <li>Let <var>new rate</var> be the updated value of
-                  <code>timing.playbackRate</code>.</li> 
-              <li>If either <var>previous rate</var> or <var>new rate</var>
-                  are zero, return.
-                  <p class="issue">
-                    This isn't great. If you set the playback rate to zero at
-                    a given time, you expect it to act as if paused at that
-                    time.
-                    Currently, the only way to get that behavior out of the
-                    model is to set the <code>iterationStart</code> and that
-                    seems pretty intrusive.
-                  </p>
-              </li>
-              <li>Invert the fill mode as follows:
-                <dl class="switch">
-                  <dt>If <code>timing.fillMode</code> is
-                      <code>"forwards"</code>,</dt>
-                  <dd>
-                    Set <code>timing.fillMode</code> to
-                    <code>"backwards"</code>.
-                  </dd>
-                  <dt>If <code>timing.fillMode</code> is
-                      <code>"backwards"</code>,</dt>
-                  <dd>
-                    Set <code>timing.fillMode</code> to <code>"forwards"</code>.
-                  </dd>
-                  <dt>Otherwise,</dt>
-                  <dd>Leave <code>timing.fillMode</code> as is.</dd>
-                </dl>
-              </li>
-              <li>If <a>item time</a> is <code>null</code>, return.</li>
-              <li>Update the value of <code>animationDuration</code> if
-                  necessary (that is, if <code>animationDuration</code> reflects
-                  the <a>intrinsic animation duration</a>), applying the
-                  updated value for <code>timing.speed</code>.</li>
-              <li>Calculate the <var>seek adjustment</var> according to the
-                  following formula:
-                  <code><var>seek adjustment</var> =
-                  (<a>item time</a> - <code>timing.startDelay</code>) *
-                  (1 - <var>previous rate</var> / <var>new rate</var>)</code>.
-                  </li>
-              <li>If the sign of <var>new rate</var> and <var>previous
-                  rate</var> differs, subtract from the updated value for the
-                  <code>animationDuration</code>.</li>
-              <li>Let <var>seek time</var> be the result of the following
-                  formula:
-                  <code><a>item time</a>
-                    - <var>seek adjustment</var></code>.</li>
-              <li>Set <code>currentTime</code> to <var>seek time</var>.</li>
-            </ol>
             <p>
-              Exceptions:
+              Setting this attribute also performs a compensatory seek on the
+              timed item using the procedure defined in <a
+              href="#performing-run-time-speed-control" class="sectionRef"></a>.
             </p>
-            <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
-              <dd>
-                Raised if this item is a linked item, that is, if
-                <code>template</code> is not <code>null</code>
-                (see <a href="#animation-templates" class="sectionRef"></a>).
-              </dd>
-            </dl>
+            <p>
+              After setting, this attribute can be restored to reflecting
+              <code>defaultPlaybackRate</code> by calling
+              <code>resetPlaybackRate</code>.
+            </p>
           </dd>
           <dt>void reverse ()</dt>
           <dd>
@@ -1769,49 +1857,46 @@
               Note that this means that an animation that has yet to begin,
               calling <code>reverse</code> will mean that it never starts.
             </p>
-            <li>
-              Calculate <var>seek time</var> as follows:
-            </li>
-              <dl class="switch">
-                <dt>If <code>currentTime</code> is null,</dt>
-                <dd>
-                  Let <var>seek time</var> be zero.
-                </dd>
-                <dt>If <code>currentTime &lt; timing.startDelay</code>,</dt>
-                <dd>
-                  Let <var>seek time</var> be
-                  <code>timing.startDelay + animationDuration</code>.
-                </dd>
-                <dt>If <code>currentTime &gt;
-                    timing.startDelay + animationDuration</code>,</dt>
-                <dd>
-                  Let <var>seek time</var> be <code>timing.startDelay</code>.
-                </dd>
-                <dt>Otherwise,</dt>
-                <dd>
-                  Let <var>seek time</var> be
-                  <code>animationDuration - currentTime - startDelay</code>.
-                </dd>
-              </dl>
-            </li>
-            <li>
-              Call <code>changePlaybackRate(-timing.playbackRate)</code>.
-            </li>
-            <li>
-              Set <code>currentTime</code> to <var>seek time</var>.
-            </li>
+            <ol>
+              <li>
+                Calculate <var>seek time</var> as follows:
+              </li>
+                <dl class="switch">
+                  <dt>If <code>currentTime &lt; startDelay</code>,</dt>
+                  <dd>
+                    Let <var>seek time</var> be
+                    <code>startDelay + activeDuration</code>.
+                  </dd>
+                  <dt>If <code>currentTime &gt;
+                      startDelay + activeDuration</code>,</dt>
+                  <dd>
+                    Let <var>seek time</var> be <code>startDelay</code>.
+                  </dd>
+                  <dt>Otherwise,</dt>
+                  <dd>
+                    Let <var>seek time</var> be
+                    <code>activeDuration - currentTime - startDelay</code>.
+                  </dd>
+                </dl>
+              </li>
+              <li>
+                Set <code>playbackRate</code> to <code>-playbackRate</code>.
+              </li>
+              <li>
+                Set <code>currentTime</code> to <var>seek time</var>.
+              </li>
+            </ol>
+          </dd>
+          <dt>double resetPlaybackRate ()</dt>
+          <dd>
             <p>
-              Exceptions:
+              Makes the <a>run-time playback rate</a> undefined.
+              As a result the <code>playbackRate</code> will reflect
+              <code>defaultPlaybackRate</code>.
             </p>
-            <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
-              <dd>
-                Raised if this item is a linked item, that is, if
-                <code>template</code> is not <code>null</code>
-                (see <a href="#animation-templates" class="sectionRef"></a>).
-              </dd>
-            </dl>
+            <p>
+              Returns the <a>default playback rate</a>.
+            </p>
           </dd>
         </dl>
       </section>
