@@ -1052,8 +1052,39 @@
           </dl>
         </section>
       </section>
-      <section class="informative">
+      <section>
         <h3>Cancelling a timed item</h3>
+        <div class="informative">
+          <p>
+            During playback it is sometimes useful to completely disable a timed
+            item such that it has no effect.
+            This is achieved by disassociating the timed item from its time
+            source.
+          </p>
+        </div>
+        <p>
+          The procedure for cancelling a timed item is as follows:
+        </p>
+        <ol>
+          <li>If the timed item's <code>timeline</code> attribute is
+              <code>null</code>, return immediately.</li>
+          <li>Record the current <a>inherited time</a> as <var>local
+              time</var>.</li>
+          <li>Record the current <a>document time</a> as <var>document
+              time</var>.</li>
+          <li>Record the <a>current iteration</a> as <var>iteration
+              index</var>.</li>
+          <li>If <code>timeline</code> is a timing group,
+              remove this timed item from the group and set
+              <code>timeline</code> to <code>null</code>.
+              Otherwise simply set <code>timeline</code> to <code>null</code>.
+              In either case, do not dispatch a <em>timingend</em> event on this
+              timed item or any of its descendents.
+          <li>Dispatch a <em>timingcancel</em> event at this timed item and
+              its descendents using the stored values for
+              <var>local time</var>, <var>document time</var>, and
+              <var>iteration index</var>.</li>
+        </ol>
       </section>
       <section>
         <h3>Playback control interface members</h3>
@@ -1163,63 +1194,6 @@
               sources don't have pause state.
             </p>
           </dd>
-          <dt>void cancel ()</dt>
-          <dd>
-            <p>
-              Disassociates this timed item from its <a>TimeSource</a>
-              (represented by <code>timeline</code>).
-              Removes the timed item from its parent group.
-              As a result, the timed item will no longer affect its target.
-            </p>
-            <p class="annotation">
-              We will need to make this actually disassociate from its
-              TimeSource once we introduce that concept.
-            </p>
-            <p>
-              When cancelling a timed item, a <em>timingcancel</em> event is
-              also fired at the item and its descendents using the following
-              procedure:
-            </p>
-            <ol>
-              <li>If <code>timeline</code> is <code>null</code>, return
-                  immediately.
-                  <span class="todo">(Is this right? Should be just dispatch the
-                  event anyway with <code>null</code> <code>documentTime</code>
-                  and <code>localTime</code>?)</span>
-                  </li>
-              <li>Record <code>parentGroup.currentTime</code> as <var>local
-                  time</var>.</li>
-              <li>Record the document time as <var>document time</var>
-                  <span class="todo">(the concept of document time will be
-                  explained properly once we introduce
-                  <a>DocumentTimeSource</a>)</span>.</li>
-              <li>Record the <code>currentIteration</code> as <var>iteration
-                  index</var>.</li>
-              <li>Remove this timed item from <code>parentGroup</code>
-                  but do not dispatch a <em>timingend</em> event on this timed
-                  item or any of its descendents.</li>
-              <li>Dispatch a <em>timingcancel</em> event at this timed item and
-                  its descendents with using the stored values for
-                  <var>local time</var>, <var>document time</var>, and
-                  <var>iteration index</var>.</li>
-            </ol>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
-              <dd>
-                Raised if this item is a linked item, that is, if
-                <code>template</code> is not <code>null</code>
-                (see <a href="#animation-templates" class="sectionRef"></a>).
-              </dd>
-            </dl>
-            <p class="feedbackWanted">
-              Is this exception necessary? It will depend how we approach group
-              templates.
-            </p>
-          </dd>
           <dt>void pause ()</dt>
           <dd>
             Sets the <code>locallyPaused</code> property to <code>true</code> by
@@ -1256,6 +1230,20 @@
               href="http://dev.w3.org/html5/spec/media-elements.html#media-elements">HTMLMediaElement</a>'s <a
               href="http://dev.w3.org/html5/spec/media-elements.html#dom-media-play">play
               method</a>.
+            </p>
+          </dd>
+          <dt>void cancel ()</dt>
+          <dd>
+            <p>
+              Disassociates this timed item from its <a>TimeSource</a>
+              (represented by <code>timeline</code>).
+              As a result, if the timed item or its children are
+              <a>Animation</a> objects, they will no longer affect their target
+              elements.
+            </p>
+            <p>
+              The procedure for cancelling a timed item is defined in <a
+              href="#cancelling-a-timed-item" class="sectionRef"></a>.
             </p>
           </dd>
         </dl>
