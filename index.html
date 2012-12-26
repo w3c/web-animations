@@ -1961,24 +1961,6 @@
     </section>
 
     <section>
-      <h2>Time transformations</h2>
-      <section>
-        <h3>The <a>TimingFunction</a> interface</h3>
-      </section>
-      <section>
-        <h3>Time transformation interface members</h3>
-        <dl title="partial interface TimedItem" class="idl">
-          <dt>attribute TimingFunction? timingFunction</dt>
-          <dd>
-            An optional timing function used to scale input time to produce
-            timing effects such as easing behavior.
-            See <a href="#scaling-the-time" class="sectionRef"></a>.
-          </dd>
-        </dl>
-      </section>
-    </section>
-
-    <section>
       <h2>The output time of a timed item</h2>
       <section class="informative">
         <h3>Overview</h3>
@@ -1995,33 +1977,408 @@
     </section>
 
     <section>
-      <h2>Timing events</h2>
+      <h2>Time transformations</h2>
+      <section class="informative">
+        <h3>Scaling the time</h3>
+        <p>
+          It is often desirable to control the rate at which an animation
+          progresses.
+          For example, easing the rate of animation can create a sense of
+          momentum and produce a more natural effect.
+          Conversely, in other situations such as when modelling a discrete
+          change, a smooth transition is undesirable and instead it is necessary
+          for the animation to progress in a series of distinct steps.
+        </p>
+        <p>
+          For such situations Web Animations provides a variety of timing
+          functions that scale the progress of an animation.
+        </p>
+        <p>
+          Timing functions take an input time and produce a scaled output time.
+        </p>
+        <p class="todo">
+          Diagram
+        </p>
+        <p>
+          Such timing functions can be applied to an iteration of a timed item
+          as a whole via the <a>TimedItem</a> interface or to a segment of
+          a keyframe animation via the <a>KeyframeAnimationEffect</a>
+          interface.
+        </p>
+      </section>
       <section>
-        <h3>Time transformation interface members</h3>
+        <h3>The <a>TimingFunction</a> interface</h3>
+        <p>
+          The timing functions provided by Web Animations share a common
+          <a>TimingFunction</a> interface as defined below.
+        </p>
+        <dl title="interface TimingFunction" class="idl">
+          <dt>double scaleTime()</dt>
+          <dd>
+            <p>
+              Takes an input time fraction in the range [0, 1] and applies some
+              transformation on the value to produce an output time fraction
+              (typically, but not necessarily, also in the range [0, 1]).
+            </p>
+            <dl class="parameters">
+              <dt>double time</dt> <!-- Oh yeah! -->
+              <dd>
+                The input time fraction.
+              </dd>
+              <dt>TimedItem? item</dt>
+              <dd>
+                <p>
+                  The <a>TimedItem</a> for which the time scaling operation is
+                  being performed.
+                </p>
+                <p>
+                  Some timing functions, for example, may produce different
+                  results depending on the animation values involved to produce
+                  an even rate of change.
+                </p>
+                <p>
+                  This may be <code>null</code>, for example, when invoked
+                  directly by user code for the purpose of testing or re-using
+                  the scaling operation in another context.
+                </p>
+                <p>
+                  Implementations of this interface for which there is no
+                  meaningful result in the absence of a <a>TimedItem</a> will
+                  simply return <code>time</code> unchanged when
+                  <code>item</code> is <code>null</code>.
+                </p>
+              </dd>
+            </dl>
+          </dd>
+          <dt>TimingFunction clone()</dt>
+          <dd>
+            <p>
+              For implementations of this interface that have local state,
+              produces an identical but independent copy of this object.
+              For implementations without local state, returns the same object.
+            </p>
+          </dd>
+          <dt>static TimingFunction? createFromString(DOMString spec)</dt>
+          <dd>
+            <p>
+              Creates a new <a>TimingFunction</a> object based on a string-based
+              specification (e.g. "ease-in").
+            </p>
+            <p>
+              The acceptable values and their meanings are those defined for the
+              <a
+              href="http://www.w3.org/TR/css3-transitions/#transition-timing-function-property">transition-timing-function</a>
+              property in CSS Transitions [[!CSS3-TRANSITIONS]].
+            </p>
+            <p>
+              In addition to the values defined in CSS Transitions, this method
+              extends the <code>steps()</code> function notation to allow
+              &lsquo;middle&rsquo; as a transition point keyword (e.g.
+              <code>steps(3, middle)</code>) corresponding to the
+              &lsquo;middle&rsquo; <a>StepPosition</a> value.
+              Similarly, the keyword &lsquo;steps-middle&rsquo; is recognized by
+              and given the meaning <code>steps(1, middle)</code>.
+            </p>
+            <p>
+              Strings that specify a cubic-bezier timing function result in
+              a new <a>SplineTimingFunction</a> being returned.
+              Strings that specify a stepping function produce a new
+              <a>StepTimingFunction</a>.
+            </p>
+            <p>
+              If <code>spec</code> is unrecognized, <code>null</code> is
+              returned.
+              User agents that provide debugging feedback SHOULD report the
+              unrecognized value.
+            </p>
+            <p class="issue">
+              So the string <code>cubic-bezier(...)</code> produces
+              a <a>SplineTimingFunction</a>.
+              That's a bit confusing.
+              But <code>CubicBezierTimingFunction</code> is a lot to type and
+              not very user-friendly.
+            </p>
+            <p class="issue">
+              Should we make the &lsquo;linear&rsquo; keyword return
+              <code>null</code> as well?
+              If we do, we need to be careful to update the constructor for
+              <a>Timing</a> so that it doesn't throw an exception in that case
+              (or report anything to the console).
+            </p>
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Scaling using a cubic Bézier curve</h3>
+        <p>
+          A common method of producing easing effects is to use a cubic Bézier
+          curve to scale the time.
+          The endpoints of the curve are fixed at (0,0) and (1,1) while two
+          control points <var>P1</var> and <var>P2</var> define the shape of the
+          curve.
+          Provided the <var>x</var> values of <var>P1</var> and <var>P2</var>
+          lie within the range [0,1] such a curve produces a function that is
+          used to map input times (the <var>x</var> values) onto output times
+          (the <var>y</var> values).
+          This arrangement is illustrated below.
+        </p>
+        <div class="figure">
+          <img src="img/cubic-bezier-timing-curve.svg" width="500">
+        </div>
+        <p class="caption">
+          A cubic Bézier curve used as a timing function.<br>
+          The shape of the curve is determined by the location of the control
+          points <var>P1</var> and <var>P2</var>.<br>
+          Input time fractions serve as <var>x</var> values of the curve, whilst
+          the <var>y</var> values are the output time fractions.
+        </p>
+        <p>
+          The curves produced by the keywords accepted by the
+          <a href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
+          class="idlType"><code>Timing.createFromString</code></a>
+          method are illustrated below.
+        </p>
+        <div class="figure">
+          <img src="img/curve-keywords.svg" width="500">
+        </div>
+        <p class="caption">
+          The timing functions produced by each of the keyword values.
+        </p>
+        <section>
+          <h4>The <code>SplineTimingFunction</code> interface</h4>
+          <p>
+            Cubic bézier curve based timing functions are represented using
+            the <code>SplineTimingFunction</code> interface defined below.
+          </p>
+          <dl title="interface SplineTimingFunction : TimingFunction"
+            class="idl">
+            <dt>Constructor (sequence&lt;double&gt; points)</dt>
+            <dd>
+              <p>
+                Creates a new <a>SplineTimingFunction</a> object and initializes
+                the <code>points</code> member to the passed in list of
+                <code>points</code>.
+              </p>
+              <p class="annotation">
+                It would be more convenient for authors if the passed in list of
+                points could be longer than four items and we simply read the
+                first four items and ignored the rest.
+                However, applications may begin to depend on that behavior and
+                we could not easily allow this object to take longer lists (to
+                represent more complex curves) in the future without adding
+                a separate constructor for that purpose.
+              </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type <code>IndexSizeError</code></dt>
+                <dd>
+                  Raised if any of the <var>x</var> values in
+                  <code>points</code> is outside the range [0, 1]
+                  or if the length of <code>points</code> is not 4 items.
+                </dd>
+              </dl>
+            </dd>
+            <dt>attribute sequence&lt;double&gt; points</dt>
+            <dd>
+              <p>
+                A sequence of four real numbers representing the coordinates of
+                the two control points in the following sequence
+                <var>&lt;p1-x&gt;</var> <var>&lt;p1-y&gt;</var>
+                <var>&lt;p2-x&gt;</var> <var>&lt;p2-y&gt;</var>.
+              </p>
+              <p>
+                Each of the <var>x</var> values (i.e. <var>p1-x</var> and
+                <var>p2-x</var>) must be in the range [0, 1].
+              </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type <code>IndexSizeError</code></dt>
+                <dd>
+                  Raised on setting if an <var>x</var> value is outside the
+                  range [0, 1].
+                </dd>
+                <dt>DOMException of type
+                    <code>InvalidModificationError</code></dt>
+                <dd>
+                  Raised on attempting to alter the length of
+                  <code>points</code>.
+                </dd>
+              </dl>
+            </dd>
+            <dt>double scaleTime(double time, TimedItem? item)</dt>
+            <dd>
+              Applies the timing function produced by the cubic Bézier curve
+              with points (0,0), (<code>points[0], points[1]</code>),
+              (<code>points[2]</code>, <code>points[3]</code>), (1, 1).
+              Returns the resulting <var>y</var> value when the <var>x</var>
+              value is <code>max(0, min(1, time))</code>.
+            </dd>
+            <dt>TimingFunction clone()</dt>
+            <dd>
+              Returns a copy of this object.
+            </dd>
+          </dl>
+        </section>
+      </section>
+      <section>
+        <h3>Timing in discrete steps</h3>
+        <p>
+          It is possible to scale an animation's timing so that the animation
+          occurs in a series of discrete steps using a stepping function.
+        </p>
+        <p>
+          A stepping function divides the input time into a specified number of
+          intervals that are equal in duration.
+          The output time, starting at zero, rises by an amount equal to the
+          interval duration once during each interval at the transition point
+          which may be either the start, midpoint, or end of the interval.
+        </p>
+        <p>
+          In keeping with Web Animation's model for endpoint exclusive interval
+          timing (see <a href="#interval-timing" class="sectionRef"></a>), the
+          output time at the transition point is the time <em>after</em>
+          applying the increase (i.e. the top of the step).
+        </p>
+        <p>
+          Some example step timing functions are illustrated below.
+        </p>
+        <div class="figure">
+          <img src="img/step-timing-func-examples.svg" width="700">
+        </div>
+        <p class="caption">
+          Example step timing functions.
+          In each case the domain is the input time fraction whilst the range
+          represents the output time fraction produced by the step function.<br>
+          The first row shows the function for each transition point when only
+          one step is specified whilst the second row shows the same for three
+          steps.
+        </p>
+        <section>
+          <h4>The <code>StepPosition</code> enumeration</h4>
+          <p>
+            The point within a step interval at which the change in value occurs
+            is specified using one of the <a>StepPosition</a> enumeration
+            values.
+          <dl title="enum StepPosition" class="idl">
+            <dt>start</dt>
+            <dd>
+              The change in value occurs at the beginning of the interval.
+            </dd>
+            <dt>middle</dt>
+            <dd>
+              The change in value occurs at the midpoint of the interval.
+            </dd>
+            <dt>end</dt>
+            <dd>
+              The change in value occurs at the end of the interval.
+            </dd>
+          </dl>
+        </section>
+        <section>
+          <h4>The <code>StepTimingFunction</code> interface</h4>
+          <p>
+            Step timing functions are represented by the
+            <a>StepTimingFunction</a> interface.
+          </p>
+          <dl title="interface StepTimingFunction : TimingFunction" class="idl">
+            <dt>Constructor (unsigned integer numSteps,
+                             optional StepPosition position = 'end')</dt>
+            <dd>
+              <p>
+                Creates a new <a>StepTimingFunction</a> with the specified
+                number of steps and transition point.
+              </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type <code>IndexSizeError</code></dt>
+                <dd>
+                  Raised if <code>numSteps</code> is zero.
+                </dd>
+              </dl>
+            </dd>
+            <dt>attribute unsigned integer numSteps</dt>
+            <dd>
+              <p>
+                A number greater than or equal to one representing the number of
+                steps in the function.
+              </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type <code>IndexSizeError</code></dt>
+                <dd>
+                  Raised on setting if the number of steps is zero.
+                </dd>
+              </dl>
+            </dd>
+            <dt>attribute StepPosition position</dt>
+            <dd>
+              The point within each interval at which the change in value
+              occurs.
+            </dd>
+            <dt>double scaleTime(double time, TimedItem? item)</dt>
+            <dd>
+              Returns the value of applying the step function defined by
+              <a>numSteps</a> and <a>position</a> with input <var>time</var>.
+              The behavior of the step function is described in <a
+              href="#timing-in-discrete-steps" class="sectionRef"></a>.
+            </dd>
+            <dt>TimingFunction clone()</dt>
+            <dd>
+              Returns a copy of this object.
+            </dd>
+          </dl>
+        </section>
+      </section>
+      <section>
+        <h3>The <code>SmoothTimingFunction</code> interface</h3>
+        <div class="todo">
+          <p>
+            Need help from someone who knows math.
+            We'd like to be able to have a function with many extrema.
+            Ideally, something like Catmull-Rom curves would be great where you
+            could just say:
+          </p>
+          <p>
+            <tt>[ 0: 0, 0.7: 1, 0.8: 0.9, 1: 1 ]</tt>
+          </p>
+          <p>
+            And you'd get a smooth curve that goes to the full value and bounces
+            back a bit then finishes.
+          </p>
+          <p>
+            The trouble is that Catmull-Rom curves won't necessarily give you
+            a function even if you sort the <var>x</var> values.
+          </p>
+        </div>
+        <dl title="
+[Constructor (sequence&lt;double&gt; points)]
+          interface SmoothTimingFunction : TimingFunction" class="idl">
+          <dt>attribute sequence&lt;double&gt; points</dt>
+          <dd>
+            TBD
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3><a>TimedItem</a> time transformation interface members</h3>
         <dl title="partial interface TimedItem" class="idl">
-          <dt>[TreatNonCallableAsNull] attribute Function? onstart</dt>
+          <dt>attribute TimingFunction? timingFunction</dt>
           <dd>
-            The event handler for the <em>timingstart</em> event
-            (see <a href="#timing-events" class="sectionRef"></a>).
-          </dd>
-          <dt>[TreatNonCallableAsNull] attribute Function? oniteration</dt>
-          <dd>
-            The event handler for the <em>timingiteration</em> event
-            (see <a href="#timing-events" class="sectionRef"></a>).
-          </dd>
-          <dt>[TreatNonCallableAsNull] attribute Function? onend</dt>
-          <dd>
-            The event handler for the <em>timingend</em> event
-            (see <a href="#timing-events" class="sectionRef"></a>).
-          </dd>
-          <dt>[TreatNonCallableAsNull] attribute Function? oncancel</dt>
-          <dd>
-            The event handler for the <em>timingcancel</em> event
-            (see <a href="#timing-events" class="sectionRef"></a>).
+            An optional timing function used to scale input time to produce
+            timing effects such as easing behavior.
           </dd>
         </dl>
       </section>
     </section>
+
 
     <section>
       <h2>Animations</h2>
@@ -2952,10 +3309,10 @@ new SeqGroup(
             </dd>
           </dl>
           <p class="note">
-            Since <a href="#scaling-the-time">timing functions</a> are allowed
-            to produce output times outside the range [0,1] it is possible that
-            the value calculated for a <a>time fraction</a> also lies outside
-            this range.
+            Since <a href="#time-transformations">timing functions</a> are
+            allowed to produce output times outside the range [0,1] it is
+            possible that the value calculated for a <a>time fraction</a> also
+            lies outside this range.
           </p>
         </section>
         <section>
@@ -2993,482 +3350,6 @@ new SeqGroup(
             </li>
           </ol>
         </section>
-      </section>
-      <section>
-        <h3>Pausing a timed item</h3>
-        <div class="informative">
-          <p>
-            Timed items may be paused and resumed independently of the parent
-            animation group they belong to.
-            The effect is that the time of the item lags behind that of its
-            parent.
-            This lag is called the <var>time drift</var> and acts as an
-            additional delay added to the <var>start time</var> of the item.
-          </p>
-          <p>
-            Timed elements that do not have a parent animation group may still
-            be paused and resumed.
-            However, except for the case of the document timeline, there will be
-            no observable effect until the element is attached to a parent
-            animation group.
-          </p>
-        </div>
-        <p>
-          Pausing and seeking are realised using two additional inputs to the
-          timing model, the <dfn>time drift</dfn> which is exposed as the
-          <code>timeDrift</code> property on the <a>TimedItem</a> interface, and
-          the <dfn>pause start time</dfn> which is internal to the model.
-          Both the <var>time drift</var> and <var>pause start time</var> are
-          initially zero.
-        </p>
-        <p>
-          The pausing behavior is realised through the specific steps defined
-          for calculating and updating the <code>locallyPaused</code> and
-          <code>timeDrift</code> properties of the <a>TimedItem</a> interface.
-        </p>
-      </section>
-      <section>
-        <h3>Seeking a timed item</h3>
-        <div class="informative">
-          <p>
-            Seeking, like pausing, has the effect of causing a timed item's
-            time to drift from that of its parent animation group.
-            Consequently, it is also uses the <a>time drift</a> and
-            <a>pause start time</a> concepts on which pausing is based.
-          </p>
-        </div>
-        <p>
-          Seeking is performed in response to a change to a timed item's
-          <code>currentTime</code> property and is realised by adjusting the
-          <code>timeDrift</code> property or the internal <a>pause start
-          time</a> of the item as follows:
-        </p>
-        <ol>
-          <li>Let <var>seek time</var> be the new value to which
-              <code>currentTime</code> should be set.</li>
-          <li>The steps for adjusting the item time depend on the state of the
-              <code>locallyPaused</code> property as follows:
-            <dl class="switch">
-              <dt>If <code>locallyPaused</code> is true,</dt>
-              <dd>
-                Set <a>pause start time</a> to <var>seek time</var>.
-              </dd>
-              <dt>If <code>locallyPaused</code> is false,</dt>
-              <dd>
-                Set the stored value for <code>timeDrift</code> to
-                the result of evaluating
-                <code><a>effective parent time</a> - startTime -
-                      <var>seek time</var></code>.
-              </dd>
-            </dl>
-          </li>
-        </ol>
-        <p class="note">
-          Note that the <code>currentTime</code> property is not actually set
-          directly but is updated to the seek time as a result of the
-          calculation outlined in the decsription of the
-          <code>currentTime</code> property on the <a>TimedItem</a> interface.
-        </p>
-        <p>
-          The animation events dispatched when a seek is performed are described
-          in <a href="#event-dispatch-during-seeking" class="sectionRef"></a>.
-        </p>
-      </section>
-    </section>
-
-    <section>
-      <h2>Scaling the time</h2>
-      <div class="informative">
-        <p>
-          It is often desirable to control the rate at which an animation
-          progresses.
-          For example, easing the rate of animation can create a sense of
-          momentum and produce a more natural effect.
-          Conversely, in other situations such as when modelling a discrete
-          change, a smooth transition is undesirable and instead it is necessary
-          for the animation to progress in a series of distinct steps.
-        </p>
-        <p>
-          For such situations Web Animations provides a variety of timing
-          functions that scale the progress of an animation.
-          In situations where the timing functions defined here are
-          insufficient, it is possible to provide a custom script-based timing
-          function.
-        </p>
-        <p>
-          In all cases, timing functions take an input time and produce a scaled
-          output time.
-        </p>
-        <p class="todo">
-          Diagram
-        </p>
-        <p>
-          Such timing functions can be applied to an iteration of an animation
-          as a whole via the <a>TimedItem</a> interface or to a segment of
-          a keyframe animation via the <a>KeyframeAnimationEffect</a>
-          interface.
-        </p>
-      </div>
-      <section>
-        <h3>The <code>TimingFunction</code> interface</h3>
-        <p>
-          The timing functions provided by Web Animations share a common
-          <a>TimingFunction</a> interface as defined below.
-        </p>
-        <dl title="interface TimingFunction" class="idl">
-          <dt>double scaleTime()</dt>
-          <dd>
-            <p>
-              Takes an input time fraction in the range [0, 1] and applies some
-              transformation on the value to produce an output time fraction
-              (typically, but not necessarily, also in the range [0, 1]).
-            </p>
-            <dl class="parameters">
-              <dt>double time</dt> <!-- Oh yeah! -->
-              <dd>
-                The input time fraction.
-              </dd>
-              <dt>TimedItem? item</dt>
-              <dd>
-                <p>
-                  The <a>TimedItem</a> for which the time scaling operation is
-                  being performed.
-                </p>
-                <p>
-                  Some timing functions, for example, may produce different
-                  results depending on the animation values involved to produce
-                  an even rate of change.
-                </p>
-                <p>
-                  This may be <code>null</code>, for example, when invoked
-                  directly by user code for the purpose of testing or re-using
-                  the scaling operation in another context.
-                </p>
-                <p>
-                  Implementations of this interface for which there is no
-                  meaningful result in the absence of a <a>TimedItem</a> will
-                  simply return <code>time</code> unchanged when
-                  <code>item</code> is <code>null</code>.
-                </p>
-              </dd>
-            </dl>
-          </dd>
-          <dt>TimingFunction clone()</dt>
-          <dd>
-            <p>
-              For implementations of this interface that have local state,
-              produces an identical but independent copy of this object.
-              For implementations without local state, returns the same object.
-            </p>
-          </dd>
-          <dt>static TimingFunction? createFromString(DOMString spec)</dt>
-          <dd>
-            <p>
-              Creates a new <a>TimingFunction</a> object based on a string-based
-              specification (e.g. "ease-in").
-            </p>
-            <p>
-              The acceptable values and their meanings are those defined for the
-              <a
-              href="http://www.w3.org/TR/css3-transitions/#transition-timing-function-property">transition-timing-function</a>
-              property in CSS Transitions [[!CSS3-TRANSITIONS]].
-            </p>
-            <p>
-              In addition to the values defined in CSS Transitions, this method
-              extends the <code>steps()</code> function notation to allow
-              &lsquo;middle&rsquo; as a transition point keyword (e.g.
-              <code>steps(3, middle)</code>) corresponding to the
-              &lsquo;middle&rsquo; <a>StepPosition</a> value.
-              Similarly, the keyword &lsquo;steps-middle&rsquo; is recognized by
-              and given the meaning <code>steps(1, middle)</code>.
-            </p>
-            <p>
-              Strings that specify a cubic-bezier timing function result in
-              a new <a>SplineTimingFunction</a> being returned.
-              Strings that specify a stepping function produce a new
-              <a>StepTimingFunction</a>.
-            </p>
-            <p>
-              If <code>spec</code> is unrecognized, <code>null</code> is
-              returned.
-              User agents that provide debugging feedback SHOULD report the
-              unrecognized value.
-            </p>
-            <p class="issue">
-              So the string <code>cubic-bezier(...)</code> produces
-              a <a>SplineTimingFunction</a>.
-              That's a bit confusing.
-              But <code>CubicBezierTimingFunction</code> is a lot to type and
-              not very user-friendly.
-            </p>
-            <p class="issue">
-              Should we make the &lsquo;linear&rsquo; keyword return
-              <code>null</code> as well?
-              If we do, we need to be careful to update the constructor for
-              <a>Timing</a> so that it doesn't throw an exception in that case
-              (or report anything to the console).
-            </p>
-          </dd>
-        </dl>
-      </section>
-      <section>
-        <h3>Scaling using a cubic Bézier curve</h3>
-        <p>
-          A common method of producing easing effects is to use a cubic Bézier
-          curve to scale the time.
-          The endpoints of the curve are fixed at (0,0) and (1,1) while two
-          control points <var>P1</var> and <var>P2</var> define the shape of the
-          curve.
-          Provided the <var>x</var> values of <var>P1</var> and <var>P2</var>
-          lie within the range [0,1] such a curve produces a function that is
-          used to map input times (the <var>x</var> values) onto output times
-          (the <var>y</var> values).
-          This arrangement is illustrated below.
-        </p>
-        <div class="figure">
-          <img src="img/cubic-bezier-timing-curve.svg" width="500">
-        </div>
-        <p class="caption">
-          A cubic Bézier curve used as a timing function.<br>
-          The shape of the curve is determined by the location of the control
-          points <var>P1</var> and <var>P2</var>.<br>
-          Input time fractions serve as <var>x</var> values of the curve, whilst
-          the <var>y</var> values are the output time fractions.
-        </p>
-        <p>
-          The curves produced by the keywords accepted by the
-          <a href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
-          class="idlType"><code>Timing.createFromString</code></a>
-          method are illustrated below.
-        </p>
-        <div class="figure">
-          <img src="img/curve-keywords.svg" width="500">
-        </div>
-        <p class="caption">
-          The timing functions produced by each of the keyword values.
-        </p>
-        <section>
-          <h4>The <code>SplineTimingFunction</code> interface</h4>
-          <p>
-            Cubic bézier curve based timing functions are represented using
-            the <code>SplineTimingFunction</code> interface defined below.
-          </p>
-          <dl title="interface SplineTimingFunction : TimingFunction"
-            class="idl">
-            <dt>Constructor (sequence&lt;double&gt; points)</dt>
-            <dd>
-              <p>
-                Creates a new <a>SplineTimingFunction</a> object and initializes
-                the <code>points</code> member to the passed in list of
-                <code>points</code>.
-              </p>
-              <p class="annotation">
-                It would be more convenient for authors if the passed in list of
-                points could be longer than four items and we simply read the
-                first four items and ignored the rest.
-                However, applications may begin to depend on that behavior and
-                we could not easily allow this object to take longer lists (to
-                represent more complex curves) in the future without adding
-                a separate constructor for that purpose.
-              </p>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type <code>IndexSizeError</code></dt>
-                <dd>
-                  Raised if any of the <var>x</var> values in
-                  <code>points</code> is outside the range [0, 1]
-                  or if the length of <code>points</code> is not 4 items.
-                </dd>
-              </dl>
-            </dd>
-            <dt>attribute sequence&lt;double&gt; points</dt>
-            <dd>
-              <p>
-                A sequence of four real numbers representing the coordinates of
-                the two control points in the following sequence
-                <var>&lt;p1-x&gt;</var> <var>&lt;p1-y&gt;</var>
-                <var>&lt;p2-x&gt;</var> <var>&lt;p2-y&gt;</var>.
-              </p>
-              <p>
-                Each of the <var>x</var> values (i.e. <var>p1-x</var> and
-                <var>p2-x</var>) must be in the range [0, 1].
-              </p>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type <code>IndexSizeError</code></dt>
-                <dd>
-                  Raised on setting if an <var>x</var> value is outside the
-                  range [0, 1].
-                </dd>
-                <dt>DOMException of type
-                    <code>InvalidModificationError</code></dt>
-                <dd>
-                  Raised on attempting to alter the length of
-                  <code>points</code>.
-                </dd>
-              </dl>
-            </dd>
-            <dt>double scaleTime(double time, TimedItem? item)</dt>
-            <dd>
-              Applies the timing function produced by the cubic Bézier curve
-              with points (0,0), (<code>points[0], points[1]</code>),
-              (<code>points[2]</code>, <code>points[3]</code>), (1, 1).
-              Returns the resulting <var>y</var> value when the <var>x</var>
-              value is <code>max(0, min(1, time))</code>.
-            </dd>
-            <dt>TimingFunction clone()</dt>
-            <dd>
-              Returns a copy of this object.
-            </dd>
-          </dl>
-        </section>
-      </section>
-      <section>
-        <h3>Timing in discrete steps</h3>
-        <p>
-          It is possible to scale an animation's timing so that the animation
-          occurs in a series of discrete steps using a stepping function.
-        </p>
-        <p>
-          A stepping function divides the input time into a specified number of
-          intervals that are equal in duration.
-          The output time, starting at zero, rises by an amount equal to the
-          interval duration once during each interval at the transition point
-          which may be either the start, midpoint, or end of the interval.
-        </p>
-        <p>
-          In keeping with Web Animation's model for endpoint exclusive interval
-          timing (see <a href="#interval-timing" class="sectionRef"></a>), the
-          output time at the transition point is the time <em>after</em>
-          applying the increase (i.e. the top of the step).
-        </p>
-        <p>
-          Some example step timing functions are illustrated below.
-        </p>
-        <div class="figure">
-          <img src="img/step-timing-func-examples.svg" width="700">
-        </div>
-        <p class="caption">
-          Example step timing functions.
-          In each case the domain is the input time fraction whilst the range
-          represents the output time fraction produced by the step function.<br>
-          The first row shows the function for each transition point when only
-          one step is specified whilst the second row shows the same for three
-          steps.
-        </p>
-        <section>
-          <h4>The <code>StepPosition</code> enumeration</h4>
-          <p>
-            The point within a step interval at which the change in value occurs
-            is specified using one of the <a>StepPosition</a> enumeration
-            values.
-          <dl title="enum StepPosition" class="idl">
-            <dt>start</dt>
-            <dd>
-              The change in value occurs at the beginning of the interval.
-            </dd>
-            <dt>middle</dt>
-            <dd>
-              The change in value occurs at the midpoint of the interval.
-            </dd>
-            <dt>end</dt>
-            <dd>
-              The change in value occurs at the end of the interval.
-            </dd>
-          </dl>
-        </section>
-        <section>
-          <h4>The <code>StepTimingFunction</code> interface</h4>
-          <p>
-            Step timing functions are represented by the
-            <a>StepTimingFunction</a> interface.
-          </p>
-          <dl title="interface StepTimingFunction : TimingFunction" class="idl">
-            <dt>Constructor (unsigned integer numSteps,
-                             optional StepPosition position = 'end')</dt>
-            <dd>
-              <p>
-                Creates a new <a>StepTimingFunction</a> with the specified
-                number of steps and transition point.
-              </p>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type <code>IndexSizeError</code></dt>
-                <dd>
-                  Raised if <code>numSteps</code> is zero.
-                </dd>
-              </dl>
-            </dd>
-            <dt>attribute unsigned integer numSteps</dt>
-            <dd>
-              <p>
-                A number greater than or equal to one representing the number of
-                steps in the function.
-              </p>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type <code>IndexSizeError</code></dt>
-                <dd>
-                  Raised on setting if the number of steps is zero.
-                </dd>
-              </dl>
-            </dd>
-            <dt>attribute StepPosition position</dt>
-            <dd>
-              The point within each interval at which the change in value
-              occurs.
-            </dd>
-            <dt>double scaleTime(double time, TimedItem? item)</dt>
-            <dd>
-              Returns the value of applying the step function defined by
-              <a>numSteps</a> and <a>position</a> with input <var>time</var>.
-              The behavior of the step function is described in <a
-              href="#timing-in-discrete-steps" class="sectionRef"></a>.
-            </dd>
-            <dt>TimingFunction clone()</dt>
-            <dd>
-              Returns a copy of this object.
-            </dd>
-          </dl>
-        </section>
-      </section>
-      <section>
-        <h3>The <code>SmoothTimingFunction</code> interface</h3>
-        <div class="todo">
-          <p>
-            Need help from someone who knows math.
-            We'd like to be able to have a function with many extrema.
-            Ideally, something like Catmull-Rom curves would be great where you
-            could just say:
-          </p>
-          <p>
-            <tt>[ 0: 0, 0.7: 1, 0.8: 0.9, 1: 1 ]</tt>
-          </p>
-          <p>
-            And you'd get a smooth curve that goes to the full value and bounces
-            back a bit then finishes.
-          </p>
-          <p>
-            The trouble is that Catmull-Rom curves won't necessarily give you
-            a function even if you sort the <var>x</var> values.
-          </p>
-        </div>
-        <dl title="
-[Constructor (sequence&lt;double&gt; points)]
-          interface SmoothTimingFunction : TimingFunction" class="idl">
-          <dt>attribute sequence&lt;double&gt; points</dt>
-          <dd>
-            TBD
-          </dd>
-        </dl>
       </section>
     </section>
 
@@ -6424,6 +6305,31 @@ elem.animate({ opacity: '0%' }, 1).onend =
           remember that not everything that is timed is composited (e.g.
           groups).
         </p>
+      </section>
+      <section>
+        <h3><a>TimedItem</a> events interface members</h3>
+        <dl title="partial interface TimedItem" class="idl">
+          <dt>[TreatNonCallableAsNull] attribute Function? onstart</dt>
+          <dd>
+            The event handler for the <em>timingstart</em> event
+            (see <a href="#timing-events" class="sectionRef"></a>).
+          </dd>
+          <dt>[TreatNonCallableAsNull] attribute Function? oniteration</dt>
+          <dd>
+            The event handler for the <em>timingiteration</em> event
+            (see <a href="#timing-events" class="sectionRef"></a>).
+          </dd>
+          <dt>[TreatNonCallableAsNull] attribute Function? onend</dt>
+          <dd>
+            The event handler for the <em>timingend</em> event
+            (see <a href="#timing-events" class="sectionRef"></a>).
+          </dd>
+          <dt>[TreatNonCallableAsNull] attribute Function? oncancel</dt>
+          <dd>
+            The event handler for the <em>timingcancel</em> event
+            (see <a href="#timing-events" class="sectionRef"></a>).
+          </dd>
+        </dl>
       </section>
     </section>
 
