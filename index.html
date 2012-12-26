@@ -1253,6 +1253,672 @@
     </section>
 
     <section>
+      <h2>Fill behavior</h2>
+      <div class="informative">
+        <p>
+          Outside of the <a>active interval</a>, a timed item may still have an
+          effect depending on its <dfn>fill mode</dfn>.
+        </p>
+      </div>
+      <section class="informative">
+        <h3>Fill modes</h3>
+        <p>
+          The different fill modes are as follows:
+        </p>
+        <dl>
+          <dt>none</dt>
+          <dd>
+            The timed item has no effect outside of the <a>active interval</a>.
+          </dd>
+          <dt>forwards</dt>
+          <dd>
+            For times that occur later than the <a>active interval</a>, the
+            timed item will continue to produce the same output time value that
+            was used at the end of the <a>active interval</a>.
+
+            For times that occur before the <a>active interval</a>, the
+            timed item will have no effect.
+          </dd>
+          <dt>backwards</dt>
+          <dd>
+            For times that occur before the <a>active interval</a>, the
+            timed item will produce the same output time value that will be used
+            at the start of the <a>active interval</a>.
+
+            For times that occur later than the <a>active interval</a>, the
+            timed item will have no effect.
+          </dd>
+          <dt>both</dt>
+          <dd>
+            For times that occur before the <a>active interval</a>, the
+            backwards fill behavior is used.
+
+            For times that occur after the <a>active interval</a>, the
+            forwards fill behavior is used.
+          </dd>
+        </dl>
+        <p>
+          Some examples of the these fill modes are illustrated below.
+        </p>
+        <div class="figure">
+          <img src="img/animation-state-and-fill-behavior.svg" width="600">
+        </div>
+        <p class="caption">
+          Examples of various fill modes and the states produced.<br>
+          (a) fill mode &lsquo;none&rsquo;. The timed item has no effect outside
+              its active interval.<br>
+          (b) fill mode &lsquo;forwards&rsquo;. After the active interval has
+              finished, the timed value continues to maintain a fill value.<br>
+          (c) fill mode &lsquo;backwards&rsquo;. The timed item produces a fill
+              value until the start of the active interval.<br>
+          (d) fill mode &lsquo;both&rsquo;. Both before and after the active
+              interval the timed item produces a fill value.
+        </p> 
+        <p>
+          At a given time, it is possible to describe a timed item as <dfn>in
+          effect</dfn> if either (a) the time falls within the item's
+          <a>active interval</a>, or (b) the fill mode of the timed item
+          causes it to produce an output time value at the given time.
+        </p>
+        <p>
+          The normative definition of fill behavior is incorporated in the
+          calculation of the <a>active time</a> in <a
+          href="#calculating-the-active-time" class="sectionRef"></a>.
+        </p>
+        <p class="note">
+          Note that setting a fill mode has no bearing on the endpoints of the
+          <a>active interval</a>.
+          However, the fill mode <em>does</em> have an effect on the
+          calculation of the <a>iteration time</a> since this is defined
+          only when a timed item is <a>in effect</a>.
+        </p>
+      </section>
+      <section>
+        <h3>The <code>FillMode</code> enumeration</h3>
+        <dl title="enum FillMode" class="idl">
+          <dt>none</dt>
+          <dd>
+            No fill.
+          </dd>
+          <dt>forwards</dt>
+          <dd>
+            Fill forwards.
+          </dd>
+          <dt>backwards</dt>
+          <dd>
+            Fill backwards.
+          </dd>
+          <dt>both</dt>
+          <dd>
+            Fill backwards and forwards.
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Fill control interface members</h3>
+        <dl title="partial interface TimedItem" class="idl">
+          <dt>attribute FillMode fillMode</dt>
+          <dd>
+            <p>
+              The <a>fill mode</a> as specified by one of the <a>FillMode</a>
+              enumeration values.
+            </p>
+          </dd>
+        </dl>
+      </section>
+    </section>
+
+    <section>
+      <h2>Repeating</h2>
+      <section class="informative">
+        <h3>Iteration intervals</h3>
+      </section>
+      <section class="informative">
+        <h3>Time spaces</h3>
+      </section>
+      <section>
+        <h3>Iteration control interface members</h3>
+        <dl title="partial interface TimedItem" class="idl">
+          <dt>attribute double iterationStart</dt>
+          <dd>
+            <p>
+              A finite real number greater than or equal to zero representing
+              the number of iterations into the animation at which to begin.
+              For example, a value of 0.5 would cause the animation to begin
+              half-way through the first iteration.
+            </p>
+            <p>
+              The <code>iterationCount</code> is effectively <em>added</em> to
+              the <code>iterationStart</code> such that an animation with an
+              <code>iterationStart</code> of &lsquo;0.5&rsquo; and
+              <code>iterationCode</code> of &lsquo;2&rsquo; would still
+              repeat twice however it would begin and end half-way through
+              the animation's <a>iteration interval</a>.
+            </p>
+            <p>
+              Setting the <code>iterationStart</code> to a value greater than
+              or equal to one is typically only useful in combination with an
+              animation effect that has an <code>accumulateOperation</code>
+              other than &lsquo;replace&rsquo;.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised on setting if this object is readonly.
+              </dd>
+              <dt>DOMException of type <code>IndexSizeError</code></dt>
+              <dd>
+                Raised on setting if the value to set is a real number less
+                than zero.
+              </dd>
+            </dl>
+          </dd>
+          <dt>attribute unrestricted double iterationCount</dt>
+          <dd>
+            <p>
+              A real number greater than or equal to zero (including positive
+              infinity) representing the number of times to repeat the
+              animation.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised on setting if this object is readonly.
+              </dd>
+              <dt>DOMException of type <code>IndexSizeError</code></dt>
+              <dd>
+                Raised on setting if the value to set is a real number less
+                than zero.
+              </dd>
+            </dl>
+          </dd>
+          <dt>attribute unrestricted double? iterationDuration</dt>
+          <dd>
+            <p>
+              The duration in seconds of a single iteration.
+              This may be <code>null</code> in which case the <a>intrinsic
+              duration</a> will be used.
+              If set, it must be greater than or equal to zero (including
+              positive infinity).
+            </p>
+            <p>
+              This property corresponds to the <a>iteration duration</a>
+              defined in <a href="#calculating-the-iteration-duration"
+              class="sectionRef"></a> and described non-normatively in <a
+              href="#animation-repeat-behavior" class="sectionRef"></a>.
+            </p>
+            <p>
+              The <a>iteration duration</a> calculated for this item.
+              If <code>timing.duration</code> is set and greater than or
+              equal to zero, this will match <code>timing.duration</code>.
+              Otherwise, this will reflect the calculated <a>intrinsic
+              duration</a>.
+            </p>
+            <p>
+              This property corresponds to the <a>iteration duration</a>
+              defined in <a href="#calculating-the-iteration-duration"
+              class="sectionRef"></a> and described non-normatively in <a
+              href="#animation-repeat-behavior" class="sectionRef"></a>.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised on setting if this object is readonly.
+              </dd>
+              <dt>DOMException of type <code>IndexSizeError</code></dt>
+              <dd>
+                Raised on setting if the value to set is a real number less
+                than zero.
+              </dd>
+            </dl>
+          </dd>
+          <dt>readonly attribute double? iterationTime</dt>
+          <dd>
+            <p>
+              The time in seconds representing the offset into the iteration
+              duration using the steps described in <a
+              href="#calculating-the-iteration-time" class="sectionRef"></a>.
+              As a result of that definition, this property will be
+              non-<code>null</code> if and only if the animation is in
+              <a>in effect</a>.
+            </p>
+            <p>
+              This property corresponds to the <a>iteration time</a> described
+              in <a href="#time-spaces" class="sectionRef"></a>.
+            </p>
+            <p class="annotation">
+              This is not writeable since doing so would basically require doing
+              a reverse conversion from the value to set into to item time space
+              and then updating the <code>currentTime</code> accordingly.
+              However, that's not possible since timing functions may be applied
+              and some of them are not invertible.
+            </p>
+          </dd>
+        </dl>
+        <dt>readonly attribute unsigned long? currentIteration</dt>
+        <dd>
+          The current iteration index beginning with zero for the first
+          iteration as described in <a
+            href="#calculating-the-current-iteration" class="sectionRef"></a>.
+        </dd>
+      </section>
+    </section>
+
+    <section>
+      <h2>Speed control</h2>
+      <section>
+        <h3>Speed control interface members</h3>
+        <dl title="partial interface TimedItem" class="idl">
+          <dt>attribute double playbackRate</dt>
+          <dd>
+            <p>
+              A real number that acts as a multiplier on the item's rate of
+              play.
+              For example, a value of 2.0 will cause the item to run at twice
+              its usual speed.
+              A value of -1.0 will cause the item to play backwards.
+              The <code>playbackRate</code> is applied to the item's
+              <a>animation time</a> and hence has no effect on the <a>start
+              time</a> (see <a href="#time-spaces" class="sectionRef"></a>).
+            </p>
+            <p>
+              Setting this attribute will affect the item's <a>intrinsic
+              animation duration</a>.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised on setting if this object is readonly.
+              </dd>
+            </dl>
+          </dd>
+          <dt>void changePlaybackRate (double playbackRate)</dt>
+          <dd>
+            <p>
+              Updates the speed of the timed item such that it produces a smooth
+              change.
+            </p>
+            <p>
+              In particular:
+            </p>
+            <ul>
+              <li>the <a>adjusted animation time</a> will not change,</li>
+              <li>if the direction changes, <code>timing.fillMode</code> will be
+                  inverted to prevent sudden jumps in output, and</li>
+              <li>if the current <a>item time</a> is outside the animation
+                  interval the distance from the interval is scaled according
+                  to the change in speed.</li>
+            </ul>
+            <p>
+              The smooth change is achieved using the following steps:
+            </p>
+            <ol>
+              <li>Let <var>previous rate</var> be the value of
+                  <code>timing.playbackRate</code> prior to updating it.</li>
+              <li>Update <code>timing.playbackRate</code> to the passed-in
+                  <code>playbackRate</code> parameter.</li>
+              <li>Let <var>new rate</var> be the updated value of
+                  <code>timing.playbackRate</code>.</li> 
+              <li>If either <var>previous rate</var> or <var>new rate</var>
+                  are zero, return.
+                  <p class="issue">
+                    This isn't great. If you set the playback rate to zero at
+                    a given time, you expect it to act as if paused at that
+                    time.
+                    Currently, the only way to get that behavior out of the
+                    model is to set the <code>iterationStart</code> and that
+                    seems pretty intrusive.
+                  </p>
+              </li>
+              <li>Invert the fill mode as follows:
+                <dl class="switch">
+                  <dt>If <code>timing.fillMode</code> is
+                      <code>"forwards"</code>,</dt>
+                  <dd>
+                    Set <code>timing.fillMode</code> to
+                    <code>"backwards"</code>.
+                  </dd>
+                  <dt>If <code>timing.fillMode</code> is
+                      <code>"backwards"</code>,</dt>
+                  <dd>
+                    Set <code>timing.fillMode</code> to <code>"forwards"</code>.
+                  </dd>
+                  <dt>Otherwise,</dt>
+                  <dd>Leave <code>timing.fillMode</code> as is.</dd>
+                </dl>
+              </li>
+              <li>If <a>item time</a> is <code>null</code>, return.</li>
+              <li>Update the value of <code>animationDuration</code> if
+                  necessary (that is, if <code>animationDuration</code> reflects
+                  the <a>intrinsic animation duration</a>), applying the
+                  updated value for <code>timing.speed</code>.</li>
+              <li>Calculate the <var>seek adjustment</var> according to the
+                  following formula:
+                  <code><var>seek adjustment</var> =
+                  (<a>item time</a> - <code>timing.startDelay</code>) *
+                  (1 - <var>previous rate</var> / <var>new rate</var>)</code>.
+                  </li>
+              <li>If the sign of <var>new rate</var> and <var>previous
+                  rate</var> differs, subtract from the updated value for the
+                  <code>animationDuration</code>.</li>
+              <li>Let <var>seek time</var> be the result of the following
+                  formula:
+                  <code><a>item time</a>
+                    - <var>seek adjustment</var></code>.</li>
+              <li>Set <code>currentTime</code> to <var>seek time</var>.</li>
+            </ol>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised if this item is a linked item, that is, if
+                <code>template</code> is not <code>null</code>
+                (see <a href="#animation-templates" class="sectionRef"></a>).
+              </dd>
+            </dl>
+          </dd>
+          <dt>void reverse ()</dt>
+          <dd>
+            <p>
+              Reverses this animation such that the reverse animation
+              immediately begins reversing from its current point.
+              Note that this means that an animation that has yet to begin,
+              calling <code>reverse</code> will mean that it never starts.
+            </p>
+            <li>
+              Calculate <var>seek time</var> as follows:
+            </li>
+              <dl class="switch">
+                <dt>If <code>currentTime</code> is null,</dt>
+                <dd>
+                  Let <var>seek time</var> be zero.
+                </dd>
+                <dt>If <code>currentTime &lt; timing.startDelay</code>,</dt>
+                <dd>
+                  Let <var>seek time</var> be
+                  <code>timing.startDelay + animationDuration</code>.
+                </dd>
+                <dt>If <code>currentTime &gt;
+                    timing.startDelay + animationDuration</code>,</dt>
+                <dd>
+                  Let <var>seek time</var> be <code>timing.startDelay</code>.
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  Let <var>seek time</var> be
+                  <code>animationDuration - currentTime - startDelay</code>.
+                </dd>
+              </dl>
+            </li>
+            <li>
+              Call <code>changePlaybackRate(-timing.playbackRate)</code>.
+            </li>
+            <li>
+              Set <code>currentTime</code> to <var>seek time</var>.
+            </li>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised if this item is a linked item, that is, if
+                <code>template</code> is not <code>null</code>
+                (see <a href="#animation-templates" class="sectionRef"></a>).
+              </dd>
+            </dl>
+          </dd>
+        </dl>
+      </section>
+    </section>
+
+    <section>
+      <h2>Direction control</h2>
+      <section>
+        <h3>The <code>PlaybackDirection</code> enumeration</h3>
+        <dl title="enum PlaybackDirection" class="idl">
+          <dt>normal</dt>
+          <dd>
+            All iterations are played as specified.
+          </dd>
+          <dt>reverse</dt>
+          <dd>
+            All iterations are played in the reverse direction from the way
+            they are specified.
+          </dd>
+          <dt>alternate</dt>
+          <dd>
+            Even iterations are played as specified, odd iterations are played
+            in the reverse direction from the way they are specified.
+          </dd>
+          <dt>alternate-reverse</dt>
+          <dd>
+            Even iterations are played in the reverse direction from the way
+            they are specified, odd iterations are played as specified.
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Direction control interface members</h3>
+        <dl title="partial interface TimedItem" class="idl">
+          <dt>attribute PlaybackDirection direction</dt>
+          <dd>
+            <p>
+              Direction behavior as specified by one of the
+              <a>PlaybackDirection</a> enumeration values.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised on setting if this object is readonly.
+              </dd>
+            </dl>
+          </dd>
+        </dl>
+      </section>
+    </section>
+
+    <section>
+      <h2>Time transformations</h2>
+      <section>
+        <h3>The <a>TimingFunction</a> interface</h3>
+      </section>
+      <section>
+        <h3>Time transformation interface members</h3>
+        <dl title="partial interface TimedItem" class="idl">
+          <dt>attribute TimingFunction? timingFunction</dt>
+          <dd>
+            An optional timing function used to scale input time to produce
+            timing effects such as easing behavior.
+            See <a href="#scaling-the-time" class="sectionRef"></a>.
+          </dd>
+        </dl>
+      </section>
+    </section>
+
+    <section>
+      <h2>The output time of a timed item</h2>
+      <section class="informative">
+        <h3>Overview</h3>
+        <p class="todo">
+          Diagram
+        </p>
+      </section>
+      <section>
+        <h3>Calculating the active duration</h3>
+      </section>
+      <section>
+        <h3>Calculating the time fraction</h3>
+      </section>
+    </section>
+
+    <section>
+      <h2>Timing events</h2>
+      <section>
+        <h3>Time transformation interface members</h3>
+        <dl title="partial interface TimedItem" class="idl">
+          <dt>[TreatNonCallableAsNull] attribute Function? onstart</dt>
+          <dd>
+            The event handler for the <em>timingstart</em> event
+            (see <a href="#timing-events" class="sectionRef"></a>).
+          </dd>
+          <dt>[TreatNonCallableAsNull] attribute Function? oniteration</dt>
+          <dd>
+            The event handler for the <em>timingiteration</em> event
+            (see <a href="#timing-events" class="sectionRef"></a>).
+          </dd>
+          <dt>[TreatNonCallableAsNull] attribute Function? onend</dt>
+          <dd>
+            The event handler for the <em>timingend</em> event
+            (see <a href="#timing-events" class="sectionRef"></a>).
+          </dd>
+          <dt>[TreatNonCallableAsNull] attribute Function? oncancel</dt>
+          <dd>
+            The event handler for the <em>timingcancel</em> event
+            (see <a href="#timing-events" class="sectionRef"></a>).
+          </dd>
+        </dl>
+      </section>
+    </section>
+
+    <section>
+      <h2>Animations</h2>
+      <section>
+        <h3>The <code>TimingDictionary</code> dictionary</h3>
+        <p>
+          To simplify creation of <a>Timing</a> objects
+          a <code>TimingDictionary</code> can be used.
+        </p>
+        <p>
+          Except where otherwise noted, the acceptable values for each
+          property and their meanings are defined in the <a>Timing</a>
+          interface.
+        </p>
+        <dl title="dictionary TimingDictionary" class="idl">
+          <dt>double startDelay = 0</dt>
+          <dd>
+            <p>
+              The number of seconds from a timed item's <code>startTime</code>
+              to the start of the <a>animation interval</a>.
+              See <a href="#widl-Timing-startDelay"
+              class="idlType"><code>startDelay</code></a> on the <a>Timing</a>
+              interface.
+            </p>
+          </dd>
+          <dt>unrestricted double? duration = null</dt>
+          <dd>
+            <p>
+              The duration in seconds of a single iteration, that is, the
+              <a>iteration duration</a>.
+              See <a href="#widl-Timing-duration"
+              class="idlType"><code>duration</code></a> on the <a>Timing</a>
+              interface.
+            </p>
+          </dd>
+          <dt>unrestricted double iterationCount = 1.0</dt>
+          <dd>
+            <p>
+              The number of times to repeat the item.
+              See <a href="#widl-Timing-iterationCount"
+              class="idlType"><code>iterationCount</code></a> on the
+              <a>Timing</a> interface.
+            </p>
+          </dd>
+          <dt>double iterationStart = 0.0</dt>
+          <dd>
+            <p>
+              The number of iterations into the item at which to begin.
+              See <a href="#widl-Timing-iterationStart"
+              class="idlType"><code>iterationStart</code></a> on the
+              <a>Timing</a> interface.
+            </p>
+          </dd>
+          <dt>double playbackRate = 1.0</dt>
+          <dd>
+            <p>
+              A multiplier applied to the inherited time potentially causing
+              the item to run at a different rate to its natural speed.
+              See <a href="#widl-Timing-playbackRate"
+              class="idlType"><code>playbackRate</code></a> on the
+              <a>Timing</a> interface.
+            </p>
+          </dd>
+          <dt>PlaybackDirection direction = "normal"</dt>
+          <dd>
+            <p>
+              The direction in which animation proceeds, e.g. "reverse".
+              See <a href="#widl-Timing-direction"
+              class="idlType"><code>direction</code></a> on the <a>Timing</a>
+              interface.
+            </p>
+          </dd>
+          <dt>(DOMString or TimingFunction)? timingFunction = null</dt>
+          <dd>
+            <p>
+              An optional timing function used to scale the time to produce
+              easing effects and the like.
+            </p>
+            <p>
+              Unlike the <a>Timing</a> interface, the member here may be set
+              to either a <a>TimingFunction</a> object or
+              a <code>DOMString</code> corresponding to one of the values
+              recognized by <a
+              href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
+              class="idlType"><code>Timing.createFromString</code></a>.
+            </p>
+          </dd>
+          <dt>FillMode fillMode = "forwards"</dt>
+          <dd>
+            <p>
+              The <a>fill mode</a> of the animation.
+              See <a href="#widl-Timing-fillMode"
+              class="idlType"><code>fillMode</code></a> on the <a>Timing</a>
+              interface.
+            </p>
+            <p class="note">
+              Note that in both CSS Animations [[CSS3-ANIMATIONS]] and SVG
+              [[SVG112]] the default fill mode is "none".
+              Web Animations differs in this regard since it was determined
+              that when generating animations from script forwards filling is
+              the more commonly-desired behavior.
+            </p>
+            <p class="issue">
+              Some feedback suggests the default here should be "both".
+            </p>
+          </dd>
+        </dl>
+      </section>
+    </section>
+
+    <section>
+      <h2>Timing groups</h2>
+    </section>
+
+    <section>
       <h2>Animations in the timeline</h2>
       <p>
         Animations in the timeline are represented by <code>Animation</code>
@@ -1682,86 +2348,6 @@ var animC = new Animation(elem,
     <section>
       <h2>Timing animations</h2>
       <section class="informative">
-        <h3>Animation fill behavior</h3>
-        <p>
-          Outside of the <a>animation interval</a>, an animation may still
-          affect its target depending on its <dfn>fill mode</dfn>.
-          The different modes are as follows:
-        </p>
-        <dl>
-          <dt>none</dt>
-          <dd>
-            The animation does not affect its target outside of the
-            <a>animation interval</a>.
-          </dd>
-          <dt>forwards</dt>
-          <dd>
-            For times that occur later than the <a>animation interval</a>, the
-            animation will continue to apply to its target the
-            animation value that was used at the end of the <a>animation
-            interval</a>.
-
-            For times that occur before the <a>animation interval</a>, the
-            animation will not affect its target.
-          </dd>
-          <dt>backwards</dt>
-          <dd>
-            For times that occur before the <a>animation interval</a>, the
-            animation will apply the same animation value that will be used at
-            the start of the <a>animation interval</a>.
-
-            For times that occur later than the <a>animation interval</a>, the
-            animation will not affect its target.
-          </dd>
-          <dt>both</dt>
-          <dd>
-            For times that occur before the <a>animation interval</a>, the
-            backwards fill behavior is used.
-
-            For times that occur after the <a>animation interval</a>, the
-            forwards fill behavior is used.
-          </dd>
-        </dl>
-        <p>
-          Some examples of the these fill modes are illustrated below.
-        </p>
-        <div class="figure">
-          <img src="img/animation-state-and-fill-behavior.svg" width="600">
-        </div>
-        <p class="caption">
-          Examples of various fill modes and the animation states produced.<br>
-          (a) fill mode &lsquo;none&rsquo;. The animation has no effect outside
-              its animation interval.<br>
-          (b) fill mode &lsquo;forwards&rsquo;. After the animation interval has
-              finished, the animation continues to apply a fill value to the
-              target.<br>
-          (c) fill mode &lsquo;backwards&rsquo;. The animation applies a fill
-              value to its target until the start of the animation
-              interval.<br>
-          (d) fill mode &lsquo;both&rsquo;. Both before and after the animation
-              interval the animation applies a fill value to its target.
-        </p> 
-        <p>
-          At a given time, it is possible to describe an animation as <dfn>in
-          effect</dfn> if either (a) the time falls within the animation's
-          <a>animation interval</a>, or (b) the fill mode of the animation
-          causes it to apply a fill mode to its target at the given time.
-        </p>
-        <p>
-          The normative definition of fill behavior is incorporated in the
-          calculation of the <a>animation time</a> in <a
-          href="#calculating-the-animation-time" class="sectionRef"></a>.
-        </p>
-        <p class="note">
-          Note that setting a fill mode has no bearing on the endpoints of the
-          <a>animation interval</a>.
-          However, the fill mode <em>does</em> have an effect on the
-          calculation of the <a>animation time</a> and consequently the
-          <a>iteration time</a> since these are defined only when the animation
-          is <a>in effect</a>.
-        </p>
-      </section>
-      <section class="informative">
         <h3>Animation repeat behavior</h3>
         <p>
           It is possible to specify that an animation's effect should repeat
@@ -1927,998 +2513,6 @@ var animC = new Animation(elem,
           after two iterations (and thereonwards), the last frame is shown due
           to the special behavior defined when an animation fills.
         </p>
-      </section>
-      <section>
-        <h3>Specifying timing properties</h3>
-        <p>
-          Timing properties are collected under the <code>Timing</code>
-          interface.
-        </p>
-        <p>
-          If this object is attached to a linked <a>Animation</a> or
-          <a>AnimationGroup</a> (see <a href="#animation-templates"
-          class="sectionRef"></a>) then it is readonly and attempting to set any
-          of its properties will result in a DOMException of type
-          <code>NoModificationAllowedError</code> being thrown.
-          In order to modify the properties of a readonly object, it is
-          necessary to first call the <code>unlink</code> method on the
-          corresponding <a>Animation</a> or <a>AnimationGroup</a> object.
-        </p>
-        <p>
-          When throwing a DOMException as a result of attempting to set
-          a readonly property, <a>user agent</a>s that provide debugging
-          feedback SHOULD also provide feedback indicating the reason that this
-          object is readonly and the remedy described above.
-        </p>
-        <section>
-          <h4>The <code>Timing</code> interface</h4>
-          <dl title="interface Timing" class="idl">
-            <dt>Constructor ()</dt>
-            <dd>
-              <p>
-                Creates a new <a>Timing</a> object using the supplied
-                parameters.
-              </p>
-              <p>
-                In most cases the members of the <code>params</code>
-                <a>TimingDictionary</a> can be assigned directly to the property
-                in the <a>Timing</a> interface of the same name.
-              </p>
-              <p>
-                The one exception is the <code>timingFunction</code> member
-                which in a <a>TimingDictionary</a> value can also be set to
-                a <code>DOMString</code>.
-                In this case, the <code>DOMString</code> is first passed to
-                <a
-                href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
-                class="idlType"><code>TimingFunction.createFromString</code></a> and
-                the returned <a>TimingFunction</a> is assigned to the
-                <code>timingFunction</code> property of the new <a>Timing</a>
-                object.
-              </p>
-              <p>
-              </p>
-              <div class="issue">
-                <p>
-                  Should we make this fail silently here?
-                  Which is better from a forwards compatibility standpoint?
-                </p>
-                <p>
-                  For example:
-                </p>
-                <blockquote>
-                  If any of the values specified on <code>params</code> is
-                  invalid such that setting the corresponding <a>Timing</a>
-                  property would trigger an exception, the property is set to
-                  the default value as specified on the
-                  <code>TimingDictionary</code> definition.
-                  User agents that provide a debugging feedback SHOULD indicate
-                  that an unrecognized or invalid value was encountered.
-                </blockquote>
-              </div>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type <code>IndexSizeError</code></dt>
-                <dd>
-                  Raised if any of the values specified on <code>params</code>
-                  is out of range.
-                </dd>
-                <dt>DOMException of type <code>SyntaxError</code></dt>
-                <dd>
-                  Raised if <code>params.timingFunction</code> is set to
-                  a string that it not recognized by
-                  <a
-                  href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
-                  class="idlType"><code>Timing.createFromString</code></a> as
-                  indicated by a <code>null</code> return value.
-                </dd>
-              </dl>
-              <dl class="parameters">
-                <dt>TimingDictionary params</dt>
-                <dd>
-                  The properties to set on the new <a>Timing</a> object.
-                  Unspecified members take on the default values specified in
-                  the <a>TimingDictionary</a> dictionary definition.
-                </dd>
-              </dl>
-            <dd>
-            <dt>attribute double startDelay</dt>
-            <dd>
-              <p>
-                The number of seconds which, when added to the timed item's
-                <code>startTime</code>, defines the lower bound of the timed
-                item's <a>animation interval</a>.
-              </p>
-              <p>
-                A non-normative description of the effect of this property on
-                timing is given in <a href="#the-animation-interval"
-                class="sectionRef"></a>.
-              </p>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type
-                    <code>NoModificationAllowedError</code></dt>
-                <dd>
-                  Raised on setting if this object is readonly.
-                </dd>
-              </dl>
-            </dd>
-            <dt>attribute unrestricted double? duration</dt>
-            <dd>
-              <p>
-                The duration in seconds of a single iteration.
-                This may be <code>null</code> in which case the <a>intrinsic
-                duration</a> will be used.
-                If set, it must be greater than or equal to zero (including
-                positive infinity).
-              </p>
-              <p>
-                This property corresponds to the <a>iteration duration</a>
-                defined in <a href="#calculating-the-iteration-duration"
-                class="sectionRef"></a> and described non-normatively in <a
-                href="#animation-repeat-behavior" class="sectionRef"></a>.
-              </p>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type
-                    <code>NoModificationAllowedError</code></dt>
-                <dd>
-                  Raised on setting if this object is readonly.
-                </dd>
-                <dt>DOMException of type <code>IndexSizeError</code></dt>
-                <dd>
-                  Raised on setting if the value to set is a real number less
-                  than zero.
-                </dd>
-              </dl>
-            </dd>
-            <dt>attribute unrestricted double iterationCount</dt>
-            <dd>
-              <p>
-                A real number greater than or equal to zero (including positive
-                infinity) representing the number of times to repeat the
-                animation.
-              </p>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type
-                    <code>NoModificationAllowedError</code></dt>
-                <dd>
-                  Raised on setting if this object is readonly.
-                </dd>
-                <dt>DOMException of type <code>IndexSizeError</code></dt>
-                <dd>
-                  Raised on setting if the value to set is a real number less
-                  than zero.
-                </dd>
-              </dl>
-            </dd>
-            <dt>attribute double iterationStart</dt>
-            <dd>
-              <p>
-                A finite real number greater than or equal to zero representing
-                the number of iterations into the animation at which to begin.
-                For example, a value of 0.5 would cause the animation to begin
-                half-way through the first iteration.
-              </p>
-              <p>
-                The <code>iterationCount</code> is effectively <em>added</em> to
-                the <code>iterationStart</code> such that an animation with an
-                <code>iterationStart</code> of &lsquo;0.5&rsquo; and
-                <code>iterationCode</code> of &lsquo;2&rsquo; would still
-                repeat twice however it would begin and end half-way through
-                the animation's <a>iteration interval</a>.
-              </p>
-              <p>
-                Setting the <code>iterationStart</code> to a value greater than
-                or equal to one is typically only useful in combination with an
-                animation effect that has an <code>accumulateOperation</code>
-                other than &lsquo;replace&rsquo;.
-              </p>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type
-                    <code>NoModificationAllowedError</code></dt>
-                <dd>
-                  Raised on setting if this object is readonly.
-                </dd>
-                <dt>DOMException of type <code>IndexSizeError</code></dt>
-                <dd>
-                  Raised on setting if the value to set is a real number less
-                  than zero.
-                </dd>
-              </dl>
-            </dd>
-            <dt>attribute double playbackRate</dt>
-            <dd>
-              <p>
-                A real number that acts as a multiplier on the item's rate of
-                play.
-                For example, a value of 2.0 will cause the item to run at twice
-                its usual speed.
-                A value of -1.0 will cause the item to play backwards.
-                The <code>playbackRate</code> is applied to the item's
-                <a>animation time</a> and hence has no effect on the <a>start
-                time</a> (see <a href="#time-spaces" class="sectionRef"></a>).
-              </p>
-              <p>
-                Setting this attribute will affect the item's <a>intrinsic
-                animation duration</a>.
-              </p>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type
-                    <code>NoModificationAllowedError</code></dt>
-                <dd>
-                  Raised on setting if this object is readonly.
-                </dd>
-              </dl>
-            </dd>
-            <dt>attribute PlaybackDirection direction</dt>
-            <dd>
-              <p>
-                Direction behavior as specified by one of the
-                <a>PlaybackDirection</a> enumeration values.
-              </p>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type
-                    <code>NoModificationAllowedError</code></dt>
-                <dd>
-                  Raised on setting if this object is readonly.
-                </dd>
-              </dl>
-            </dd>
-            <dt>attribute TimingFunction? timingFunction</dt>
-            <dd>
-              An optional timing function used to scale input time to produce
-              timing effects such as easing behavior.
-              See <a href="#scaling-the-time" class="sectionRef"></a>.
-            </dd>
-            <dt>attribute FillMode fillMode</dt>
-            <dd>
-              <p>
-                The <a>fill mode</a> as specified by one of the <a>FillMode</a>
-                enumeration values.
-              </p>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type
-                    <code>NoModificationAllowedError</code></dt>
-                <dd>
-                  Raised on setting if this object is readonly.
-                </dd>
-              </dl>
-            </dd>
-            <dt>Timing clone ()</dt>
-            <dd>
-              <p>
-                Creates a new <a>Timing</a> object with each of its properties
-                set to the same value as this object with the exception of the
-                <code>timingFunction</code> property which is set to
-                <code>timingFunction.clone()</code>.
-              </p>
-            </dd>
-          </dl>
-        </section>
-        <section>
-          <h4>The <code>FillMode</code> enumeration</h4>
-          <p>A non-normative description of these modes is given in
-             <a href="#animation-fill-behavior" class="sectionRef"></a>.</p>
-          <dl title="enum FillMode" class="idl">
-            <dt>none</dt>
-            <dd>
-              No fill.
-            </dd>
-            <dt>forwards</dt>
-            <dd>
-              Fill forwards.
-            </dd>
-            <dt>backwards</dt>
-            <dd>
-              Fill backwards.
-            </dd>
-            <dt>both</dt>
-            <dd>
-              Fill backwards and forwards.
-            </dd>
-          </dl>
-        </section>
-        <section>
-          <h4>The <code>PlaybackDirection</code> enumeration</h4>
-          <dl title="enum PlaybackDirection" class="idl">
-            <dt>normal</dt>
-            <dd>
-              All iterations are played as specified.
-            </dd>
-            <dt>reverse</dt>
-            <dd>
-              All iterations are played in the reverse direction from the way
-              they are specified.
-            </dd>
-            <dt>alternate</dt>
-            <dd>
-              Even iterations are played as specified, odd iterations are played
-              in the reverse direction from the way they are specified.
-            </dd>
-            <dt>alternate-reverse</dt>
-            <dd>
-              Even iterations are played in the reverse direction from the way
-              they are specified, odd iterations are played as specified.
-            </dd>
-          </dl>
-        </section>
-        <section>
-          <h4>The <code>TimingDictionary</code> dictionary</h4>
-          <p>
-            To simplify creation of <a>Timing</a> objects
-            a <code>TimingDictionary</code> can be used.
-          </p>
-          <p>
-            Except where otherwise noted, the acceptable values for each
-            property and their meanings are defined in the <a>Timing</a>
-            interface.
-          </p>
-          <dl title="dictionary TimingDictionary" class="idl">
-            <dt>double startDelay = 0</dt>
-            <dd>
-              <p>
-                The number of seconds from a timed item's <code>startTime</code>
-                to the start of the <a>animation interval</a>.
-                See <a href="#widl-Timing-startDelay"
-                class="idlType"><code>startDelay</code></a> on the <a>Timing</a>
-                interface.
-              </p>
-            </dd>
-            <dt>unrestricted double? duration = null</dt>
-            <dd>
-              <p>
-                The duration in seconds of a single iteration, that is, the
-                <a>iteration duration</a>.
-                See <a href="#widl-Timing-duration"
-                class="idlType"><code>duration</code></a> on the <a>Timing</a>
-                interface.
-              </p>
-            </dd>
-            <dt>unrestricted double iterationCount = 1.0</dt>
-            <dd>
-              <p>
-                The number of times to repeat the item.
-                See <a href="#widl-Timing-iterationCount"
-                class="idlType"><code>iterationCount</code></a> on the
-                <a>Timing</a> interface.
-              </p>
-            </dd>
-            <dt>double iterationStart = 0.0</dt>
-            <dd>
-              <p>
-                The number of iterations into the item at which to begin.
-                See <a href="#widl-Timing-iterationStart"
-                class="idlType"><code>iterationStart</code></a> on the
-                <a>Timing</a> interface.
-              </p>
-            </dd>
-            <dt>double playbackRate = 1.0</dt>
-            <dd>
-              <p>
-                A multiplier applied to the inherited time potentially causing
-                the item to run at a different rate to its natural speed.
-                See <a href="#widl-Timing-playbackRate"
-                class="idlType"><code>playbackRate</code></a> on the
-                <a>Timing</a> interface.
-              </p>
-            </dd>
-            <dt>PlaybackDirection direction = "normal"</dt>
-            <dd>
-              <p>
-                The direction in which animation proceeds, e.g. "reverse".
-                See <a href="#widl-Timing-direction"
-                class="idlType"><code>direction</code></a> on the <a>Timing</a>
-                interface.
-              </p>
-            </dd>
-            <dt>(DOMString or TimingFunction)? timingFunction = null</dt>
-            <dd>
-              <p>
-                An optional timing function used to scale the time to produce
-                easing effects and the like.
-              </p>
-              <p>
-                Unlike the <a>Timing</a> interface, the member here may be set
-                to either a <a>TimingFunction</a> object or
-                a <code>DOMString</code> corresponding to one of the values
-                recognized by <a
-                href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
-                class="idlType"><code>Timing.createFromString</code></a>.
-              </p>
-            </dd>
-            <dt>FillMode fillMode = "forwards"</dt>
-            <dd>
-              <p>
-                The <a>fill mode</a> of the animation.
-                See <a href="#widl-Timing-fillMode"
-                class="idlType"><code>fillMode</code></a> on the <a>Timing</a>
-                interface.
-              </p>
-              <p class="note">
-                Note that in both CSS Animations [[CSS3-ANIMATIONS]] and SVG
-                [[SVG112]] the default fill mode is "none".
-                Web Animations differs in this regard since it was determined
-                that when generating animations from script forwards filling is
-                the more commonly-desired behavior.
-              </p>
-              <p class="issue">
-                Some feedback suggests the default here should be "both".
-              </p>
-            </dd>
-          </dl>
-        </section>
-      </section>
-      <section>
-        <h3>The <code>TimedItem</code> interface</h3>
-        <p>
-          The application of the timing properties specified in
-          a <code>Timing</code> object to an actor in the animation timeline
-          is represented by the <code>TimedItem</code> interface.
-        </p>
-        <dl title="interface TimedItem : EventTarget" class="idl">
-          <dt>attribute Timing timing</dt>
-          <dd>
-            <p>
-              The timing parameters for this item.
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
-              <dd>
-                Raised on setting if this object is linked to a template (see <a
-                href="#animation-templates" class="sectionRef"></a>).
-              </dd>
-            </dl>
-          </dd>
-          <dt>attribute double? currentTime</dt>
-          <dd>
-            <p>
-              Returns the effective item time of the timed item.
-            </p>
-            <p>
-              This differs from the definition of <a>item time</a> used
-              elsewhere in the model in that when the parent iteration time is
-              <code>null</code> (e.g. because <code>parentGroup</code> is
-              <code>null</code>, or because the parent is not <a>in effect</a>)
-              a parent time of zero is used.
-              This allows the item to be seeked prior to being attached to
-              a group.
-            </p>
-            <p>
-              The value returned is calculated as follows:
-            </p>
-            <blockquote>
-              <code>currentTime =
-                    <a>effective parent time</a> - startTime - timeDrift</code>
-            </blockquote>
-            <p>
-              Setting this value performs a seek operation according to the
-              steps described in described in <a href="#seeking-a-timed-item"
-              class="sectionRef"></a>.
-            </p>
-          </dd>
-          <dt>attribute unrestricted double animationDuration</dt>
-          <dd>
-            <p>
-              The length in seconds of the <a>animation interval</a>.
-            </p>
-            <p>
-              Initially, this attribute will reflect the <a>intrinsic animation
-              duration</a>.
-              Changes to the model that cause the <a>intrinsic animation
-              duration</a> to change are reflected in the value returned here.
-            </p>
-            <p>
-              The <a>instrinsic animation duration</a> may be overridden by
-              setting this attribute to any real number.
-              Setting this attribute to <code>undefined</code> has the effect of
-              clearing the override value so that the attribute returns to
-              reflecting the <a>intrinsic animation duration</a>. 
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>IndexSizeError</code></dt>
-              <dd>
-                Raised on setting if the value to set is a real number that is
-                less than zero.
-              </dd>
-            </dl>
-          </dd>
-          <dt>readonly attribute double? iterationTime</dt>
-          <dd>
-            <p>
-              The time in seconds representing the offset into the iteration
-              duration using the steps described in <a
-              href="#calculating-the-iteration-time" class="sectionRef"></a>.
-              As a result of that definition, this property will be
-              non-<code>null</code> if and only if the animation is in
-              <a>in effect</a>.
-            </p>
-            <p>
-              This property corresponds to the <a>iteration time</a> described
-              in <a href="#time-spaces" class="sectionRef"></a>.
-            </p>
-            <p class="annotation">
-              This is not writeable since doing so would basically require doing
-              a reverse conversion from the value to set into to item time space
-              and then updating the <code>currentTime</code> accordingly.
-              However, that's not possible since timing functions may be applied
-              and some of them are not invertible.
-            </p>
-          </dd>
-          <dt>readonly attribute unsigned long? currentIteration</dt>
-          <dd>
-            The current iteration index beginning with zero for the first
-            iteration as described in <a
-              href="#calculating-the-current-iteration" class="sectionRef"></a>.
-          </dd>
-          <dt>readonly attribute unrestricted double duration</dt>
-          <dd>
-            <p>
-              The <a>iteration duration</a> calculated for this item.
-              If <code>timing.duration</code> is set and greater than or
-              equal to zero, this will match <code>timing.duration</code>.
-              Otherwise, this will reflect the calculated <a>intrinsic
-              duration</a>.
-            </p>
-            <p>
-              This property corresponds to the <a>iteration duration</a>
-              defined in <a href="#calculating-the-iteration-duration"
-              class="sectionRef"></a> and described non-normatively in <a
-              href="#animation-repeat-behavior" class="sectionRef"></a>.
-            </p>
-          </dd>
-          <dt>attribute double startTime</dt>
-          <dd>
-            <p>
-              The time which, when combined with the
-              <code>timing.startDelay</code>, defines the lower bound of the
-              <a>animation interval</a>.
-              It is expressed in seconds in the <a>iteration time space</a> of
-              <code>parentGroup</code>.
-            </p>
-            <p>
-              When the parent animation group is a sequence group, any
-              previously set value set for <code>startTime</code> is ignored and
-              instead the value of this property is determined by the procedure
-              defined in <a
-              href="#the-start-time-of-children-of-a-sequence-animation-group"
-              class="sectionRef"></a>.
-              Furthermore, attempts to set this property will raise an
-              DOMException of type <code>InvalidStateError</code>.
-              If this item is later made the child of a parallel animation
-              group, any previously set value will be restored.
-            </p>
-            <p>
-              This property corresponds to the <a>start time</a> described in <a
-              href="#the-animation-interval" class="sectionRef"></a>.
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>InvalidStateError</code></dt>
-              <dd>
-                Raised on setting if <code>parentGroup</code> is a sequence
-                animation group (see <a
-                href="#the-start-time-of-children-of-a-sequence-animation-group"
-                class="sectionRef"></a>).
-              </dd>
-            </dl>
-          </dd>
-          <dt>readonly attribute unrestricted double endTime</dt>
-          <dd>
-            <p>
-              The upper bound of the <a>animation interval</a> expressed in
-              seconds relative to the <a>iteration time space</a> of
-              <code>parentGroup</code>.
-            </p>
-            <p>
-              The <code>endTime</code> is calculated as follows:
-            </p>
-            <dl class="switch">
-              <dt>If <code>locallyPaused</code> is <code>true</code>,</dt>
-              <dd>
-                The <code>endTime</code> is positive infinity.
-              </dd>
-              <dt>Otherwise,</dt>
-              <dd>
-                The <code>endTime</code> is the result of evaluating
-                <code>startTime + timing.startDelay +
-                      animationDuration + timeDrift</code>.
-              </dd>
-            </dl>
-            <p class="note">
-              Note that while the <code>endTime</code> is read-only, it can be
-              set indirectly by overriding the <code>animationDuration</code>
-              property.
-              For example, to set <code>endTime</code> to time <var>t</var> in
-              <a>item time space</a>, set <code>animationDuration</code> to
-              <code><var>t</var> - startTime - timing.startDelay</code>.
-            </p>
-          </dd>
-          <dt>readonly attribute AnimationGroup parentGroup</dt>
-          <dd>
-            The parent animation group.
-          </dd>
-          <dt>readonly attribute double timeDrift</dt>
-          <dd>
-            <p>
-              The number of seconds that the actual <a>item time</a> of this
-              item lags behind its scheduled time as a result of pausing and
-              seeking this item.
-            </p>
-            <p>
-              The <code>timeDrift</code> property is both a stored and a
-              calculated value.
-              When this timed item is paused, the value is calculated from the
-              <a>pause start time</a>.
-              When the timed item is not paused, the value stored for the
-              property is used.
-              The stored value is initially zero, and is updated when the item
-              is unpaused or seeked.
-            </p>
-            <p>
-              The value returned is as follows:
-            </p>
-            <dl class="switch">
-              <dt>If <code>locallyPaused</code> is <code>false</code>,</dt>
-              <dd>
-                Return the stored value for this property.
-              </dd>
-              <dt>If <code>locallyPaused</code> is <code>true</code>,</dt>
-              <dd>
-                Return the result of 
-                <code><a>effective parent time</a> - startTime - <a>pause start
-                time</a></code>.
-              </dd>
-            </dl>
-          </dd>
-          <dt>attribute boolean locallyPaused</dt>
-          <dd>
-            <p>
-              The pause state of this timed item.
-              Initially <code>false</code>.
-            </p>
-            <p>
-              When setting the following procedure is used:
-            </p>
-            <ol>
-              <li>
-                Let <var>new value</var> be the value to set.
-              </li>
-              <li>
-                If <var>new value</var> equals <code>locallyPaused</code>,
-                return.
-              </li>
-              <li>
-                The next step depends on the current value of
-                <code>locallyPaused</code> as follows,
-                <dl class="switch">
-                  <dt>If <code>locallyPaused</code> is true,</dt>
-                  <dd>
-                    Record the current value of <code>currentTime</code> as
-                    <a>pause start time</a>.
-                  </dd>
-                  <dt>If <code>locallyPaused</code> is false,</dt>
-                  <dd>
-                    Set the stored value of <code>timeDrift</code> to the result
-                    of evaluating <code><a>effective parent time</a> - startTime
-                    - <a>pause start time</a></code>.
-                  </dd>
-                </dl>
-              </li>
-              <li>
-                Set <code>locallyPaused</code> to <var>new value</var>.
-              </li>
-            </ol>
-            <p class="issue">
-              Should this be writeable?
-              Once we integrate with media controllers we might want to make
-              this writeable only when not associated with a media controller
-              much like things currently work in HTML5.
-            </p>
-            <p class="issue">
-              This attribute is at-risk.
-              It remains to be seen if it is really needed, or if
-              <code>pause()</code>, <code>play()</code>, and
-              <code>unpause()</code> are sufficient for most use cases.
-            </p>
-          </dd>
-          <dt>readonly attribute boolean paused</dt>
-          <dd>
-            Indicates if this element or one of its ancestors is paused.
-            This will be <code>true</code> if an only if the
-            <code>locallyPaused</code> property of this object <em>or one of its
-            ancestor animation groups</em> is <code>true</code>.
-          </dd>
-          <dt>[TreatNonCallableAsNull] attribute Function? onstart</dt>
-          <dd>
-            The event handler for the <em>timingstart</em> event
-            (see <a href="#timing-events" class="sectionRef"></a>).
-          </dd>
-          <dt>[TreatNonCallableAsNull] attribute Function? oniteration</dt>
-          <dd>
-            The event handler for the <em>timingiteration</em> event
-            (see <a href="#timing-events" class="sectionRef"></a>).
-          </dd>
-          <dt>[TreatNonCallableAsNull] attribute Function? onend</dt>
-          <dd>
-            The event handler for the <em>timingend</em> event
-            (see <a href="#timing-events" class="sectionRef"></a>).
-          </dd>
-          <dt>[TreatNonCallableAsNull] attribute Function? oncancel</dt>
-          <dd>
-            The event handler for the <em>timingcancel</em> event
-            (see <a href="#timing-events" class="sectionRef"></a>).
-          </dd>
-          <dt>void pause ()</dt>
-          <dd>
-            Sets the <code>locallyPaused</code> property to <code>true</code> by
-            following the procedure described for setting that property.
-            <p class="annotation">
-              This method is intended to behave in a comparable manner to
-              <a
-              href="http://dev.w3.org/html5/spec/media-elements.html#media-elements">HTMLMediaElement</a>'s <a
-              href="http://dev.w3.org/html5/spec/media-elements.html#dom-media-pause">pause
-              method</a>.
-            </p>
-          </dd>
-          <dt>void play ()</dt>
-          <dd>
-            <p>
-              Unpauses this item and, if the item is not currently animating,
-              seeks to the beginning of the <a>animation interval</a> by taking
-              the following steps.
-            </p>
-            <ol>
-              <li>If <code>currentTime &gt; timing.startDelay
-                  + animationDuration</code> and
-                  <code>timing.playbackRate &ge; 0</code>, set
-                  <code>currentTime</code> to <code>timing.startDelay</code>.</li>
-              <li>Set <code>locallyPaused</code> to <code>false</code>.</li>
-            </ol>
-            <p>
-              To unpause the item without seeking, set
-              <code>locallyPaused</code> to <code>false</code>.
-            </p>
-            <p class="annotation">
-              This method is intended to behave in a comparable manner to
-              <a
-              href="http://dev.w3.org/html5/spec/media-elements.html#media-elements">HTMLMediaElement</a>'s <a
-              href="http://dev.w3.org/html5/spec/media-elements.html#dom-media-play">play
-              method</a>.
-            </p>
-          </dd>
-          <dt>void changePlaybackRate (double playbackRate)</dt>
-          <dd>
-            <p>
-              Updates the speed of the timed item such that it produces a smooth
-              change.
-            </p>
-            <p>
-              In particular:
-            </p>
-            <ul>
-              <li>the <a>adjusted animation time</a> will not change,</li>
-              <li>if the direction changes, <code>timing.fillMode</code> will be
-                  inverted to prevent sudden jumps in output, and</li>
-              <li>if the current <a>item time</a> is outside the animation
-                  interval the distance from the interval is scaled according
-                  to the change in speed.</li>
-            </ul>
-            <p>
-              The smooth change is achieved using the following steps:
-            </p>
-            <ol>
-              <li>Let <var>previous rate</var> be the value of
-                  <code>timing.playbackRate</code> prior to updating it.</li>
-              <li>Update <code>timing.playbackRate</code> to the passed-in
-                  <code>playbackRate</code> parameter.</li>
-              <li>Let <var>new rate</var> be the updated value of
-                  <code>timing.playbackRate</code>.</li> 
-              <li>If either <var>previous rate</var> or <var>new rate</var>
-                  are zero, return.
-                  <p class="issue">
-                    This isn't great. If you set the playback rate to zero at
-                    a given time, you expect it to act as if paused at that
-                    time.
-                    Currently, the only way to get that behavior out of the
-                    model is to set the <code>iterationStart</code> and that
-                    seems pretty intrusive.
-                  </p>
-              </li>
-              <li>Invert the fill mode as follows:
-                <dl class="switch">
-                  <dt>If <code>timing.fillMode</code> is
-                      <code>"forwards"</code>,</dt>
-                  <dd>
-                    Set <code>timing.fillMode</code> to
-                    <code>"backwards"</code>.
-                  </dd>
-                  <dt>If <code>timing.fillMode</code> is
-                      <code>"backwards"</code>,</dt>
-                  <dd>
-                    Set <code>timing.fillMode</code> to <code>"forwards"</code>.
-                  </dd>
-                  <dt>Otherwise,</dt>
-                  <dd>Leave <code>timing.fillMode</code> as is.</dd>
-                </dl>
-              </li>
-              <li>If <a>item time</a> is <code>null</code>, return.</li>
-              <li>Update the value of <code>animationDuration</code> if
-                  necessary (that is, if <code>animationDuration</code> reflects
-                  the <a>intrinsic animation duration</a>), applying the
-                  updated value for <code>timing.speed</code>.</li>
-              <li>Calculate the <var>seek adjustment</var> according to the
-                  following formula:
-                  <code><var>seek adjustment</var> =
-                  (<a>item time</a> - <code>timing.startDelay</code>) *
-                  (1 - <var>previous rate</var> / <var>new rate</var>)</code>.
-                  </li>
-              <li>If the sign of <var>new rate</var> and <var>previous
-                  rate</var> differs, subtract from the updated value for the
-                  <code>animationDuration</code>.</li>
-              <li>Let <var>seek time</var> be the result of the following
-                  formula:
-                  <code><a>item time</a>
-                    - <var>seek adjustment</var></code>.</li>
-              <li>Set <code>currentTime</code> to <var>seek time</var>.</li>
-            </ol>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
-              <dd>
-                Raised if this item is a linked item, that is, if
-                <code>template</code> is not <code>null</code>
-                (see <a href="#animation-templates" class="sectionRef"></a>).
-              </dd>
-            </dl>
-          </dd>
-          <dt>void reverse ()</dt>
-          <dd>
-            <p>
-              Reverses this animation such that the reverse animation
-              immediately begins reversing from its current point.
-              Note that this means that an animation that has yet to begin,
-              calling <code>reverse</code> will mean that it never starts.
-            </p>
-            <li>
-              Calculate <var>seek time</var> as follows:
-            </li>
-              <dl class="switch">
-                <dt>If <code>currentTime</code> is null,</dt>
-                <dd>
-                  Let <var>seek time</var> be zero.
-                </dd>
-                <dt>If <code>currentTime &lt; timing.startDelay</code>,</dt>
-                <dd>
-                  Let <var>seek time</var> be
-                  <code>timing.startDelay + animationDuration</code>.
-                </dd>
-                <dt>If <code>currentTime &gt;
-                    timing.startDelay + animationDuration</code>,</dt>
-                <dd>
-                  Let <var>seek time</var> be <code>timing.startDelay</code>.
-                </dd>
-                <dt>Otherwise,</dt>
-                <dd>
-                  Let <var>seek time</var> be
-                  <code>animationDuration - currentTime - startDelay</code>.
-                </dd>
-              </dl>
-            </li>
-            <li>
-              Call <code>changePlaybackRate(-timing.playbackRate)</code>.
-            </li>
-            <li>
-              Set <code>currentTime</code> to <var>seek time</var>.
-            </li>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
-              <dd>
-                Raised if this item is a linked item, that is, if
-                <code>template</code> is not <code>null</code>
-                (see <a href="#animation-templates" class="sectionRef"></a>).
-              </dd>
-            </dl>
-          </dd>
-          <dt>void cancel ()</dt>
-          <dd>
-            <p>
-              Removes the timed item from its parent group.
-              As a result, the timed item will no longer affect its target.
-            </p>
-            <p class="annotation">
-              We will need to make this actually disassociate from its
-              TimeSource once we introduce that concept.
-            </p>
-            <p>
-              When cancelling a timed item, a <em>timingcancel</em> event is
-              also fired at the item and its descendents using the following
-              procedure:
-            </p>
-            <ol>
-              <li>If <code>parentGroup</code> is <code>null</code>, return
-                  immediately.
-                  <span class="todo">(Is this right? Should be just dispatch the
-                  event anyway with <code>null</code> <code>documentTime</code>
-                  and <code>localTime</code>?)</span>
-                  </li>
-              <li>Record <code>parentGroup.currentTime</code> as <var>local
-                  time</var>.</li>
-              <li>Record the document time as <var>document time</var>
-                  <span class="todo">(the concept of document time will be
-                  explained properly once we introduce
-                  <a>DocumentTimeSource</a>)</span>.</li>
-              <li>Record the <code>currentIteration</code> as <var>iteration
-                  index</var>.</li>
-              <li>Remove this timed item from <code>parentGroup</code>
-                  but do not dispatch a <em>timingend</em> event on this timed
-                  item or any of its descendents.</li>
-              <li>Dispatch a <em>timingcancel</em> event at this timed item and
-                  its descendents with using the stored values for
-                  <var>local time</var>, <var>document time</var>, and
-                  <var>iteration index</var>.</li>
-            </ol>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
-              <dd>
-                Raised if this item is a linked item, that is, if
-                <code>template</code> is not <code>null</code>
-                (see <a href="#animation-templates" class="sectionRef"></a>).
-              </dd>
-            </dl>
-            <p class="feedbackWanted">
-              Is this exception necessary? It will depend how we approach group
-              templates.
-            </p>
-          </dd>
-        </dl>
-        <div class="todo">
-          <p>
-            Do we need a means for getting the startTime etc. in document
-            time (i.e. in terms of the root time container)?
-          </p>
-        </div>
       </section>
       <section>
         <h3>Timing model common definitions</h3>
