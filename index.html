@@ -2959,7 +2959,7 @@ new SeqGroup(
     <section>
       <h2>Animations</h2>
       <p>
-        Animations are a kind of time item that apply an animation effect to
+        Animations are a kind of timed item that apply an animation effect to
         a target element.
         The are represented in the Web Animations API by the
         <code>Animation</code> objects.
@@ -2970,14 +2970,101 @@ new SeqGroup(
           <dt>Constructor ()</dt>
           <dd>
             <p>
-              Creates a new <a>Animation</a> object.
+              Creates a new <a>Animation</a> object using the following
+              procedure:
             </p>
+            <ol>
+              <li>Create a new <a>Animation</a> object,
+                  <var>animation</var>.</li>
+              <li>Establish a temporary timing dictionary, <var>timing
+                 dictionary</var>, based on the type of <var>timing</var> as
+                 follows,
+                <dl class="switch">
+                  <dt>If <var>timing</var> is a <a>TimingDictionary</a>
+                  object,</dt>
+                  <dd>
+                    Let <var>timing dictionary</var> refer to <var>timing</var>.
+                  </dd>
+                  <dt>If <var>timing</var> is a <code>double</code>,</dt>
+                  <dd>
+                    Let <var>timing dictionary</var> be a new <var>timing
+                    dictionary</var> object with all properties set to their
+                    default values and <code>iterationDuration</code> set to
+                    <var>timing</var>.
+                  </dd>
+                  <dt>Otherwise (<var>timing</var> is <code>null</code> or
+                      undefined),</dt>
+                  <dd>
+                    Let <var>timing dictionary</var> be a new <var>timing
+                    dictionary</var> object with all properties set to their
+                    default values.
+                  </dd>
+                </dl>
+              </li>
+              <li>For each member of <var>timing dictionary</var>,
+                <ol>
+                  <li>Assign the value of the member to the
+                      correspondingly-named property on
+                      <var>animation</var>.</li>
+                  <li>If member <code>timingFunction</code> is of type
+                      <code>DOMString</code> create a new <a>TimingFunction</a>
+                      object by calling
+                      <a href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
+                      class="idlType"><code>Timing.createFromString</code></a><code>(<var>timing
+                      dictionary</var>.timingFunction)</code> and assign the
+                      result to
+                      <code><var>animation</var>.timingFunction</code>.</li>
+                </ol>
+              </li>
+              <li>Assign the animation effect based on the type of
+                <var>effect</var> as follows,
+                <dl class="switch">
+                  <dt>If <var>effect</var> is an <a>AnimationEffect</a>
+                      object or a <a>CustomAnimationEffect</a> object,</dt>
+                  <dd>
+                    Assign <code><var>animation</var>.effect</code> to
+                    <var>effect</var>.
+                  </dd>
+                  <dt>If <var>effect</var> is <code>null</code>,</dt>
+                  <dd>
+                    Set <code><var>animation</var>.effect</code> to
+                    <code>null</code>.
+                  </dd>
+                  <dt>Otherwise,</dt>
+                  <dd>
+                    Set <code><var>animation</var>.effect</code> to the return
+                    value of calling <a
+                  href="#widl-AnimationEffect-createFromProperties-AnimationEffect-object-properties"
+                  class="idlType"><code>AnimationEffect.createFromProperties</code></a><code>(<var>effect</var>)</code>.
+                  </dd>
+                </dl>
+              </li>
+              <li>Set <code>timeline</code> to the <a>DocumentTimeSource</a> for
+                the <a
+                href="http://www.w3.org/TR/html5/browsers.html#active-document">active
+                document</a>.</li>
+            </ol>
+            <div class="todo">
+              <p>
+                Still need to work out the autoplay behaviour here.
+              </p>
+              <p>
+                I think we want it to work like this:
+              </p>
+              <pre class='example sh_javascript'>
+var anim = new Animation(elem, { left: '100px' }, 3);
+// anim is paused until you call play
+// anim.startTime = ???
+anim.play();
+// anim.startTime = anim.timeline.filteredTime
+              </pre>
+            </div>
             <p>
               Examples of the usage of this constructor are given in <a
               href="#creating-a-new-animation-object" class="sectionRef"></a>.
             </p>
             <dl class="parameters">
-              <dt>AnimationTarget? elem</dt>
+              <dt>AnimationTarget? element</dt>
               <dd>
                 The target element or pseudo-element.
                 This may be <code>null</code> for animations that do not target
@@ -3009,82 +3096,32 @@ new SeqGroup(
                   animation effect.
                 </p>
               </dd>
-              <dt>optional (double or TimingDictionary or Timing)? timing</dt>
+              <dt>optional (double or TimingDictionary)? timing</dt>
               <dd>
-                The timing properties of the new animation.
+                <p>
+                  The timing properties of the new animation.
+                </p>
                 <p>
                   If this parameter is a <code>double</code>, then it
                   specifies the duration of a single iteration of the animation,
                   that is, the <a>iteration duration</a>, in seconds.
-                  In this case, the <code>timing</code> property of the new
-                  <a>Animation</a> object is set to a new <a>Timing</a> object
-                  constructed from a <a>TimingDictionary</a> object with the
-                  <code>duration</code> property set to the <code>double</code>
-                  value specified here, and all other properties set to their
-                  default values.
                 </p>
                 <p>
-                  Similarly, if this parameter is <code>null</code>, the
-                  <code>timing</code> property is set to a new <a>Timing</a>
-                  object constructed from a <a>TimingDictionary</a> object
-                  with all properties set to their default values.
+                  If this parameter is <code>null</code> the default value for
+                  <a>iteration duration</a> specified in the
+                  <a>TimingDictionary</a> definition will be used, that is,
+                  zero.
                 </p>
                 <p>
-                  If this parameter is of type <a>TimingDictionary</a>, then the
-                  passed-in dictionary is used to construct a new <a>Timing</a>
-                  object which is then assigned to the <code>timing</code>
-                  property of the new <a>Animation</a> object.
-                </p>
-                <p>
-                  If this parameter is a <a>Timing</a> object, it is directly
-                  assigned to the <code>timing</code> property of the new
-                  <a>Animation</a> object.
-                  It is <em>not</em> copied.
-                  In this way <a>Timing</a> objects can be shared between
-                  <a>Animation</a> objects.
+                  If this parameter is of type <a>TimingDictionary</a>, then
+                  the values of the passed-in dictionary will be used.
                 </p>
                 <p>
                   Finally, if this parameter is not specified, it is as if
                   a value of <code>null</code> were specified.
                 </p>
               </dd>
-              <dt>optional AnimationGroup? parentGroup</dt>
-              <dd>
-                The group to which the newly created animation should be
-                appended as a child.
-                If not specified, the animation will be appended to the document
-                timeline.
-                If <code>null</code>, the animation will not be appended to any
-                group.
-              </dd>
-              <dt>optional double startTime</dt>
-              <dd>
-                The <a>start time</a> of the newly generated animation
-                expressed in seconds in the <a>iteration time space</a> of the
-                <a>AnimationGroup</a> to which it is (or will be) appended.
-                <p>
-                  If not specified, the current <a>iteration time</a> of the
-                  <a>AnimationGroup</a> to which the animation is appended (as
-                  determined by the <code>parentGroup</code> parameter) will be
-                  used. If <code>parentGroup</code> is <code>null</code>, and
-                  the <code>startTime</code> is not specified, a time of zero
-                  will be used.
-                </p>
-              </dd>
             </dl>
-          </dd>
-          <dt>NamedConstructor = LinkedAnimation(AnimationTarget? elem,
-                                                 AnimationTemplate template,
-                                                 optional double startTime)</dt>
-          <dd>
-            TBD
-          </dd>
-          <dt>NamedConstructor = ClonedAnimation(AnimationTarget? elem,
-                                                 Animation cloneSource,
-                                                 AnimationGroup? parentGroup,
-                                                 optional double startTime)
-          <dd>
-            TBD
           </dd>
           <dt>attribute (AnimationEffect or CustomAnimationEffect)? effect</dt>
           <dd>
@@ -3107,38 +3144,6 @@ new SeqGroup(
               </dd>
             </dl>
           </dd>
-          <dt>attribute AnimationTemplate? template</dt>
-          <dd>
-            <p>
-              For linked animations (see <a href="#animation-templates"
-              class="sectionRef"></a>), the <a>AnimationTemplate</a> object
-              from which this object derives its values.
-              For animations that are not linked to a template, this property is
-              <code>null</code>.
-            </p>
-            <p>
-              Setting this property has the following effect:
-            </p>
-            <ol>
-              <li>Let <var>new template</var> be the value to assign to the
-                  <code>template</code> property.</li>
-              <li>If <var>new template</var> is <code>null</code>,
-                <ol>
-                  <li>Call <code>unlink()</code>.</li>
-                </ol>
-              </li>
-              <li>Otherwise,
-                <ol>
-                  <li>Set <code>timing</code> to <code><var>new
-                      template</var>.timing.clone()</code>.</li>
-                  <li>Set <code>effect</code> to <code><var>new
-                      template</var>.effect.clone()</code>.</li>
-                  <li>Set <code>template</code> to <code><var>new
-                      template</var></code>.</li>
-                </ol>
-              </li>
-            </ol>
-          </dd>
           <dt>readonly attribute AnimationTarget? targetElement</dt>
           <dd>
             <p>
@@ -3147,64 +3152,6 @@ new SeqGroup(
               a specific element such as an animation that produces a sound
               using an audio API.
             </p>
-          </dd>
-          <dt>AnimationTemplate templatize()</dt>
-          <dd>
-            <p>
-              If this object is not already linked to a template,
-              creates a new <a>AnimationTemplate</a> object based on this object
-              and links this object to it (see <a href="#animation-templates"
-              class="sectionRef"></a>).
-            </p>
-            <p class="feedbackWanted">
-              What is the more useful behavior? To always create a template?
-              Or to only create one if it doesn't already have one?
-            </p>
-            <p>
-              The effect is equivalent to the following steps:
-            </p>
-            <ol>
-              <li>Let <var>source</var> be the object on which
-                  <code>templatize</code> is called.</li>
-              <li>If <code><var>source</var>.template</code> is not
-                  <code>null</code>, return.</li>
-              <li>Create a new <a>AnimationTemplate</a> object,
-                  <var>template</var>.</li>
-              <li>Set <code><var>template</var>.timing</code> to
-                  <code><var>source</var>.timing.clone()</code>.</li>
-              <li>Set <code><var>template</var>.effect</code> to
-                  <code><var>source</var>.effect.clone()</code>.</li>
-              <li>Set <code><var>source</var>.template</code> to
-                  <var>template</var>.</li>
-              <li>Return <var>template</var>.</li>
-            </ol>
-          </dd>
-          <dt>AnimationTemplate? unlink()</dt>
-          <dd>
-            <p>
-              Makes this animation independent of the template with which it is
-              associated if any
-              (see <a href="#animation-templates" class="sectionRef"></a>)
-            </p>
-            <p>
-              After setting <code>template</code> to <code>null</code> the
-              previous value of <code>template</code> is returned.
-            </p>
-            <p>
-              The effect is equivalent to the following steps:
-            </p>
-            <ol>
-              <li>If <code>template</code> is <code>null</code>, return
-                  <code>null</code>.</li>
-              <li>Let <var>old template</var> be <code>template</code>.</li>
-              <li>Set <code>timing</code> to
-                  <code>template.timing.clone()</code>.</li>
-              <li>Set <code>effect</code> to
-                  <code>template.effect.clone()</code>.</li>
-              <li>Set <code>template</code> to <code>null</code> (but do not
-                  recursively call this function).</li>
-              <li>Return <var>old template</var>.</li>
-            </ol>
           </dd>
         </dl>
         <section class="informative">
@@ -3225,17 +3172,6 @@ var anim = new Animation(elem, { left: '100px' }, 3);
           </p>
           <pre class='example sh_javascript'>
 var anim = new Animation(elem, { left: '100px' }, { duration: 3, playbackRate: 2 });
-          </pre>
-          <p>
-            To share or re-used timing properties with another animation,
-            a <a>Timing</a> object can be directly passed in as follows:
-          </p>
-          <pre class='example sh_javascript'>
-// Share the timing properties of animB with animA
-var animA = new Animation(elem, { left: '100px' }, animB.timing);
-
-// Re-use the timing properties of animB in animC without sharing
-var animC = new Animation(elem, { left: '100px' }, animB.timing.clone());
           </pre>
           <p>
             The animation effect parameter may specify multiple properties,
@@ -3268,10 +3204,6 @@ var animC = new Animation(elem,
             Fill in the parameters for <a>PathAnimationEffect</a> above once
             we have decided on them.
           </p>
-          <p class="todo">
-            Add examples of specifying the parent group and start time once we
-            resolve the behavior of those.
-          </p>
         </section>
       </section>
       <section>
@@ -3282,88 +3214,33 @@ var animC = new Animation(elem,
         </p>
         <p>
           Except where otherwise noted, the acceptable values for each
-          property and their meanings are defined in the <a>Timing</a>
+          member and their meanings are defined in the <a>Timing</a>
           interface.
         </p>
         <dl title="dictionary TimingDictionary" class="idl">
+          <dt>double? startTime = null</dt>
+          <dd>
+            <p class="todo">
+              TBD. See notes on autoplay behavior in the <a>Animation</a>
+              constructor definition.
+            </p>
+          </dd>
           <dt>double startDelay = 0</dt>
           <dd>
             <p>
               The number of seconds from a timed item's <code>startTime</code>
               to the start of the <a>animation interval</a>.
-              See <a href="#widl-Timing-startDelay"
-              class="idlType"><code>startDelay</code></a> on the <a>Timing</a>
-              interface.
-            </p>
-          </dd>
-          <dt>unrestricted double? duration = null</dt>
-          <dd>
-            <p>
-              The duration in seconds of a single iteration, that is, the
-              <a>iteration duration</a>.
-              See <a href="#widl-Timing-duration"
-              class="idlType"><code>duration</code></a> on the <a>Timing</a>
-              interface.
-            </p>
-          </dd>
-          <dt>unrestricted double iterationCount = 1.0</dt>
-          <dd>
-            <p>
-              The number of times to repeat the item.
-              See <a href="#widl-Timing-iterationCount"
-              class="idlType"><code>iterationCount</code></a> on the
-              <a>Timing</a> interface.
-            </p>
-          </dd>
-          <dt>double iterationStart = 0.0</dt>
-          <dd>
-            <p>
-              The number of iterations into the item at which to begin.
-              See <a href="#widl-Timing-iterationStart"
-              class="idlType"><code>iterationStart</code></a> on the
-              <a>Timing</a> interface.
-            </p>
-          </dd>
-          <dt>double playbackRate = 1.0</dt>
-          <dd>
-            <p>
-              A multiplier applied to the inherited time potentially causing
-              the item to run at a different rate to its natural speed.
-              See <a href="#widl-Timing-playbackRate"
-              class="idlType"><code>playbackRate</code></a> on the
-              <a>Timing</a> interface.
-            </p>
-          </dd>
-          <dt>PlaybackDirection direction = "normal"</dt>
-          <dd>
-            <p>
-              The direction in which animation proceeds, e.g. "reverse".
-              See <a href="#widl-Timing-direction"
-              class="idlType"><code>direction</code></a> on the <a>Timing</a>
-              interface.
-            </p>
-          </dd>
-          <dt>(DOMString or TimingFunction)? timingFunction = null</dt>
-          <dd>
-            <p>
-              An optional timing function used to scale the time to produce
-              easing effects and the like.
-            </p>
-            <p>
-              Unlike the <a>Timing</a> interface, the member here may be set
-              to either a <a>TimingFunction</a> object or
-              a <code>DOMString</code> corresponding to one of the values
-              recognized by <a
-              href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
-              class="idlType"><code>Timing.createFromString</code></a>.
+              See <a href="#widl-TimedItem-startDelay"
+              class="idlType"><code>startDelay</code></a> on the
+              <a>TimedItem</a> interface.
             </p>
           </dd>
           <dt>FillMode fillMode = "forwards"</dt>
           <dd>
             <p>
               The <a>fill mode</a> of the animation.
-              See <a href="#widl-Timing-fillMode"
-              class="idlType"><code>fillMode</code></a> on the <a>Timing</a>
+              See <a href="#widl-TimedItem-fillMode"
+              class="idlType"><code>fillMode</code></a> on the <a>TimedItem</a>
               interface.
             </p>
             <p class="note">
@@ -3375,6 +3252,68 @@ var animC = new Animation(elem,
             </p>
             <p class="issue">
               Some feedback suggests the default here should be "both".
+            </p>
+          </dd>
+          <dt>double iterationStart = 0.0</dt>
+          <dd>
+            <p>
+              The number of iterations into the item at which to begin.
+              See <a href="#widl-TimedItem-iterationStart"
+              class="idlType"><code>iterationStart</code></a> on the
+              <a>TimedItem</a> interface.
+            </p>
+          </dd>
+          <dt>unrestricted double iterationCount = 1.0</dt>
+          <dd>
+            <p>
+              The number of times to repeat the item.
+              See <a href="#widl-TimedItem-iterationCount"
+              class="idlType"><code>iterationCount</code></a> on the
+              <a>TimedItem</a> interface.
+            </p>
+          </dd>
+          <dt>unrestricted double? iterationDuration = null</dt>
+          <dd>
+            <p>
+              The duration in seconds of a single iteration, that is, the
+              <a>iteration duration</a>.
+              See <a href="#widl-TimedItem-duration"
+              class="idlType"><code>duration</code></a> on the <a>TimedItem</a>
+              interface.
+            </p>
+          </dd>
+          <dt>double defaultPlaybackRate = 1.0</dt>
+          <dd>
+            <p>
+              A multiplier applied to the inherited time potentially causing
+              the item to run at a different rate to its natural speed.
+              See <a href="#widl-TimedItem-defaultPlaybackRate"
+              class="idlType"><code>defaultPlaybackRate</code></a> on the
+              <a>TimedItem</a> interface.
+            </p>
+          </dd>
+          <dt>PlaybackDirection direction = "normal"</dt>
+          <dd>
+            <p>
+              The direction in which animation proceeds, e.g. "reverse".
+              See <a href="#widl-TimedItem-direction"
+              class="idlType"><code>direction</code></a> on the <a>TimedItem</a>
+              interface.
+            </p>
+          </dd>
+          <dt>(DOMString or TimingFunction)? timingFunction = null</dt>
+          <dd>
+            <p>
+              An optional timing function used to scale the time to produce
+              easing effects and the like.
+            </p>
+            <p>
+              Unlike the <a>TimedItem</a> interface, the member here may be set
+              to either a <a>TimingFunction</a> object or
+              a <code>DOMString</code> corresponding to one of the values
+              recognized by <a
+              href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
+              class="idlType"><code>Timing.createFromString</code></a>.
             </p>
           </dd>
         </dl>

@@ -242,5 +242,104 @@
         </section>
       </section>
     </section>
+    <section>
+      <h2>Templates</h2>
+      <section>
+        <h3>The <code>Animation</code> interface</h3>
+        <dl title="partial interface Animation" class="idl">
+          <dt>attribute AnimationTemplate? template</dt>
+          <dd>
+            <p>
+              For linked animations (see <a href="#animation-templates"
+              class="sectionRef"></a>), the <a>AnimationTemplate</a> object
+              from which this object derives its values.
+              For animations that are not linked to a template, this property is
+              <code>null</code>.
+            </p>
+            <p>
+              Setting this property has the following effect:
+            </p>
+            <ol>
+              <li>Let <var>new template</var> be the value to assign to the
+                  <code>template</code> property.</li>
+              <li>If <var>new template</var> is <code>null</code>,
+                <ol>
+                  <li>Call <code>unlink()</code>.</li>
+                </ol>
+              </li>
+              <li>Otherwise,
+                <ol>
+                  <li>Set <code>timing</code> to <code><var>new
+                      template</var>.timing.clone()</code>.</li>
+                  <li>Set <code>effect</code> to <code><var>new
+                      template</var>.effect.clone()</code>.</li>
+                  <li>Set <code>template</code> to <code><var>new
+                      template</var></code>.</li>
+                </ol>
+              </li>
+            </ol>
+          </dd>
+          <dt>AnimationTemplate templatize()</dt>
+          <dd>
+            <p>
+              If this object is not already linked to a template,
+              creates a new <a>AnimationTemplate</a> object based on this object
+              and links this object to it (see <a href="#animation-templates"
+              class="sectionRef"></a>).
+            </p>
+            <p class="feedbackWanted">
+              What is the more useful behavior? To always create a template?
+              Or to only create one if it doesn't already have one?
+            </p>
+            <p>
+              The effect is equivalent to the following steps:
+            </p>
+            <ol>
+              <li>Let <var>source</var> be the object on which
+                  <code>templatize</code> is called.</li>
+              <li>If <code><var>source</var>.template</code> is not
+                  <code>null</code>, return.</li>
+              <li>Create a new <a>AnimationTemplate</a> object,
+                  <var>template</var>.</li>
+              <li>Set <code><var>template</var>.timing</code> to
+                  <code><var>source</var>.timing.clone()</code>.</li>
+              <li>Set <code><var>template</var>.effect</code> to
+                  <code><var>source</var>.effect.clone()</code>.</li>
+              <li>Set <code><var>source</var>.template</code> to
+                  <var>template</var>.</li>
+              <li>Return <var>template</var>.</li>
+            </ol>
+          </dd>
+          <dt>AnimationTemplate? unlink()</dt>
+          <dd>
+            <p>
+              Makes this animation independent of the template with which it is
+              associated if any
+              (see <a href="#animation-templates" class="sectionRef"></a>)
+            </p>
+            <p>
+              After setting <code>template</code> to <code>null</code> the
+              previous value of <code>template</code> is returned.
+            </p>
+            <p>
+              The effect is equivalent to the following steps:
+            </p>
+            <ol>
+              <li>If <code>template</code> is <code>null</code>, return
+                  <code>null</code>.</li>
+              <li>Let <var>old template</var> be <code>template</code>.</li>
+              <li>Set <code>timing</code> to
+                  <code>template.timing.clone()</code>.</li>
+              <li>Set <code>effect</code> to
+                  <code>template.effect.clone()</code>.</li>
+              <li>Set <code>template</code> to <code>null</code> (but do not
+                  recursively call this function).</li>
+              <li>Return <var>old template</var>.</li>
+            </ol>
+          </dd>
+        </dl>
+        </dl>
+      </section>
+    </section>
   </body>
 </html>
