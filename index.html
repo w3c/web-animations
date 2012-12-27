@@ -663,7 +663,8 @@
         </p>
         <p>
           The relationship between the <a>start time</a>, <a>start delay</a>,
-          and <a>active duration</a> is illustrated below.
+          and <a href="#calculating-the-active-duration">active duration</a> is
+          illustrated below.
         </p>
         <div class="figure">
           <img src="img/active-interval-examples.svg" width="600">
@@ -831,23 +832,20 @@
               The length in seconds of the <a>active interval</a>.
             </p>
             <p>
-              Initially, this attribute will reflect the <a>intrinsic active
-              duration</a>.
-              Changes to the model that cause the <a>intrinsic active
+              Initially, this attribute will reflect the <a>intrinsic run-time
+              active duration</a>.
+              Changes to the model that cause the <a>intrinsic run-time active
               duration</a> to change are reflected in the value returned here.
             </p>
             <p>
-              The <a>intrinsic active duration</a> may be overridden by
+              The <a>intrinsic run-time active duration</a> may be overridden by
               setting this attribute to any real number (see <a
               href="#calculating-the-active-duration" class="sectionRef"></a>).
             </p>
             <p class="issue">
               How can you restore the active duration to reflecting the
-              intrinsic active duration?
-              Previously we said that setting it to <code>undefined</code> did
-              this but we had some feedback that this was un-javascript-like.
-              Do we add <code>resetDuration()</code>? Or just say, &ldquo;you
-              can't&rdquo;?
+              <a>intrinsic run-time active duration</a>?
+              <code>resetActiveDuration</code>?
             </p>
             <p class="issue">
               Call this simply <code>duration</code>?
@@ -862,6 +860,13 @@
                 less than zero.
               </dd>
             </dl>
+            <p class="issue">
+              It might be simpler and more consistent to split out
+              <code>defaultActiveDuration</code> and <code>activeDuration</code>
+              here?<br>
+              However, in this case <code>defaultActiveDuration</code> would not
+              be overridable? i.e. readonly?
+            </p>
           </dd>
           <dt>readonly attribute unrestricted double endTime</dt>
           <dd>
@@ -1495,7 +1500,8 @@
         <p>
           The length of a single iteration is called the <a>iteration
           duration</a>. Comparing the <a>iteration duration</a> and the
-          <a>active duration</a> we have:
+          <a href="#calculating-the-active-duration">active duration</a> we
+          have:
         </p>
         <dl>
           <dt>Iteration duration</dt>
@@ -1511,7 +1517,8 @@
         </dl>
         <p>
           The relationship between the <a>iteration duration</a> and
-          <a>active duration</a> is illustrated below.
+          <a href="#calculating-the-active-duration">active duration</a> is
+          illustrated below.
         </p>
         <div class="figure">
           <img src="img/iteration-intervals.svg" width="600">
@@ -1674,14 +1681,14 @@
           <dd>
             <p>
               The duration in seconds of a single iteration.
-              Unless set, this will reflect the <a>intrinsic duration</a> of the
-              timed item.
+              Unless set, this will reflect the <a>intrinsic iteration
+              duration</a> of the timed item.
               If set, it must be greater than or equal to zero (including
               positive infinity).
             </p>
             <p>
               After setting, this attribute can be restored to reflecting the
-              <a>intrinsic duration</a> of the timed item by calling
+              <a>intrinsic iteration duration</a> of the timed item by calling
               <code>resetIterationDuration</code>.
             </p>
             <p>
@@ -1710,11 +1717,11 @@
           <dd>
             <p>
               Causes the <code>iterationDuration</code> attribute to reflect the
-              <a>intrinsic duration</a> of the timed item, discarding
+              <a>intrinsic iteration duration</a> of the timed item, discarding
               any previously set value for the attribute.
             </p>
             <p>
-              Returns the <a>intrinsic duration</a> of the timed item.
+              Returns the <a>intrinsic iteration duration</a> of the timed item.
             </p>
           </dd>
         </dl>
@@ -1761,10 +1768,10 @@
                 a quarter of the way through its <a>active interval</a> will
                 cause it to jump to the half-way point.</li>
             <li>Changing the playback rate of an item can change its
-                <a>intrinsic active duration</a>.
+                <a>default active duration</a>.
                 For example, doubling the playback rate of an item with an
-                active interval that usually takes 3 seconds make the active
-                interval 1.5 seconds.
+                active interval that usually takes 3 seconds will make the
+                active interval 1.5 seconds.
                 This can cause knock-on effects if other timed items depend on
                 this timed item's duration such as other children of a sequence
                 timing group.</li>
@@ -1779,7 +1786,7 @@
               A static parameter to the model that exhibits the side effects
               described above.
               This is the parameter used to calculate a timed item's
-              <a>intrinsic active duration</a> and for scheduling the children
+              <a>default active duration</a> and for scheduling the children
               of a timing group.
               It is also the most suitable parameter for serializing and is the
               only parameter copied when cloning.
@@ -1787,7 +1794,7 @@
             <dt>Run-time playback rate</dt>
             <dd>
               An override parameter used to adjust the playback rate without
-              affecting the <a>intrinsic active duration</a>.
+              affecting the <a>default active duration</a>.
             </dd>
           </dl>
           <p class="annotation">
@@ -1893,7 +1900,8 @@
               <dt>Otherwise,</dt>
               <dd>
                 <ol>
-                  <li>Re-calculate the value of <a>active duration</a>.</li>
+                  <li>Re-calculate the value of the <a>run-time active
+                      duration</a>.</li>
                   <li>Calculate the <var>seek adjustment</var> according to the
                       following formula:
                       <code><var>seek adjustment</var> =
@@ -1904,7 +1912,7 @@
                       rate</var> differs, subtract from <span
                       class="todo"><var>seek adjustment</var> (is that right?
                       a word seemed to be missing from this sentence)</span> the
-                      updated value of <a>active duration</a>.</li>
+                      updated value of the <a>run-time active duration</a>.</li>
                   <li>Let <var>seek time</var> be the result of the following
                       formula:
                       <code><a>item time</a>
@@ -1941,9 +1949,9 @@
             <p>
               Run-time playback control.
               Setting this attribute allows overriding the playback rate in such
-              a way that the <a>active duration</a> does not change and performs
-              a compensatory seek so that the position of the timed item does
-              not jump.
+              a way that the <a>default active duration</a> does not change and
+              performs a compensatory seek so that the position of the timed
+              item does not jump.
             </p>
             <p>
               The attribute returns the <a>effective run-time playback rate</a>
@@ -2089,12 +2097,17 @@ new SeqGroup(
         <section>
           <h4>Calculating the active duration</h4>
           <p>
-            As with the <a>iteration duration</a>, the <dfn>active
-            duration</dfn>, unless overridden, is simply the <a>intrinsic active
-            duration</a>.
+            The active duration is based on the timed item's playback rate of
+            which we have both the <a>default playback rate</a> and <a>run-time
+            playback rate</a>.
+            As a result, we can define both the <a>default active duration</a>
+            and <a>run-time active duration</a>.
+            As with the playback rate, the <a>default active duration</a> is
+            used by timing groups to schedule children whilst the <a>run-time
+            active duration</a> is used to control playback.
           </p>
           <p>
-            In order to calculate the <a>intrinsic active duration</a> we
+            In order to calculate the <a>default active duration</a> we
             first define the <a>repeated duration</a> as follows:
           </p>
           <blockquote>
@@ -2103,19 +2116,32 @@ new SeqGroup(
                     <a>iterationCount</a></code>
           </blockquote>
           <p>
-            The <dfn>intrinsic active duration</dfn> is calculated according
+            The <dfn>default active duration</dfn> is calculated according
             to the following steps:
           </p>
           <ol>
             <li>
-              If the <a>effective run-time playback rate</a> is zero, return
+              If the <a>default playback rate</a> is zero, return
               <code>Infinity</code>.
             </li>
             <li>
               Otherwise, return <code><a>repeated duration</a>
-              / abs(<a>effective run-time playback rate</a>)</code>.
+              / abs(<a>default playback rate</a>)</code>.
             </li>
           </ol>
+          <p>
+            For the <a>run-time active duration</a>, we first define
+            the <dfn>intrinsic run-time active duration</dfn> as the result of
+            following the same steps for calculating the <a>default active
+            duration</a> but substituting the <a>effective run-time playback
+            rate</a> for the <a>default playback rate</a>.
+          </p>
+          <p>
+            Next we define the <dfn>run-time active duration</dfn> as simply the
+            <a>intrinsic run-time active duration</a> unless overridden by
+            providing another value for the run-time active duration via the
+            <code>activeDuration</code> attribute.
+          </p>
         </section>
       </section>
       <section>
@@ -2153,7 +2179,7 @@ new SeqGroup(
               </dl>
             </li>
             <li>
-              If <code><a>local time</a> &lt; startTime + <a>active
+              If <code><a>local time</a> &lt; startTime + <a>run-time active
               duration</a></code>, return <code><a>local time</a>
               - startDelay</code>.
             </li>
@@ -2166,7 +2192,7 @@ new SeqGroup(
                   <em>both</em>,
                 </dt>
                 <dd>
-                  return <a>active duration</a>.
+                  return the <a>run-time active duration</a>.
                 <dd>
                 <dt>
                   Otherwise,
@@ -2210,7 +2236,7 @@ new SeqGroup(
                 <dt>If <a>effective run-time playback rate</a> is negative,</dt>
                 <dd>
                 Return <code>(<a>active time</a> -
-                              <a>active duration</a>)
+                              <a>run-time active duration</a>)
                         * <a>effective run-time playback rate</a>
                         + <a>start offset</a></code>.
                 </dd>
