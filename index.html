@@ -2234,6 +2234,48 @@ new SeqGroup(
         </section>
         <section>
           <h4>Calculating the adjusted active time</h4>
+          <p>
+            Before the <a>active time</a> can be converted to an <a>iteration
+            time</a> we must factor in the timed item's <a>effective run-time
+            playback rate</a> and <code>iterationStart</code>.
+            This is called the <a>adjusted active time</a>.
+          </p>
+          <p>
+            In order to calculate the <a>adjusted active time</a> we first
+            define the <a>start offset</a> as follows:
+          </p>
+          <blockquote>
+            <dfn>start offset</dfn> =
+              <code>iterationStart * <a>iteration duration</a></code>
+          </blockquote>
+          <p>
+            The <dfn>adjusted active time</dfn> is calculated according to
+            the following steps:
+          </p>
+          <ol>
+            <li>
+              If the <a>active time</a> is <code>null</code>, return
+              <code>null</code>.
+            </li>
+            <li>
+              Return the adjusted animation time based on the
+              <a>effective run-time playback rate</a> as follows,
+              <dl class="switch">
+                <dt>If <a>effective run-time playback rate</a> is negative,</dt>
+                <dd>
+                Return <code>(<a>active time</a> -
+                              <a>active duration</a>)
+                        * <a>effective run-time playback rate</a>
+                        + <a>start offset</a></code>.
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  Return <code><a>active time</a>
+                  * <a>effective run-time playback rate</a>
+                  + <a>start offset</a></code>.
+                </dd>
+            </li>
+          </ol>
         </section>
         <section>
           <h4>Calculating the iteration time</h4>
@@ -3235,46 +3277,6 @@ var animC = new Animation(elem,
         </p>
         <section>
           <h4>Calculating the adjusted animation time</h4>
-          <p>
-            Before the <a>animation time</a> can be converted to an <a>iteration
-            time</a> we must factor in the animation's <var>playback rate</var>
-            and <var>iteration start</var>.
-            This is called the <a>adjusted animation time</a>.
-          </p>
-          <p>
-            In order to calculate the <a>adjusted animation time</a> we first
-            define the <a>start offset</a> as follows:
-          </p>
-          <blockquote>
-            <dfn>start offset</dfn> =
-              <code>iterationStart * <a>iteration duration</a></code>
-          </blockquote>
-          <p>
-            The <dfn>adjusted animation time</dfn> is calculated according to
-            the following steps:
-          </p>
-          <ol>
-            <li>
-              If the <a>animation time</a> is <code>null</code>, return
-              <code>null</code>.
-            </li>
-            <li>
-              Return the adjusted animation time based on the
-              <code>timing.playbackRate</code> as follows,
-              <dl class="switch">
-                <dt>If <code>timing.playbackRate</code> is negative,</dt>
-                <dd>
-                Return <code>(<a>animation time</a> -
-                              animationDuration) * timing.playbackRate
-                        + <a>start offset</a></code>.
-                </dd>
-                <dt>Otherwise,</dt>
-                <dd>
-                  Return <code><a>animation time</a> * timing.playbackRate
-                  + <a>start offset</a></code>.
-                </dd>
-            </li>
-          </ol>
         </section>
         <section>
           <h4>Calculating the unscaled iteration time</h4>
