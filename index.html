@@ -842,6 +842,10 @@
               setting this attribute to any real number (see <a
               href="#calculating-the-active-duration" class="sectionRef"></a>).
             </p>
+            <p>
+              If the <a>zero run-time playback rate flag</a> is set, returns
+              <code>Infinity</code>.
+            </p>
             <p class="issue">
               How can you restore the active duration to reflecting the
               <a>intrinsic run-time active duration</a>?
@@ -1133,7 +1137,7 @@
           </p>
           <dl class="switch">
             <dt>If the <a>local pause state</a> is true or
-                the <a>run-time playback rate</a> is zero,</dt>
+                the <a>zero run-time playback rate flag</a> is true,</dt>
             <dd>
               Return the result of 
               <code><a>effective inherited time</a> - startTime -
@@ -1804,8 +1808,8 @@
           </p>
         </div>
         <p>
-          In order to support speed control, timed items track the following two
-          values:
+          In order to support speed control, timed items track the following
+          three values:
         </p>
         <dl>
           <dt><dfn>default playback rate</dfn></dt>
@@ -1821,6 +1825,13 @@
             playback rate for the purposes of calculating the <a>iteration
             time</a>.
             Initially undefined.
+            Not exposed in the API.
+          </dd>
+          <dt><dfn>zero run-time playback rate flag</dfn></dt>
+          <dd>
+            A flag to indicate special pause-like behavior is to be employed due
+            to setting <code>playbackRate</code> to zero.
+            Initially false.
             Not exposed in the API.
           </dd>
         </dl>
@@ -1873,13 +1884,55 @@
           active interval the distance from the interval is scaled according to
           the change in speed.
         </p>
+        <div class="annotation">
+          <p>
+            Special handling is required for when the run-time playback rate is
+            zero.
+            Intuitively, this should pause the timed item at its current
+            position however the way the model is designed that will not
+            happen.
+            Instead, the active duration will become infinite and the item will
+            effectively jump back to the start position.
+          </p>
+          <p>
+            We work around that by providing special handling for when the
+            run-time playback rate is zero.
+            This handling consists of the following strategy:
+          </p>
+          <ul>
+            <li>When setting the <code>playbackRate</code> to zero, record the
+                time as the pause time and basically employ pause behavior.
+                Don't actually update the playback rate in this case.</li>
+            <li>Set a flag <em>zero run-time playback rate</em>.</li>
+            <li>When reporting the <code>activeDuration</code> report
+                <code>Infinity</code> when <em>zero run-time playback rate</em>
+                is set.</li>
+            <li>When reporting the <code>playbackRate</code> report
+                <code>0</code> when <em>zero run-time playback rate</em>
+                is set.</li>
+          </ul>
+        </div>
         <ol>
           <li>Let <var>previous rate</var> be the value of
               <a>effective run-time playback rate</a> prior to making any
               changes.</li>
-          <li>Let <var>previous local time</var> be the current value of
-              <code>currentTime</code>.</li>
-          <li>Update <a>run-time playback rate</a> to <var>new rate</var>.</li>
+          <li>Perform the steps corresponding to the first matching condition of
+              the following.
+              <dl class="switch">
+                <dt>If <var>new rate</var> is zero,</dt>
+                <dd>
+                  Set the <a>zero run-time playback rate flag</a> to true.
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  <ol>
+                    <li>Update <a>run-time playback rate</a> to <var>new
+                        rate</var>.</li>
+                    <li>Set the <a>zero run-time playback rate flag</a> to
+                        false.</li>
+                  </ol>
+                </dd>
+              </dl></li>
           <li>Perform the steps corresponding to the first matching condition
               of the following.
             <dl class="switch">
@@ -1891,7 +1944,8 @@
               </dd>
               <dt>If <var>new rate</var> is zero,</dt>
               <dd>
-                Set <a>pause start time</a> to <var>previous local time</var>.
+                Set <a>pause start time</a> to the current value of
+                <code>currentTime</code>.
               </dd>
               <dt>If <a>local time</a> is <code>null</code>,</dt>
               <dd>
@@ -1958,6 +2012,9 @@
               and as such will initially equal <code>defaultPlaybackRate</code>.
             </p>
             <p>
+              If the <a>zero run-time playback rate flag</a> is set, returns 0.
+            </p>
+            <p>
               Setting this value updates the <a>run-time playback rate</a> which
               in turn will be used as input when calculating the <a>iteration
               time</a>.
@@ -2017,6 +2074,10 @@
               Makes the <a>run-time playback rate</a> undefined.
               As a result the <code>playbackRate</code> will reflect
               <code>defaultPlaybackRate</code>.
+            </p>
+            <p>
+              This also has the effect of setting the <a>zero run-time playback
+              rate flag</a> to false.
             </p>
             <p>
               Returns the <a>default playback rate</a>.
