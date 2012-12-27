@@ -2076,17 +2076,11 @@
           value</a>.
         </p>
         <p>
-          When the timed item is used to control an animation effect, a further
-          step is required to convert the <a>iteration time</a> into a <a>time
-          fraction</a> as well as to calculate the <a>current iteration</a>.
-        </p>
-        <p>
-          The process can be described in three steps:
+          The process can be described in two steps:
         </p>
         <ol>
           <li>Calculating the active duration</li>
-          <li>Calculating the iteration time</li>
-          <li>Calculating additional animation inputs</li>
+          <li>Filtering the local time</li>
         </ol>
       </section>
       <section>
@@ -2173,7 +2167,7 @@ new SeqGroup(
         </section>
       </section>
       <section>
-        <h3>Calculating the filtered time</h3>
+        <h3>Filtering the local time</h3>
         <section>
           <h4>Calculating the active time</h4>
           <p>
@@ -2364,76 +2358,6 @@ new SeqGroup(
               </p>
             </li>
           </ol>
-        </section>
-        <section>
-          <h4>Calculating the transformed time</h4>
-          <p>
-            The <dfn>transformed time</dfn> is calculated from the
-            <a>directed time</a> using the following steps:
-          </p>
-          <ol>
-            <li>
-              If the <a>directed time</a> is <code>null</code>,
-              return <code>null</code>.
-            </li>
-            <li>
-              Scale the time as follows:
-              <dl class="switch">
-                <dt>If <code>timingFunction</code> is
-                    a <a>TimingFunction</a> object,</dt>
-                <dd>
-                  <ol>
-                    <li>Let <var>iteration fraction</var> be the result of
-                        evaluating <code><a>directed time</a> / <a>iteration
-                        duration</a></code> unless <a>iteration duration</a> is
-                        zero, in which case let <var>iteration fraction</var> be
-                        zero.</li>
-                    <li>Return the result of evaluating
-                  <code><a>directed time</a> *
-                  timingFunction.scaleTime(<var>iteration fraction</a>))</code>.
-                    </li>
-                  </ol>
-                </dd>
-                <dt>Otherwise,</dt>
-                <dd>
-                  Return the <a>directed time</a>.
-                </dd>
-              </dl>
-            </li>
-          </ol>
-        </section>
-      </section>
-      <section>
-        <h3>Filtered time interface members</h3>
-        <dl title="partial interface TimedItem" class="idl">
-          <dt>readonly attribute double? filteredTime</dt>
-          <dd>
-            <p>
-              The output time in seconds of this timed item
-              calculated using the steps described in <a
-              href="#calculating-the-filtered-time" class="sectionRef"></a>.
-              As a result of that definition, this attribute will be
-              non-<code>null</code> if and only if the timed item is in
-              <a>in effect</a>.
-            </p>
-            <p class="annotation">
-              This attribute is not writeable since doing so would require
-              being able to do a reverse conversion from the value to set into
-              to local time space and then updating the <code>currentTime</code>
-              accordingly.
-              However, that's not possible since timing functions may be applied
-              and some of them are not invertible.
-            </p>
-          </dd>
-        </dl>
-      </section>
-      <section>
-        <h3>Calculating animation inputs</h3>
-        <section>
-          <h4>Calculating the time fraction</h4>
-        </section>
-        <section>
-          <h4>Calculating the current iteration</h4>
         </section>
       </section>
     </section>
@@ -2839,8 +2763,76 @@ new SeqGroup(
           </dd>
         </dl>
       </section>
+      <section>
+        <h3>Calculating the transformed time</h3>
+        <p>
+          The <dfn>transformed time</dfn> is calculated from the
+          <a>directed time</a> using the following steps:
+        </p>
+        <ol>
+          <li>
+            If the <a>directed time</a> is <code>null</code>,
+            return <code>null</code>.
+          </li>
+          <li>
+            Scale the time as follows:
+            <dl class="switch">
+              <dt>If <code>timingFunction</code> is
+                  a <a>TimingFunction</a> object,</dt>
+              <dd>
+                <ol>
+                  <li>Let <var>iteration fraction</var> be the result of
+                      evaluating <code><a>directed time</a> / <a>iteration
+                      duration</a></code> unless <a>iteration duration</a> is
+                      zero, in which case let <var>iteration fraction</var> be
+                      zero.</li>
+                  <li>Return the result of evaluating
+                <code><a>directed time</a> *
+                timingFunction.scaleTime(<var>iteration fraction</a>))</code>.
+                  </li>
+                </ol>
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                Return the <a>directed time</a>.
+              </dd>
+            </dl>
+          </li>
+        </ol>
+      </section>
     </section>
 
+    <section>
+      <h2>The filtered time of a timed item</h2>
+      <p>
+        The <dfn>filtered time</dfn> of a timed item is simply the
+        <a>transformed time</a>.
+      </p>
+      <section>
+        <h3>Filtered time interface members</h3>
+        <dl title="partial interface TimedItem" class="idl">
+          <dt>readonly attribute double? filteredTime</dt>
+          <dd>
+            <p>
+              The <a>filtered time</a> in seconds of this timed item.
+              As a result of the steps for calculating this value in <a
+              href="#timed-item-calculations" class="sectionRef"></a> and
+              elsewhere, this attribute will be
+              non-<code>null</code> if and only if the timed item is in
+              <a>in effect</a>.
+            </p>
+            <p class="annotation">
+              This attribute is not writeable since doing so would require
+              being able to do a reverse conversion from the value to set into
+              to local time space and then updating the <code>currentTime</code>
+              accordingly.
+              However, that's not possible since timing functions may be applied
+              and some of them are not invertible.
+            </p>
+          </dd>
+        </dl>
+      </section>
+    </section>
 
     <section>
       <h2>Animations</h2>
@@ -3374,6 +3366,55 @@ var animC = new Animation(elem,
           </div>
         </section>
       </section>
+      <section>
+        <h3>Calculating the time fraction</h3>
+        <p>
+          Before passing the <a>filtered time value</a> to the animation effect
+          we must convert it to a <em>time fraction</em>.
+          The <dfn>time fraction</dfn> is calculated according to the
+          following steps:
+        </p>
+        <dl class="switch">
+          <dt>
+            If the <a>iteration duration</a> is zero,
+          </dt>
+          <dd>
+            <p>
+              the <a>time fraction</a> is as follows,
+            </p>
+            <dl class="switch">
+              <dt>
+                If <a>local time</a> &lt; <code>startDelay</code>,
+              </dt>
+              <dd>
+                Return the result of recalculating the <a>filtered time</a>
+                using a <a>local time</a> of zero and an <a>iteration
+                duration</a> of 1.
+              </dd>
+              <dt>
+                Otherwise,
+              </dt>
+              <dd>
+                Return the result of recalculating the <a>filtered time</a>
+                using a <a>local time</a> of <code>iterationCount</code> and an
+                <a>iteration duration</a> of 1.
+              </dd>
+            </dl>
+          </dd>
+          <dt>
+            Otherwise,
+          </dt>
+          <dd>
+            Return <a>filtered time</a> / <a>iteration duration</a>.
+          </dd>
+        </dl>
+        <p class="note">
+          Since <a href="#time-transformations">timing functions</a> are
+          allowed to produce output times outside the range [0,1] it is
+          possible that the value calculated for a <a>time fraction</a> also
+          lies outside this range.
+        </p>
+      </section>
     </section>
 
     <section>
@@ -3383,71 +3424,6 @@ var animC = new Animation(elem,
     <section>
       <h2>Timing animations</h2>
       <section>
-        <h3>Calculating the iteration time</h3>
-        <p>
-          The iteration time is calculated by first applying the animation's
-          <code>playbackRate</code> and <code>iterationStart</code> properties
-          to produce the <a>adjusted animation time</a>
-          The <a>adjusted animation time</a> is then divided into intervals
-          resulting in the <a>unscaled iteration time</a>.
-          Following this, timing manipulations specified on the timed item are
-          applied to the <a>unscaled iteration time</a> to produce the
-          <a>iteration time</a>.
-        </p>
-        <section>
-          <h4>Applying time manipulations</h4>
-          <p class="note">
-            Applying the reverse behavior after applying the timing function
-            means that ease-in becomes ease-out on reverse, however it avoids
-            jumps in values when reversing part-way.
-          </p>
-        </section>
-        <section>
-          <h4>Calculating the time fraction</h4>
-          <p>
-            The <dfn>time fraction</dfn> is calculated according to the
-            following steps:
-          </p>
-          <dl class="switch">
-            <dt>
-              If the <a>iteration duration</a> is zero,
-            </dt>
-            <dd>
-              <p>
-                the <a>time fraction</a> is as follows.
-              </p>
-              <dl class="switch">
-                <dt>
-                  If <a>item time</a> &lt; <code>timing.startDelay</code>,
-                </dt>
-                <dd>
-                  Return the result of recalculating the iteration time using an
-                  item time of zero and an iteration duration of 1.
-                </dd>
-                <dt>
-                  Otherwise,
-                </dt>
-                <dd>
-                  Return the result of recalculating the iteration time using an
-                  item time of <code>timing.iterationCount</code> and an
-                  iteration duration of 1.
-                </dd>
-              </dl>
-            </dd>
-            <dt>
-              Otherwise,
-            </dt>
-            <dd>
-              Return <a>iteration time</a> / <a>iteration duration</a>.
-            </dd>
-          </dl>
-          <p class="note">
-            Since <a href="#time-transformations">timing functions</a> are
-            allowed to produce output times outside the range [0,1] it is
-            possible that the value calculated for a <a>time fraction</a> also
-            lies outside this range.
-          </p>
-        </section>
         <section>
           <h4>Calculating the current iteration</h4>
           <p>
