@@ -316,11 +316,11 @@
         </p>
         <p>
           A consequence of this hierarchical arrangement is that complex
-          animation arrangements can be reversed, schedule, accelerated and so
-          on, as a whole since the manipulations applied to the parent cascade
-          down to its descendants.
+          animation arrangements can be reversed, scheduled, accelerated and so
+          on, as a whole unit since the manipulations applied to the parent
+          cascade down to its descendants.
           Furthermore, since time has a common source, it is easy to synchronize
-          otherwise independent animations.
+          animations.
         </p>
       </section>
     </section>
@@ -338,6 +338,49 @@
         or other quantities that are less related to time.
       </p>
       <p>
+        Some time sources further separate the <a>time value</a> into
+        a <em>current time value</em> and a <em>result time value</em>.
+      </p>
+      <p>
+        The <dfn>current time value</dfn> is a point of progress in the time
+        source and is used for seeking the time source.
+      </p>
+      <p>
+        The <dfn>filtered time value</dfn> is the <a>current time value</a> with
+        an optional transformation applied
+        and is used for synchronizing consumers of the time source.
+      </p>
+      <p class="feedbackWanted">
+        Other options for naming:
+        <em>result time value</em> (<code>resultTime</code>),
+        <em>output time value</em> (<code>outputTime</code>),
+        <em>child time value</em> (<code>childTime</code>),
+        <em>sync time value</em> (<code>syncTime</code>)
+        &hellip;
+      </p>
+      <p>
+        For simple time sources, and unless otherwise stated, the <a>current
+        time value</a> and <a>filtered time value</a> are one and the same.
+      </p>
+      <div class="annotation">
+        <p>
+          This complexity arises from the fact that in other APIs
+          <code>currentTime</code> is used both as the input for seeking (e.g.
+          HTMLMediaController, HTMLMediaElement) and also as the output for
+          syncing (e.g. HTMLMediaController).
+        </p>
+        <p>
+          We want to be consistent in allowing <code>currentTime</code> to be
+          used for seeking and we also want to allow such objects to be used as 
+          time sources.
+        </p>
+        <p>
+          As a result we allow <code>currentTime</code> to do double-duty in
+          simple cases, and introduce <code>filteredTime</code> for cases where
+          it is necessary to distinguish between the two times.
+        </p>
+      </div>
+      <p>
         Time sources are represented in the Web Animations <acronym
         title="Application Programming Interface">API</acronym> by the
         <a>TimeSource</a> interface.
@@ -348,17 +391,17 @@
           <dt>readonly attribute double? currentTime</dt>
           <dd>
             <p>
-              The current <a>time value</a> of this time source in seconds.
+              The <a>current time value</a> of this time source in seconds.
               This value is updated each time the model is sampled (see <a
               href="#interaction-with-script" class="sectionRef"></a>).
             </p>
             <p>
-              Note that current time will be <code>null</code> if the time
-              source cannot currently produce a time value.
+              Note that this will be <code>null</code> if the time source cannot
+              currently produce a time value.
               For example, a time source that derives its time from another time
               source will return <code>null</code> if the parent time source is
               not provided, is unavailable, or if the parent time source reports
-              <code>null</code> as its <code>currentTime</code>.
+              <code>null</code> as its <a>filtered time value</a>.
             </p>
             <p class="note">
               Note that while <code>currentTime</code> is read-only in this
@@ -374,7 +417,7 @@
       <h2>The document timeline</h2>
       <p>
         Towards the root of the time hierarchy is the document time source.
-        A document time source is associated with a <a
+        A <dfn>document time source</dfn> is associated with a <a
         href="http://www.w3.org/TR/html51/dom.html#the-document-object">Document</a>
         [[HTML5]]
         object and provides a monotonically increasing time value that begins at
@@ -407,7 +450,7 @@
         Before a document time source <a>begins to play</a>, its <a>time
         value</a> is <code>null</code>.
         Once a document time source has begun to play its immediate time value
-        is zero and from that point onwards, it reports the number of seconds
+        is zero and from that point onwards it reports the number of seconds
         since it <a title="begins to play">begun to play</a> subject to the
         constraints on updating the time value in <a
         href="#interaction-with-script" class="sectionRef"></a>.
@@ -599,7 +642,7 @@
           As well as being consumer of time values, timed items are also
           themselves time sources.
           After consuming a time value most timed values apply a transformation
-          to the value and then pass it on.
+          to the value and then pass it on as a <a>filtered time value</a>.
         </p>
       </section>
       <section class="informative">
@@ -636,57 +679,96 @@
           item is brought forward by the delay.
         </p>
       </section>
-      <section class="informative">
+      <section>
         <h3>Local time and inherited time</h3>
-        <p>
-          In Web Animations all times are relative to some point of reference.
-          These different points of reference produce different <a>time
-          spaces</a>.
-        </p>
-        <p>
-          This can be compared to coordinate spaces as used in computer
-          graphics.
-          The zero time of a time space is analogous to the origin of
-          a coordinate space.
-        </p>
-        <p>
-          For example, since a timed item can specify its own start time, the
-          time values produced by a timed item will be offset from those of its
-          time source.
-          As a result we say that the timed item establishes a new time space
-          which we call <em>local time</em> as illustrated below.
-        </p>
-        <div class="figure">
-          <img src="img/local-time.svg" width="600">
+        <div class="informative">
+          <p>
+            In Web Animations all times are relative to some point of reference.
+            These different points of reference produce different <em>time
+            spaces</em>.
+          </p>
+          <p>
+            This can be compared to coordinate spaces as used in computer
+            graphics.
+            The zero time of a time space is analogous to the origin of
+            a coordinate space.
+          </p>
+          <p>
+            For example, since a timed item can specify its own start time, the
+            time values produced by a timed item will be offset from those
+            received from its time source.
+            As a result we say that the timed item establishes a new time space
+            which we call <em>local time</em> as illustrated below.
+          </p>
+          <div class="figure">
+            <img src="img/local-time.svg" width="600">
+          </div>
+          <p class="caption">
+            Inherited time and local time.<br>
+            At time <var>t</var>, the inherited time is 2.5.<br>
+            For timed item (a), the local time is 1.5.<br>
+            For timed item (b), the local time is also 1.5 since local time is
+            based on a timed item's start time only, and not on its start delay.
+          </p>
+          <p>
+            From the point of a view of a given timed item we can talk about the
+            following time spaces:
+          </p>
+          <dl>
+            <dt><dfn>Inherited time space</dfn></dt>
+            <dd>
+              A time space that corresponds to the <a title="filtered time
+              value">filtered time values</a> of the timed item's time source.
+            </dd>
+            <dt><dfn>Local time space</dfn></dt>
+            <dd>
+              A time space whose zero time is the start time of the timed item
+              (plus any accumulated <a>time drift</a>&mdash;see <a
+              href="#seeking-a-timed-item" class="sectionRef"></a>).
+            </dd>
+          </dl>
+          <p>
+            In addition to these time spaces we can also refer to the
+            <dfn>document time space</dfn> which is equivalent to the
+            <a>inherited time space</a> of the <a>DocumentTimeSource</a> of the
+            <a
+            href="http://www.w3.org/TR/html5/browsers.html#active-document">active
+            document</a>.
+          </p>
+          <p>
+            Furthermore, timed items that allow repeating introduce a further
+            time space, <a>iteration time space</a> (see <a
+            href="#repeating" class="sectionRef"></a>).
+          </p>
         </div>
-        <p class="caption">
-          Inherited time and local time.<br>
-          At time <var>t</var>, the inherited time is 2.5.<br>
-          For timed item (a), the local time is 1.5.<br>
-          For timed item (b), the local time is also 1.5 since local time is
-          based on a timed item's start time only, and not on its start delay.
+        <p>
+          For a given timed item, the <dfn>inherited time</dfn> at a given
+          moment is the value of the <dfn>filtered time value</dfn> of the time
+          source. If no time source is associated with the timed item, the
+          inherited time is <code>null</code>.
         </p>
         <p>
-          From the point of a view of a given timed item we can talk about the
-          following time spaces:
+          From the point of view of the API, the <a>inherited time</a> is
+          determined using the following procedure:
         </p>
-        <dl>
-          <dt><dfn>Local time space</dfn></dt>
-          <dd>
-            A time space whose zero time is the start time of the timed item
-            (plus any accumulated <a>time drift</a>&mdash;see <a
-            href="#seeking-a-timed-item" class="sectionRef"></a>).
-          </dd>
-          <dt><dfn>Inherited time space</dfn></dt>
-          <dd>
-            A time space that corresponds to the output of the timed item's time
-            source.
-          </dd>
-        </dl>
+        <ol>
+          <li>If <code>timeline</code> is <code>null</code> return
+              <code>null</code>.</li>
+          <li>If <code>timeline</code> has an attribute
+              <code>filteredTime</code>, return that value.</li>
+          <li>Return <code>timeline.currentTime</code>.</li>
+        </ol>
         <p>
-          In addition to these time spaces, for timed items that allow
-          repeating, we can also describe <a>iteration time space</a> (see <a
-          href="#repeating" class="sectionRef"></a>).
+          For some calculations it is useful to be able to use zero when the
+          <a>inherited time</a> is <code>null</code>. For this purpose we define
+          the <dfn>effective inherited time</dfn> as the <a>inherited time</a>
+          unless that value is <code>null</code> in which case the effective
+          inherited time is zero.
+        </p>
+        <p>
+          The normative definition of <a>local time</a> follows the definition
+          of <a>time drift</a> and is found in <a
+          href="#calculating-the-local-time" class="sectionRef"></a>.
         </p>
       </section>
       <section>
@@ -754,7 +836,8 @@
             </p>
             <p>
               The <a>intrinsic active duration</a> may be overridden by
-              setting this attribute to any real number.
+              setting this attribute to any real number (see <a
+              href="#calculating-the-active-duration" class="sectionRef"></a>).
             </p>
             <p class="issue">
               How can you restore the active duration to reflecting the
@@ -828,8 +911,9 @@
           <dd>
             <p>
               The time source upon which this timed item's timing is based.
-              The output time values of this time source provide the
-              <a>inherited time space</a> for this timed item.
+              The <a title="filtered time value">filtered time values</a> of
+              this time source provide the <a>inherited time space</a> for this
+              timed item.
             </p>
             <p>
               May be <code>null</code> if this timed item is not associated with
@@ -1053,6 +1137,22 @@
               Return the stored value for this property.
             </dd>
           </dl>
+        </section>
+        <section>
+          <h4>Calculating the local time</h4>
+          <p>
+            Having defined the <a>time drift</a> we can now define <a>local
+            time</a> as described in <a href="#local-time-and-inherited-time"
+            class="sectionRef"></a>.
+          </p>
+          <blockquote>
+            <dfn>local time</dfn> =
+              <code><a>inherited time</a> - startTime - <a>time drift</a></code>
+          </blockquote>
+          <p>
+            If either <a>inherited time</a> is <code>null</code>, the local time
+            is <code>null</code>.
+          </p>
         </section>
       </section>
       <section>
@@ -1279,8 +1379,8 @@
           <dt>forwards</dt>
           <dd>
             For times that occur later than the <a>active interval</a>, the
-            timed item will continue to produce the same output time value that
-            was used at the end of the <a>active interval</a>.
+            timed item will continue to produce the same <a>filtered time
+            value</a> that was used at the end of the <a>active interval</a>.
 
             For times that occur before the <a>active interval</a>, the
             timed item will have no effect.
@@ -1288,8 +1388,8 @@
           <dt>backwards</dt>
           <dd>
             For times that occur before the <a>active interval</a>, the
-            timed item will produce the same output time value that will be used
-            at the start of the <a>active interval</a>.
+            timed item will produce the same <a>filtered time value</a> that
+            will be used at the start of the <a>active interval</a>.
 
             For times that occur later than the <a>active interval</a>, the
             timed item will have no effect.
@@ -1324,7 +1424,7 @@
           At a given time, it is possible to describe a timed item as <dfn>in
           effect</dfn> if either (a) the time falls within the item's
           <a>active interval</a>, or (b) the fill mode of the timed item
-          causes it to produce an output time value at the given time.
+          causes it to produce a <a>filtered time value</a> at the given time.
         </p>
         <p>
           The normative definition of fill behavior is incorporated in the
@@ -1598,29 +1698,6 @@
               Which is better?
             </p>
           </dd>
-          <dt>readonly attribute double? iterationTime</dt>
-          <dd>
-            <p>
-              The time in seconds representing the offset into the iteration
-              duration using the steps described in <a
-              href="#calculating-the-iteration-time" class="sectionRef"></a>.
-              As a result of that definition, this property will be
-              non-<code>null</code> if and only if the timed item is in
-              <a>in effect</a>.
-            </p>
-            <p>
-              This property corresponds to the <a>iteration time</a> described
-              in <a href="#iteration-time-space" class="sectionRef"></a>.
-            </p>
-            <p class="annotation">
-              This attribute is not writeable since doing so would require
-              begin able to do a reverse conversion from the value to set into
-              to local time space and then updating the <code>currentTime</code>
-              accordingly.
-              However, that's not possible since timing functions may be applied
-              and some of them are not invertible.
-            </p>
-          </dd>
           <dt>readonly attribute unsigned long? currentIteration</dt>
           <dd>
             The current iteration index beginning with zero for the first
@@ -1639,6 +1716,14 @@
             </p>
           </dd>
         </dl>
+        <p class="annotation">
+          In future we may introduce <code>iterationTime</code> which
+          corresponds to the <code>filteredTime</code> prior to applying time
+          transformations.
+          The advantage of exposing this is that it could be writeable since the
+          transformation from iteration time to local time should be invertible.
+          It is also probably the time we will use for <a>TimingEvent</a> times.
+        </p>
       </section>
     </section>
 
@@ -1956,9 +2041,8 @@
         <h3>Overview</h3>
         <p>
           At the core of the Web Animations timing model is the process that
-          takes an inherited time value and converts it to an output time value.
-          This output time value is simply the <a>iteration time</a> for the
-          current iteration.
+          takes an inherited time value and converts it to a <a>filtered time
+          value</a>.
         </p>
         <p>
           When the timed item is used to control an animation effect, a further
@@ -2058,7 +2142,31 @@ new SeqGroup(
         </section>
       </section>
       <section>
-        <h3>Calculating the iteration time</h3>
+        <h3>Calculating the filtered time</h3>
+      </section>
+      <section>
+        <h3>Filtered time interface members</h3>
+        <dl title="partial interface TimedItem" class="idl">
+          <dt>readonly attribute double? filteredTime</dt>
+          <dd>
+            <p>
+              The output time in seconds of this timed item
+              calculated using the steps described in <a
+              href="#calculating-the-filtered-time" class="sectionRef"></a>.
+              As a result of that definition, this attribute will be
+              non-<code>null</code> if and only if the timed item is in
+              <a>in effect</a>.
+            </p>
+            <p class="annotation">
+              This attribute is not writeable since doing so would require
+              being able to do a reverse conversion from the value to set into
+              to local time space and then updating the <code>currentTime</code>
+              accordingly.
+              However, that's not possible since timing functions may be applied
+              and some of them are not invertible.
+            </p>
+          </dd>
+        </dl>
       </section>
       <section>
         <h3>Calculating animation inputs</h3>
@@ -3015,38 +3123,6 @@ var animC = new Animation(elem,
 
     <section>
       <h2>Timing animations</h2>
-      <section>
-        <h3>Timing model common definitions</h3>
-        <p>
-          In order to calculate various properties of the timing model the
-          following common definitions are used.
-        </p>
-        <ul>
-          <li><dfn>effective parent time</dfn> =
-              <code>parentGroup.iterationTime</code> unless
-              <code>parentGroup</code> or <code>parentGroup.iterationTime</code>
-              is <code>null</code> in which case it is zero.</li>
-        </ul>
-      </section>
-      <section>
-        <h3>Calculating the item time</h3>
-        <p>
-          The <dfn>item time</dfn> is calculated according to the following
-          equation:
-        </p>
-        <blockquote>
-          <code><var>item time</var> = parentGroup.iterationTime
-            - startTime - timeDrift</code>
-        </blockquote>
-        <p>
-          If either <code>parentGroup</code> or
-          <code>parentGroup.iterationTime</code> is <code>null</code>, the
-          <var>item time</var> is <code>null</code>.
-        </p>
-        <p class="todo">
-          Need to define this for the document timeline.
-        </p>
-      </section>
       <section>
         <h3>Calculating the animation time</h3>
         <p>
