@@ -2019,54 +2019,6 @@
     </section>
 
     <section>
-      <h2>Direction control</h2>
-      <div class="informative">
-        <p>
-          Timed items may also be configured to run iterations in alternative
-          directions using direction control.
-          Unlike speed control, setting a reverse direction does not invert the
-          <a>effective fill mode</a> of the timed item.
-        </p>
-      </div>
-      <section>
-        <h3>The <code>PlaybackDirection</code> enumeration</h3>
-        <dl title="enum PlaybackDirection" class="idl">
-          <dt>normal</dt>
-          <dd>
-            All iterations are played as specified.
-          </dd>
-          <dt>reverse</dt>
-          <dd>
-            All iterations are played in the reverse direction from the way
-            they are specified.
-          </dd>
-          <dt>alternate</dt>
-          <dd>
-            Even iterations are played as specified, odd iterations are played
-            in the reverse direction from the way they are specified.
-          </dd>
-          <dt>alternate-reverse</dt>
-          <dd>
-            Even iterations are played in the reverse direction from the way
-            they are specified, odd iterations are played as specified.
-          </dd>
-        </dl>
-      </section>
-      <section>
-        <h3>Direction control interface members</h3>
-        <dl title="partial interface TimedItem" class="idl">
-          <dt>attribute PlaybackDirection direction</dt>
-          <dd>
-            <p>
-              Direction behavior as specified by one of the
-              <a>PlaybackDirection</a> enumeration values.
-            </p>
-          </dd>
-        </dl>
-      </section>
-    </section>
-
-    <section>
       <h2>Timed item calculations</h2>
       <section class="informative">
         <h3>Overview</h3>
@@ -2298,67 +2250,115 @@ new SeqGroup(
             </li>
           </ol>
         </section>
-        <section>
-          <h4>Calculating the directed time</h4>
-          <p>
-            The <dfn>directed time</dfn> is calculated from the
-            <a>iteration time</a> using the following steps:
-          </p>
-          <ol>
-            <li>
-              Calculate the <var>current direction</var> using the first
-              matching condition from the following list:
-              <dl class="switch">
-                <dt>
-                  If <code>direction</code> is <code>normal</code>,
-                </dt>
-                <dd>Let the <var>current direction</var> be forwards.</dd>
-                <dt>
-                  If <code>direction</code> is <code>reverse</code>,
-                </dt>
-                <dd>Let the <var>current direction</var> be reverse.</dd>
-                <dt>
-                  Otherwise,
-                </dt>
-                <dd>
-                  <ol>
-                    <li>
-                      Let <var>d</var> be the <a>current iteration</a>.
-                    </li>
-                    <li>
-                      If <code>direction</code> is
-                      <code>alternate-reverse</code> increment
-                      <var>d</var> by 1.
-                    </li>
-                    <li>
-                      <p class="issue">
-                        There used to be a step here which seemed to be adding
-                        special handling for filling when the item ends on
-                        a repeat boundary but it seems like that is taken care
-                        of by the calcuation of <a>iteration time</a> and
-                        <a>current iteration</a>.
-                        Is anything actually needed here?
-                      </p>
-                    </li>
-                    <li>
-                      If <code><var>d</var> % 2 == 0</code>, let the
-                      <var>current direction</var> be forwards, otherwise let
-                      the <var>current direction</var> be reverse.
-                    </li>
-                  </ol>
-                </dd>
-              </dl>
-            </li>
-            <li>
-              If the <var>current direction</var> is forwards then return
-              the <a>iteration time</a>.
-              <p>
-                Otherwise, return the <a>iteration duration</a>
-                - <a>iteration time</a>.
-              </p>
-            </li>
-          </ol>
-        </section>
+      </section>
+    </section>
+
+    <section>
+      <h2>Direction control</h2>
+      <div class="informative">
+        <p>
+          Timed items may also be configured to run iterations in alternative
+          directions using direction control.
+          Unlike speed control, setting a reverse direction does not invert the
+          <a>effective fill mode</a> of the timed item.
+        </p>
+      </div>
+      <section>
+        <h3>The <code>PlaybackDirection</code> enumeration</h3>
+        <dl title="enum PlaybackDirection" class="idl">
+          <dt>normal</dt>
+          <dd>
+            All iterations are played as specified.
+          </dd>
+          <dt>reverse</dt>
+          <dd>
+            All iterations are played in the reverse direction from the way
+            they are specified.
+          </dd>
+          <dt>alternate</dt>
+          <dd>
+            Even iterations are played as specified, odd iterations are played
+            in the reverse direction from the way they are specified.
+          </dd>
+          <dt>alternate-reverse</dt>
+          <dd>
+            Even iterations are played in the reverse direction from the way
+            they are specified, odd iterations are played as specified.
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Calculating the directed time</h3>
+        <p>
+          The <dfn>directed time</dfn> is based on the <a>iteration time</a>
+          using the following steps:
+        </p>
+        <ol>
+          <li>
+            Calculate the <var>current direction</var> using the first
+            matching condition from the following list:
+            <dl class="switch">
+              <dt>
+                If <code>direction</code> is <code>normal</code>,
+              </dt>
+              <dd>Let the <var>current direction</var> be forwards.</dd>
+              <dt>
+                If <code>direction</code> is <code>reverse</code>,
+              </dt>
+              <dd>Let the <var>current direction</var> be reverse.</dd>
+              <dt>
+                Otherwise,
+              </dt>
+              <dd>
+                <ol>
+                  <li>
+                    Let <var>d</var> be the <a>current iteration</a>.
+                  </li>
+                  <li>
+                    If <code>direction</code> is
+                    <code>alternate-reverse</code> increment
+                    <var>d</var> by 1.
+                  </li>
+                  <li>
+                    <p class="issue">
+                      There used to be a step here which seemed to be adding
+                      special handling for filling when the item ends on
+                      a repeat boundary but it seems like that is taken care
+                      of by the calcuation of <a>iteration time</a> and
+                      <a>current iteration</a>.
+                      Is anything actually needed here?
+                    </p>
+                  </li>
+                  <li>
+                    If <code><var>d</var> % 2 == 0</code>, let the
+                    <var>current direction</var> be forwards, otherwise let
+                    the <var>current direction</var> be reverse.
+                  </li>
+                </ol>
+              </dd>
+            </dl>
+          </li>
+          <li>
+            If the <var>current direction</var> is forwards then return
+            the <a>iteration time</a>.
+            <p>
+              Otherwise, return the <a>iteration duration</a>
+              - <a>iteration time</a>.
+            </p>
+          </li>
+        </ol>
+      </section>
+      <section>
+        <h3>Direction control interface members</h3>
+        <dl title="partial interface TimedItem" class="idl">
+          <dt>attribute PlaybackDirection direction</dt>
+          <dd>
+            <p>
+              Direction behavior as specified by one of the
+              <a>PlaybackDirection</a> enumeration values.
+            </p>
+          </dd>
+        </dl>
       </section>
     </section>
 
