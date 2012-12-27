@@ -1825,6 +1825,35 @@
           If the <a>run-time playback rate</a> the value of the effective
           run-time playback rate is that of the <a>default playback rate</a>.
         </blockquote>
+        <p>
+          Setting a negative playback rate has the effect of inverting a timed
+          item's <a>fill mode</a> and hence we define the <dfn>effective fill
+          mode</dfn> as follows:
+        </p>
+        <dl class="switch">
+          <dt>If the <a>effective run-time playback rate</a> is &ge; 0,</dt>
+          <dd>
+            return the value of <code>fillMode</code>.
+          </dd>
+          <dt>Otherwise,
+          <dd>
+            the result depends on the value of <code>fillMode</code> as follows,
+            <dl class="switch">
+              <dt>If <code>fillMode</code> is <code>forwards</code>,</dt>
+              <dd>
+                return <code>backwards</code>.
+              </dd>
+              <dt>If <code>fillMode</code> is <code>backwards</code>,</dt>
+              <dd>
+                return <code>forwards</code>.
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                return <code>fillMode</code>.
+              </dd>
+            </dl>
+          </dd>
+        </dl>
       </section>
       <section>
         <h3>Performing run-time speed control</h3>
@@ -1994,7 +2023,7 @@
           Timed items may also be configured to run iterations in alternative
           directions using direction control.
           Unlike speed control, setting a reverse direction does not invert the
-          effective <a>fill mode</a> of the timed item.
+          <a>effective fill mode</a> of the timed item.
         </p>
       </div>
       <section>
@@ -2143,6 +2172,73 @@ new SeqGroup(
       </section>
       <section>
         <h3>Calculating the filtered time</h3>
+        <section>
+          <h4>Calculating the active time</h4>
+          <p>
+            The <dfn>active time</dfn> is based on the <a>local time</a>
+            and <code>startDelay</code>.
+            It is defined only when the timed item is <a>in effect</a> and is
+            calculated according to the following steps:
+          </p>
+          <ol>
+            <li>
+              If <a>local time</a> is <code>null</code>, return
+              <code>null</code>.
+            </li>
+            <li>
+              If <code><a>local time</a> &lt; startDelay</code>
+              the result depends on the <code>fillMode</code> as follows,
+              <dl class="switch">
+                <dt>
+                  If the <a>effective fill mode</a> is <em>backwards</em> or
+                  <em>both</em>,
+                </dt>
+                <dd>
+                  return zero.
+                <dd>
+                <dt>
+                  Otherwise,
+                </dt>
+                <dd>
+                  return <code>null</code>.
+                </dd>
+              </dl>
+            </li>
+            <li>
+              If <code><a>local time</a> &lt; startTime + <a>active
+              duration</a></code>, return <code><a>local time</a>
+              - startDelay</code>.
+            </li>
+            <li>
+              Otherwise, the result depends on the <a>effective fill mode</a> as
+              follows,
+              <dl class="switch">
+                <dt>
+                  If the <a>effective fill mode</a> is <em>forwards</em> or
+                  <em>both</em>,
+                </dt>
+                <dd>
+                  return <a>active duration</a>.
+                <dd>
+                <dt>
+                  Otherwise,
+                </dt>
+                <dd>
+                  return <code>null</code>.
+                </dd>
+              </dl>
+            </li>
+          </ol>
+        </section>
+        <section>
+          <h4>Calculating the adjusted active time</h4>
+        </section>
+        <section>
+          <h4>Calculating the iteration time</h4>
+        </section>
+        <section>
+          <h4>Calculating the transformed time</h4>
+        </section>
       </section>
       <section>
         <h3>Filtered time interface members</h3>
@@ -3123,63 +3219,6 @@ var animC = new Animation(elem,
 
     <section>
       <h2>Timing animations</h2>
-      <section>
-        <h3>Calculating the animation time</h3>
-        <p>
-          The <dfn>animation time</dfn> is based on the <a>item time</a>
-          and <var>start delay</var>.
-          It is defined only when the timed item is <a>in effect</a> and is
-          calculated according to the following steps:
-        </p>
-        <ol>
-          <li>
-            If <a>item time</a> is <code>null</code>, return <code>null</code>.
-          </li>
-          <li>
-            If <code><a>item time</a> &lt; timing.startDelay</code>
-            the result depends on the <var>fill mode</var> as follows,
-            <dl class="switch">
-              <dt>
-                If the <var>fill mode</var> is <em>backwards</em> or
-                <em>both</em>,
-              </dt>
-              <dd>
-                return zero.
-              <dd>
-              <dt>
-                Otherwise,
-              </dt>
-              <dd>
-                return <code>null</code>.
-              </dd>
-            </dl>
-          </li>
-          <li>
-            If <code><a>item time</a> &lt;
-            timing.startTime + animationDuration</code>, return
-            <code><a>item time</a> - timing.startDelay</code>.
-          </li>
-          <li>
-            Otherwise, the result depends on the <var>fill mode</var> as
-            follows,
-            <dl class="switch">
-              <dt>
-                If the <var>fill mode</var> is <em>forwards</em> or
-                <em>both</em>,
-              </dt>
-              <dd>
-                return <code>animationDuration</code>.
-              <dd>
-              <dt>
-                Otherwise,
-              </dt>
-              <dd>
-                return <code>null</code>.
-              </dd>
-            </dl>
-          </li>
-        </ol>
-      </section>
       <section>
         <h3>Calculating the iteration time</h3>
         <p>
