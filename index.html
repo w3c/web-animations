@@ -2305,40 +2305,12 @@ new SeqGroup(
           </ol>
         </section>
         <section>
-          <h4>Calculating the transformed time</h4>
+          <h4>Calculating the directed time</h4>
           <p>
-            The <a>iteration time</a> is converted into the
-            <dfn>transformed time</dfn> using the following steps:
+            The <dfn>directed time</dfn> is calculated from the
+            <a>iteration time</a> using the following steps:
+          </p>
           <ol>
-            <li>
-              If the <a>iteration time</a> is <code>null</code>,
-              return <code>null</code>.
-            </li>
-            <li>
-              Scale the time as follows:
-              <dl class="switch">
-                <dt>If <code>timingFunction</code> is
-                    a <a>TimingFunction</a> object,</dt>
-                <dd>
-                  <ol>
-                    <li>Let <var>iteration fraction</var> be the result of
-                        evaluating <code><a>iteration time</a> / <a>iteration
-                        duration</a></code> unless <a>iteration duration</a> is
-                        zero, in which case let <var>iteration fraction</var> be
-                        zero.</li>
-                    <li>Let <var>scaled iteration time</var> be
-                        the result of evaluating
-                  <code><a>iteration time</a> *
-                  timingFunction.scaleTime(<var>iteration fraction</a>))</code>.
-                    </li>
-                  </ol>
-                </dd>
-                <dt>Otherwise,</dt>
-                <dd>
-                  Let <var>scaled iteration time</var> be <a>iteration time</a>.
-                </dd>
-              </dl>
-            </li>
             <li>
               Calculate the <var>current direction</var> using the first
               matching condition from the following list:
@@ -2385,11 +2357,48 @@ new SeqGroup(
             </li>
             <li>
               If the <var>current direction</var> is forwards then return
-              the <var>scaled iteration time</var>.
+              the <a>iteration time</a>.
               <p>
                 Otherwise, return the <a>iteration duration</a>
-                - <var>scaled iteration time</var>.
+                - <a>iteration time</a>.
               </p>
+            </li>
+          </ol>
+        </section>
+        <section>
+          <h4>Calculating the transformed time</h4>
+          <p>
+            The <dfn>transformed time</dfn> is calculated from the
+            <a>directed time</a> using the following steps:
+          </p>
+          <ol>
+            <li>
+              If the <a>directed time</a> is <code>null</code>,
+              return <code>null</code>.
+            </li>
+            <li>
+              Scale the time as follows:
+              <dl class="switch">
+                <dt>If <code>timingFunction</code> is
+                    a <a>TimingFunction</a> object,</dt>
+                <dd>
+                  <ol>
+                    <li>Let <var>iteration fraction</var> be the result of
+                        evaluating <code><a>directed time</a> / <a>iteration
+                        duration</a></code> unless <a>iteration duration</a> is
+                        zero, in which case let <var>iteration fraction</var> be
+                        zero.</li>
+                    <li>Return the result of evaluating
+                  <code><a>directed time</a> *
+                  timingFunction.scaleTime(<var>iteration fraction</a>))</code>.
+                    </li>
+                  </ol>
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  Return the <a>directed time</a>.
+                </dd>
+              </dl>
             </li>
           </ol>
         </section>
