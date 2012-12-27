@@ -2258,7 +2258,7 @@ new SeqGroup(
               <code>null</code>.
             </li>
             <li>
-              Return the adjusted animation time based on the
+              Return the adjusted active time based on the
               <a>effective run-time playback rate</a> as follows,
               <dl class="switch">
                 <dt>If <a>effective run-time playback rate</a> is negative,</dt>
@@ -2306,6 +2306,92 @@ new SeqGroup(
         </section>
         <section>
           <h4>Calculating the transformed time</h4>
+          <p>
+            The <a>iteration time</a> is converted into the
+            <dfn>transformed time</dfn> using the following steps:
+          <ol>
+            <li>
+              If the <a>iteration time</a> is <code>null</code>,
+              return <code>null</code>.
+            </li>
+            <li>
+              Scale the time as follows:
+              <dl class="switch">
+                <dt>If <code>timingFunction</code> is
+                    a <a>TimingFunction</a> object,</dt>
+                <dd>
+                  <ol>
+                    <li>Let <var>iteration fraction</var> be the result of
+                        evaluating <code><a>iteration time</a> / <a>iteration
+                        duration</a></code> unless <a>iteration duration</a> is
+                        zero, in which case let <var>iteration fraction</var> be
+                        zero.</li>
+                    <li>Let <var>scaled iteration time</var> be
+                        the result of evaluating
+                  <code><a>iteration time</a> *
+                  timingFunction.scaleTime(<var>iteration fraction</a>))</code>.
+                    </li>
+                  </ol>
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  Let <var>scaled iteration time</var> be <a>iteration time</a>.
+                </dd>
+              </dl>
+            </li>
+            <li>
+              Calculate the <var>current direction</var> using the first
+              matching condition from the following list:
+              <dl class="switch">
+                <dt>
+                  If <code>direction</code> is <code>normal</code>,
+                </dt>
+                <dd>Let the <var>current direction</var> be forwards.</dd>
+                <dt>
+                  If <code>direction</code> is <code>reverse</code>,
+                </dt>
+                <dd>Let the <var>current direction</var> be reverse.</dd>
+                <dt>
+                  Otherwise,
+                </dt>
+                <dd>
+                  <ol>
+                    <li>
+                      Let <var>d</var> be the <a>current iteration</a>.
+                    </li>
+                    <li>
+                      If <code>direction</code> is
+                      <code>alternate-reverse</code> increment
+                      <var>d</var> by 1.
+                    </li>
+                    <li>
+                      <p class="issue">
+                        There used to be a step here which seemed to be adding
+                        special handling for filling when the item ends on
+                        a repeat boundary but it seems like that is taken care
+                        of by the calcuation of <a>iteration time</a> and
+                        <a>current iteration</a>.
+                        Is anything actually needed here?
+                      </p>
+                    </li>
+                    <li>
+                      If <code><var>d</var> % 2 == 0</code>, let the
+                      <var>current direction</var> be forwards, otherwise let
+                      the <var>current direction</var> be reverse.
+                    </li>
+                  </ol>
+                </dd>
+              </dl>
+            </li>
+            <li>
+              If the <var>current direction</var> is forwards then return
+              the <var>scaled iteration time</var>.
+              <p>
+                Otherwise, return the <a>iteration duration</a>
+                - <var>scaled iteration time</var>.
+              </p>
+            </li>
+          </ol>
         </section>
       </section>
       <section>
@@ -3301,82 +3387,6 @@ var animC = new Animation(elem,
         </p>
         <section>
           <h4>Applying time manipulations</h4>
-          <p>
-            The <a>unscaled iteration time</a> is converted into the
-            <dfn>iteration time</dfn> using the following steps:
-          <ol>
-            <li>
-              If the <var>unscaled iteration time</var> is <code>null</code>,
-              return <code>null</code>.
-            </li>
-            <li>
-              Scale the time as follows:
-              <dl class="switch">
-                <dt>If <var>timing.timingFunction</var> is
-                    a <a>TimingFunction</a> object,</dt>
-                <dd>
-                  <p>
-                    Let <var>scaled iteration time</var> be
-                    <code>unscaled iteration time *
-                      timing.timingFunction.scaleTime(<var>unscaled iteration
-                      time</var> / <a>iteration duration</a>)))</code>.
-                  </p>
-                </dd>
-                <dt>Otherwise,</dt>
-                <dd>
-                  Let <var>scaled iteration time</var> be <var>unscaled
-                  iteration time</var>.
-                </dd>
-              </dl>
-            </li>
-            <li>
-              Calculate the <var>current direction</var> using the first
-              matching condition from the following list:
-              <dl class="switch">
-                <dt>
-                  If the direction is normal,
-                </dt>
-                <dd>Let the <var>current direction</var> be forwards.</dd>
-                <dt>
-                  If the direction is reverse,
-                </dt>
-                <dd>Let the <var>current direction</var> be reverse.</dd>
-                <dt>
-                  Otherwise,
-                </dt>
-                <dd>
-                  <ol>
-                    <li>
-                      Let <var>d</var> be the <a>current iteration</a>.
-                    </li>
-                    <li>
-                      If the direction is alternate-reverse increment
-                      <var>d</var> by 1.
-                    </li>
-                    <li>
-                      If the animation is not animating, and the
-                      <code>animationDuration</code> is a positive multiple of
-                      the <a>iteration duration</a> increment <var>d</var>
-                      by 1.
-                    </li>
-                    <li>
-                      If <code><var>d</var> % 2 == 0</code>, let the
-                      <var>current direction</var> be forwards, otherwise let
-                      the <var>current direction</var> be reverse.
-                    </li>
-                  </ol>
-                </dd>
-              </dl>
-            </li>
-            <li>
-              If the <var>current direction</var> is forwards then return
-              the <var>scaled iteration time</var>.
-              <p>
-                Otherwise, return the <a>iteration duration</a>
-                - <var>scaled iteration time</var>.
-              </p>
-            </li>
-          </ol>
           <p class="note">
             Applying the reverse behavior after applying the timing function
             means that ease-in becomes ease-out on reverse, however it avoids
