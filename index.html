@@ -1951,18 +1951,95 @@
     </section>
 
     <section>
-      <h2>The output time of a timed item</h2>
+      <h2>Timed item calculations</h2>
       <section class="informative">
         <h3>Overview</h3>
-        <p class="todo">
-          Diagram
+        <p>
+          At the core of the Web Animations timing model is the process that
+          takes an inherited time value and converts it to an output time value.
+          This output time value is simply the <a>iteration time</a> for the
+          current iteration.
         </p>
+        <p>
+          When the timed item is used to control an animation effect, a further
+          step is required to convert the <a>iteration time</a> into a <a>time
+          fraction</a> as well as to calculate the <a>current iteration</a>.
+        </p>
+        <p>
+          The process can be described in three steps:
+        </p>
+        <ol>
+          <li>Calculating the active duration</li>
+          <li>Calculating the iteration time</li>
+          <li>Calculating additional animation inputs</li>
+        </ol>
       </section>
       <section>
-        <h3>Calculating the active duration</h3>
+        <h3>Calculating the duration</h3>
+        <section>
+          <h4>Calculating the iteration duration</h4>
+          <p>
+            The <dfn>iteration duration</dfn>, unless overridden (see below), is
+            simply its <em>intrinsic iteration duration</em>.
+          </p>
+          <p>
+            The <dfn>intrinsic iteration duration</dfn> of a timed item is zero,
+            however some specific types of timed item such as timing groups
+            override this behavior and provide an alternative intrinsic duration
+            (see <a href="#the-intrinsic-duration-of-a-parallel-animation-group"
+            class="sectionRef"></a> and <a
+            href="#the-intrinsic-duration-of-a-sequence-animation-group"
+            class="sectionRef"></a>).
+          </p>
+          <p>
+            The Web Animations API also provides a means to
+            override the <a>intrinsic iteration duration</a> and provide another
+            value for the <a>iteration duration</a> via that
+            <code>iterationDuration</code> attribute.
+          </p>
+          <div class="informative">
+            <p>
+              Since the <a>intrinsic iteration duration</a> of an animation is
+              zero, and the default <code>fillMode</code> when constructing an
+              <a>Animation</a> is <em>forwards</em>, it is possible to
+              create animations that simply set a property without any
+              interpolation as follows,
+            </p>
+            <pre class='example sh_javascript'>
+new Animation(elem, { display: 'none' });
+            </pre>
+            <p>
+              This is particularly useful in combination with other animations
+              or timed items.
+              For example, fading an element before switching
+              &lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
+              follows,
+            </p>
+            <pre class='example sh_javascript'>
+new SeqGroup(
+  [
+    new Animation(elem, { opacity: '0%' }, 1),
+    new Animation(elem, { display: 'none' })
+  ]
+);
+            </pre>
+          </div>
+        </section>
+        <section>
+          <h4>Calculating the active duration</h4>
+        </section>
       </section>
       <section>
-        <h3>Calculating the time fraction</h3>
+        <h3>Calculating the iteration time</h3>
+      </section>
+      <section>
+        <h3>Calculating animation inputs</h3>
+        <section>
+          <h4>Calculating the time fraction</h4>
+        </section>
+        <section>
+          <h4>Calculating the current iteration</h4>
+        </section>
       </section>
     </section>
 
@@ -2922,71 +2999,6 @@ var animC = new Animation(elem,
               <code>parentGroup</code> or <code>parentGroup.iterationTime</code>
               is <code>null</code> in which case it is zero.</li>
         </ul>
-      </section>
-      <section>
-        <h3>Calculating the iteration duration</h3>
-        <p>
-          The <dfn>iteration duration</dfn> is calculated according to the
-          following steps:
-        </p>
-        <dl class="switch">
-          <dt>
-            If the <code>timing.duration</code> timing property is set
-            to a numerical value greater than or equal to zero (including
-            positive infinity),
-          </dt>
-          <dd>
-            return <code>timing.duration</code>.
-          </dd>
-          <dt>
-            Otherwise,
-          </dt>
-          <dd>
-            return the item's <a>intrinsic duration</a>.
-          </dd>
-        </dl>
-        <p>
-          The value of an item's <dfn>intrinsic duration</dfn> depends on
-          the type of the item.
-        </p>
-        <p>
-          For animations the <a>intrinsic duration</a> is zero.
-          The intrinsic duration for animation groups and media items
-          is described under <a
-      href="#the-intrinsic-duration-of-a-parallel-animation-group"
-          class="sectionRef"></a>, <a
-      href="#the-intrinsic-duration-of-a-sequence-animation-group"
-          class="sectionRef"></a>,
-          and <a
-          href="#the-intrinsic-duration-of-a-media-item"
-          class="sectionRef"></a>.
-        </p>
-        <div class="informative">
-          <p>
-            Since the intrinsic duration of an animation is zero, and the
-            default <code>fillMode</code> when constructing an
-            <code>Animation</code> is <em>forwards</em>, it is possible to
-            create animations that simply set a property without any
-            interpolation as follows,
-          </p>
-          <pre class='example sh_javascript'>
-new Animation(elem, { display: 'none' });
-          </pre>
-          <p>
-            This is particularly useful in combination with other animations or
-            timed items. For example, fading an element before switching
-            &lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
-            follows,
-          </p>
-          <pre class='example sh_javascript'>
-new SeqGroup(
-  [
-    new Animation(elem, { opacity: '0%' }, 1),
-    new Animation(elem, { display: 'none' })
-  ]
-);
-          </pre>
-        </div>
       </section>
       <section>
         <h3>Calculating the intrinsic animation duration</h3>
