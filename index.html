@@ -2019,21 +2019,21 @@
     </section>
 
     <section>
-      <h2>Timed item calculations</h2>
+      <h2>Core timed item calculations</h2>
       <section class="informative">
         <h3>Overview</h3>
         <p>
           At the core of the Web Animations timing model is the process that
-          takes an inherited time value and converts it to a <a>filtered time
-          value</a>.
+          takes an inherited time value and converts it to an <a>iteration
+          time</a>.
         </p>
         <p>
-          The process can be described in two steps:
+          Following this further transformations are applied before resulting at
+          a final <a>filtered time</a>.
         </p>
-        <ol>
-          <li>Calculating the active duration</li>
-          <li>Filtering the local time</li>
-        </ol>
+        <p class="todo">
+          Diagram here
+        </p>
       </section>
       <section>
         <h3>Calculating the duration</h3>
@@ -2250,6 +2250,41 @@ new SeqGroup(
             </li>
           </ol>
         </section>
+      </section>
+      <section>
+        <h3>Calculating the current iteration</h3>
+        <p>
+          The <dfn>current iteration</dfn> can be calculated using the
+          following steps:
+        </p>
+        <ol>
+          <li>
+            If the <a>item time</a> is <code>null</code>, return
+            <code>null</code>.
+          </li>
+          <li>
+            If the <a>adjusted animation time</a> is zero, return zero.
+          </li>
+          <li>
+            If the <a>iteration duration</a> is zero, return
+            <code>floor(timing.iterationStart + timing.iterationCount)</code>.
+          </li>
+          <li>
+            If the <a>unscaled iteration time</a> equals the <a>iteration
+            duration</a>, return <code>timing.iterationStart
+            + timing.iterationCount - 1</code>.
+          </li>
+          <li>
+            Return <code>floor(<a>adjusted animation time</a> /
+            <a>iteration duration</a>)</code>.
+            <p class="note">
+              If the <a>iteration duration</a> is infinite, the
+              result of <code>floor(<a>adjusted animation time</a> /
+              <a>iteration duration</a>)</code> will be zero as defined by
+              IEEE 754-2008.
+            </p>
+          </li>
+        </ol>
       </section>
     </section>
 
@@ -3414,51 +3449,6 @@ var animC = new Animation(elem,
           possible that the value calculated for a <a>time fraction</a> also
           lies outside this range.
         </p>
-      </section>
-    </section>
-
-    <section>
-      <h2>Timing groups</h2>
-    </section>
-
-    <section>
-      <h2>Timing animations</h2>
-      <section>
-        <section>
-          <h4>Calculating the current iteration</h4>
-          <p>
-            The <dfn>current iteration</dfn> can be calculated from the
-            following steps:
-          </p>
-          <ol>
-            <li>
-              If the <a>item time</a> is <code>null</code>, return
-              <code>null</code>.
-            </li>
-            <li>
-              If the <a>adjusted animation time</a> is zero, return zero.
-            </li>
-            <li>
-              If the <a>iteration duration</a> is zero, return
-              <code>floor(timing.iterationStart + timing.iterationCount)</code>.
-            </li>
-            <li>
-              If the <a>unscaled iteration time</a> equals the <a>iteration
-              duration</a>, return <code>timing.iterationStart
-              + timing.iterationCount - 1</code>.
-            </li>
-            <li>
-              Return <code>floor(<a>adjusted animation time</a> /
-              <a>iteration duration</a>)</code>.
-              <p class="note">
-                If the <a>iteration duration</a> is infinite, the
-                result of <code>floor(<a>adjusted animation time</a> /
-                <a>iteration duration</a>)</code> will be zero as defined by
-                IEEE 754-2008.
-              </p>
-            </li>
-          </ol>
-        </section>
       </section>
     </section>
 
