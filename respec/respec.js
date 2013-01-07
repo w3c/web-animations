@@ -1581,7 +1581,7 @@ berjon.respec.prototype = {
               infNames.push(inf.id);
             }
             if (summaryProcessor) {
-                summaryProcessor.definition(idl);
+                summaryProcessor.parent.children.push(inf);
             }
         }
         if (summaryProcessor) {
