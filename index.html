@@ -977,7 +977,7 @@
         <div class="informative">
           <p>
             Changing the current playback position of a timed item can be used
-            to rewind an animation to its start point, fast-forward to a point
+            to rewind a timed item to its start point, fast-forward to a point
             in the future, or to provide ad-hoc synchronization between items.
           </p>
           <p>
@@ -1578,7 +1578,7 @@
           <img src="img/time-spaces.svg" width="600">
         </div>
         <p class="caption">
-          A comparison of item time, animation time, and iteration time for an
+          A comparison of item time, active time, and iteration time for an
           animation with a iteration duration of 1s and an iteration count of
           2.5.
         </p>
@@ -1653,17 +1653,17 @@
           <dd>
             <p>
               A finite real number greater than or equal to zero representing
-              the number of iterations into the animation at which to begin.
-              For example, a value of 0.5 would cause the animation to begin
+              the number of iterations into the timed item at which to begin.
+              For example, a value of 0.5 would cause the timed item to begin
               half-way through the first iteration.
             </p>
             <p>
               The <code>iterationCount</code> is effectively <em>added</em> to
-              the <code>iterationStart</code> such that an animation with an
+              the <code>iterationStart</code> such that a timed item with an
               <code>iterationStart</code> of &lsquo;0.5&rsquo; and
               <code>iterationCode</code> of &lsquo;2&rsquo; would still
               repeat twice however it would begin and end half-way through
-              the animation's <a>iteration interval</a>.
+              the timed item's <a>iteration interval</a>.
             </p>
             <p>
               Setting the <code>iterationStart</code> to a value greater than
@@ -2052,9 +2052,9 @@
           <dt>void reverse ()</dt>
           <dd>
             <p>
-              Reverses this animation such that the reverse animation
-              immediately begins reversing from its current point.
-              Note that this means that an animation that has yet to begin,
+              Reverses this timed item such that it begins reversing from its
+              current point.
+              Note that this means that for a timed item that has yet to begin,
               calling <code>reverse</code> will mean that it never starts.
             </p>
             <ol>
@@ -2369,7 +2369,7 @@ new SeqGroup(
             <code>null</code>.
           </li>
           <li>
-            If the <a>adjusted animation time</a> is zero, return zero.
+            If the <a>adjusted active time</a> is zero, return zero.
           </li>
           <li>
             If the <a>iteration duration</a> is zero, return
@@ -2381,11 +2381,11 @@ new SeqGroup(
             + timing.iterationCount - 1</code>.
           </li>
           <li>
-            Return <code>floor(<a>adjusted animation time</a> /
+            Return <code>floor(<a>adjusted active time</a> /
             <a>iteration duration</a>)</code>.
             <p class="note">
               If the <a>iteration duration</a> is infinite, the
-              result of <code>floor(<a>adjusted animation time</a> /
+              result of <code>floor(<a>adjusted active time</a> /
               <a>iteration duration</a>)</code> will be zero as defined by
               IEEE 754-2008.
             </p>
@@ -2508,17 +2508,17 @@ new SeqGroup(
       <section class="informative">
         <h3>Scaling the time</h3>
         <p>
-          It is often desirable to control the rate at which an animation
+          It is often desirable to control the rate at which a timed item
           progresses.
           For example, easing the rate of animation can create a sense of
           momentum and produce a more natural effect.
           Conversely, in other situations such as when modelling a discrete
           change, a smooth transition is undesirable and instead it is necessary
-          for the animation to progress in a series of distinct steps.
+          for the timed item to progress in a series of distinct steps.
         </p>
         <p>
           For such situations Web Animations provides a variety of timing
-          functions that scale the progress of an animation.
+          functions that scale the progress of a timed item.
         </p>
         <p>
           Timing functions take an input time and produce a scaled output time.
@@ -2754,7 +2754,7 @@ new SeqGroup(
       <section>
         <h3>Timing in discrete steps</h3>
         <p>
-          It is possible to scale an animation's timing so that the animation
+          It is possible to scale a timed item's timing so that the timed item
           occurs in a series of discrete steps using a stepping function.
         </p>
         <p>
@@ -3972,7 +3972,8 @@ var animC = new Animation(elem,
                     <dt>If <var>timing</var> is a <a>TimingDictionary</a>
                     object,</dt>
                     <dd>
-                      Let <var>timing dictionary</var> refer to <var>timing</var>.
+                      Let <var>timing dictionary</var> refer to
+                      <var>timing</var>.
                     </dd>
                     <dt>If <var>timing</var> is a <code>double</code>,</dt>
                     <dd>
