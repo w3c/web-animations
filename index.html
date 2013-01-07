@@ -1142,8 +1142,8 @@
             is unpaused or seeked.
           </p>
           <p>
-            Since pausing does not take effect prior to when an animation
-            begins, we first define the beginning of an animation for the
+            Since pausing does not take effect prior to when a timed item
+            begins, we first define the beginning of a timed item for the
             purposes of pausing as a timed item's <em>earliest moment</em>.
             The calculation is as follows:
           </p>
@@ -3959,6 +3959,62 @@ var animC = new Animation(elem,
           <dl title="interface ParGroup : TimingGroup" class="idl">
             <dt>Constructor ()</dt>
             <dd>
+              <p>
+                Creates a new <a>ParGroup</a> object using the following
+                procedure:
+              </p>
+              <ol>
+                <li>Create a new <a>ParGroup</a> object, <var>group</var>.</li>
+                <li>Establish a temporary timing dictionary, <var>timing
+                   dictionary</var>, based on the type of <var>timing</var> as
+                   follows,
+                  <dl class="switch">
+                    <dt>If <var>timing</var> is a <a>TimingDictionary</a>
+                    object,</dt>
+                    <dd>
+                      Let <var>timing dictionary</var> refer to <var>timing</var>.
+                    </dd>
+                    <dt>If <var>timing</var> is a <code>double</code>,</dt>
+                    <dd>
+                      Let <var>timing dictionary</var> be a new <var>timing
+                      dictionary</var> object with all properties set to their
+                      default values and <code>iterationDuration</code> set to
+                      <var>timing</var>.
+                    </dd>
+                    <dt>Otherwise (<var>timing</var> is <code>null</code> or
+                        undefined),</dt>
+                    <dd>
+                      Let <var>timing dictionary</var> be a new <var>timing
+                      dictionary</var> object with all properties set to their
+                      default values.
+                    </dd>
+                  </dl>
+                </li>
+                <li>For each member of <var>timing dictionary</var>,
+                  <ol>
+                    <li>Assign the value of the member to the
+                        correspondingly-named property on
+                        <var>group</var>.</li>
+                    <li>If member <code>timingFunction</code> is of type
+                        <code>DOMString</code> create a new <a>TimingFunction</a>
+                        object by calling
+                        <a href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
+                        class="idlType"><code>Timing.createFromString</code></a><code>(<var>timing
+                        dictionary</var>.timingFunction)</code> and assign the
+                        result to
+                        <code><var>group</var>.timingFunction</code>.</li>
+                  </ol>
+                </li>
+                <li>
+                  Add <var>children</var> to the group by calling
+                  <code><var>group</var>.splice(0, 0,
+                  <var>children</var>)</code>.
+                </li>
+                <li>Set <code>timeline</code> to the <a>DocumentTimeSource</a> for
+                  the <a
+                  href="http://www.w3.org/TR/html5/browsers.html#active-document">active
+                  document</a>.</li>
+              </ol>
               <dl class="parameters">
                 <dt>sequence&lt;TimedItem&gt;? children</dt>
                 <dd>
@@ -3966,11 +4022,11 @@ var animC = new Animation(elem,
                     A sequence of timed items to add as children of this group.
                   </p>
                   <p>
-                    These children are appended in sequence using the semantics
-                    as the <code><a>TimingGroup</a>.add</code> method.
+                    These children are appended in sequence using the same
+                    semantics as the <code><a>TimingGroup</a>.add</code> method.
                   </p>
                 </dd>
-                <dt>optional (double or TimingDictionary or Timing)? timing</dt>
+                <dt>optional (double or TimingDictionary)? timing</dt>
                 <dd>
                   <p>
                     The timing properties of the new timing group.
@@ -3978,66 +4034,22 @@ var animC = new Animation(elem,
                   <p>
                     If this parameter is a <code>double</code>, then it
                     specifies the duration of a single iteration of the
-                    timing group, that is, the <a>iteration duration</a>, in
+                    animation, that is, the <a>iteration duration</a>, in
                     seconds.
-                    In this case, the <code>timing</code> property of the new
-                    <a>ParGroup</a> object is set to a new <a>Timing</a>
-                    object constructed from a <a>TimingDictionary</a> object
-                    with the <code>duration</code> property set to the
-                    <code>double</code> value specified here, and all other
-                    properties set to their default values.
                   </p>
                   <p>
-                    Similarly, if this parameter is <code>null</code>, the
-                    <code>timing</code> property is set to a new <a>Timing</a>
-                    object constructed from a <a>TimingDictionary</a> object
-                    with all properties set to their default values.
+                    If this parameter is <code>null</code> the default value for
+                    <a>iteration duration</a> specified in the
+                    <a>TimingDictionary</a> definition will be used, that is,
+                    zero.
                   </p>
                   <p>
                     If this parameter is of type <a>TimingDictionary</a>, then
-                    the passed-in dictionary is used to construct a new
-                    <a>Timing</a> object which is then assigned to the
-                    <code>timing</code> property of the new <a>ParGroup</a>
-                    object.
-                  </p>
-                  <p>
-                    If this parameter is a <a>Timing</a> object, it is directly
-                    assigned to the <code>timing</code> property of the new
-                    <a>ParGroup</a> object.
-                    It is <em>not</em> copied.
-                    In this way <a>Timing</a> objects can be shared between
-                    <a>TimedItem</a> objects.
+                    the values of the passed-in dictionary will be used.
                   </p>
                   <p>
                     Finally, if this parameter is not specified, it is as if
                     a value of <code>null</code> were specified.
-                  </p>
-                </dd>
-                <dt>optional TimingGroup? parentGroup</dt>
-                <dd>
-                  The group to which the newly created timing group should be
-                  appended as a child.
-                  If not specified, the animation will be appended to the
-                  document timeline.
-                  If <code>null</code>, the timing group will not be appended
-                  to any group.
-                </dd>
-                <dt>optional double startTime</dt>
-                <dd>
-                  <p>
-                    The <a>start time</a> of the newly generated timing group
-                    expressed in seconds in the <a>iteration time space</a> of
-                    the <a>TimingGroup</a> to which it is (or will be)
-                    appended.
-                  </p>
-                  <p>
-                    If not specified, the current <a>iteration time</a> of the
-                    <a>TimingGroup</a> to which the animation is appended (as
-                    determined by the <code>parentGroup</code> parameter) will
-                    be used.
-                    If <code>parentGroup</code> is <code>null</code>, and
-                    the <code>startTime</code> is not specified, a time of zero
-                    will be used.
                   </p>
                 </dd>
               </dl>
@@ -4126,9 +4138,7 @@ var animC = new Animation(elem,
             class="idl">
             <dt>
             Constructor (sequence&lt;TimedItem&gt;? children,
-                optional (double or TimingDictionary or Timing)? timing,
-                optional TimingGroup? parentGroup,
-                optional double startTime)
+                optional (double or TimingDictionary)? timing)
             </dt>
             <dd>
               The meaning and handling of each of the parameters in this
