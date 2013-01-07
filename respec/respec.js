@@ -1563,6 +1563,12 @@ berjon.respec.prototype = {
     webIDL:    function () {
         var idls = document.querySelectorAll(".idl"); // should probably check that it's not inside one
         var infNames = [];
+        var summary = document.getElementById("webidl-ref");
+        var summaryProcessor = null;
+        if (summary) {
+            summaryProcessor = new berjon.WebIDLProcessor(
+              { noIDLSorting: this.noIDLSorting, noIDLIn: this.noIDLIn });
+        }
         for (var i = 0; i < idls.length; i++) {
             var idl = idls[i];
             var w = new berjon.WebIDLProcessor({ noIDLSorting: this.noIDLSorting, noIDLIn: this.noIDLIn });
@@ -1574,6 +1580,14 @@ berjon.respec.prototype = {
                 inf.type == "enum" || inf.type == "callback") {
               infNames.push(inf.id);
             }
+            if (summaryProcessor) {
+                summaryProcessor.definition(idl);
+            }
+        }
+        if (summaryProcessor) {
+            summaryProcessor.mergePartials();
+            var df = summaryProcessor.makeMarkup(true);
+            summary.appendChild(df);
         }
         document.normalize();
         var ants = document.querySelectorAll("a:not([href])");
@@ -1796,7 +1810,6 @@ berjon.WebIDLProcessor.prototype = {
         tdf.type = "typedef";
         var match = /^\s*typedef\s+(?:\[([^\]]+?)\]\s+)?([^\[].*)\s([A-Z_a-z][0-9A-Z_a-z]*)\s*$/.exec(str);
         if (match) {
-            console.error(match);
             tdf.extendedAttributes = match[1];
             var type = match[2];
             tdf.nullable = false;
@@ -2150,6 +2163,14 @@ berjon.WebIDLProcessor.prototype = {
             return this.methodMember(mem, excepts, extPrm, prm);
         }
 
+        // COMMENT
+        match = /^\s*\/\/\s*(.*)\s*$/.exec(str);
+        if (match) {
+            mem.type = "comment";
+            mem.id = match[1];
+            return mem;
+        }
+
         // NOTHING MATCHED
         error("Expected interface member, got: " + str);
     },
@@ -2264,12 +2285,36 @@ berjon.WebIDLProcessor.prototype = {
         str = str.replace(/^\s*\[([^\]]+)\]\s+/, function (x, m1) { obj.extendedAttributes = m1; return ""; });
         return str;
     },
-    
-    makeMarkup:    function () {
+
+    mergePartials: function() {
+        var objs = this.parent.children;
+        for (var i = 0; i < objs.length; i++) {
+            var child = objs[i];
+            if (!child.partial)
+                continue;
+
+            for (var j = 0; j < objs.length; j++) {
+                if (j === i || objs[j].partial || objs[j].refId !== child.refId)
+                    continue;
+
+                // Found match
+                var master = objs[j];
+                master.children =
+                  master.children.concat(child.children);
+                objs.splice(i, 1);
+                --i;
+                break;
+            }
+        }
+    },
+
+    makeMarkup:    function (summaryOnly /*=false*/) {
         var df = sn.documentFragment();
         var pre = sn.element("pre", { "class": "idl" }, df);
         pre.innerHTML = this.writeAsWebIDL(this.parent, 0);
-        df.appendChild(this.writeAsHTML(this.parent));
+        if (typeof summaryOnly === "undefined" || summaryOnly === false) {
+            df.appendChild(this.writeAsHTML(this.parent));
+        }
         return df;
     },
 
@@ -2569,9 +2614,11 @@ berjon.WebIDLProcessor.prototype = {
     writeAsWebIDL:    function (obj, indent) {
         if (obj.type == "module") {
             if (obj.id == "outermost") {
-                var str = "";
-                for (var i = 0; i < obj.children.length; i++) str += this.writeAsWebIDL(obj.children[i], indent);
-                return str;
+                var fragments = [];
+                for (var i = 0; i < obj.children.length; i++) {
+                  fragments.push(this.writeAsWebIDL(obj.children[i], indent));
+                }
+                return fragments.join("\n");
             }
             else {
                 var str = "<span class='idlModule'>";
@@ -2593,7 +2640,8 @@ berjon.WebIDLProcessor.prototype = {
             str += "<span class='idlTypedefType'>" +
                    this.writeDatatype(obj.datatype) +
                    "</span>" + arr + nullable;
-            str += " <span class='idlTypedefID'>" + obj.id + "</span>;</span>";
+            str += " <span class='idlTypedefID'>" + obj.id +
+                   "</span>;</span>\n";
             return str;
         }
         else if (obj.type == "callback") {
@@ -2605,7 +2653,7 @@ berjon.WebIDLProcessor.prototype = {
                       this.writeDatatype(obj.datatype) + "</span>" +
                       arr + nullable + " (";
             str += this.writeParams(obj.params);
-            str += ")</span>;";
+            str += ")</span>;\n";
             return str;
         }
         else if (obj.type == "enum") {
@@ -2615,7 +2663,7 @@ berjon.WebIDLProcessor.prototype = {
 			};
             return  "<span class='idlEnum' id='idl-def-" + obj.refId + "'>enum <span class='idlEnumName'>" + 
                     obj.id +
-                    "</span> {<span class='idlEnumValues'> \"" + enm.join('", "') + "\" </span>};</span>";
+                    "</span> {<span class='idlEnumValues'> \"" + enm.join('", "') + "\" </span>};</span>\n";
         }
         else if (obj.type == "implements") {
             return  "<span class='idlImplements'><a>" + obj.id + "</a> implements <a>" + obj.datatype + "</a>;";
@@ -2661,7 +2709,7 @@ berjon.WebIDLProcessor.prototype = {
             var maxAttr = 0, maxMeth = 0, maxConst = 0, hasInherit = false,
                 hasRO = false, hasStatic = false;
             obj.children.forEach(function (it, idx) {
-                var len = it.datatype.length;
+                var len = it.datatype ? it.datatype.length : 0;
                 if (it.type == "method" && it.special)
                   len += it.special.length + " ".length;
                 if (it.nullable) len++;
@@ -2679,6 +2727,7 @@ berjon.WebIDLProcessor.prototype = {
                 if (ch.type == "attribute") str += this.writeAttribute(ch, maxAttr, indent + 1, curLnk, hasInherit, hasRO);
                 else if (ch.type == "method") str += this.writeMethod(ch, maxMeth, indent + 1, curLnk, hasStatic);
                 else if (ch.type == "constant") str += this.writeConst(ch, maxConst, indent + 1, curLnk);
+                else if (ch.type == "comment") str += this.writeComment(ch, indent + 1, i === 0);
             }
             str += this._idn(indent) + "};</span>\n";
             return str;
@@ -2924,6 +2973,15 @@ berjon.WebIDLProcessor.prototype = {
         for (var i = 0; i < pad; i++) str += " ";
         str += "<span class='idlConstName'><a href='#" + curLnk + cons.refId + "'>" + cons.id + "</a></span> = " +
                "<span class='idlConstValue'>" + cons.value + "</span>;</span>\n";
+        return str;
+    },
+
+    writeComment:    function (comment, indent, isFirst) {
+        var str = "<span class='idlSectionComment'>";
+        if (!isFirst)
+          str += "\n";
+        str += this._idn(indent);
+        str += "// " + comment.id + "</span>\n";
         return str;
     },
 
