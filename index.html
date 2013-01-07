@@ -3447,6 +3447,80 @@ var animC = new Animation(elem,
         </section>
       </section>
       <section>
+        <h3>Re-using animations</h3>
+        <p>
+          It is possible to duplicate an <a>Animation</a> using the
+          <code>clone</code> method.
+          Doing so duplicates only the scheduled state of the <a>Animation</a>
+          and not its run-time state.
+        </p>
+        <ol>
+          <li>Let <var>source</var> be a the <a>Animation</a> object to
+              clone.</li>
+          <li>Create a new <a>TimingDictionary</a>,
+              <var>cloned timing</var> with all members set to their default
+              values (see <a href="#the-timingdictionary-dictionary"
+              class="sectionRef"></a>).</li>
+          <li>Set <code><var>cloned timing</var>.timingFunction</code> to
+              the result of calling
+              <code><var>source</var>.timingFunction.clone()</code>
+              or <code>null</code> if
+              <code><var>source</var>.timingFunction</code> is
+              <code>null</code>.</li>
+          <li>Set the remainder of the members of <var>cloned timing</var> to
+              the properties of the same name on <var>source</var>.</li>
+          <li>
+            The <a>AnimationEffect</a> is cloned depending on the type of
+            <code><var>source</var>.effect</code> as follows,
+            <dl class="switch">
+              <dt>If <code><var>source</var>.effect</code> is an
+                  <a>Animation</a> object,</dt>
+              <dd>
+                Let <var>cloned effect</var> be the result of calling
+                <code><var>source</var>.effect.clone()</code>.
+              </dd>
+              <dt>If <code><var>source</var>.effect</code> is a
+                  <a>CustomAnimationEffect</a> object,</dt>
+              <dd>
+                If <code><var>source</var>.effect</code> has a method called
+                <code>clone</code> let <var>cloned effect</var> be the result of
+                calling that method, otherwise let <var>cloned effect</var> be
+                <code><var>source</var>.effect</code>.
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                Let <var>cloned effect</var> be <code>null</code>.
+              </dd>
+            </dl>
+          </li>
+          <li>Return a new <a>Animation</a> object created by
+              calling the <a
+              href="#widl-ctor-Animation--AnimationTarget-element-object-effect--double-or-TimingDictionary--timing">Animation
+              constructor</a> with parameters
+              <code>Animation(<var>source</var>.targetElement, <var>cloned
+              effect</var>, <var>cloned timing</var>)</code>.</li>
+        </ol>
+        <p class="annotation">
+          This does not attach the cloned animation to
+          <code><var>source</var>.timeline</code>.
+          I think that's the more useful and expected behavior (especially when
+          dealing with children of a sequence group or repeating parallel
+          groups) but we may wish to add a facility in future for simplifying
+          this.
+        </p>
+        <section>
+          <h4>Animation re-use related interface members</h4>
+          <dl title="partial interface Animation" class="idl">
+            <dt>Animation clone ()</dt>
+            <dd>
+              Creates a copy of this <a>Animation</a> object minus its run-time
+              state using the procedure defined in <a
+              href="#re-using-animations" class="sectionRef"></a>.
+            </dd>
+          </dl>
+        </section>
+      </section>
+      <section>
         <h3>Calculating the time fraction</h3>
         <p>
           Before passing the <a>filtered time value</a> to the animation effect
