@@ -3450,6 +3450,59 @@ var animC = new Animation(elem,
         </section>
       </section>
       <section>
+        <h3>Extensions to the <code>Element</code> interface</h3>
+        <p>
+          To simplify the creation of <a>Animation</a> objects for a given
+          Element, the <a class="externalDFN"
+          href="http://www.w3.org/TR/2012/WD-dom-20121206/#interface-element">Element</a>
+          interface [[!DOM4]] is extended as follows:
+        </p>
+        <dl class="idl" title="partial interface Element">
+          <dt>Animation animate()</dt>
+          <dd>
+            <p>
+              Creates a new <a>Animation</a> object whose target element is the
+              Element object on which the method is called, and calls
+              <code>play()</code> on the newly created animation.
+            </p>
+            <p>
+              The following code fragment:
+            </p>
+            <pre class="example sh_javascript">
+              var anim = elem.animate({ 'opacity': 0 }, 2);
+            </pre>
+            <p>
+              is equivalent to:
+            </p>
+            <pre class="example sh_javascript">
+              var anim = new Animation(elem, { 'opacity': 0 }, 2);
+              anim.play();
+            </pre>
+            <p>
+              Returns the newly created <a>Animation</a> object.
+            </p>
+            <dl class="parameters">
+              <dt>object? effect</dt>
+              <dd>
+                The animation effect to apply.
+                This value is passed to the <a
+                href="#widl-ctor-Animation--AnimationTarget-element-object-effect--double-or-TimingDictionary--timing">Animation
+                constructor</a> as the <var>effect</var> parameter and has the
+                same interpretation as defined for that constructor.
+              </dd>
+              <dt>optional (double or TimingDictionary)? timing</dt>
+              <dd>
+                The timing parameters of the animation.
+                This value is passed to the <a
+                href="#widl-ctor-Animation--AnimationTarget-element-object-effect--double-or-TimingDictionary--timing">Animation
+                constructor</a> as the <var>timing</var> parameter and has the
+                same interpretation as defined for that constructor.
+              </dd>
+            </dl>
+          </dd>
+        </dl>
+      </section>
+      <section>
         <h3>Re-using animations</h3>
         <p>
           It is possible to duplicate an <a>Animation</a> using the
