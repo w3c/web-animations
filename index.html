@@ -5723,6 +5723,9 @@ var frame = effect.frames['0.3'];
             <code>iterationTime</code> &ge; <var>progress</var> was newly true.
           </p>
         </div>
+      </section>
+      <section>
+        <h4>Event dispatch</h4>
         <p>
           The <a
           href="http://www.w3.org/TR/DOM-Level-3-Events/#glossary-propagation-path">propagation
@@ -6036,12 +6039,144 @@ elem.animate({ opacity: '0%' }, 1).onend =
 
     <section>
       <h2>Interaction with script</h2>
-      <div class="todo">
-        <p>
-          Need to document when the model is updated. e.g. currentTime doesn't
-          change within a script block unless you set it.
-        </p>
-      </div>
+      <p>
+        The Web Animations model may be modified using the API defined in this
+        specification.
+        This iteraction between script execution and the regular operation of
+        the model is defined as follows:
+      </p>
+      <ul>
+        <li>
+          <p>
+            Changes made to the timing model are reflected immediately in the
+            values returned by timing model interfaces.
+            <span
+            class="todo">(Need to be more specific here. Once the section
+            numbers have stabilized we could put section numbers here.)</span>
+            Similarly, timing model methods that operate on the current state
+            of the model such as pausing or reversing are applied to
+            a fully-updated timing model, that is, after all previous
+            modifications have been incorporated.
+          </p>
+          <div class="informative">
+            <p>
+              For example, if an <a>Animation</a>'s <code>startTime</code> is
+              changed via the API, the value returned when querying the
+              animation's <code>endTime</code> will reflect updated state of the
+              timing model immediately.
+            </p>
+            <pre class="example sh_javascript">
+              // Initially startTime is 3 and endTime is 5
+              anim.startTime = 4;
+              alert(anim.endTime); // Displays '6'
+            </pre>
+            <p>
+              The same concept applies to more complex modifications of the
+              timing model such as adding and removing children from
+              a <a>TimingGroup</a>.
+            </p>
+          </div>
+        </li>
+        <li>
+          <p>
+            Changes to the timing model other than <a
+            href="#seeking-a-timed-item">seek operations</a> do not cause
+            <a href="#timing-events">timing events</a> to be dispatched
+            immediately.
+            Instead, such events are dispatched upon the next sample as defined
+            in <a href="#event-dispatch" class="sectionRef"></a>.
+          </p>
+          <p>
+            The behavior of events with relation to seek operations is defined
+            in <a href="#event-dispatch-during-seeking" class="sectionRef"></a>.
+          </p>
+          <div class="informative">
+            <p>
+              For example, if a series of modifications to the timing model in
+              a single script block causes a <a>TimedItem</a>'s <a>item time</a>
+              to jump from being outside the active interval, to inside the
+              interval, and then outside again no events are fired as in the
+              following example.
+            </p>
+            <pre class="example sh_javascript">
+              // document.timeline.currentTime is 3
+              var anim = new Animation(null, null, 2);
+              anim.onstart = function() { alert("started"); };
+              anim.play(); // startTime = 3
+              anim.startTime = Infinity;
+              // No alert is shown
+            </pre>
+          </div>
+        </li>
+        <li>
+          <p>
+            Modifications to any part of the API (whether the timing model or
+            animation model) are not reflected in the target element and nor is
+            any <a>CustomAnimationEffect</a> called until the next sample has
+            been performed at some time after the current script block completes
+            execution.
+          </p>
+          <div class="informative">
+            <p>
+              For example, if a series of modifications to the timing model in
+              a single script block causes a <a>TimedItem</a>'s <a>item time</a>
+              to jump from being outside the active interval, to inside the
+              interval, and then outside again no events are fired as in the
+              following example.
+            </p>
+            <pre class="example sh_javascript">
+              // Set opacity to 0 immediately
+              var anim = new Animation(elem, { "opacity": 0 });
+              anim.play();
+              alert(window.getComputedStyle(elem).opacity);
+              // Displays '1'
+            </pre>
+          </div>
+          <p class="issue">
+            I'm unsure if this is the desired behavior.
+            Gecko, for example, forces a synchronous sample when a seek is
+            performed.
+            This certainly makes testing simpler but I'm not sure if this is
+            a good idea or not.
+          </p>
+          <p class="issue">
+            Do we need to put some minimum requirement on when samples are
+            performed?
+            By the time the next script block executes can I assume the model is
+            up to date?
+          </p>
+        </li>
+        <li>
+          <p>
+            The value returned by
+            <code><a>DocumentTimeSource</a>.currentTime</code> will not change
+            within a script block unless explicitly set through the API.
+          </p>
+          <div class="informative">
+            <p>
+              For example, if a series of modifications to the timing model in
+              a single script block causes a <a>TimedItem</a>'s <a>item time</a>
+              to jump from being outside the active interval, to inside the
+              interval, and then outside again no events are fired as in the
+              following example.
+            </p>
+            <pre class="example sh_javascript">
+              var a = document.timeline.currentTime;
+              // ... many lines of code ...
+              var b = document.timeline.currentTime;
+              alert(b - a); // Displays 0
+            </pre>
+          </div>
+          <p class="issue">
+            What about when <code>play</code> is called and the
+            <a>DocumentTimeSource</a> is not already playing?
+            We said elsewhere that <code>currentTime</code> <em>immediately</em>
+            becomes zero.
+            If we want that to be true we should probably force a synchronous
+            sample at that point.
+          </p>
+        </li>
+      </ul>
     </section>
 
     <section>
