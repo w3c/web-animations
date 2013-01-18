@@ -1900,7 +1900,7 @@
         <h3>Performing run-time speed control</h3>
         <p>
           The following procedure adjusts the <a>run-time playback rate</a>
-          to <var>new rate</var> whilst maintaining the current <a>adjusted
+          to <var>new rate</var> whilst maintaining the current <a>scaled
           active time</a>.  If the current <a>local time</a> is outside the
           active interval the distance from the interval is scaled according to
           the change in speed.
@@ -2122,8 +2122,37 @@
           Following this further transformations are applied before resulting at
           a final <a>filtered time</a>.
         </p>
-        <p class="todo">
-          Diagram here
+        <p>
+          The steps in this process are illustrated below.
+        </p>
+        <div class="figure">
+          <img src="img/time-calculations.svg" width="650">
+        </div>
+        <p class="caption">
+          An overview of timing model calculations.<br>
+          (1) The <a>inherited time</a> is converted into a <a>local time</a> by
+          incorporating the <a>start time</a> and <a>time drift</a>.<br>
+          (2) The <a>local time</a> is converted into an <a>active time</a> by
+          incorporating the <a>start delay</a>.<br>
+          (3) The <a>playback rate</a> and <a>iteration start</a> properties are
+          applied to the <a>active time</a> to produce the <a>scaled active
+          time</a>.<br>
+          (4) The <a>scaled active time</a> is then converted to an offset
+          within a single iteration: the <a>iteration time</a>.<br>
+          (5) The <a>iteration time</a> is converted into a <a>directed time</a>
+          by incorporating the <a>playback direction</a>.<br>
+          (6) Finally any timing functions are applied to the <a>directed
+          time</a> to produce the <a>transformed time</a>.
+        </p>
+        <p>
+          Steps 2 to 4 in the diagram are described following.
+          The first step, calculating the <a>local time</a> is described in <a
+          href="#calculating-the-local-time" class="sectionRef"></a>.
+          Steps 5 and 6 are described in
+          <a href="#calculating-the-directed-time" class="sectionRef"></a>
+          and
+          <a href="#calculating-the-transformed-time" class="sectionRef"></a>
+          respectively.
         </p>
       </section>
       <section>
@@ -2288,15 +2317,15 @@ new SeqGroup(
           </ol>
         </section>
         <section>
-          <h4>Calculating the adjusted active time</h4>
+          <h4>Calculating the scaled active time</h4>
           <p>
             Before the <a>active time</a> can be converted to an <a>iteration
             time</a> we must factor in the timed item's <a>effective run-time
             playback rate</a> and <code>iterationStart</code>.
-            This is called the <a>adjusted active time</a>.
+            This is called the <a>scaled active time</a>.
           </p>
           <p>
-            In order to calculate the <a>adjusted active time</a> we first
+            In order to calculate the <a>scaled active time</a> we first
             define the <a>start offset</a> as follows:
           </p>
           <blockquote>
@@ -2304,7 +2333,7 @@ new SeqGroup(
               <code>iterationStart * <a>iteration duration</a></code>
           </blockquote>
           <p>
-            The <dfn>adjusted active time</dfn> is calculated according to
+            The <dfn>scaled active time</dfn> is calculated according to
             the following steps:
           </p>
           <ol>
@@ -2313,7 +2342,7 @@ new SeqGroup(
               <code>null</code>.
             </li>
             <li>
-              Return the adjusted active time based on the
+              Return the scaled active time based on the
               <a>effective run-time playback rate</a> as follows,
               <dl class="switch">
                 <dt>If <a>effective run-time playback rate</a> is negative,</dt>
@@ -2347,14 +2376,14 @@ new SeqGroup(
               If the <a>iteration duration</a> is zero, return zero.
             </li>
             <li>
-              If <code><a>adjusted active time</a> - <a>start
+              If <code><a>scaled active time</a> - <a>start
               offset</a></code> is equal to the <a>repeated duration</a>,
               and <code>iterationCount</code> is not zero,
               and <code>(iterationCount + iterationStart) % 1</code> is zero,
               return the <a>iteration duration</a>.
             </li>
             <li>
-              Otherwise, return <code><a>adjusted active time</a>
+              Otherwise, return <code><a>scaled active time</a>
               % <var>iteration duration</var></code>.
             </li>
           </ol>
@@ -2372,7 +2401,7 @@ new SeqGroup(
             <code>null</code>.
           </li>
           <li>
-            If the <a>adjusted active time</a> is zero, return zero.
+            If the <a>scaled active time</a> is zero, return zero.
           </li>
           <li>
             If the <a>iteration duration</a> is zero, return
@@ -2384,11 +2413,11 @@ new SeqGroup(
             + timing.iterationCount - 1</code>.
           </li>
           <li>
-            Return <code>floor(<a>adjusted active time</a> /
+            Return <code>floor(<a>scaled active time</a> /
             <a>iteration duration</a>)</code>.
             <p class="note">
               If the <a>iteration duration</a> is infinite, the
-              result of <code>floor(<a>adjusted active time</a> /
+              result of <code>floor(<a>scaled active time</a> /
               <a>iteration duration</a>)</code> will be zero as defined by
               IEEE 754-2008.
             </p>
