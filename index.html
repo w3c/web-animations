@@ -774,6 +774,102 @@
         </p>
       </section>
       <section>
+        <h3>Timed item states</h3>
+        <div class="informative">
+          <p>
+            At given moment, a timed item may be described as being in one of
+            several overlapping states.
+            These states are only established for the duration of a single
+            sample and are primarily a convenience for defining the behavior of
+            events and various API methods.
+          </p>
+          <p>
+            The different states are illustrated below.
+          </p>
+          <div class="figure">
+            <img src="img/timed-item-states.svg" width="700">
+          </div>
+          <p class="caption">
+            An example of the different states used for describing a timed item
+            at a given time.
+            Note that a timed item is considered to be in effect for all times
+            inside the <a>active interval</a> as well as times outside the
+            active interval where a <a>fill mode</a> is applied.
+          </p>
+          <p>
+            These states and their useage within the model are summarised as
+            follows:
+          </p>
+          <dl>
+            <dt>scheduled</dt>
+            <dd>
+              The current time falls before the item's <a>active interval</a>.
+              This state is only used in conjunction with the <em>active</em>
+              state to define <em>current</em> timed items.
+            </dd>
+            <dt>active</dt>
+            <dd>
+              The current time falls inside the item's <a>active interval</a>.
+              Transitions to and from the active state trigger timing events as
+              defined in <a href="#timing-events" class="sectionRef"></a>.
+            </dd>
+            <dt>current</dt>
+            <dd>
+              The current time falls either before or inside the item's
+              <a>active interval</a>.
+              This state is used to determine which animations are returned from
+              the <code>getCurrentAnimations</code> method defined on the
+              <code>Document</code> and <code>Element</code> interfaces.
+            </dd>
+            <dt>in effect</dt>
+            <dd>
+              The current time falls either inside the item's <a>active
+              interval</a> or outside the interval but at a time where the
+              item's <a>fill mode</a> (see <a href="#fill-behavior"
+              class="sectionRef"></a>) causes it to affect its target.
+              Timed items only pass on an output time value to descendent timed
+              items or animation effects when the item is in effect.
+              At all other times, the output time of a timed item is
+              <code>null</code>.
+            </dd>
+          </dl>
+          <p>
+            The normative definition of each of these states follows.
+          </p>
+        </div>
+        <p>
+          A timed item is <dfn>scheduled</dfn> if <em>either</em> of the
+          following conditions is true:
+        </p>
+        <ol>
+          <li>the timed item's <a>local time</a> is not <code>null</code> and is
+              less than the item's <code>startDelay</code>, or</li>
+          <li>the timed item has a parent time source (represented in the API by
+              a non-null <code>timeline</code> attribute) which is
+              a <a>scheduled</a> timed item.</li>
+        </ol>
+        <p>
+          A timed item is <dfn>active</dfn> if <em>all</em> of the following
+          conditions are met:
+        </p>
+        <ol>
+          <li>the timed item's <a>local time</a> is not <code>null</code>,
+              and</li>
+          <li><a>local time</a> &ge; <code>startDelay</code>, and</li>
+          <li><a>local time</a> &lt; <code>activeDuration</code>.</li>
+        </ol>
+        <p>
+          A timed item is <dfn>current</dfn> if it is either <a>scheduled</a> or
+          <a>active</a>.
+        </p>
+        <p>
+          A timed item is <dfn>in effect</dfn> if its <a>active time</a> as
+          calculated according to the procedure in <a
+          href="#calculating-the-active-time" class="sectionRef"></a> is not
+          <code>null</code>.
+        </p>
+      </section>
+      <section>
         <h3>The <a>TimedItem</a> interface</h3>
         <p>
           Timed items are represented in the Web Animations API by the
@@ -1451,12 +1547,6 @@
               interval the timed item produces a fill value.
         </p> 
         <p>
-          At a given time, it is possible to describe a timed item as <dfn>in
-          effect</dfn> if either (a) the time falls within the item's
-          <a>active interval</a>, or (b) the fill mode of the timed item
-          causes it to produce a <a>filtered time value</a> at the given time.
-        </p>
-        <p>
           The normative definition of fill behavior is incorporated in the
           calculation of the <a>active time</a> in <a
           href="#calculating-the-active-time" class="sectionRef"></a>.
@@ -1464,9 +1554,10 @@
         <p class="note">
           Note that setting a fill mode has no bearing on the endpoints of the
           <a>active interval</a>.
-          However, the fill mode <em>does</em> have an effect on the
-          calculation of the <a>iteration time</a> since this is defined
-          only when a timed item is <a>in effect</a>.
+          However, the fill mode <em>does</em> have an effect on various other
+          properties of the timing model since the <a>active time</a> of a timed
+          item is only defined (that is, not <code>null</code>) inside the
+          <a>active interval</a> <em>or</em> when a fill is applied.
         </p>
       </section>
       <section>
@@ -1616,11 +1707,10 @@
           sequenced since there is no overlap between the intervals.
         </p>
         <p>
-          In the examples below, for the repeated item, at active time 1s,
+          In the examples below, for the repeated item, at local time 1s,
           the iteration time is 0.
-          For the sequenced items, in the absence of any <a>fill mode</a>,
-          at inherited time 1s, only item B can will be <a>in effect</a>; there
-          is no overlap.
+          For the sequenced items, at inherited time 1s, only item B will be
+          <a>active</a>; there is no overlap.
         </p>
         <div class="figure">
           <img src="img/endpoint-exclusive-timing.svg" width="600">
@@ -6025,11 +6115,6 @@ elem.animate({ opacity: '0%' }, 1).onend =
           The procedure is as follows:
         </p>
         <ol>
-          <li>Define a <a>TimedItem</a> as <dfn>active</dfn> if and only if
-            <code>currentTime</code> &ge; <code>timing.startDelay</code> and
-            <code>currentTime</code> &lt; <code>timing.startDelay</code> +
-                                          <code>animationDuration</code>.</li>
-          <dd></dd>
           <li>Prior to performing the seek on <var>item</var>,
               record whether it is <a>active</a> or not.</li>
           <li>If <var>item</var> is an <a>TimingGroup</a> record whether each
