@@ -2294,15 +2294,28 @@ berjon.WebIDLProcessor.prototype = {
                 continue;
 
             for (var j = 0; j < objs.length; j++) {
-                if (j === i || objs[j].partial || objs[j].refId !== child.refId)
+                if (j === i || objs[j].refId !== child.refId)
                     continue;
 
                 // Found match
-                var master = objs[j];
-                master.children =
-                  master.children.concat(child.children);
-                objs.splice(i, 1);
-                --i;
+
+                // If the match is not a partial, use its position
+                if (!objs[j].partial) {
+                  var master = objs[j];
+                  master.children =
+                    master.children.concat(child.children);
+                  objs.splice(i, 1);
+                  --i;
+                // Otherwise, use the position of child
+                } else {
+                  var master = child;
+                  master.children =
+                    master.children.concat(objs[j].children);
+                  objs.splice(j, 1);
+                  if (j < i)
+                    --i;
+                }
+
                 break;
             }
         }
