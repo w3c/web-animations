@@ -3610,7 +3610,7 @@ var animC = new Animation(elem,
         <p>
           To simplify the creation of <a>Animation</a> objects for a given
           Element, the <a class="externalDFN"
-          href="http://www.w3.org/TR/2012/WD-dom-20121206/#interface-element">Element</a>
+          href="http://www.w3.org/TR/dom/#interface-element">Element</a>
           interface [[!DOM4]] is extended as follows:
         </p>
         <dl class="idl" title="partial interface Element">
@@ -5729,8 +5729,8 @@ var frame = effect.frames['0.3'];
               (DOMString type, optional TimingEventInit eventInitDict)</dt>
           <dd>
             Constructs a new <a>TimingEvent</a> object as described in <a
-            href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#constructing-events">Constructing
-            events</a> [[!DOM4]].
+            href="http://www.w3.org/TR/dom/#constructing-events">Constructing
+            events</a> in [[!DOM4]].
           </dd>
           <dt>attribute double documentTime</dt>
           <dd>
@@ -6223,6 +6223,97 @@ elem.animate({ opacity: '0%' }, 1).onend =
           callback interface type is defined in [[!HTML5]].
         </p>
       </section>
+    </section>
+
+    <section>
+      <h2>Querying current animations</h2>
+      <p>
+        It is often useful to be able to access the animations currently in play
+        or scheduled to play, that is <a>current</a> animations, including those
+        which may have been defined declaratively rather than by using the API.
+        To that end the following extensions are defined for
+        the <a class="externalDFN"
+        href="http://www.w3.org/TR/dom/#interface-document">Document</a>
+        and <a class="externalDFN"
+        href="http://www.w3.org/TR/dom/#interface-element">Element</a>
+        interfaces defined in [[!DOM4]].
+      </p>
+      <p class="note">
+        Note that animations for which the current time falls <em>after</em> the
+        <a>active interval</a> but which are still <a>in effect</a> due to
+        a <a>fill mode</a> are <em>not</em> returned by this method.
+        This is because in order to return such animations, user agents would be
+        required to maintain all animations with a forwards fill indefinitely.
+        As a result the resources consumed by an animated document would
+        steadily accumulate over time.
+      </p>
+      <dl class="idl" title="partial interface Document">
+        <dt>sequence&lt;Animation&gt; getCurrentAnimations()</dt>
+        <dd>
+          <p>
+            Returns all <a>Animation</a> objects that meet <em>both</em> of the
+            following conditions:
+          </p>
+          <ol>
+            <li>
+              has a <code>target</code> property that is an Element whose
+              <code>ownerDocument</code> is the Document on which this method
+              was called, <em>or</em> has a <code>target</code> property that is
+              a <a>PseudoElement</a> whose <code>element.ownerDocument</code> is
+              the Document on which this method was called, and
+            </li>
+            <li>
+              is <a>current</a>.
+            </li>
+          </ol>
+          <div class="issue">
+            <p>
+              There are at least three ways to define which elements this
+              covers in terms of their association with the Document object on
+              which the method is called, <var>document</var>:
+            </p>
+            <ol>
+              <li>All <a>Animation</a>s created using
+              <a><var>document</var>.createAnimation</a>&mdash;means even
+              Animations that don't target an element (e.g. they do some audio,
+              or target a scrollbar) get included. Not sure if this is good or
+              bad.</li>
+              <li>All <a>Animation</a>s which, if you trace their chain of time
+              sources you eventually arrive at
+              <code><var>document</var>.timeline</code>&mdash;means if you
+              associate an Animation with a custom time source like a scrollbar
+              (in a future version) it wouldn't be included. Again, not sure if
+              this is good or bad.</li>
+              <li>All <a>Animation</a>s whose <code>target</code> or
+              <code>target.element</code> (for <a>PseudoElement</a>s) has an
+              <code>ownerDocument</code> which is
+              <var>document</var>&mdash;means only stuff which is affecting this
+              document's DOM in the usual way is included (but including, if
+              it's even possible, animations from another document).</li>
+            </ol>
+            <p>
+              I suspect option 2 is the best approach but I've specified 3 for
+              now simply because it was easiest.
+            </p>
+            <p>
+              I'll probably specify 2 once we've cleared up some of the issues
+              surrounding time sources.
+            </p>
+          </div>
+        </dd>
+      </dl>
+      <dl class="idl" title="partial interface Element">
+        <dt>sequence&lt;Animation&gt; getCurrentAnimations()</dt>
+        <dd>
+          <p>
+            Returns all <a>Animation</a> objects whose <code>target</code>
+            property is the Element on which this method was called and which
+            are <a>current</a>.
+            Note that this does <em>not</em> include <a>PseudoElement</a>s whose
+            <code>element</code> attribute refers to this Element.
+          </p>
+        </dd>
+      </dl>
     </section>
 
     <section>
