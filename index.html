@@ -953,7 +953,7 @@
               Is this right? It's probably useful to be able to put animations
               in a state where they have no effect on their target such as when
               calling <code>cancel</code>.
-              Should we just set <code>targetElement</code> to <code>null</code>
+              Should we just set <code>target</code> to <code>null</code>
               in that case?
             </p>
           </dd>
@@ -3217,13 +3217,28 @@ anim.play();
               </dd>
             </dl>
           </dd>
-          <dt>readonly attribute AnimationTarget? targetElement</dt>
+          <dt>readonly attribute AnimationTarget? target</dt>
           <dd>
             <p>
               The element or pseudo-element being animated by this object.
               This may be <code>null</code> for animations that do not target
               a specific element such as an animation that produces a sound
               using an audio API.
+            </p>
+            <p class="note">
+              Note that in a future version <a>AnimationTarget</a> may be
+              extended to allow targetting, for example, a sequence of elements.
+              Therefore, code that is intended to be used with arbitrary
+              <a>Animation</a> objects should test the concrete type of
+              <code>target</code> before using it and not assume that it refers
+              to an Element.
+            </p>
+            <p class="issue">
+              Allowing <code>target</code> to refer to multiple elements may
+              suggest cancelling works differently so that it is possible to
+              cancel the animation as-applied to a single element.
+              Likewise, it may influence how SVG is mapped to this API if SVG is
+              extended to support multiple targets.
             </p>
           </dd>
         </dl>
@@ -3477,8 +3492,8 @@ var animC = new Animation(elem,
               <p>
                 The reason we don't is that it complicates the 99% case where
                 you're not using pseudo-elements. For example, you have to type
-                <code>anim.effect.targetElement.element</code> which is
-                what so many people don't like about SVG.
+                <code>anim.target.element</code> which is what so many people
+                don't like about SVG.
               </p>
               <p>
                 So, again, this works for this specification, but is it ok for
@@ -3604,7 +3619,7 @@ var animC = new Animation(elem,
               calling the <a
               href="#widl-ctor-Animation--AnimationTarget-element-object-effect--double-or-TimingDictionary--timing">Animation
               constructor</a> with parameters
-              <code>Animation(<var>source</var>.targetElement, <var>cloned
+              <code>Animation(<var>source</var>.target, <var>cloned
               effect</var>, <var>cloned timing</var>)</code>.</li>
         </ol>
         <p class="annotation">
@@ -4024,7 +4039,7 @@ var animC = new Animation(elem,
           elem)</dt>
           <dd>
             Returns all descendent <code>Animation</code> objects
-            whose <code>targetElement</code> is <code>elem</code>.
+            whose <code>target</code> is <code>elem</code>.
             As with <code>getActiveAnimations</code>, the returned sequence is
             a snapshot (i.e. not live) representing the state of animation
             when this method was called.
@@ -5311,10 +5326,10 @@ var frame = effect.frames['0.3'];
                 </dd>
                 <dt>AnimationTarget? target</dt>
                 <dd>
-                  The element to which the effect should be applied if any.
+                  The element to which the effect should be applied, if any.
                   When this method is called as a result of this object being
                   associated with an <a>Animation</a> object, it will be
-                  <code><a>Animation</a>.targetElement</code>
+                  <code><a>Animation</a>.target</code>
                 </dd>
               </dl>
             </dd>
@@ -5815,12 +5830,11 @@ var frame = effect.frames['0.3'];
           href="http://www.w3.org/TR/DOM-Level-3-Events/#glossary-propagation-path">propagation
           path</a> for all events depends on the <a>TimedItem</a> where the
           status change took place.
-          If the item is an <a>Animation</a> with an <a>AnimationEffect</a>
-          <var>effect</var>, and <code><var>effect</var>.targetElement</code> is
+          If the item is an <a>Animation</a> with a <code>target</code> that is
           not <code>null</code>, the propagation path follows the usual <a
           href="http://www.w3.org/TR/DOM-Level-3-Events/#event-flow">DOM event
           flow</a> from <code>DefaultView</code> down the parent chain to
-          <code><var>effect</var>.targetElement</code> and finally to the
+          <code>target</code> and finally to the
           <a>TimedItem</a> where the status change took place.
           Otherwise, the propagation path is simply the <code>TimedItem</code>
           object itself.
