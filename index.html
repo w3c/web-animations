@@ -123,36 +123,137 @@
     <section class="informative">
       <h2>Introduction</h2>
       <p>
-        Web Animations defines features for supporting animation and
-        synchronization on the Web platform by means of a programming interface.
-        This interface is intended to be used both directly to easily produce
-        animations using script, as well as a foundation for other
-        specifications whose behavior can be defined in terms of these features.
+        Web Animations defines a model for supporting animation and
+        synchronization on the Web platform.
+        It is intended that other specifications will build on this model and
+        expose its features through declarative means.
+        In addition, this specification provides a programming interface to the
+        model.
+        This interface can be used to inspect and extend animations produced by
+        declarative means or for directly producing animations when a procedural
+        approach is more suitable.
       </p>
+      <section>
+        <h3>Use cases</h3>
+        <p>
+          The Web Animations model aims at three broad areas of application:
+        </p>
+        <dl>
+          <dt>User interface effects</dt>
+          <dd>
+            <p>
+              Animation can be used to give visual clues and feedback to make
+              a user interface more readily comprehensible.
+            </p>
+            <p>
+              For example, a user action results in a table row being
+              removed to represent an item being removed from a shopping cart.
+              In such a case, fading the row to transparent and then shifting
+              the subsequent rows up to fill the space over a few hundred
+              milliseconds provides the user with clear feedback as to the
+              results of their action as opposed to instantly removing the row
+              from the DOM.
+            </p>
+            <p>
+              To support this scenario not only are the animated effects of
+              fading and shifting required, but so is synchronization, both
+              between the animations, and between animations and scripted
+              actions (removing the table row from the DOM after the animations
+              have completed).
+            </p>
+          </dd>
+          <dt>Storytelling and visualisation</dt>
+          <dd>
+            <p>
+              Another type of animation uses the animated effect to convey
+              a story or represent some information.
+              Unlike user interface effects which are largely a presentational
+              adjunct to the content, these animations form an essential part of
+              the content presented to the user.
+            </p>
+            <p>
+              For example, in an animated cartoon two cats fly through space
+              to another planet leaving a rainbow trail behind them.
+              After arriving at the planet a change of scene occurs and the user
+              should decide whether or not the cats enter a magic mountain by
+              selecting one of two preset destinations in the scene.
+            </p>
+            <p>
+              This scenario requires the following features:
+            </p>
+            <ul>
+              <li>animated effects for moving characters along a path as well as
+                  warping a path (the rainbow trail),</li>
+              <li>synchronization that allows some actions to happen
+                  simultaneously (the two cats moving) and others in sequence
+                  (the change of scene),</li>
+              <li>play control to allow rewinding the cartoon, or changing its
+                  playback rate to accommodate particular learning or
+                  accessibility needs (particularly if audio or textual captions
+                  are included as described in the next use case category),</li>
+              <li>the ability to trigger alternate animations at different
+                  points in the overall story.</li>
+            </ul>
+            <p>
+              Similar use cases in this category include visualising physical
+              phenomena such as spring motion for educational purposes,
+              or visualising data such as the prevalence of a disease over
+              a geographical space over a year whereby animation provides
+              a natural means of presenting the time-based component of the
+              data.
+            </p>
+          </dd>
+          <dt>Synchronizing media and animated effects</dt>
+          <dd>
+            <p>
+              Finally, animation is often used in conjunction with other media
+              such as video and audio.
+            </p>
+            <p>
+              As an example, the subtitles shown on a karaoke video may indicate
+              the current position in the lyrics through a ball bouncing from
+              one syllable to the next.
+              In this scenario it is necessary to maintain strict
+              synchronization between the audio and animation even in the face
+              of user interaction such as rewinding or pausing the audio or
+              network events such as a delay due to media buffering.
+            </p>
+            <p>
+              A more complicated example of this category is applying a series
+              of independent sound effects to an animated cartoon or adding
+              a video as the background of an animated scene such that is cued
+              to start mid-way into the scene.
+            </p>
+          </dd>
+        </dl>
+        <p>
+          The nature of these uses cases differs significantly and whilst Web
+          Animations attempts to address each use case, technologies built on
+          top of the Web Animations may expose features tailored towards more
+          specific use cases rather catering to each scenario equally.
+        </p>
+      </section>
       <section>
         <h3>Relationship to other specifications</h3>
         <p>
           CSS Transitions [[CSS3-TRANSITIONS]], CSS Animations 
           [[CSS3-ANIMATIONS]], and SVG [[SVG112]] all provide mechanisms that
           generate animated content on a web page.
-          Although the three specifications provide similar functionality,
-          the syntaxes are incompatible and the animations cannot be
-          interchanged.
-          Furthermore, the interfaces available for interacting with animations
-          from script are largely general-purpose interfaces with few features
-          tuned specifically to the creation and manipulation of animations.
+          Although the three specifications provide many similar features,
+          the syntaxes are incompatible and heretofore the animations have not
+          been able to be interchanged and synchronized.
         </p>
         <p>
-          This specification proposes an abstract animations model that
+          This specification proposes an abstract animation model that
           encompasses the abilities of both CSS and SVG, and additionally
-          provides a programming interface to expose these features to script.
+          provides a common programming interface to expose these features to
+          script.
         </p>
         <p>
           This specification is accompanied by a CSS embedding specification,
           which describes how CSS features can be implemented in terms of Web 
-          Animations primitives, and an SVG embedding specification, which
-          describes how SVG features can be implemented in terms of Web
-          Animations primitives.
+          Animations primitives, and an SVG embedding specification which does
+          the same for SVG.
         </p>
         <p>
           As a result, this specification does not directly alter the behavior
