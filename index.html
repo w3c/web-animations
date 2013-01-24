@@ -446,21 +446,21 @@
         source and is used for seeking the time source.
       </p>
       <p>
-        The <dfn>filtered time value</dfn> is the <a>current time value</a> with
+        The <dfn>output time value</dfn> is the <a>current time value</a> with
         an optional transformation applied
         and is used for synchronizing consumers of the time source.
       </p>
       <p class="feedbackWanted">
         Other options for naming:
         <em>result time value</em> (<code>resultTime</code>),
-        <em>output time value</em> (<code>outputTime</code>),
+        <em>filtered time value</em> (<code>filteredTime</code>),
         <em>child time value</em> (<code>childTime</code>),
         <em>sync time value</em> (<code>syncTime</code>)
         &hellip;
       </p>
       <p>
         For simple time sources, and unless otherwise stated, the <a>current
-        time value</a> and <a>filtered time value</a> are one and the same.
+        time value</a> and <a>output time value</a> are one and the same.
       </p>
       <div class="annotation">
         <p>
@@ -476,7 +476,7 @@
         </p>
         <p>
           As a result we allow <code>currentTime</code> to do double-duty in
-          simple cases, and introduce <code>filteredTime</code> for cases where
+          simple cases, and introduce <code>outputTime</code> for cases where
           it is necessary to distinguish between the two times.
         </p>
       </div>
@@ -501,7 +501,7 @@
               For example, a time source that derives its time from another time
               source will return <code>null</code> if the parent time source is
               not provided, is unavailable, or if the parent time source reports
-              <code>null</code> as its <a>filtered time value</a>.
+              <code>null</code> as its <a>output time value</a>.
             </p>
             <p class="note">
               Note that while <code>currentTime</code> is read-only in this
@@ -742,7 +742,7 @@
           As well as being consumer of time values, timed items are also
           themselves time sources.
           After consuming a time value most timed values apply a transformation
-          to the value and then pass it on as a <a>filtered time value</a>.
+          to the value and then pass it on as an <a>output time value</a>.
         </p>
       </section>
       <section class="informative">
@@ -818,8 +818,8 @@
           <dl>
             <dt><dfn>Inherited time space</dfn></dt>
             <dd>
-              A time space that corresponds to the <a title="filtered time
-              value">filtered time values</a> of the timed item's time source.
+              A time space that corresponds to the <a title="output time
+              value">output time values</a> of the timed item's time source.
             </dd>
             <dt><dfn>Local time space</dfn></dt>
             <dd>
@@ -844,7 +844,7 @@
         </div>
         <p>
           For a given timed item, the <dfn>inherited time</dfn> at a given
-          moment is the value of the <dfn>filtered time value</dfn> of the time
+          moment is the value of the <dfn>output time value</dfn> of the time
           source. If no time source is associated with the timed item, the
           inherited time is <code>null</code>.
         </p>
@@ -856,7 +856,7 @@
           <dt>If <code>timeline</code> is <code>null</code>,</dt>
           <dd>return <code>null</code>.</dd>
           <dt>If <code>timeline</code> has an attribute
-              <code>filteredTime</code>,</dt>
+              <code>outputTime</code>,</dt>
           <dd>return that value.</dd>
           <dt>Otherwise,</dt>
           <dd>Return <code>timeline.currentTime</code>.</dd>
@@ -1137,7 +1137,7 @@
           <dd>
             <p>
               The time source upon which this timed item's timing is based.
-              The <a title="filtered time value">filtered time values</a> of
+              The <a title="output time value">output time values</a> of
               this time source provide the <a>inherited time space</a> for this
               timed item.
             </p>
@@ -1606,7 +1606,7 @@
           <dt>forwards</dt>
           <dd>
             For times that occur later than the <a>active interval</a>, the
-            timed item will continue to produce the same <a>filtered time
+            timed item will continue to produce the same <a>output time
             value</a> that was used at the end of the <a>active interval</a>.
 
             For times that occur before the <a>active interval</a>, the
@@ -1615,7 +1615,7 @@
           <dt>backwards</dt>
           <dd>
             For times that occur before the <a>active interval</a>, the
-            timed item will produce the same <a>filtered time value</a> that
+            timed item will produce the same <a>output time value</a> that
             will be used at the start of the <a>active interval</a>.
 
             For times that occur later than the <a>active interval</a>, the
@@ -1943,7 +1943,7 @@
         </dl>
         <p class="annotation">
           In future we may introduce <code>iterationTime</code> which
-          corresponds to the <code>filteredTime</code> prior to applying time
+          corresponds to the <code>outputTime</code> prior to applying time
           transformations.
           The advantage of exposing this is that it could be writeable since the
           transformation from iteration time to local time should be invertible.
@@ -2311,7 +2311,7 @@
         </p>
         <p>
           Following this further transformations are applied before resulting at
-          a final <a>filtered time</a>.
+          a final <a>output time</a>.
         </p>
         <p>
           The first step in this process is to calculate the boundary when the
@@ -2470,7 +2470,7 @@ new SeqGroup(
         </section>
       </section>
       <section>
-        <h3>Filtering the local time</h3>
+        <h3>Transforming the local time</h3>
         <section>
           <h4>Calculating the active time</h4>
           <p>
@@ -3159,19 +3159,19 @@ new SeqGroup(
     </section>
 
     <section>
-      <h2>The filtered time of a timed item</h2>
+      <h2>The output time of a timed item</h2>
       <p>
-        The <dfn>filtered time</dfn> of a timed item is simply the
+        The <dfn>output time</dfn> of a timed item is simply the
         <a>transformed time</a>.
       </p>
       <section>
-        <h3>Filtered time interface members</h3>
+        <h3>Output time interface members</h3>
         <dl title="partial interface TimedItem" class="idl">
-          <dt>// Filtered time members</dt><dd></dd>
-          <dt>readonly attribute double? filteredTime</dt>
+          <dt>// Output time members</dt><dd></dd>
+          <dt>readonly attribute double? outputTime</dt>
           <dd>
             <p>
-              The <a>filtered time</a> in seconds of this timed item.
+              The <a>output time</a> in seconds of this timed item.
               As a result of the steps for calculating this value in <a
               href="#core-timed-item-calculations" class="sectionRef"></a> and
               elsewhere, this attribute will be
@@ -3291,7 +3291,7 @@ var anim = new Animation(elem, { left: '100px' }, 3);
 // anim is paused until you call play
 // anim.startTime = ???
 anim.play();
-// anim.startTime = anim.timeline.filteredTime
+// anim.startTime = anim.timeline.outputTime
               </pre>
             </div>
             <p>
@@ -3807,8 +3807,8 @@ var animC = new Animation(elem,
       <section>
         <h3>Calculating the time fraction</h3>
         <p>
-          Before passing the <a>filtered time value</a> to the animation effect
-          we must convert it to a <em>time fraction</em>.
+          Before passing the <a>output time</a> of an <a>Animation</a> to the
+          animation effect we must convert it to a <em>time fraction</em>.
           The <dfn>time fraction</dfn> is calculated according to the
           following steps:
         </p>
@@ -3825,7 +3825,7 @@ var animC = new Animation(elem,
                 If <a>local time</a> &lt; <code>startDelay</code>,
               </dt>
               <dd>
-                Return the result of recalculating the <a>filtered time</a>
+                Return the result of recalculating the <a>output time</a>
                 using a <a>local time</a> of zero and an <a>iteration
                 duration</a> of 1.
               </dd>
@@ -3833,7 +3833,7 @@ var animC = new Animation(elem,
                 Otherwise,
               </dt>
               <dd>
-                Return the result of recalculating the <a>filtered time</a>
+                Return the result of recalculating the <a>output time</a>
                 using a <a>local time</a> of <code>iterationCount</code> and an
                 <a>iteration duration</a> of 1.
               </dd>
@@ -3843,7 +3843,7 @@ var animC = new Animation(elem,
             Otherwise,
           </dt>
           <dd>
-            Return <a>filtered time</a> / <a>iteration duration</a>.
+            Return <a>output time</a> / <a>iteration duration</a>.
           </dd>
         </dl>
         <p class="note">
@@ -5812,7 +5812,7 @@ var frame = effect.frames['0.3'];
           <dt>attribute double localTime</dt>
           <dd>
             <p>
-              The <a>filtered time value</a> of the <a>TimeSource</a> with which
+              The <a>output time value</a> of the <a>TimeSource</a> with which
               the <a>TimedItem</a> is associated when the event was dispatched.
               For animations that do not belong to an <a>TimingGroup</a> this
               will be equal to <code>documentTime</code>.
