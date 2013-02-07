@@ -2,10 +2,9 @@
 <!-- vim: set expandtab ts=2 sw=2 tw=80: -->
 <html>
   <head>
-    <title>Web Animations and SVG Integration Note</title>
-    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
-    <script src='http://dev.w3.org/2009/dap/ReSpec.js/js/respec.js'
-      class='remove'></script>
+    <title>Web Animations and SVG Integration</title>
+    <meta charset="utf-8">
+    <script src="respec/respec.js" class="remove"></script>
     <script class='remove'>
       var respecConfig = {
         // specification status (e.g. WD, LCWD, NOTE, etc.). If in doubt use
@@ -195,6 +194,43 @@ AnimInstance   AnimInstance    AnimGroupInstance
           implemented differently in WebKit and Gecko.
         </p>
       </div>
+    </section>
+
+    <section>
+      <h2>Integration with Media Fragments</h2>
+      <p>
+        The Media Fragments specification [[!MEDIA-FRAGMENTS]] defines a means
+        for addressing a temporal range of a media resource.
+        The application of the temporal parameters to documents with the <a
+        href="http://www.w3.org/TR/SVG/intro.html#MIMEType">SVG MIME type</a> 
+        [[!SVG11] is as follows.
+      </p>
+      <ul>
+        <li>If there is a begin time, seek the document controller to
+            the begin time at the earliest of two moments: when the document
+            begins to play or document load.
+            <p class="note">
+              Note that seeking behavior is well-defined even when the document
+              has yet to start.
+            </p>
+        </li>
+        <li>If there is an end time, set a flag on the controller to say
+            auto-pause at the given time.</li>
+        <li>Any calls to seek / pause / play etc. on that controller clear the
+            flag.</li>
+        <li>If the controller reaches (or passes) the end time and the flag is
+            still set, call pause and clear the flag.</li>
+      </ul>
+      <p class="todo">
+        What happens if the fragment is changed after the document has loaded
+      </p>
+      <p class="note">
+        Note that media fragments are defined to operate on resources based on
+        their MIME type.
+        As a result, temporal addressing may not have any effect for SVG content
+        that is served in a document with a MIME type other than the SVG MIME
+        type such as SVG embedded in HTML.
+      </p>
     </section>
   </body>
 </html>
