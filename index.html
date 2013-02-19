@@ -125,11 +125,9 @@
         synchronization on the Web platform.
         It is intended that other specifications will build on this model and
         expose its features through declarative means.
-        In addition, this specification provides a programming interface to the
-        model.
-        This interface can be used to inspect and extend animations produced by
-        declarative means or for directly producing animations when a procedural
-        approach is more suitable.
+        In addition, this specification also defines a programming interface to
+        the model that may be implemented by user agents that provide support
+        for scripting.
       </p>
       <section>
         <h3>Use cases</h3>
@@ -196,9 +194,8 @@
               Similar use cases in this category include visualising physical
               phenomena such as spring motion for educational purposes,
               or visualising data such as the prevalence of a disease over
-              a geographical space over a year whereby animation provides
-              a natural means of presenting the time-based component of the
-              data.
+              a geographical space over a year whereby animation is used to
+              present the time-based component of the data.
             </p>
           </dd>
           <dt>Synchronizing media and animated effects</dt>
@@ -236,33 +233,49 @@
         <p>
           CSS Transitions [[CSS3-TRANSITIONS]], CSS Animations 
           [[CSS3-ANIMATIONS]], and SVG [[SVG112]] all provide mechanisms that
-          generate animated content on a web page.
+          generate animated content on a Web page.
           Although the three specifications provide many similar features,
-          the syntaxes are incompatible and heretofore the animations have not
-          been able to be interchanged and synchronized.
-        </p>
-        <p>
+          they are described in different terms.
           This specification proposes an abstract animation model that
-          encompasses the abilities of both CSS and SVG, and additionally
-          provides a common programming interface to expose these features to
-          script.
+          encompasses the common features of all three specifications.
+          This model is backwards-compatible with the current behavior of these
+          specifications such that they can be defined in terms of this model
+          without any observable change.
         </p>
         <p>
-          This specification is accompanied by a CSS embedding specification,
-          which describes how CSS features can be implemented in terms of Web 
-          Animations primitives, and an SVG embedding specification which does
-          the same for SVG.
+          Defining CSS Transitions, CSS Animations and SVG's animation features
+          in terms of a common model opens up possibilities of synchronizing
+          animations, interchanging their definitions, and manipulating them
+          using a common programming interface regardless of their markup.
+          To facilitate this process of redefining these features in terms of
+          a common model, this specification is accompanied by a CSS embedding
+          specification, which describes how CSS features can be implemented in
+          terms of Web Animations primitives, and an SVG embedding specification
+          which does the same for SVG.
         </p>
         <p>
-          As a result, this specification does not directly alter the behavior
-          of CSS Transitions, CSS Animations, or SVG.
-          However, Web Animations is intended to replace the SMIL Animation
-          [[SMIL-ANIMATION]] specification where it is currently used to define
-          the behavior of SVG's animation features.
+          The animation features in SVG 1.1 are defined in terms of SMIL
+          Animation [[SMIL-ANIMATION]].
+          It is intended that by defining SVG's animation features in terms of
+          the Web Animations model, the dependency between SVG and SMIL
+          Animation can be removed.
+          To this end, features not present in Web Animations that are part of
+          SVG are described in full in the SVG and Web Animations integration
+          document.
         </p>
         <p>
-          This specification makes some additions to some interfaces defined in
-          HTML5 [[HTML5]].
+          The programming interface component of this specification makes
+          some additions to interfaces defined in HTML5 [[HTML5]].
+        </p>
+      </section>
+      <section>
+        <h3>Overview of this specification</h3>
+        <p>
+          This specification begins by defining an abstract model for animation.
+          This is followed by a programming interface defined in terms of the
+          abstract model.
+          The programming interface is defined in terms of the abstract model
+          and is only relevant to user agents that provide scripting support.
         </p>
       </section>
     </section>
@@ -5743,6 +5756,17 @@ var frame = effect.frames['0.3'];
     </section>
 
     <section>
+      <h2>Script interface</h2>
+      <p>
+        In addition to the abstract model described above, Web Animations also
+        defines a programming interface to the model.
+        This interface can be used to inspect and extend animations produced by
+        declarative means or for directly producing animations when a procedural
+        approach is more suitable.
+      </p>
+    </section>
+
+    <section>
       <h2>Timing events</h2>
       <p>
         As timed items play they report changes to their status through
@@ -6613,6 +6637,13 @@ elem.animate({ opacity: '0%' }, 1).onend =
             animations will run forwards.
           </p>
         </div>
+      </section>
+      <section>
+        <h3>Conformance criteria</h3>
+        <p class="todo">
+          Basically, for non-scripted user agents, there are none,
+          For scripted user agents, do the API.
+        </p>
       </section>
     </section>
 
