@@ -348,9 +348,8 @@
         <p>
           The Web Animations timing model operates by taking an input time and
           producing an output time fraction.
-          Since the output is based solely on the input time and is entirely
-          independent of previous inputs, the model may be described as
-          stateless.
+          Since the output is based solely on the input time and is independent
+          of previous inputs, the model may be described as stateless.
           This gives the model the following properties:
         </p>
         <dl>
@@ -378,7 +377,7 @@
           </dd>
         </dl>
         <p>
-          There are two apparent exceptions to the stateless behavior of the
+          There are a few apparent exceptions to the stateless behavior of the
           timing model.
         </p>
         <p>
@@ -388,23 +387,25 @@
           This is certainly stative behavior.
           However, events should be considered as a layer added on top of the
           core timing model.
-          In the case where no event listeners are registered, the model is
-          stateless.
+          When no event listeners are registered, the model is stateless.
         </p>
         <p>
           The other exception to this stateless behavior is that a number of
-          methods such as <code>pause</code> and <code>reverse</code> are
-          defined in terms of the time at which they are called and are
-          therefore stative.
+          methods defined in the <a href="#script-interface">programming
+          interface</a> to the model provide play control such as pausing and
+          reversing an item.
+          These methods are defined in terms of the time at which they are
+          called and are therefore stative.
           These methods are provided primarily for convenience and are not part
           of the core timing model but, like events, are layered on top.
         </p>
         <p>
           Finally, each time the model is sampled, it can be considered to
           establish a temporary state.
-          While this temporary state affects the values returned from the API,
-          it has no influence on the subsequent samples and hence does not
-          conflict with the stateless qualities described above.
+          While this temporary state affects the values returned from the <a
+          href="#script-interface">programming interface</a>, it has no
+          influence on the subsequent samples and hence does not conflict with
+          the stateless qualities described above.
         </p>
       </section>
       <section>
@@ -421,10 +422,9 @@
           <img src="img/time-hierarchy.svg" width="600">
         </div>
         <p class="caption">
-          A hierarchy of time sources.
-          Each node in the tree refers to a time source from which it derives
-          its time.
-          This parent time source is referred to here as the node's timeline.
+          A hierarchy of timing nodes.
+          Each node in the tree derives its time from its parent node.
+          At the root of the tree is the global clock.
         </p>
         <p>
           A consequence of this hierarchical arrangement is that complex
