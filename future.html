@@ -98,6 +98,92 @@
       This is the abstract for your specification.
     </section>
     <section>
+      <h2>The <code>Timeline</code> interface</h2>
+      <dl title="partial interface Timeline" class="idl">
+        <dt>double? fromTimelineTime (double timelineTime,
+                                      TimedItem target)</dt>
+        <dd>
+          <p class="annotation">
+            This is basically supposed to be a method that answers the question,
+            "If the time of this timeline is A (<em>timelineTime</em>), what
+            will the local time be at timed item B (<em>target</em>)?"
+          </p>
+          <p>
+            Returns the corresponding time value for a given timed item,
+            <em>target</em>, for a time value relative to this timeline
+            using the following procedure.
+          </p>
+          <p class="todo">
+            All the following needs to be updated since it refers to time
+            sources etc.
+          </p>
+          <ol>
+            <li>Define the <dfn>parent time source</dfn> of time source A as
+                being the value of a <code>timeline</code> property on A if
+                such a property exists and refers to a <a>TimeSource</a>
+                object.</li>
+            <li>Define an <dfn>ancestor time source</dfn> of time source A as
+                any time source that appears in the chain of parent time
+                sources constructed starting with the <a>parent time
+                source</a> of A and continuing with each subsequent parent
+                up to and including a document time source or until there are
+                no further parent time sources.</li>
+            <li>Define a time source A as being <dfn>derived from another time
+                source</dfn> B if B is an <a>ancestor time source</a> of
+                A.</li>
+            <li>Determine <var>local document time</var> as follows:
+              <dl class="switch">
+                <dt>If <em>other</em> is not <a title="derived from another
+                time source">derived from</a> this document time source,</dt>
+                <dd>
+                  <ol>
+                    <li>
+                      Let <var>remote document</var> be the document time
+                      source that is an <a>ancestor time source</a> of
+                      <em>other</em> if such a document time source exists.
+                    </li>
+                    <li>
+                      If there is no such <var>remote document</var> raise
+                      a <code>DOMException</code> of type
+                      <code>HierarchyRequestError</code>.
+                    </li>
+                    <li>
+                      Let <var>local document time</var> be the result of
+                      calling <code>toDocumentTime(<em>documentTime</em>,
+                      <var>remote document</var>)</code> on this object.
+                    </li>
+                  </ol>
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  Let <var>local document time</var> be <em>documentTime</em>.
+                </dd>
+              </dl>
+            </li>
+            <li>
+              Calculate the <code>currentTime</code> of <em>other</em> by
+              following the steps described <span
+              class="todo">somewhere...</span>
+            </li>
+          </ol>
+          <p>
+            Exceptions:
+          </p>
+          <dl class="exceptions">
+            <dt>DOMException of type <code>HierarchyRequestError</code></dt>
+            <dd>
+              Raised if <em>other</em> does not have an <a>ancestor time
+              source</a> that is a document time source object.
+            </dd>
+          </dl>
+          <p class="issue">
+            Is this needed? And is the automatic cross-document time source
+            negotation required?
+          </p>
+        </dd>
+      </dl>
+    </section>
+    <section>
       <h2>Scaling the time</h2>
       <section>
         <h3>The <code>TimingFunctionCallback</code> callback</h3>

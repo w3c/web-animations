@@ -438,209 +438,200 @@
     </section>
 
     <section>
-      <h2>Global clock</h2>
+      <h2>Timing model concepts</h2>
       <p>
         In Web Animations timing is based on a hierarchy of time relationships
         between timing nodes.
-        At the root of this hierarchy is the <a>global clock</a>.
+        Parent nodes provide timing information to their child nodes in the form
+        of <a title="time value">time values</a>.
+        A <dfn>time value</dfn> is a real number which nominally represents
+        a number of seconds from some moment.
+        The connection between <a title="time value">time values</a> and
+        wall-clock seconds may be obscured by any number of transformations
+        applied to the value as it passes through the time hierarchy.
+      </p>
+      <p class="annotation">
+        In the future we may have timelines that are based on UI gestures in
+        which case the connection between time values and seconds will be
+        weakened even further.
       </p>
       <p>
-        The <dfn>global clock</dfn> is a monotonically increasing time source
-        unaffected by adjustments to the system clock.
-        The global clock measures wall-clock time measured in a real number of
-        seconds although the absolute values of the clock are insignificant.
+        Periodically, the user agent will trigger an update to the timing model
+        in a process called <dfn>sampling</dfn>.
+        On each <dfn>sample</dfn> the <a title="time value">time values</a> of
+        each timing node are updated.
+      </p>
+      <p class="note">
+        A more precise definition of when the model is updated when scripting is
+        involved is provided in <a href="#interaction-with-script"
+        class="sectionRef"></a>.
+      </p>
+    </section>
+
+    <section>
+      <h2>The global clock</h2>
+      <p>
+        At the root of the Web Animations timing hierarchy is the <a>global
+        clock</a>.
+      </p>
+      <p>
+        The <dfn>global clock</dfn> is a source of monotonically increasing <a
+        title="time value">time values</a> unaffected by adjustments to the
+        system clock.
+        The <a title="time value">time values</a> produced by the <a>global
+        clock</a> represent wall-clock seconds from an unspecified historical
+        moment.
+        The absolute value of the <a title="time value">time values</a> produced
+        by the <a>global clock</a> are insignificant, only their rate of change.
       </p>
       <p class="note">
         Note that the <a>global clock</a> is not exposed in the <a
         href="#script-interface">programming interface</a> and nor is it
         expected to be exposed by markup.
-        As a result the zero time of the global clock is allowed to be
-        implementation-dependent.
-        One user agent may record the zero time of the global clock as the time
-        when the user agent was loaded whilst another may use the time when the
-        device was started.
+        As a result the moment from which <a>global clock</a> <a title="time
+        value">time values</a> are measured, that is, the zero time of the
+        clock, is allowed to be implementation-dependent.
+        One user agent may measure the number of seconds since the the user
+        agent was loaded whilst another may use the time when the device was
+        started.
         Both approaches are acceptable and produce no observable difference
         in the output of the model.
       </p>
     </section>
 
     <section>
-      <h2>Time sources</h2>
+      <h2>Timelines</h2>
       <p>
-        In Web Animations timing is based on a hierarchy of time relationships
-        where the nodes are called time sources.
-        Time sources provide a <dfn>time value</dfn> for the purpose of deriving
-        further time sources and for eventual input into the animation model.
+        A <dfn>timeline</dfn> provides a source of <a title="time value">time
+        values</a> for the purpose of synchronization.
+      </p>
+      <p>
+        Typically, a <a>timeline</a> is tied to the <a>global clock</a> such
+        that its absolute time is calculated as a fixed offset from the time of
+        the <a>global clock</a>.
+        This offset is established by designating some moment as the timeline's
+        <dfn>zero time</dfn> and recording the <a>time value</a> of the
+        <a>global clock</a> at that moment.
+        At subsequent moments, the <a>time value</a> of the timeline is
+        calculated as the difference between the current <a>time value</a> of
+        the <a>global clock</a> and the value recorded at the <a>zero time</a>.
       </p>
       <p class="annotation">
-        A future version or module may offer time sources based on UI gestures
-        or other quantities that are less related to time.
+        Note that we anticipate that other types of timelines may be introduced
+        in the future that are not tied to the global clock.
+        For example, a timeline whose time values correspond to UI gestures.
       </p>
       <p>
-        Some time sources further separate the <a>time value</a> into
-        a <em>current time value</em> and a <em>result time value</em>.
-      </p>
-      <p>
-        The <dfn>current time value</dfn> is a point of progress in the time
-        source and is used for seeking the time source.
-      </p>
-      <p>
-        The <dfn>output time value</dfn> is the <a>current time value</a> with
-        an optional transformation applied
-        and is used for synchronizing consumers of the time source.
-      </p>
-      <p class="feedbackWanted">
-        Other options for naming:
-        <em>result time value</em> (<code>resultTime</code>),
-        <em>filtered time value</em> (<code>filteredTime</code>),
-        <em>child time value</em> (<code>childTime</code>),
-        <em>sync time value</em> (<code>syncTime</code>)
-        &hellip;
-      </p>
-      <p>
-        For simple time sources, and unless otherwise stated, the <a>current
-        time value</a> and <a>output time value</a> are one and the same.
-      </p>
-      <div class="annotation">
-        <p>
-          This complexity arises from the fact that in other APIs
-          <code>currentTime</code> is used both as the input for seeking (e.g.
-          HTMLMediaController, HTMLMediaElement) and also as the output for
-          syncing (e.g. HTMLMediaController).
-        </p>
-        <p>
-          We want to be consistent in allowing <code>currentTime</code> to be
-          used for seeking and we also want to allow such objects to be used as 
-          time sources.
-        </p>
-        <p>
-          As a result we allow <code>currentTime</code> to do double-duty in
-          simple cases, and introduce <code>outputTime</code> for cases where
-          it is necessary to distinguish between the two times.
-        </p>
-      </div>
-      <p>
-        Time sources are represented in the Web Animations <acronym
-        title="Application Programming Interface">API</acronym> by the
-        <a>TimeSource</a> interface.
+        Since a <a>timeline</a> may be defined to relative a moment that has yet
+        to occur, it may not always be able to return a meaningful <a>time
+        value</a>.
+        A <a>timeline</a> is considered to be <dfn>not started</dfn> when it is
+        in such a state that it cannot produce a <a>time value</a>.
       </p>
       <section>
-        <h3>The <code>TimeSource</code> interface</h3>
-        <dl title="interface TimeSource" class="idl">
+        <h3>The document timeline</h3>
+        <p>
+          Each document has a <a>timeline</a> called the <dfn>document
+          timeline</dfn> whose <a>time value</a> at a given moment is calculated
+          as a fixed offset from the <a>global clock</a> such that its <a>zero
+          time</a> corresponds to the moment immediately prior to dispatching
+          the load event of the document.
+          Prior to this moment, the <a>document timeline</a> is <a>not
+          started</a>.
+        </p>
+        <p>
+          For documents that support the concept of <a
+          href="http://www.w3.org/TR/html51/dom.html#current-document-readiness
+          ">current document readiness</a>, this is the moment after the <a
+          href="http://www.w3.org/TR/html51/dom.html#current-document-readiness
+          ">current document readiness</a> has changed to "complete" but
+          before dispatching the load event.
+          For user agents that support Navigation Timing [[NAVIGATION-TIMING]],
+          this occurs between the <em>domComplete</em> and
+          <em>loadEventStart</em> timings.
+        </p>
+        <p>
+          Since the <a>document timeline</a> is tied to the <a>global clock</a>
+          by a fixed offset, <a title="time value">time values</a> reported by
+          the <a>document timeline</a> increase monotonically.
+          Furthermore, since no scaling is applied, these <a title="time
+          value">time values</a> represent wall-clock seconds.
+        </p>
+      </section>
+      <section>
+        <h3>The <code>Timeline</code> interface</h3>
+        <p>
+          <a title="timeline">Timelines</a>, including the <a>document
+          timeline</a> are represented in the Web Animations API by the
+          <a>Timeline</a> interface.
+        </p>
+        <dl title="interface Timeline" class="idl">
           <dt>readonly attribute double? currentTime</dt>
           <dd>
             <p>
-              The <a>current time value</a> of this time source in seconds.
-              This value is updated each time the model is sampled (see <a
-              href="#interaction-with-script" class="sectionRef"></a>).
+              Returns the <a>time value</a> for this timeline or
+              <code>null</code> if this timeline is <a>not started</a>.
             </p>
             <p>
-              Note that this will be <code>null</code> if the time source cannot
-              currently produce a time value.
-              For example, a time source that derives its time from another time
-              source will return <code>null</code> if the parent time source is
-              not provided, is unavailable, or if the parent time source reports
-              <code>null</code> as its <a>output time value</a>.
-            </p>
-            <p class="note">
-              Note that while <code>currentTime</code> is read-only in this
-              interface, it is writeable in the derived interface
-              <a>TimedItem</a>.
+              For a <a>document timeline</a> this will never be negative and
+              represents the number of seconds since the document with which
+              this timeline is associated was ready to fire its load event.
             </p>
           </dd>
-        </dl>
-      </section>
-    </section>
-
-    <section>
-      <h2>The document timeline</h2>
-      <p>
-        Towards the root of the time hierarchy is the document time source.
-        A <dfn>document time source</dfn> is associated with a <a
-        href="http://www.w3.org/TR/html51/dom.html#the-document-object">Document</a>
-        [[HTML5]]
-        object and provides a monotonically increasing time value that begins at
-        zero when the Document <a>begins to play</a>.
-      </p>
-      <p>
-        A document time source <dfn>begins to play</dfn> at the earliest of the
-        following possible moments:
-      </p>
-      <ol>
-        <li>When a call is made to <code>play</code> on the
-            <a>DocumentTimeSource</a>.</li>
-        <li>The moment immediately prior to dispatching the "load" event of the
-            document with which it is associated if the <code>autoplay</code>
-            attribute on the <a>DocumentTimeSource</a> is <code>true</code> at
-            that moment.
-            <p>
-              For HTML documents, this is the moment after the <a
-              href="http://www.w3.org/TR/html51/dom.html#current-document-readiness
-              ">current document readiness</a> has changed to "complete" but
-              before dispatching the load event.
-              In terms of the timings defined in [[NAVIGATION-TIMING]], this
-              occurs between the <em>domComplete</em> and
-              <em>loadEventStart</em> timings.
-            </p>
-        <li>When the <code>autoplay</code> attribute is made newly
-            <code>true</code> at a moment after opportunity 2.</li>
-      </ol>
-      <p>
-        Before a document time source <a>begins to play</a>, its <a>current time
-        value</a> is <code>null</code>.
-        Once a document time source has <a title="begins to play">begun to
-        play</a> its immediate time value is zero and from that point onwards it
-        reports the number of seconds since it <a title="begins to play">began
-        to play</a> subject to the constraints on updating the time value in <a
-        href="#interaction-with-script" class="sectionRef"></a>.
-      </p>
-      <p>
-        Once a document time source has begun to play it cannot be restarted or
-        paused and continues to be non-<code>null</code> for the remainder of
-        its lifetime.
-      </p>
-      <section>
-        <h3>The <a>DocumentTimeSource</a> interface</h3>
-        <dl title="interface DocumentTimeSource : TimeSource" class="idl">
-          <dt>attribute boolean autoplay</dt>
+          <dt>double? toTimelineTime (double otherTime, Timeline other)</dt>
           <dd>
             <p>
-              Indicates if the document time source should <a title="begins to
-              play">begin to play</a> automatically at the moment immediately
-              before the "load" event is fired.
-              Initially <code>true</code>.
-            </p>
-          </dd>
-          <dt>void play ()</dt>
-          <dd>
-            If the document time source has not already <a title="begins to
-            play">begun to play</a> causes it to begin immediately.
-          </dd>
-          <dt>double? toDocumentTime (double documentTime,
-                                      DocumentTimeSource other)</dt>
-          <dd>
-            <p>
-              Returns the time value from another <a>DocumentTimeSource</a>,
-              <em>other</em>, converted to a time value relative to the when
-              this document time source began.
+              Returns the <a>time value</a>, <em>otherTime</em>, from another
+              <a>Timeline</a> also tied to the <a>global clock</a>,
+              <em>other</em>, converted to a <a>time value</a> relative to this
+              timeline's <a>zero time</a>.
             </p>
             <p>
-              Returns <code>null</code> if <em>documentTime</em> time represents
-              a time earlier than when this document time source <a
-              title="begins to play">began to play</a> or if this document time
-              source has not yet begun to play.
+              Returns <code>null</code> if:
             </p>
+            <ul>
+              <li>this timeline is <a>not started</a>, or</li>
+              <li><em>other</em> is <a>not started</a>.</li>
+            </ul>
+            <p>
+              Note that unlike <code>currentTime</code>, this method may return
+              a negative <a>time value</a> if <em>otherTime</em> occurred prior
+              to this timeline's <a>zero time</a>.
+            </p>
+            <p>
+              Furthermore, negative values for <em>otherTime</em> are also
+              allowed.
+            </p>
+            <p>
+              If this timeline records the <a>time value</a> of the <a>global
+              clock</a> at its <a>zero time</a> as <var>global clock
+              offset</var>, and so does <em>other</em> as <var>other global
+              clock offset</var>, then the result of this method is simply:
+            </p>
+            <blockquote>
+              <code><var>other global clock offset</var> + <var>otherTime</var>
+              - <var>global clock offset</var></code>
+            </blockquote>
             <p>
               Exceptions:
             </p>
             <dl class="exceptions">
-              <dt>DOMException of type <code>IndexSizeError</code></dt>
+              <dt>DOMException of type <code>InvalidNodeTypeError</code></dt>
               <dd>
-                Raised if <em>documentTime</em> is less than zero.
+                Raised if <em>other</em> is a timeline that is not tied to the
+                <a>global clock</a>.
+                <p class="annotation">
+                  The reason for choosing <code>InvalidNodeTypeError</code> here
+                  is that DOM4 describes it as meaning, "The supplied node is
+                  incorrect or has an incorrect ancestor for this operation."
+                  In this case the error is because <em>other</em> does not have
+                  the <a>global clock</a> as an ancestor so it seems
+                  appropriate.
+                </p>
               </dd>
             </dl>
           </dd>
-          <dt>double? toDocumentTime (Event event)</dt>
+          <dt>double? toTimelineTime (Event event)</dt>
           <dd>
             <p>
               Returns the number of seconds between when <em>event</em> was
@@ -649,10 +640,10 @@
             <p>
               Since the <code>timeStamp</code> attribute of the
               <code>Event</code> interface specified in [[DOM-LEVEL-3-EVENTS]]
-              is not guaranteed to be monotonically increasing implementations
-              SHOULD record alongside each event a suitable monotonically
-              increasing timestamp that can be used to convert to an appropriate
-              time value here.
+              is not guaranteed to be monotonically increasing, implementations
+              SHOULD record alongside each event the <a>time value</a> of the
+              <a>global clock</a> when the event is dispatched so that it can be
+              converted to an accurate <a>time value</a> here.
             </p>
             <p>
               Returns <code>null</code> if the time of the event precedes when
@@ -664,88 +655,17 @@
               This might be deferred to a later version.
             </p>
           </dd>
-          <dt>double? fromDocumentTime (double documentTime,
-                                        TimeSource other)</dt>
-          <dd>
-            <p>
-              Returns the corresponding time value for a given time source,
-              <em>other</em>, for a time value relative to this document time
-              source using the following procedure.
-            </p>
-            <ol>
-              <li>Define the <dfn>parent time source</dfn> of time source A as
-                  being the value of a <code>timeline</code> property on A if
-                  such a property exists and refers to a <a>TimeSource</a>
-                  object.</li>
-              <li>Define an <dfn>ancestor time source</dfn> of time source A as
-                  any time source that appears in the chain of parent time
-                  sources constructed starting with the <a>parent time
-                  source</a> of A and continuing with each subsequent parent
-                  up to and including a document time source or until there are
-                  no further parent time sources.</li>
-              <li>Define a time source A as being <dfn>derived from another time
-                  source</dfn> B if B is an <a>ancestor time source</a> of
-                  A.</li>
-              <li>Determine <var>local document time</var> as follows:
-                <dl class="switch">
-                  <dt>If <em>other</em> is not <a title="derived from another
-                  time source">derived from</a> this document time source,</dt>
-                  <dd>
-                    <ol>
-                      <li>
-                        Let <var>remote document</var> be the document time
-                        source that is an <a>ancestor time source</a> of
-                        <em>other</em> if such a document time source exists.
-                      </li>
-                      <li>
-                        If there is no such <var>remote document</var> raise
-                        a <code>DOMException</code> of type
-                        <code>HierarchyRequestError</code>.
-                      </li>
-                      <li>
-                        Let <var>local document time</var> be the result of
-                        calling <code>toDocumentTime(<em>documentTime</em>,
-                        <var>remote document</var>)</code> on this object.
-                      </li>
-                    </ol>
-                  </dd>
-                  <dt>Otherwise,</dt>
-                  <dd>
-                    Let <var>local document time</var> be <em>documentTime</em>.
-                  </dd>
-                </dl>
-              </li>
-              <li>
-                Calculate the <code>currentTime</code> of <em>other</em> by
-                following the steps described <span
-                class="todo">somewhere...</span>
-              </li>
-            </ol>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>HierarchyRequestError</code></dt>
-              <dd>
-                Raised if <em>other</em> does not have an <a>ancestor time
-                source</a> that is a document time source object.
-              </dd>
-            </dl>
-            <p class="issue">
-              Is this needed? And is the automatic cross-document time source
-              negotation required?
-            </p>
-          </dd>
         </dl>
         <p>
-          As document time sources are associated with a Document object, the
-          following extension is required to the Document interface defined in
-          [[HTML5]].
+          As document timelines are associated with a document, the following
+          extension is required to the <a
+          href="http://www.w3.org/TR/dom/#interface-document">Document
+          interface</a> defined in [[!DOM4]].
         </p>
         <dl title="partial interface Document" class="idl">
-          <dt>readonly attribute DocumentTimeSource timeline</dt>
+          <dt>readonly attribute Timeline timeline</dt>
           <dd>
-            The <a>DocumentTimeSource</a> associated with the document.
+            The <a>Timeline</a> representing the <a>document timeline</a>.
           </dd>
         </dl>
       </section>
