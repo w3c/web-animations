@@ -1595,9 +1595,14 @@ berjon.respec.prototype = {
             var ant = ants[i];
             if (sn.hasClass(ant, "externalDFN")) continue;
             var name = ant.textContent;
-            if (infNames.indexOf(name) >= 0) {
-                ant.setAttribute("href", "#idl-def-" + name);
-                // ant.setAttribute("class", "idlType");
+            // Allow the following:
+            //   <a title="Fred interface">Fred</a>
+            // for cases when "fred" is also a definition
+            var infName =
+                (ant.hasAttribute("title") ? ant.getAttribute("title") : name)
+                .replace(/\s+interface\s*$/i, "");
+            if (infNames.indexOf(infName) >= 0) {
+                ant.setAttribute("href", "#idl-def-" + infName);
                 sn.addClass(ant, "idlType");
                 ant.innerHTML = "<code>" + name + "</code>";
             }
