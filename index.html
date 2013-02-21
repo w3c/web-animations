@@ -558,117 +558,6 @@
           value">time values</a> represent wall-clock seconds.
         </p>
       </section>
-      <section>
-        <h3>The <code>Timeline</code> interface</h3>
-        <p>
-          <a title="timeline">Timelines</a>, including the <a>document
-          timeline</a> are represented in the Web Animations API by the
-          <a>Timeline</a> interface.
-        </p>
-        <dl title="interface Timeline" class="idl">
-          <dt>readonly attribute double? currentTime</dt>
-          <dd>
-            <p>
-              Returns the <a>time value</a> for this timeline or
-              <code>null</code> if this timeline is <a>not started</a>.
-            </p>
-            <p>
-              For a <a>document timeline</a> this will never be negative and
-              represents the number of seconds since the document with which
-              this timeline is associated was ready to fire its load event.
-            </p>
-          </dd>
-          <dt>double? toTimelineTime (double otherTime, Timeline other)</dt>
-          <dd>
-            <p>
-              Returns the <a>time value</a>, <em>otherTime</em>, from another
-              <a>Timeline</a> also tied to the <a>global clock</a>,
-              <em>other</em>, converted to a <a>time value</a> relative to this
-              timeline's <a>zero time</a>.
-            </p>
-            <p>
-              Returns <code>null</code> if:
-            </p>
-            <ul>
-              <li>this timeline is <a>not started</a>, or</li>
-              <li><em>other</em> is <a>not started</a>.</li>
-            </ul>
-            <p>
-              Note that unlike <code>currentTime</code>, this method may return
-              a negative <a>time value</a> if <em>otherTime</em> occurred prior
-              to this timeline's <a>zero time</a>.
-            </p>
-            <p>
-              Furthermore, negative values for <em>otherTime</em> are also
-              allowed.
-            </p>
-            <p>
-              If this timeline records the <a>time value</a> of the <a>global
-              clock</a> at its <a>zero time</a> as <var>global clock
-              offset</var>, and so does <em>other</em> as <var>other global
-              clock offset</var>, then the result of this method is simply:
-            </p>
-            <blockquote>
-              <code><var>other global clock offset</var> + <var>otherTime</var>
-              - <var>global clock offset</var></code>
-            </blockquote>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>InvalidNodeTypeError</code></dt>
-              <dd>
-                Raised if <em>other</em> is a timeline that is not tied to the
-                <a>global clock</a>.
-                <p class="annotation">
-                  The reason for choosing <code>InvalidNodeTypeError</code> here
-                  is that DOM4 describes it as meaning, "The supplied node is
-                  incorrect or has an incorrect ancestor for this operation."
-                  In this case the error is because <em>other</em> does not have
-                  the <a>global clock</a> as an ancestor so it seems
-                  appropriate.
-                </p>
-              </dd>
-            </dl>
-          </dd>
-          <dt>double? toTimelineTime (Event event)</dt>
-          <dd>
-            <p>
-              Returns the number of seconds between when <em>event</em> was
-              fired and when this document time source began.
-            </p>
-            <p>
-              Since the <code>timeStamp</code> attribute of the
-              <code>Event</code> interface specified in [[DOM-LEVEL-3-EVENTS]]
-              is not guaranteed to be monotonically increasing, implementations
-              SHOULD record alongside each event the <a>time value</a> of the
-              <a>global clock</a> when the event is dispatched so that it can be
-              converted to an accurate <a>time value</a> here.
-            </p>
-            <p>
-              Returns <code>null</code> if the time of the event precedes when
-              this document time source <a title="begins to play">began to
-              play</a> or if this document time source has not yet begun to
-              play.
-            </p>
-            <p class="issue">
-              This might be deferred to a later version.
-            </p>
-          </dd>
-        </dl>
-        <p>
-          As document timelines are associated with a document, the following
-          extension is required to the <a
-          href="http://www.w3.org/TR/dom/#interface-document">Document
-          interface</a> defined in [[!DOM4]].
-        </p>
-        <dl title="partial interface Document" class="idl">
-          <dt>readonly attribute Timeline timeline</dt>
-          <dd>
-            The <a>Timeline</a> representing the <a>document timeline</a>.
-          </dd>
-        </dl>
-      </section>
     </section>
 
     <section>
@@ -5705,13 +5594,128 @@ var frame = effect.frames['0.3'];
 
     <section>
       <h2>Script interface</h2>
-      <p>
-        In addition to the abstract model described above, Web Animations also
-        defines a programming interface to the model.
-        This interface can be used to inspect and extend animations produced by
-        declarative means or for directly producing animations when a procedural
-        approach is more suitable.
-      </p>
+      <div class="informative">
+        <p>
+          In addition to the abstract model described above, Web Animations also
+          defines a programming interface to the model.
+          This interface can be used to inspect and extend animations produced
+          by declarative means or for directly producing animations when
+          a procedural approach is more suitable.
+        </p>
+      </div>
+      <section>
+        <h3>The <code>Timeline</code> interface</h3>
+        <p>
+          <a title="timeline">Timelines</a>, including the <a>document
+          timeline</a> are represented in the Web Animations API by the
+          <a>Timeline</a> interface.
+        </p>
+        <dl title="interface Timeline" class="idl">
+          <dt>readonly attribute double? currentTime</dt>
+          <dd>
+            <p>
+              Returns the <a>time value</a> for this timeline or
+              <code>null</code> if this timeline is <a>not started</a>.
+            </p>
+            <p>
+              For a <a>document timeline</a> this will never be negative and
+              represents the number of seconds since the document with which
+              this timeline is associated was ready to fire its load event.
+            </p>
+          </dd>
+          <dt>double? toTimelineTime (double otherTime, Timeline other)</dt>
+          <dd>
+            <p>
+              Returns the <a>time value</a>, <em>otherTime</em>, from another
+              <a>Timeline</a> also tied to the <a>global clock</a>,
+              <em>other</em>, converted to a <a>time value</a> relative to this
+              timeline's <a>zero time</a>.
+            </p>
+            <p>
+              Returns <code>null</code> if:
+            </p>
+            <ul>
+              <li>this timeline is <a>not started</a>, or</li>
+              <li><em>other</em> is <a>not started</a>.</li>
+            </ul>
+            <p>
+              Note that unlike <code>currentTime</code>, this method may return
+              a negative <a>time value</a> if <em>otherTime</em> occurred prior
+              to this timeline's <a>zero time</a>.
+            </p>
+            <p>
+              Furthermore, negative values for <em>otherTime</em> are also
+              allowed.
+            </p>
+            <p>
+              If this timeline records the <a>time value</a> of the <a>global
+              clock</a> at its <a>zero time</a> as <var>global clock
+              offset</var>, and so does <em>other</em> as <var>other global
+              clock offset</var>, then the result of this method is simply:
+            </p>
+            <blockquote>
+              <code><var>other global clock offset</var> + <var>otherTime</var>
+              - <var>global clock offset</var></code>
+            </blockquote>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type <code>InvalidNodeTypeError</code></dt>
+              <dd>
+                Raised if <em>other</em> is a timeline that is not tied to the
+                <a>global clock</a>.
+                <p class="annotation">
+                  The reason for choosing <code>InvalidNodeTypeError</code> here
+                  is that DOM4 describes it as meaning, "The supplied node is
+                  incorrect or has an incorrect ancestor for this operation."
+                  In this case the error is because <em>other</em> does not have
+                  the <a>global clock</a> as an ancestor so it seems
+                  appropriate.
+                </p>
+              </dd>
+            </dl>
+          </dd>
+          <dt>double? toTimelineTime (Event event)</dt>
+          <dd>
+            <p>
+              Returns the number of seconds between when <em>event</em> was
+              fired and when this document time source began.
+            </p>
+            <p>
+              Since the <code>timeStamp</code> attribute of the
+              <code>Event</code> interface specified in [[DOM-LEVEL-3-EVENTS]]
+              is not guaranteed to be monotonically increasing, implementations
+              SHOULD record alongside each event the <a>time value</a> of the
+              <a>global clock</a> when the event is dispatched so that it can be
+              converted to an accurate <a>time value</a> here.
+            </p>
+            <p>
+              Returns <code>null</code> if the time of the event precedes when
+              this document time source <a title="begins to play">began to
+              play</a> or if this document time source has not yet begun to
+              play.
+            </p>
+            <p class="issue">
+              This might be deferred to a later version.
+            </p>
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Extensions to the <code>Document</code> interface</h3>
+        <p>
+          The following extensions are made to the <a
+          href="http://www.w3.org/TR/dom/#interface-document">Document
+          interface</a> defined in [[!DOM4]].
+        </p>
+        <dl title="partial interface Document" class="idl">
+          <dt>readonly attribute Timeline timeline</dt>
+          <dd>
+            The <a>Timeline</a> representing the <a>document timeline</a>.
+          </dd>
+        </dl>
+      </section>
     </section>
 
     <section>
