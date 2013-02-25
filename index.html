@@ -561,6 +561,364 @@
     </section>
 
     <section>
+      <h2>Players</h2>
+      <div class="informative">
+        <p>
+          The children of a <a>timeline</a> are called <em>players</em>.
+          A player takes a <a>timed item</a> which is a static description of
+          some timed behavior and binds it to a <a>timeline</a> so that it runs.
+          A player also allows run-time control of the connection between the
+          <a>timed item</a> and its <a>timeline</a> by providing pausing,
+          seeking, and speed control.
+          The relationship between a player and a <a>timed item</a> is analogous
+          to that of a DVD player and a DVD.
+        </p>
+      </div>
+      <p>
+        A <dfn>player</dfn> connects a single <a>timed item</a>, called its
+        <dfn>playback content</dfn>, to a <a>timeline</a> and provides playback
+        control.
+      </p>
+      <p>
+        A <a>player</a> records the <a>time value</a> of its <a>timeline</a>
+        at which its <a>playback content</a> is scheduled to begin
+        as the <dfn>start time</dfn>.
+      </p>
+      <p>
+        <a title="player">Players</a> also provide a <a>time value</a> to their
+        <a>playback content</a> called the player's <dfn>current time</dfn>.
+        The calculation of the <a>current time</a> is as follows:
+      </p>
+      <blockquote>
+        <code><a>current time</a> =
+        (<var>timeline time</var> - <a>start time</a>) * <a
+        title="player playback rate">playback rate</a> - <a>time
+        drift</a></code>
+      </blockquote>
+      <p>
+        Where:
+      </p>
+      <ul>
+        <li><var>timeline time</var> is the current <a>time value</a> of the
+        <a>timeline</a> with which this <a>player</a> is associated.</li>
+        <li><var>start time</var> is the player's <a>start time</a>.</li>
+        <li><var>playback rate</var> is the <a
+        title="player playback rate">playback rate</a> value described in <a
+        href="#speed-control" class="sectionRef"></a>.</li>
+        <li><var>time drift</var> is the <a>time drift</a> value described in <a
+        href="#seeking-and-pausing" class="sectionRef"></a>.</li>
+      </ul>
+      <p>
+        If the <a>timeline</a> with which is <a>player</a> is <a>not started</a>
+        then the <a>current time</a> is <code>null</code>.
+      </p>
+      <p>
+        It is often useful to treat the <a>current time</a> as zero when it
+        would otherwise be <code>null</code>.
+        Hence we define the <dfn>effective current time</dfn> as being equal to
+        <a>current time</a> unless it is <code>null</code>, in which case the
+        <var>effective current time</var> be zero.</li>
+      </p>
+      <section>
+        <h3>Seeking and pausing</h3>
+        <p>
+          Seeking and pausing are closely related and are described here
+          together.
+        </p>
+        <section class="informative">
+          <h4>Introduction to seeking</h4>
+          <p>
+            Changing the current playback position of a player can be used to
+            rewind its <a>playback content</a> to its start point, fast-forward
+            to a point in the future, or to provide ad-hoc synchronization
+            between timed items.
+          </p>
+          <p>
+            However, in Web Animations, the <a>start time</a> of a player has
+            special significance in determining the priority of animations (see
+            <a href="#combining-animations" class="sectionRef"></a>) and so we
+            cannot simply adjust the <a>start time</a>.
+            Instead, an additional offset is introduced called the <a>time
+            drift</a> that further offsets a player's <a>current time</a> from
+            its timeline.
+            The effect of the <a>time drift</a> when seeking is illustrated
+            below.
+          </p>
+          <div class="figure">
+            <img src="img/seeking.svg" width="600">
+          </div>
+          <p class="caption">
+            At time <var>t</var>, a seek is performed on the player changing its
+            <a>current time</a> from 1.5s to 2s.<br>
+            As a result, the <a>time drift</a> is set to -0.5s.<br>
+            Note that the <a>start time</a> indicated by a red star does not
+            change.
+          </p>
+          <p>
+            It is possible to seek a player even if its <a>timeline</a> is
+            <a>not started</a>.
+            Once the timeline begins, the player will being playback from the
+            seeked time.
+          </p>
+        </section>
+        <section class="informative">
+          <h4>Introduction to pausing</h4>
+          <p>
+            Pausing can be used to temporarily suspend a <a>player</a>.
+            Like seeking, pausing effectively causes the <a>current time</a> of
+            a player to be offset from its <a>timeline</a> by means of
+            setting the <a>time drift</a>.
+          </p>
+          <p>
+            Pausing before a player's <a>start time</a> will cause the player's
+            content to begin in a paused state but does not delay its start as
+            is illustrated below.
+          </p>
+          <div class="figure">
+            <img src="img/pausing.svg" width="600">
+          </div>
+          <p class="caption">
+            The effect of pausing a player at different moments.<br>
+            In case A, the player is paused and unpaused before its <a>start
+            time</a>.
+            The pause has no effect.<br><br>
+            In case B, the player is paused before the <a>start time</a> and
+            remains paused.
+            At the scheduled <a>start time</a> the playback content begins
+            playing in a paused state.
+            When the player is unpaused it continues playing.
+            The resulting player has a <a>time drift</a> equivalent to the
+            interval from the <a>start time</a> to when it was unpaused.<br><br>
+            In case C, the player is paused and unpaused during the <a>active
+            interval</a> of the playback content.
+            After unpausing, the player has a <a>time drift</a> equivalent to
+            the duration of the pause interval.
+          </p>
+          <p class="issue">
+            I suspect we don't want this behavior now that player is a separate
+            object.
+          </p>
+        </section>
+        <section>
+          <h4>Seeking and pausing properties</h4>
+          <p>
+            <a title="player">Players</a> track three properties related to
+            seeking and pausing.
+          </p>
+          <dl>
+            <dt><dfn>time drift</dfn></dt>
+            <dd>
+              The offset from a player's scheduled current time as defined by
+              its <a>start time</a>, and its actual current time after
+              accounting for the effects of seeking and pausing.
+              The <a>time drift</a> is initially zero and is updated as per the
+              definition in <a href="#calculating-the-time-drift"
+              class="sectionRef"></a>.
+            </dd>
+            <dt><dfn>paused state</dfn></dt>
+            <dd>
+              A boolean value that is true if the player is currently paused.
+              The <a>paused state</a> is initially false.
+            </dd>
+            <dt><dfn>pause start time</dfn></dt>
+            <dd>
+              The player's <a>effective current time</a> at the time when the
+              <a>paused state</a> was last newly true.
+              The <a>pause start time</a> is initially zero.
+            </dd>
+          </dl>
+          <p>
+            A number of calculations for performing seeking and pausing are
+            defined to operate even when the associated <a>timeline</a> is
+            <a>not started</a>.
+            For such situations we define the <dfn>effective timeline time</dfn>
+            as the current <a>time value</a> of the <a>timeline</a> associated
+            with a <a>player</a>;
+            if the timeline is <a>not started</a>, then the <var>effective
+            timeline time</var> is zero.
+          </p>
+        </section>
+        <section>
+          <h4>Calculating the <a>time drift</a></h4>
+          <p>
+            The <a>time drift</a> value is both a stored and a calculated value.
+            When a player is paused, the value is calculated from the <a>pause
+            start time</a>.
+            When a player is not paused, the stored value is used.
+            The stored value is initially zero, and is updated when the player
+            is unpaused or seeked.
+          </p>
+          <p>
+            Since pausing does not take effect prior to when a player's playback
+            content begins, we first define the beginning of a player's playback
+            content for the purposes of pausing as a player's <em>earliest
+            moment</em>.
+            The calculation is as follows:
+          </p>
+          <blockquote>
+            <dfn>earliest moment</dfn> = <code>min(0, <var>start delay of
+            playback content</var>)</code>
+          </blockquote>
+          <p class="issue">
+            I'm pretty sure we don't want this behavior now that the player is
+            separate to the playback content.
+          </p>
+          <p>
+            Using this definition we can define the value of <a>time drift</a>
+            at a given moment as follows:
+          </p>
+          <dl class="switch">
+            <dt>If the <a>paused state</a> is true,</dt>
+            <dd>
+              Return the result of 
+              <code>(<a>effective timeline time</a> - <a>start time</a>) * <a
+              title="player playback rate">playback rate</a> -
+              max(<a>pause start time</a>, <a>earliest moment</a>)</code>.
+            </dd>
+            <dt>Otherwise,</dt>
+            <dd>
+              Return the stored value for this property.
+            </dd>
+          </dl>
+        </section>
+        <section>
+          <h4>Updating the <a>paused state</a></h4>
+          <p>
+            The procedure for updating the <a>paused state</a> is as
+            follows:
+          </p>
+          <ol>
+            <li>
+              Let <var>new value</var> be the new paused state to set.
+            </li>
+            <li>
+              If <var>new value</var> equals the current <a>paused state</a>,
+              return.
+            </li>
+            <li>
+              The next step depends on the current <a>paused state</a> as
+              follows,
+              <dl class="switch">
+                <dt>If <a>paused state</a> is true,</dt>
+                <dd>
+                  Set the <em>stored</em> value of <a>time drift</a> to the
+                  <em>current calculated</em> value of <a>time drift</a> as
+                  defined in <a href="#calculating-the-time-drift"
+                  class="sectionRef"></a>.
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  Record the current value of the <a>effective current time</a>
+                  as <a>pause start time</a>.
+                </dd>
+              </dl>
+            </li>
+            <li>
+              Update <a>paused state</a> to <var>new value</var>.
+            </li>
+          </ol>
+        </section>
+        <section>
+          <h4>Performing a seek</h4>
+          <p>
+            <dfn>Seeking</dfn> is the process of updating a player's <a>current
+            time</a> to a desired value.
+            It is achieved using the following procedure:
+          </p>
+          <ol>
+            <li>Let <var>seek time</var> be the desired <a>time value</a> for
+                the player's <a>current time</a>.</li>
+            <li>The steps for adjusting the <a>current time</a> depend on the
+                <a>paused state</a> as follows:
+              <dl class="switch">
+                <dt>If the <a>paused state</a> is true,</dt>
+                <dd>
+                  Set <a>pause start time</a> to <var>seek time</var>.
+                </dd>
+                <dt>If the <a>paused state</a> is false,</dt>
+                <dd>
+                  Set the stored value for the <a>time drift</a> to
+                  the result of evaluating
+                  <code>(<a>effective timeline time</a> - <a>start time</a>)
+                     * <a title="player playback rate">playback rate</a> -
+                     <var>seek time</var></code>.
+                </dd>
+              </dl>
+            </li>
+          </ol>
+          <p>
+            The animation events dispatched when a seek is performed are
+            described in <a href="#event-dispatch-during-seeking"
+            class="sectionRef"></a>.
+          </p>
+        </section>
+      </section>
+      <section>
+        <h3>Speed control</h3>
+        <div class="informative">
+          <p>
+            The rate of play of a player can be controlled by setting its
+            <em>playback rate</em>.
+            For example, setting a playback rate of 2 will cause the player's
+            <a>current time</a> to increase at twice the rate of its
+            <a>timeline</a>.
+            Similarly, a playback rate of -1 will cause the player's <a>current
+            time</a> to decrease at the same rate as the <a title="time
+            value">time values</a> from its <a>timeline</a> increase.
+          </p>
+          <p>
+            Note that <a title="timed item">timed items</a> also have a playback
+            rate associated with them that behaves differently to that defined
+            here.
+          </p>
+        </div>
+        <p>
+          <a title="player">Players</a> have a <dfn title="player playback
+          rate">playback rate</dfn> that provides a scaling factor from the rate
+          of change of the associated <a>timeline</a>'s <a title="time
+          value">time values</a> to the player's <a>current time</a>.
+          The <a title="player playback rate">playback rate</a> is initially 1.
+        </p>
+        <p>
+          Setting a player's <a title="player playback rate">playback rate</a>
+          to zero effectively pauses the player but without affecting the
+          player's <a>paused state</a>.
+        </p>
+        <section>
+          <h4>Updating the playback rate</h4>
+          <p>
+            Changes to the <a title="player playback rate">playback rate</a>
+            also trigger a compensatory seek so that that the player's
+            <a>current time</a> is unaffected by the change to the playback
+            rate.
+          </p>
+          <p>
+            The procedure is as follows:
+          </p>
+          <ol>
+            <li>Let <var>previous time</var> be the value of the <a>effective
+                current time</a> before updating the <a
+                title="player playback rate">playback rate</a>.</li>
+            <li>Update the <a title="player playback rate">playback rate</a> to
+                the new value.</li>
+            <li>Seek to <var>previous time</var> using the procedure defined in
+                <a href="#performing-a-seek" class="sectionRef"></a>.</li>
+          </ol>
+        </section>
+      </section>
+      <section>
+        <h3>Cancelling</h3>
+        <p>
+          <dfn>Cancelling</dfn> a <a>player</a> breaks the association between
+          the <a>player</a> and its <a>playback content</a>.
+        </p>
+        <p class="issue">
+          Should this reset the time drift? And what about other properties?
+        </p>
+      </section>
+    </section>
+
+    <section>
       <h2>Timed items</h2>
       <p>
         In addition to time sources, the other actor in the Web Animations
@@ -5698,6 +6056,73 @@ var frame = effect.frames['0.3'];
             </p>
             <p class="issue">
               This might be deferred to a later version.
+            </p>
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>Player</code> interface</h3>
+        <p>
+          <a title="player">Players</a> are represented in the Web Animations
+          API by the <a title="Player interface">Player</a> interface.
+        </p>
+        <dl title="interface Player" class="idl">
+          <dt>attribute TimedItem? content</dt>
+          <dd>
+            The <a>playback content</a> of this player.
+          </dd>
+          <dt>readonly attribute Timeline timeline</dt>
+          <dd>
+            The <a>timeline</a> associated with this player.
+          </dd>
+          <dt>attribute double startTime</dt>
+          <dd>
+            The <a>start time</a> of this player. Settings resets time drift?
+          </dd>
+          <dt>attribute double currentTime</dt>
+          <dd>
+            The <a>effective current time</a> of this player.
+            Setting this attribute follows the procedure defined in <a
+            href="#performing-a-seek" class="sectionRef"></a>.
+          </dd>
+          <dt>attribute double playbackRate</dt>
+          <dd>
+            The <a>playback rate</a> of this player.
+            Setting this attribute follows the procedure defined in <a
+            href="#updating-the-playback-rate" class="sectionRef"></a>.
+          </dd>
+          <dt>attribute boolean paused</dt>
+          <dd>
+            The <a>paused state</a> of this player.
+            Setting this attribute follows the procedure defined in <a
+            href="#updating-the-paused-state" class="sectionRef"></a>.
+          </dd>
+          <dt>void reverse()</dt>
+          <dd>
+            Sets the <code>playbackRate</code> to the negative complement of its
+            current value by following the procedure defined in <a
+            href="#updating-the-playback-rate" class="sectionRef"></a>.
+          </dd>
+          <dt>void cancel()</dt>
+          <dd>
+            <p>
+              Sets <code>content</code> to <code>null</code>.
+            </p>
+            <p class="todo">
+              See notes in <a href="#cancelling" class="sectionRef"></a>.
+              Not really sure what this should reset.
+              In any case, this should refer to that section.
+            </p>
+            <p class="issue">
+              Rename to eject?
+            </p>
+          </dd>
+          <dt>void reset()</dt>
+          <dd>
+            <p class="todo">
+              Would this be useful for clearing the time drift?
+              And what about the start time? playback rate? paused state?
+              Maybe just the drift?
             </p>
           </dd>
         </dl>
