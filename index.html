@@ -5656,8 +5656,8 @@ var frame = effect.frames['0.3'];
               item</a>, and likewise, a <a>timed item</a> can only be
               associated&mdash;either directly or via an ancestor&mdash;with at
               most one <a>player</a>.
-              Therefore, on setting this value, the following procedure is
-              performed:
+              In order to maintain these invariants, on setting this value, the
+              following procedure is performed:
             </p>
             <ol>
               <li>Let <var>old value</var> be the current value of the
@@ -5697,7 +5697,8 @@ var frame = effect.frames['0.3'];
           <dd>
             The <a>start time</a> of this player.
             Setting this attribute resets the player's <a>time drift</a> to
-            zero.
+            zero even if the value to set is equal to the current value of the
+            attribute.
           </dd>
           <dt>attribute double currentTime</dt>
           <dd>
@@ -5737,15 +5738,13 @@ var frame = effect.frames['0.3'];
               Rename to eject?
             </p>
           </dd>
-          <dt>void reset()</dt>
-          <dd>
-            <p class="todo">
-              Would this be useful for clearing the time drift?
-              And what about the start time? playback rate? paused state?
-              Maybe just the drift?
-            </p>
-          </dd>
         </dl>
+        <p class="issue">
+          Do we need <code>reset()</code> to clear the time drift etc.?
+          And if so, what exactly should it clear?
+          Note that it is already possible to clear the time drift by simply
+          setting the <code>startTime</code> to its current value.
+        </p>
       </section>
       <section>
         <h3>Extensions to the <code>Document</code> interface</h3>
