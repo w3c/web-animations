@@ -584,46 +584,54 @@
         at which its <a>source content</a> is scheduled to begin
         as the <dfn>start time</dfn>.
       </p>
-      <p>
-        <a title="player">Players</a> also provide a <a>time value</a> to their
-        <a>source content</a> called the player's <dfn>current time</dfn>.
-        The calculation of the <a>current time</a> is as follows:
-      </p>
-      <blockquote>
-        <code><a>current time</a> =
-        (<var>timeline time</var> - <a>start time</a>) * <a
-        title="player playback rate">playback rate</a> - <a>time
-        drift</a></code>
-      </blockquote>
-      <p>
-        Where:
-      </p>
-      <ul>
-        <li><var>timeline time</var> is the current <a>time value</a> of the
-        <a>timeline</a> with which this <a>player</a> is associated.</li>
-        <li><var>start time</var> is the player's <a>start time</a>.</li>
-        <li><var>playback rate</var> is the <a
-        title="player playback rate">playback rate</a> value described in <a
-        href="#speed-control" class="sectionRef"></a>.</li>
-        <li><var>time drift</var> is the <a>time drift</a> value described in <a
-        href="#seeking-and-pausing" class="sectionRef"></a>.</li>
-      </ul>
-      <p>
-        If the <a>timeline</a> with which is <a>player</a> is <a>not started</a>
-        then the <a>current time</a> is <code>null</code>.
-      </p>
-      <p>
-        It is often useful to treat the <a>current time</a> as zero when it
-        would otherwise be <code>null</code>.
-        Hence we define the <dfn>effective current time</dfn> as being equal to
-        <a>current time</a> unless it is <code>null</code>, in which case the
-        <var>effective current time</var> be zero.</li>
-      </p>
+      <section>
+        <h3>The current time of a player</h3>
+        <p>
+          <a title="player">Players</a> also provide a <a>time value</a> to
+          their <a>source content</a> called the player's <dfn>current
+          time</dfn>.
+          The calculation of the <a>current time</a> is as follows:
+        </p>
+        <blockquote>
+          <code><a>current time</a> =
+          (<var>timeline time</var> - <a>start time</a>) * <a
+          title="player playback rate">playback rate</a> - <a>time
+          drift</a></code>
+        </blockquote>
+        <p>
+          Where:
+        </p>
+        <ul>
+          <li><var>timeline time</var> is the current <a>time value</a> of the
+          <a>timeline</a> with which this <a>player</a> is associated.</li>
+          <li><var>start time</var> is the player's <a>start time</a>.</li>
+          <li><var>playback rate</var> is the <a
+          title="player playback rate">playback rate</a> value described in <a
+          href="#speed-control" class="sectionRef"></a>.</li>
+          <li><var>time drift</var> is the <a>time drift</a> value described in
+          <a href="#seeking-and-pausing" class="sectionRef"></a>.</li>
+        </ul>
+        <p>
+          If the <a>timeline</a> with which is <a>player</a> is <a>not
+          started</a> then the <a>current time</a> is <code>null</code>.
+        </p>
+        <p>
+          It is often useful to treat the <a>current time</a> as zero when it
+          would otherwise be <code>null</code>.
+          Hence we define the <dfn>effective current time</dfn> as being equal
+          to <a>current time</a> unless it is <code>null</code>, in which case
+          the <var>effective current time</var> be zero.</li>
+        </p>
+        <p>
+          The procedure for performing manual updates to the <a>current time</a>
+          is defined in <a href="#performing-a-seek" class="sectionRef"></a>.
+        </p>
+      </section>
       <section>
         <h3>Seeking and pausing</h3>
         <p>
-          Seeking and pausing are closely related and are described here
-          together.
+          Seeking and pausing a player are closely related and are described
+          here together.
         </p>
         <section class="informative">
           <h4>Introduction to seeking</h4>
@@ -5727,7 +5735,9 @@ var frame = effect.frames['0.3'];
           <dt>void cancel()</dt>
           <dd>
             <p>
-              Sets <code>source</code> to <code>null</code>.
+              Sets <code>source</code> to <code>null</code> by following the
+              procedure described for updating the <code>source</code>
+              attribute.
             </p>
             <p class="todo">
               See notes in <a href="#cancelling" class="sectionRef"></a>.
