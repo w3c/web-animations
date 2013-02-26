@@ -5648,7 +5648,46 @@ var frame = effect.frames['0.3'];
         <dl title="interface Player" class="idl">
           <dt>attribute TimedItem? content</dt>
           <dd>
-            The <a>playback content</a> of this player.
+            <p>
+              The <a>playback content</a> associated with this player.
+            </p>
+            <p>
+              A <a>player</a> can only be associated with at most one <a>timed
+              item</a>, and likewise, a <a>timed item</a> can only be
+              associated&mdash;either directly or via an ancestor&mdash;with at
+              most one <a>player</a>.
+              Therefore, on setting this value, the following procedure is
+              performed:
+            </p>
+            <ol>
+              <li>Let <var>old value</var> be the current value of the
+                  <code>content</code> property.</li>
+              <li>Let <var>new value</var> be the value to set.</li>
+              <li>If <var>new value</var> is the same object as <var>old
+                  value</var>, return.</li>
+              <li>If <var>old value</var> is not <code>null</code>,
+                  disassociate <var>old value</var> from this player.</li>
+              <li>If <var>new value</var> is not <code>null</code>,
+                  perform the steps associated with the first matching condition
+                  of the following:
+                <dl class="switch">
+                  <dt>If <var>new value</var> has no parent group and is
+                      associated with a player,</dt>
+                  <dd>disassociate <var>new value</var> from its player.</dd>
+                  <dt>If <var>new value</var> has a parent group,</dt>
+                  <dd>remove <var>new value</var> from its parent group by
+                      calling <code><var>new
+                      value</var>.parentGroup.remove(<var>new
+                      value</var>.parentGroup.indexOf(<var>new
+                      value</var>))</code>.</dd>
+                  <dt>Otherwise,</dt>
+                  <dd>do nothing.</dd>
+                </dl>
+              </li>
+              <li>Associate <var>new value</var> with this player.
+              <li>Set the <code>content</code> property to <var>new
+                  value</var>.</li>
+            </ol>
           </dd>
           <dt>readonly attribute Timeline timeline</dt>
           <dd>
@@ -5656,7 +5695,8 @@ var frame = effect.frames['0.3'];
           </dd>
           <dt>attribute double startTime</dt>
           <dd>
-            The <a>start time</a> of this player. Settings resets time drift?
+            The <a>start time</a> of this player.
+            Setting this property resets the player's <a>time drift</a> to zero.
           </dd>
           <dt>attribute double currentTime</dt>
           <dd>
