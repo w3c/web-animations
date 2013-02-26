@@ -908,12 +908,18 @@
       </section>
       <section>
         <h3>Cancelling</h3>
+        <p class="issue">
+          I think we should call this ejecting. (And possibly name the API
+          method Unicode codepoint 0x23CF, i.e. &#x23CF; &#x1F609;)
+        </p>
         <p>
           <dfn>Cancelling</dfn> a <a>player</a> breaks the association between
           the <a>player</a> and its <a>playback content</a>.
         </p>
         <p class="issue">
           Should this reset the time drift? And what about other properties?
+          If the method is called eject, then it probably should reset
+          everything, or at least the time drift.
         </p>
       </section>
     </section>
@@ -1358,433 +1364,6 @@
               calling <code>cancel</code>.
               Should we just set <code>target</code> to <code>null</code>
               in that case?
-            </p>
-          </dd>
-        </dl>
-      </section>
-    </section>
-
-    <section>
-      <h2>Playback control: seeking, pausing and cancelling</h2>
-      <div class="informative">
-        <p>
-          As well as scheduling timed items to run for a given interval, it is
-          possible to make adjustments to their playback as they run by seeking
-          their current position, pausing and resuming, and disabling the
-          animation outright.
-        </p>
-      </div>
-      <section>
-        <h3>Seeking a timed item</h3>
-        <div class="informative">
-          <p>
-            Changing the current playback position of a timed item can be used
-            to rewind a timed item to its start point, fast-forward to a point
-            in the future, or to provide ad-hoc synchronization between items.
-          </p>
-          <p>
-            Seeking a timed item effectively creates an additional offset
-            between the item and its time source.
-            This offset is called the <em>time drift</em> and is illustrated
-            below.
-          </p>
-          <div class="figure">
-            <img src="img/seeking.svg" width="600">
-          </div>
-          <p class="caption">
-            A time <var>t</var> a seek is performed on animation A changing its
-            local time from 1.5s to 2s.
-            As a result animation A&prime; has a <em>time drift</em> of
-            -0.5s.<br>
-            Note that the start time indicated by a red star does not change
-            since it is expressed in <a>inherited time space</a>.
-          </p>
-          <p>
-            Timed items that do not have a time source may still be seeked.
-            If they are later attached to a time source they will resume
-            playback from the seeked time.
-          </p>
-          <p>
-            The normative description for seeking must account for pausing (see
-            <a href="#pausing-a-timed-item" class="sectionRef"></a>) as well as
-            follows. 
-          </p>
-        </div>
-        <p>
-          In order to supporting seeking and pausing, timed items track the
-          following three values:
-        </p>
-        <dl>
-          <dt><dfn>time drift</dfn></dt>
-          <dd>The offset between a timed item's scheduled time and actual local
-              time caused by seeking and pausing.
-              Initially zero.
-              Exposed in the API as <code>timeDrift</code>.
-          </dd>
-          <dt><dfn>pause start time</dfn></dt>
-          <dd>The local time when the item was paused.
-              Initially zero.
-              Not exposed in the API.
-          </dd>
-          <dt><dfn>local pause state</dfn></dt>
-          <dd>A boolean flag for indicated if this item has been directly paused
-              as opposed to being <em>effectively</em> paused due to an ancestor
-              time source being paused.
-              Initially false.
-              Exposed in the API as <code>locallyPaused</code>.
-          </dd>
-        </dl>
-        <p>
-          Seeking is performed in response to a change to a timed item's
-          <code>currentTime</code> attribute and is realised by adjusting the
-          <em>time drift</em> or the <em>pause start time</em> of the item as
-          follows:
-        </p>
-        <ol>
-          <li>Let <var>seek time</var> be the new value to which
-              <code>currentTime</code> should be set.</li>
-          <li>The steps for adjusting the local time depend on the state of the
-              <a>local pause state</a> as follows:
-            <dl class="switch">
-              <dt>If the <a>local pause state</a> is true,</dt>
-              <dd>
-                Set <a>pause start time</a> to <var>seek time</var>.
-              </dd>
-              <dt>If the <a>local pause state</a> is false,</dt>
-              <dd>
-                Set the stored value for the <a>time drift</a> to
-                the result of evaluating
-                <code><a>effective inherited time</a> - startTime -
-                      <var>seek time</var></code>.
-              </dd>
-            </dl>
-          </li>
-        </ol>
-        <p>
-          The animation events dispatched when a seek is performed are described
-          in <a href="#event-dispatch-during-seeking" class="sectionRef"></a>.
-        </p>
-      </section>
-      <section>
-        <h3>Pausing a timed item</h3>
-        <div class="informative">
-          <p>
-            Pausing can be used to temporarily suspend a timed item.
-            Like seeking, pausing effectively causes the local time of a timed
-            item to be offset from its time source and hence causes the <em>time
-            drift</em> to be updated.
-          </p>
-          <p>
-            Pausing before a timed item begins will cause the item to begin
-            in a paused state but does not delay its start as illustrated below.
-          </p>
-          <div class="figure">
-            <img src="img/pausing.svg" width="600">
-          </div>
-          <p class="caption">
-            The effect on pausing a timed item at different moments.<br>
-            Timed item A is paused and unpaused before it would otherwise begin.
-            The pause has no effect.<br><br>
-            Timed item B is paused before it would begin and remains paused.
-            At the schedule start time item B begins playing in a paused state.
-            When it is unpaused it continues playing.
-            The resulting timed item has a time drift equivalent to the interval
-            from the start time to when the item was unpaused.<br><br>
-            Timed item C is paused and unpaused during its active interval.
-            After unpausing timed item has a time drift equivalent to the
-            duration of the pause interval.
-          </p>
-        </div>
-        <section>
-          <h4>Updating the local pause state</h4>
-          <p>
-            The procedure for updating the <a>local pause state</a> is as
-            follows:
-          </p>
-          <ol>
-            <li>
-              Let <var>new value</var> be the new local pause state to set.
-            </li>
-            <li>
-              If <var>new value</var> equals <a>local pause state</a>,
-              return.
-            </li>
-            <li>
-              The next step depends on the current <a>local pause state</a> as
-              follows,
-              <dl class="switch">
-                <dt>If <a>local pause state</code> is true,</dt>
-                <dd>
-                  Set the <em>stored</em> value of <a>time drift</a> to the
-                  <em>current calculated</em> value of <a>time drift</a> as
-                  defined in <a href="#calculating-the-time-drift"
-                  class="sectionRef"></a>.
-                </dd>
-                <dt>Otherwise,</dt>
-                <dd>
-                  Record the current value of <code>currentTime</code> as
-                  <a>pause start time</a>.
-                </dd>
-              </dl>
-            </li>
-            <li>
-              Update <a>local pause state</a> to <var>new value</var>.
-            </li>
-          </ol>
-        </section>
-        <section>
-          <h4>Calculating the time drift</h4>
-          <p>
-            The <a>time drift</a> value is both a stored and a
-            calculated value.
-            When a timed item is paused, the value is calculated from the
-            <a>pause start time</a>.
-            When a timed item is not paused, the stored value is used.
-            The stored value is initially zero, and is updated when the item
-            is unpaused or seeked.
-          </p>
-          <p>
-            Since pausing does not take effect prior to when a timed item
-            begins, we first define the beginning of a timed item for the
-            purposes of pausing as a timed item's <em>earliest moment</em>.
-            The calculation is as follows:
-          </p>
-          <blockquote>
-            <dfn>earliest moment</dfn> = <code>min(0, startDelay)</code>
-          </blockquote>
-          <p>
-            Using this definition we can define the value of <a>time drift</a>
-            at a given moment as follows:
-          </p>
-          <dl class="switch">
-            <dt>If the <a>local pause state</a> is true or
-                the <a>zero run-time playback rate flag</a> is true,</dt>
-            <dd>
-              Return the result of 
-              <code><a>effective inherited time</a> - startTime -
-              max(<a>pause start time</a>, <a>earliest moment</a>)</code>.
-            </dd>
-            <dt>Otherwise,</dt>
-            <dd>
-              Return the stored value for this property.
-            </dd>
-          </dl>
-        </section>
-        <section>
-          <h4>Calculating the local time</h4>
-          <p>
-            Having defined the <a>time drift</a> we can now define <a>local
-            time</a> as described in <a href="#local-time-and-inherited-time"
-            class="sectionRef"></a>.
-          </p>
-          <blockquote>
-            <dfn>local time</dfn> =
-              <code><a>inherited time</a> - startTime - <a>time drift</a></code>
-          </blockquote>
-          <p>
-            If either <a>inherited time</a> is <code>null</code>, the local time
-            is <code>null</code>.
-          </p>
-        </section>
-      </section>
-      <section>
-        <h3>Cancelling a timed item</h3>
-        <div class="informative">
-          <p>
-            During playback it is sometimes useful to completely disable a timed
-            item such that it has no effect.
-            This is achieved by disassociating the timed item from its time
-            source.
-          </p>
-        </div>
-        <p>
-          The procedure for cancelling a timed item is as follows:
-        </p>
-        <ol>
-          <li>If the timed item's <code>timeline</code> attribute is
-              <code>null</code>, return immediately.</li>
-          <li>Record the current <a>inherited time</a> as <var>local
-              time</var>.</li>
-          <li>Record the current <a>document time</a> as <var>document
-              time</var>.</li>
-          <li>Record the <a>current iteration</a> as <var>iteration
-              index</var>.</li>
-          <li>If <code>timeline</code> is a timing group,
-              remove this timed item from the group and set
-              <code>timeline</code> to <code>null</code>.
-              Otherwise simply set <code>timeline</code> to <code>null</code>.
-              In either case, do not dispatch a <em>timingend</em> event on this
-              timed item or any of its descendents.
-          <li>Dispatch a <em>timingcancel</em> event at this timed item and
-              its descendents using the stored values for
-              <var>local time</var>, <var>document time</var>, and
-              <var>iteration index</var>.</li>
-        </ol>
-      </section>
-      <section>
-        <h3>Playback control interface members</h3>
-        <dl title="partial interface TimedItem" class="idl">
-          <dt>// Playback control members</dt><dd></dd>
-          <dt>inherit attribute double? currentTime</dt>
-          <dd>
-            <p>
-              Returns the <a>effective local time</a> of the timed item.
-            </p>
-            <p>
-              This differs from the definition of <a>local time</a> used
-              elsewhere in the model in that when the <a>inherited time</a> time
-              is <code>null</code> (e.g. because <code>timeline</code> is
-              <code>null</code>, or because the timeline has a <code>null</code>
-              time value) an inherited time of zero is used.
-              This allows the item to be seeked prior to being attached to
-              a time source.
-            </p>
-            <p>
-              The value returned is calculated as follows:
-            </p>
-            <blockquote>
-              <code>currentTime =
-                    <a>effective inherited time</a> - startTime
-                    - timeDrift</code>
-            </blockquote>
-            <p>
-              Note that unlike the <code>currentTime</code> attribute on
-              the <a>TimeSource</a> interface, this attribute can be set.
-              Setting this property performs a seek operation according to the
-              steps described in described in <a href="#seeking-a-timed-item"
-              class="sectionRef"></a>.
-            </p>
-            <p>
-              Furthermore, as a result of the definition above, for
-              <a>TimedItem</a> objects this property will never be
-              <code>null</code>.
-              Attempts to set this property to <code>null</code> will result in
-              a <code>DOMException</code> of type
-              <code>InvalidModificationError</code> being thrown.
-            </p>
-            <p class="note">
-              Note that the <code>currentTime</code> property is not actually
-              set directly but is updated to the seek time as a result of the
-              performing the calculation above using the updated
-              <code>timeDrift</code> established using the procedure described
-              in <a href="#seeking-a-timed-item" class="sectionRef"></a>.
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>InvalidModificationError</code></dt>
-              <dd>
-                Raised when attempting to set this attribute to
-                <code>null</code>.
-              </dd>
-            </dl>
-          </dd>
-          <dt>readonly attribute double timeDrift</dt>
-          <dd>
-            <p>
-              The number of seconds that the actual <a>local time</a> of this
-              item lags behind its scheduled time as a result of pausing and
-              seeking this item.
-            </p>
-            <p>
-              The calculation of the <a>time drift</a> is described in <a
-              href="#calculating-the-time-drift" class="sectionRef"></a>.
-            </p>
-            <div class="issue">
-              This should either be writeable or at least reset-able (e.g.
-              <code>resetDrift()</code>).
-            </div>
-          </dd>
-          <dt>attribute boolean locallyPaused</dt>
-          <dd>
-            <p>
-              The <a>local pause state</a> of this timed item.
-            </p>
-            <p>
-              The behavior when setting this value is described in <a
-              href="#updating-the-local-pause-state" class="sectionRef"></a>.
-            </p>
-            <p class="issue">
-              Should this be writeable?
-              Once we integrate with media controllers we might want to make
-              this writeable only when not associated with a media controller
-              much like things currently work in HTML5.
-            </p>
-            <p class="issue">
-              This attribute is at-risk.
-              It remains to be seen if really needs to be exposed, or if
-              <code>pause()</code>, <code>play()</code>, and
-              <code>unpause()</code> are sufficient for most use cases.
-            </p>
-          </dd>
-          <dt>readonly attribute boolean paused</dt>
-          <dd>
-            Indicates if this element or one of its ancestors is paused.
-            This will be <code>true</code> if and only if the
-            <a>local pause state</a> of at least one of this item <em>or one of
-            its ancestor timed items</em> is true.
-            <p class="issue">
-              We really want to say <em>ancestor time sources</em> here but time
-              sources don't have pause state.
-            </p>
-          </dd>
-          <dt>void pause ()</dt>
-          <dd>
-            Sets the <a>local pause state</a> to <code>true</code> by
-            following the procedure described in <a
-            href="#updating-the-local-pause-state" class="sectionRef"></a>.
-            <p class="annotation">
-              This method is intended to behave in a comparable manner to
-              <a
-              href="http://dev.w3.org/html5/spec/media-elements.html#media-elements">HTMLMediaElement</a>'s <a
-              href="http://dev.w3.org/html5/spec/media-elements.html#dom-media-pause">pause
-              method</a>.
-            </p>
-          </dd>
-          <dt>void play ()</dt>
-          <dd>
-            <p>
-              Unpauses this item and, if the local time of the item is not
-              within the <a>active interval</a>, seeks to the beginning of the
-              <a>active interval</a> by taking the following steps.
-            </p>
-            <ol>
-              <li>If <code>currentTime &gt; startDelay
-                  + activeDuration</code> and
-                  <code>playbackRate &ge; 0</code>, seek to
-                  <code>startDelay</code> following the procedure described in
-                  <a href="#seeking-a-timed-item" class="sectionRef"></a>.</li>
-              <li>Set the <a>local pause state</a> to <code>false</code> using
-                  the procedure described in <a
-                  href="#updating-the-local-pause-state"
-                  class="sectionRef"></a>.</li>
-            </ol>
-            <p>
-              To unpause the item without seeking, set
-              <code>locallyPaused</code> to <code>false</code>.
-            </p>
-            <p class="annotation">
-              This method is intended to behave in a comparable manner to
-              <a
-              href="http://dev.w3.org/html5/spec/media-elements.html#media-elements">HTMLMediaElement</a>'s <a
-              href="http://dev.w3.org/html5/spec/media-elements.html#dom-media-play">play
-              method</a>.
-            </p>
-          </dd>
-          <dt>void cancel ()</dt>
-          <dd>
-            <p>
-              Disassociates this timed item from its <a>TimeSource</a>
-              (represented by <code>timeline</code>).
-              As a result, if the timed item or its children are
-              <a>Animation</a> objects, they will no longer affect their target
-              elements.
-            </p>
-            <p>
-              The procedure for cancelling a timed item is defined in <a
-              href="#cancelling-a-timed-item" class="sectionRef"></a>.
             </p>
           </dd>
         </dl>
@@ -6426,6 +6005,23 @@ var frame = effect.frames['0.3'];
           The events to be dispatched are therefore those whose document time
           lies within <var>progress interval</var>.
         </p>
+        <div class="todo">
+          <p>
+            I think we will need to make sample times per-timed item.
+            Then, if we have a timed item that has a previous sample, but can't
+            get the current time (because it has no timeline), then we fire
+            a timingcancel event.
+          </p>
+          <p>
+            That way, you can switch players and their source content around and
+            you'll only get a cancel event if on the next sample the timed item
+            is not connected to a player.
+          </p>
+          <p>
+            The time for the cancel event would be the time of the previous
+            sample.
+          </p>
+        </div>
         <div class="issue">
           <p>
             This description fails to account for newly-added animations,
