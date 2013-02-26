@@ -576,17 +576,17 @@
       </div>
       <p>
         A <dfn>player</dfn> connects a single <a>timed item</a>, called its
-        <dfn>playback content</dfn>, to a <a>timeline</a> and provides playback
+        <dfn>source content</dfn>, to a <a>timeline</a> and provides playback
         control.
       </p>
       <p>
         A <a>player</a> records the <a>time value</a> of its <a>timeline</a>
-        at which its <a>playback content</a> is scheduled to begin
+        at which its <a>source content</a> is scheduled to begin
         as the <dfn>start time</dfn>.
       </p>
       <p>
         <a title="player">Players</a> also provide a <a>time value</a> to their
-        <a>playback content</a> called the player's <dfn>current time</dfn>.
+        <a>source content</a> called the player's <dfn>current time</dfn>.
         The calculation of the <a>current time</a> is as follows:
       </p>
       <blockquote>
@@ -629,7 +629,7 @@
           <h4>Introduction to seeking</h4>
           <p>
             Changing the current playback position of a player can be used to
-            rewind its <a>playback content</a> to its start point, fast-forward
+            rewind its <a>source content</a> to its start point, fast-forward
             to a point in the future, or to provide ad-hoc synchronization
             between timed items.
           </p>
@@ -671,8 +671,8 @@
           </p>
           <p>
             Pausing before a player's <a>start time</a> will cause the player's
-            content to begin in a paused state but does not delay its start as
-            is illustrated below.
+            <a>source content</a> to begin in a paused state but does not delay
+            its start as is illustrated below.
           </p>
           <div class="figure">
             <img src="img/pausing.svg" width="600">
@@ -684,13 +684,13 @@
             The pause has no effect.<br><br>
             In case B, the player is paused before the <a>start time</a> and
             remains paused.
-            At the scheduled <a>start time</a> the playback content begins
+            At the scheduled <a>start time</a> the <a>source content</a> begins
             playing in a paused state.
             When the player is unpaused it continues playing.
             The resulting player has a <a>time drift</a> equivalent to the
             interval from the <a>start time</a> to when it was unpaused.<br><br>
             In case C, the player is paused and unpaused during the <a>active
-            interval</a> of the playback content.
+            interval</a> of the source content.
             After unpausing, the player has a <a>time drift</a> equivalent to
             the duration of the pause interval.
           </p>
@@ -749,19 +749,19 @@
             is unpaused or seeked.
           </p>
           <p>
-            Since pausing does not take effect prior to when a player's playback
-            content begins, we first define the beginning of a player's playback
+            Since pausing does not take effect prior to when a player's source
+            content begins, we first define the beginning of a player's source
             content for the purposes of pausing as a player's <em>earliest
             moment</em>.
             The calculation is as follows:
           </p>
           <blockquote>
             <dfn>earliest moment</dfn> = <code>min(0, <var>start delay of
-            playback content</var>)</code>
+            source content</var>)</code>
           </blockquote>
           <p class="issue">
             I'm pretty sure we don't want this behavior now that the player is
-            separate to the playback content.
+            separate to the source content.
           </p>
           <p>
             Using this definition we can define the value of <a>time drift</a>
@@ -914,7 +914,7 @@
         </p>
         <p>
           <dfn>Cancelling</dfn> a <a>player</a> breaks the association between
-          the <a>player</a> and its <a>playback content</a>.
+          the <a>player</a> and its <a>source content</a>.
         </p>
         <p class="issue">
           Should this reset the time drift? And what about other properties?
@@ -5646,10 +5646,10 @@ var frame = effect.frames['0.3'];
           API by the <a title="Player interface">Player</a> interface.
         </p>
         <dl title="interface Player" class="idl">
-          <dt>attribute TimedItem? content</dt>
+          <dt>attribute TimedItem? source</dt>
           <dd>
             <p>
-              The <a>playback content</a> associated with this player.
+              The <a>source content</a> associated with this player.
             </p>
             <p>
               A <a>player</a> can only be associated with at most one <a>timed
@@ -5661,7 +5661,7 @@ var frame = effect.frames['0.3'];
             </p>
             <ol>
               <li>Let <var>old value</var> be the current value of the
-                  <code>content</code> attribute.</li>
+                  <code>source</code> attribute.</li>
               <li>Let <var>new value</var> be the value to set.</li>
               <li>If <var>new value</var> is the same object as <var>old
                   value</var>, return.</li>
@@ -5685,7 +5685,7 @@ var frame = effect.frames['0.3'];
                 </dl>
               </li>
               <li>Associate <var>new value</var> with this player.
-              <li>Set the <code>content</code> attribute to <var>new
+              <li>Set the <code>source</code> attribute to <var>new
                   value</var>.</li>
             </ol>
           </dd>
@@ -5726,7 +5726,7 @@ var frame = effect.frames['0.3'];
           <dt>void cancel()</dt>
           <dd>
             <p>
-              Sets <code>content</code> to <code>null</code>.
+              Sets <code>source</code> to <code>null</code>.
             </p>
             <p class="todo">
               See notes in <a href="#cancelling" class="sectionRef"></a>.
