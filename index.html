@@ -1244,192 +1244,6 @@
           <code>null</code>.
         </p>
       </section>
-      <section>
-        <h3>The <a>TimedItem</a> interface</h3>
-        <p>
-          Timed items are represented in the Web Animations API by the
-          <a>TimedItem</a> interface.
-        </p>
-        <dl title="interface TimedItem : TimeSource" class="idl">
-          <dt>attribute double startTime</dt>
-          <dd>
-            <p>
-              The time which, when combined with the <code>startDelay</code>,
-              defines the lower bound of the <a>active interval</a>.
-              It is expressed in seconds in the <a>inherited time space</a>.
-            </p>
-            <p>
-              When this item is the child of a sequence timing group, any
-              previously set value for <code>startTime</code> is ignored and
-              instead the value of this attribute is determined by the procedure
-              defined in <a
-              href="#the-start-time-of-children-of-a-sequence-timing-group"
-              class="sectionRef"></a>.
-              Furthermore, attempts to set this attribute will raise a
-              <code>DOMException</code> of type <code>InvalidStateError</code>.
-              If this item is later removed from the sequence timing group,
-              any previously set value will be restored.
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>InvalidStateError</code></dt>
-              <dd>
-                Raised on setting if this item is the child of a sequence
-                timing group (see <a
-                href="#the-start-time-of-children-of-a-sequence-timing-group"
-                class="sectionRef"></a>).
-              </dd>
-            </dl>
-          </dd>
-          <dt>attribute double startDelay</dt>
-          <dd>
-            <p>
-              The number of seconds which, when added to the timed item's
-              <code>startTime</code>, defines the lower bound of the timed
-              item's <a>active interval</a>.
-            </p>
-            <p>
-              A non-normative description of the effect of this attribute on
-              timing is given in <a href="#the-active-interval"
-              class="sectionRef"></a>.
-            </p>
-          </dd>
-          <dt>attribute unrestricted double activeDuration</dt>
-          <dd>
-            <p>
-              The length in seconds of the <a>active interval</a>.
-            </p>
-            <p>
-              Initially, this attribute will reflect the <a>intrinsic run-time
-              active duration</a>.
-              Changes to the model that cause the <a>intrinsic run-time active
-              duration</a> to change are reflected in the value returned here.
-            </p>
-            <p>
-              The <a>intrinsic run-time active duration</a> may be overridden by
-              setting this attribute to any real number (see <a
-              href="#calculating-the-active-duration" class="sectionRef"></a>).
-            </p>
-            <p>
-              If the <a>zero run-time playback rate flag</a> is set, returns
-              <code>Infinity</code>.
-            </p>
-            <p class="issue">
-              How can you restore the active duration to reflecting the
-              <a>intrinsic run-time active duration</a>?
-              <code>resetActiveDuration</code>?
-            </p>
-            <p class="issue">
-              Call this simply <code>duration</code>?
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>IndexSizeError</code></dt>
-              <dd>
-                Raised on setting if the value to set is a real number that is
-                less than zero.
-              </dd>
-            </dl>
-            <p class="issue">
-              It might be simpler and more consistent to split out
-              <code>defaultActiveDuration</code> and <code>activeDuration</code>
-              here?<br>
-              However, in this case <code>defaultActiveDuration</code> would not
-              be overridable? i.e. readonly?
-            </p>
-          </dd>
-          <dt>readonly attribute unrestricted double endTime</dt>
-          <dd>
-            <p>
-              The upper bound of the <a>active interval</a> expressed in
-              seconds relative to the <a>inherited time space</a> of
-              <code>timeline</code>.
-            </p>
-            <div class="issue">
-              <p>
-                Should this reflect the run-time active interval or the default
-                active interval? i.e. if you set <code>playbackRate</code> to
-                2 should this change?
-              </p>
-              <p>
-                It might be more useful to have to reflect the default active
-                interval since <code>activeDuration</code> already reflects the
-                run-time interval.
-              </p>
-              <p>
-                If this reflects the default it should probably ignore the
-                <code>timeDrift</code> and then we could remove the definition
-                of the <a>default end time</a> defined in <a
-                href="#the-intrinsic-duration-of-a-parallel-timing-group"
-                class="sectionRef"></a>.
-              </p>
-            </div>
-            <p>
-              <code>endTime</code> is calculated as follows:
-            </p>
-            <dl class="switch">
-              <dt>If <code>locallyPaused</code> is <code>true</code>,</dt>
-              <dd>
-                <code>endTime</code> is positive infinity.
-              </dd>
-              <dt>Otherwise,</dt>
-              <dd>
-                <code>endTime</code> is the result of evaluating
-                <code>startTime + startDelay +
-                      activeDuration + timeDrift</code>.
-              </dd>
-            </dl>
-            <p class="note">
-              Note that while the <code>endTime</code> is read-only, it can be
-              set indirectly by overriding the <code>activeDuration</code>
-              attribute.
-              For example, to set <code>endTime</code> to time <var>t</var> in
-              <a>inherited time space</a>, set <code>activeDuration</code> to
-              <code><var>t</var> - startTime - startDelay - timeDrift</code>.
-            </p>
-            <div class="issue">
-              <p>
-                Make this writeable?
-                We could make it just do the above calculation and set
-                <code>activeDuration</code>, the caveat being that setting
-                <code>endTime</code> &lt; <code>startTime</code> would fail
-                (even if the next line of code fixed <code>startTime</code> to
-                make it valid).
-              </p>
-              <p>
-                Alternatively we could allow <code>endTime</code> to be less
-                than <code>startTime</code> and add logic to ignore such
-                intervals elsewhere.
-              </p>
-            </div>
-          </dd>
-          <dt>readonly attribute TimeSource? timeline</dt>
-          <dd>
-            <p>
-              The time source upon which this timed item's timing is based.
-              The <a title="output time value">output time values</a> of
-              this time source provide the <a>inherited time space</a> for this
-              timed item.
-            </p>
-            <p>
-              May be <code>null</code> if this timed item is not associated with
-              a time source.
-              Animations without a time source do not affect their target.
-            </p>
-            <p class="issue">
-              Is this right? It's probably useful to be able to put animations
-              in a state where they have no effect on their target such as when
-              calling <code>cancel</code>.
-              Should we just set <code>target</code> to <code>null</code>
-              in that case?
-            </p>
-          </dd>
-        </dl>
-      </section>
     </section>
 
     <section>
@@ -3324,21 +3138,12 @@ var animC = new Animation(elem,
           interface.
         </p>
         <dl title="dictionary TimingDictionary" class="idl">
-          <dt>double? startTime = null</dt>
-          <dd>
-            <p class="todo">
-              TBD. See notes on autoplay behavior in the <a>Animation</a>
-              constructor definition.
-            </p>
-          </dd>
           <dt>double startDelay = 0</dt>
           <dd>
             <p>
-              The number of seconds from a timed item's <code>startTime</code>
-              to the start of the <a>animation interval</a>.
-              See <a href="#widl-TimedItem-startDelay"
-              class="idlType"><code>startDelay</code></a> on the
-              <a>TimedItem</a> interface.
+              The <a>start delay</a> which represents the number of seconds from
+              a <a>timed item</a>'s <code>startTime</code> to the start of the
+              <a>active interval</a>.
             </p>
           </dd>
           <dt>FillMode fillMode = "forwards"</dt>
@@ -5857,6 +5662,96 @@ var frame = effect.frames['0.3'];
           Note that it is already possible to clear the time drift by simply
           setting the <code>startTime</code> to its current value.
         </p>
+      </section>
+      <section>
+        <h3>The <a>TimedItem</a> interface</h3>
+        <p>
+          <a title="timed item">Timed items</a> are represented in the Web
+          Animations API by the <a>TimedItem</a> interface.
+        </p>
+        <dl title="interface TimedItem : EventTarget" class="idl">
+          <dt>// Playback state</dt><dd></dd>
+          <dt>readonly attribute double? localTime</dt>
+          <dd>
+            <p>
+              The <a>local time</a> of this <a>timed item</a> in seconds.
+            </p>
+            <p>
+              <code>localTime</code> will be <code>null</code> if this <a>timed
+              item</a> is not directly or indirectly associated with
+              a <a>player</a> or if it has a parent <a>timing group</a> that is
+              not <a>in effect</a>.
+            </p>
+          </dd>
+          <dt>// Calculated timing</dt><dd></dd>
+          <dt>readonly attribute double startTime</dt>
+          <dd>
+            <p>
+              The <a>start time</a> of this <a>timed item</a> in seconds.
+              This is the time at which the parent <a>timing group</a>, if any,
+              has scheduled this child to run within its <a title="scaled
+              time">scaled time space</a>, that is, the <a>timed item</a>'s
+              <a title="inherited time">inherited time space</a>.
+            </p>
+            <p>
+              The start of the <a>active interval</a> is based on the sum of
+              the <code>startTime</code> and <code>specified.startDelay</code>.
+            </p>
+          </dd>
+          <dt>readonly attribute unrestricted double activeDuration</dt>
+          <dd>
+            <p>
+              The calculated length, in seconds, of the <a>active interval</a>.
+            </p>
+            <p>
+              This value may be overridden by setting
+              <code>specified.activeDuration</code>.
+            </p>
+          </dd>
+          <dt>readonly attribute unrestricted double endTime</dt>
+          <dd>
+            <p>
+              The upper bound of the <a>active interval</a> expressed in
+              seconds in <a title="inherited time">inherited time space</a>.
+            </p>
+            <p>
+              <code>endTime</code> is calculated as
+              <code><a>start time</a> + <a>start delay</a> + <a>active
+                    duration</a></code>
+            </p>
+            <p class="note">
+              Note that while the <code>endTime</code> is read-only, it can be
+              set indirectly by setting <code>specified.activeDuration</code>.
+              For example, to set <code>endTime</code> to time <var>t</var> in
+              <a>inherited time</a>,
+              set <code>specified.activeDuration</code> to
+              <code><var>t</var> - startTime - specified.startDelay</code>.
+            </p>
+          </dd>
+          <dt>// Associated player</dt><dd></dd>
+          <dt>Player? getPlayer()</dt>
+          <dd>
+            <p>
+              The <a>player</a> associated with this <a>timed item</a> either
+              directly or indirectly.
+              This object can be used to perform play control such as pausing or
+              rewinding on this <a>timed item</a> <em>and all other timed items
+              in the same hierarchy</em>.
+            </p>
+            <p>
+              Since <a title="player">players</a> are only associated with the
+              root <a>timed item</a> in a hierarchy, this method will look up
+              the parent <a>timing group</a> of this <a>timed item</a>, if any,
+              and continue all the way to the root of the hierarchy and then
+              return the <a>player</a> associated with the root item, if any.
+            </p>
+            <p>
+              This method will return <code>null</code> if this <a>timed
+              item</a> is not associated&mdash;directly or indirectly&mdash;with
+              a <a>player</a>.
+            </p>
+          </dd>
+        </dl>
       </section>
       <section>
         <h3>Extensions to the <code>Document</code> interface</h3>
