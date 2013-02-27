@@ -935,69 +935,114 @@
     <section>
       <h2>Timed items</h2>
       <p>
-        In addition to time sources, the other actor in the Web Animations
-        timing model is timed items.
+        The <a>source content</a> of a <a>player</a>, if set, is a type of
+        <dfn>timed item</dfn>.
+        There are three types of <a>timed item</a>:
       </p>
-      <section class="informative">
-        <h3>Relationship to time sources</h3>
-        <p>
-          The complement of time sources&mdash;which produce time
-          values&mdash;is timed items, which consume time values.
-          The time source from which a timed item receives time values is called
-          its <em>timeline</em>.
-        </p>
-        <p>
-          In the context of its timeline, each timed item is defined by an
-          interval during which it is scheduled to be active.
-        </p>
-        <div class="figure">
-          <img src="img/timeline.svg" width="600">
-        </div>
-        <p class="caption">
-          At time <em>t</em> timed items A and B are active.
-          Timed item C is no longer active.
-          Timed item D has yet to begin and is not active.
-        </p>
-        <p>
-          As well as being consumer of time values, timed items are also
-          themselves time sources.
-          After consuming a time value most timed values apply a transformation
-          to the value and then pass it on as an <a>output time value</a>.
-        </p>
-      </section>
-      <section class="informative">
+      <ul>
+        <li><a title="animation">animations</a>,</li>
+        <li><a title="timing group">timing groups</a>, and</li>
+        <li><a title="media reference">media references</a>.</li>
+      </ul>
+      <p>
+        At a given moment, a <a>timed item</a> can be associated with at most
+        one <a>player</a>.
+      </p>
+      <p>
+        <a title="timed item">Timed items</a> can be chained together into
+        a hierarchy using <a title="timing group">timings groups</a> in which
+        case a <a>timed item</a> may be <dfn>indirectly associated</dfn> with
+        a <a>player</a> via an ancestor <a>timing group</a>.
+        Only the root <a>timed item</a> of such a hierarchy can be associated
+        directly with a <a>timed item</a>.
+        Attempting to associate a <a>timed item</a> that has a parent <a>timing
+        group</a> with a <a>player</a> results in the <a>timed item</a> being
+        removed from the parent <a>timing group</a>.
+      </p>
+      <p>
+        All types of <a>timed item</a> define a number of common properties.
+      </p>
+      <section>
         <h3>The active interval</h3>
-        <p>
-          The period that a timed item is scheduled to run is called the
-          <dfn>active interval</dfn>.
-          Each timed item has only one such interval.
-        </p>
-        <p>
-          The lower bound of the active interval is determined by the
-          <dfn>start time</dfn> of the timed item but may be shifted by
-          a <dfn>start delay</dfn> on the timed item.
-        </p>
-        <p>
-          The upper bound of the interval is determined by the <a>active
-          duration</a>.
-        </p>
-        <p>
-          The relationship between the <a>start time</a>, <a>start delay</a>,
-          and <a href="#calculating-the-active-duration">active duration</a> is
-          illustrated below.
-        </p>
-        <div class="figure">
-          <img src="img/active-interval-examples.svg" width="600">
+        <div class="informative">
+          <p>
+            The period that a <a>timed item</a> is scheduled to run is called
+            the <a>active interval</a>.
+            Each <a>timed item</a> has only one such interval.
+          </p>
+          <p>
+            The lower bound of the <a>active interval</a> is determined by the
+            <a>start time</a> of the <a>timed item</a> but may be shifted by
+            a <a>start delay</a> on the <a>timed item</a>.
+          </p>
+          <p>
+            The upper bound of the interval is determined by the <a>active
+            duration</a>.
+          </p>
+          <p>
+            The relationship between the <a>start time</a>, <a>start delay</a>,
+            and <a>active duration</a> is illustrated below.
+          </p>
+          <div class="figure">
+            <img src="img/active-interval-examples.svg" width="600">
+          </div>
+          <p class="caption">
+            Examples of the effect of the <a>start delay</a> on the endpoints of
+            the <a>active interval</a>.<br>
+            (a) A timed item with no delay; the start time and beginning of the
+            active interval are coincident.<br>
+            (b) A timed item with a positive delay; the beginning of the active
+            interval is deferred by the delay.<br>
+            (c) A timed item with a negative delay; the beginning of the active
+            interval is brought forward by the delay.
+          </p>
         </div>
-        <p class="caption">
-          Examples of the effect of the <a>start delay</a> on the endpoints of
-          the <a>active interval</a>.<br>
-          (a) A timed item with no delay; the start time and start of
-          item are coincident.<br>
-          (b) A timed item with a positive delay; the start of the
-          item is deferred by the delay.<br>
-          (c) A timed item with a negative delay; the start of the
-          item is brought forward by the delay.
+        <p>
+          <a title="timed item">Timed items</a> define an <dfn>active
+          interval</dfn> which is the period of time during which the item is
+          scheduled to produce its effect (with the exception of <a title="fill
+          mode">fill modes</a> which apply outside the <a>active interval</a>).
+        </p>
+        <p>
+          The lower bound of the <a>active interval</a> is defined by the
+          combination of the timed item's <a>start time</a> and <a>start
+          delay</a>
+        </p>
+        <p>
+          A <a>timed item</a>'s <dfn>start time</dfn> is the moment at which the
+          <em>parent timing group</em>, if any, has scheduled the <a>timed
+          item</a> to begin.
+          It is expressed in <a>inherited time</a>.
+          In most cases, including the case when the <a>timed item</a> has no
+          parent timing group, the <a>start time</a> is zero.
+          The singular exception is <a title="sequence timing
+          group">sequence timing groups</a> which set the <a title="start
+          time">start times</a> of their children as described in <a
+          href="#the-start-time-of-children-of-a-sequence-timing-group"
+          class="sectionRef"></a>.
+        </p>
+        <p>
+          In addition to the <a>start time</a>, a <a>timed item</a> also has
+          a <dfn>start delay</dfn> which is an offset from the <a>start
+          time</a>.
+          Unlike the <a>start time</a> which is determined by the parent timing
+          group, the <a>start delay</a> is a property of the <a>timed item</a>
+          itself.
+        </p>
+        <p>
+          The lower bound of the <a>active interval<a> of a <a>timed item</a>,
+          expressed in <a title="inherited time">inherited time space</a>, is
+          the sum of the <a>start time</a> and the <a>start delay</a>.
+        </p>
+        <p>
+          These definitions are incorporated in the calculation of the <a>local
+          time</a> (see <a href="#local-time-and-inherited-time"
+          class="sectionRef"></a>).
+        </p>
+        <p>
+          The upper bound of the <a>active interval</a> is determined by the
+          <a>active duration</a>, the calculation of which is defined in <a
+          href="#calculating-the-active-duration" class="sectionRef"></a>.
         </p>
       </section>
       <section>
