@@ -1123,11 +1123,11 @@
         <h3>Timed item states</h3>
         <div class="informative">
           <p>
-            At given moment, a timed item may be described as being in one of
-            several overlapping states.
+            At given moment, a <a>timed item</a> may be described as being in
+            one of several overlapping states.
             These states are only established for the duration of a single
-            sample and are primarily a convenience for defining the behavior of
-            events and various API methods.
+            sample and are primarily a convenience for describing stative parts
+            of the model such as event dispatch.
           </p>
           <p>
             The different states are illustrated below.
@@ -1136,47 +1136,74 @@
             <img src="img/timed-item-states.svg" width="700">
           </div>
           <p class="caption">
-            An example of the different states used for describing a timed item
-            at a given time.
-            Note that a timed item is considered to be in effect for all times
-            inside the <a>active interval</a> as well as times outside the
-            active interval where a <a>fill mode</a> is applied.
+            An example of the different states used for describing a <a>timed
+            item</a> at a given time.
+            Note that a <a>timed item</a> is considered to be <a>in effect</a>
+            for all times inside the <a>active interval</a> as well as times
+            outside the <a>active interval</a> where a <a>fill mode</a> is
+            applied.
           </p>
           <p>
             These states and their useage within the model are summarised as
             follows:
           </p>
           <dl>
-            <dt>scheduled</dt>
+            <dt><a>scheduled</a></dt>
             <dd>
-              The current time falls before the item's <a>active interval</a>.
-              This state is only used in conjunction with the <em>active</em>
-              state to define <em>current</em> timed items.
-            </dd>
-            <dt>active</dt>
-            <dd>
-              The current time falls inside the item's <a>active interval</a>.
-              Transitions to and from the active state trigger timing events as
-              defined in <a href="#timing-events" class="sectionRef"></a>.
-            </dd>
-            <dt>current</dt>
-            <dd>
-              The current time falls either before or inside the item's
+              The <a>timed item</a>'s <a>local time</a> falls before the item's
               <a>active interval</a>.
-              This state is used to determine which animations are returned from
-              the <code>getCurrentAnimations</code> method defined on the
-              <code>Document</code> and <code>Element</code> interfaces.
+              This state is only used in conjunction with the
+              <a><em>active</em></a> state to define the <a><em>current</em></a>
+              state.
             </dd>
-            <dt>in effect</dt>
+            <dt><a>active</a></dt>
             <dd>
-              The current time falls either inside the item's <a>active
-              interval</a> or outside the interval but at a time where the
-              item's <a>fill mode</a> (see <a href="#fill-behavior"
-              class="sectionRef"></a>) causes it to affect its target.
-              Timed items only pass on an output time value to descendent timed
-              items or animation effects when the item is in effect.
-              At all other times, the output time of a timed item is
-              <code>null</code>.
+              The <a>timed item</a>'s <a>local time</a> falls inside the item's
+              <a>active interval</a>.
+              Transitions to and from the <a><em>active</em></a> state trigger
+              timing events as defined in <a href="#timing-events"
+              class="sectionRef"></a>.
+            </dd>
+            <dt><a>current</a></dt>
+            <dd>
+              <p>
+                The <a>timed item</a>'s <a>local time</a> falls either before or
+                inside the item's <a>active interval</a>, <em>or</em> the
+                <a>local time</a> of an ancestor <a>timing group</a> falls
+                before or inside its <a>active interval</a> thereby opening up
+                the possibility that this <a>timed item</a> might play again
+                (e.g. due to repeating).
+              </p>
+              <p>
+                This state is used in the <a
+                href="#script-interface">programming interface</a> to identify
+                all <a title="animation">animations</a> and <a
+                title="player">players</a> that are likely to be of interest.
+              </p>
+              <p>
+                Furthermore, the <a>current</a> state provides an important
+                definition for managing the amount of memory required by
+                implementations.
+                Assuming a monotonically increasing <a>timeline</a>, in the
+                absence of dynamic changes to the model, an implementation can
+                safely discard all <a title="timed item">timed items</a> that
+                are <em>not</em> <a>current</a> and not referenced elsewhere
+                provided they take care to preserve any <a title="fill
+                mode">fill values</a> since they will not have any dynamic
+                effect.
+              </p>
+            </dd>
+            <dt><a>in effect</a></dt>
+            <dd>
+              The <a>timed item</a>'s <a>local time</a> falls either inside the
+              item's <a>active interval</a> or outside the interval but at
+              a time where the item's <a>fill mode</a> (see <a
+              href="#fill-behavior" class="sectionRef"></a>) causes it to affect
+              its target.
+              <a title="timed item">Timed items</a> only produce a <a>scaled
+              time</a> when the item is <a>in effect</a>.
+              At all other times, the <a>scaled time</a> of a <a>timed item</a>
+              is <code>null</code>.
             </dd>
           </dl>
           <p>
@@ -1184,29 +1211,31 @@
           </p>
         </div>
         <p>
-          A timed item is <dfn>scheduled</dfn> if <em>either</em> of the
+          A <a>timed item</a> is <dfn>scheduled</dfn> if <em>either</em> of the
           following conditions is true:
         </p>
         <ol>
           <li>the timed item's <a>local time</a> is not <code>null</code> and is
               less than the item's <code>startDelay</code>, or</li>
-          <li>the timed item has a parent time source (represented in the API by
-              a non-null <code>timeline</code> attribute) which is
+          <li>the timed item has a parent <a>timing group</a> which is
               a <a>scheduled</a> timed item.</li>
         </ol>
         <p>
-          A timed item is <dfn>active</dfn> if <em>all</em> of the following
-          conditions are met:
+          A <a>timed item</a> is <dfn>active</dfn> if <em>all</em> of the
+          following conditions are met:
         </p>
         <ol>
-          <li>the timed item's <a>local time</a> is not <code>null</code>,
-              and</li>
-          <li><a>local time</a> &ge; <code>startDelay</code>, and</li>
-          <li><a>local time</a> &lt; <code>activeDuration</code>.</li>
+          <li>the <a>timed item</a>'s <a>local time</a> is not
+              <code>null</code>, and</li>
+          <li>the <a>timed item</a>'s <a>local time</a> is <em>greater than or
+              equal</em> to its <a>start delay</a>, and</li>
+          <li>the <a>timed item</a>'s <a>local time</a> is <em>less than</em>
+              the sum of its <a>start delay</a> and <a>active duration</a>.</li>
         </ol>
         <p>
           A timed item is <dfn>current</dfn> if it is either <a>scheduled</a> or
-          <a>active</a>.
+          <a>active</a> or it has a parent <a>timing group</a> and the parent
+          <a>timing group</a> is <a>current</a>.
         </p>
         <p>
           A timed item is <dfn>in effect</dfn> if its <a>active time</a> as
