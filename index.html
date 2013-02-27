@@ -1037,7 +1037,7 @@
         <p>
           These definitions are incorporated in the calculation of the <a>local
           time</a> (see <a href="#local-time-and-inherited-time"
-          class="sectionRef"></a>).
+          class="sectionRef"></a>) and <a>active time</a>.
         </p>
         <p>
           The upper bound of the <a>active interval</a> is determined by the
@@ -1060,83 +1060,63 @@
             a coordinate space.
           </p>
           <p>
-            For example, since a timed item can specify its own start time, the
-            time values produced by a timed item will be offset from those
-            received from its time source.
-            As a result we say that the timed item establishes a new time space
-            which we call <em>local time</em> as illustrated below.
+            Just as with coordinate spaces, time spaces can also be nested.
+            <a title="timing group">Timing groups</a> typically perform some
+            transformations on the <a title="time value">time values</a> they
+            receive from their parent or <a>player</a> before passing on the
+            transformed <a title="time value">time values</a> to their children.
+            Child <a title="timed item">timed items</a> then operate
+            <em>within</em> that transformed time space.
+          </p>
+          <p>
+            Children take the transformed time values from their
+            parent&mdash;called the <a>inherited time</a>&mdash; and add their
+            <a>start time</a> to establish their own <a title="local time">local
+            time space</a> as illustrated below.
           </p>
           <div class="figure">
             <img src="img/local-time.svg" width="600">
           </div>
           <p class="caption">
             Inherited time and local time.<br>
-            At time <var>t</var>, the inherited time is 2.5.<br>
-            For timed item (a), the local time is 1.5.<br>
-            For timed item (b), the local time is also 1.5 since local time is
-            based on a timed item's start time only, and not on its start delay.
-          </p>
-          <p>
-            From the point of a view of a given timed item we can talk about the
-            following time spaces:
-          </p>
-          <dl>
-            <dt><dfn>Inherited time space</dfn></dt>
-            <dd>
-              A time space that corresponds to the <a title="output time
-              value">output time values</a> of the timed item's time source.
-            </dd>
-            <dt><dfn>Local time space</dfn></dt>
-            <dd>
-              A time space whose zero time is the start time of the timed item
-              (plus any accumulated <a>time drift</a>&mdash;see <a
-              href="#seeking-a-timed-item" class="sectionRef"></a>).
-            </dd>
-          </dl>
-          <p>
-            In addition to these time spaces we can also refer to the
-            <dfn>document time space</dfn> which is equivalent to the
-            <a>inherited time space</a> of the <a>DocumentTimeSource</a> of the
-            <a
-            href="http://www.w3.org/TR/html5/browsers.html#active-document">active
-            document</a>.
-          </p>
-          <p>
-            Furthermore, timed items that allow repeating introduce a further
-            time space, <a>iteration time space</a> (see <a
-            href="#repeating" class="sectionRef"></a>).
+            At time <var>t</var>, the <a>inherited time</a> is 2.5.<br>
+            For <a>timed item</a> (a) which has a <a>start time</a> of 1,
+              the <a>local time</a> is 1.5.<br>
+            For <a>timed item</a> (b) which has a <a>start time</a> of 1
+              and a <a>start delay</a> of 1,
+              the <a>local time</a> is also 1.5
+              since <a>local time</a> is based on a <a>timed item</a>'s
+              <a>start time</a> only,
+              and not on its <a>start delay</a>.
           </p>
         </div>
         <p>
-          For a given timed item, the <dfn>inherited time</dfn> at a given
-          moment is the value of the <dfn>output time value</dfn> of the time
-          source. If no time source is associated with the timed item, the
-          inherited time is <code>null</code>.
-        </p>
-        <p>
-          From the point of view of the API, the <a>inherited time</a> is
-          based on the first matching condition of the following:
+          For a <a>timed item</a>, the <dfn>inherited time</dfn> at
+          a given moment is based on the first matching condition from the
+          following:
         </p>
         <dl class="switch">
-          <dt>If <code>timeline</code> is <code>null</code>,</dt>
-          <dd>return <code>null</code>.</dd>
-          <dt>If <code>timeline</code> has an attribute
-              <code>outputTime</code>,</dt>
-          <dd>return that value.</dd>
+          <dt>If the <a>timed item</a> has a parent <a>timing group</a>,</dt>
+          <dd>
+            the inherited time is the parent <a>timing group</a>'s current
+            <a>scaled time value</a>.
+          </dd>
+          <dt>If the <a>timed item</a> is directly associated with
+              a <a>player</a>,</dt>
+          <dd>
+            the inherited time is the <a>current time</a> of the
+            <a>player</a>.
+          </dd>
           <dt>Otherwise,</dt>
-          <dd>Return <code>timeline.currentTime</code>.</dd>
+          <dd>
+            the inherited time is <code>null</code>.
+          </dd>
         </dl>
         <p>
-          For some calculations it is useful to be able to use zero when the
-          <a>inherited time</a> is <code>null</code>. For this purpose we define
-          the <dfn>effective inherited time</dfn> as the <a>inherited time</a>
-          unless that value is <code>null</code> in which case the effective
-          inherited time is zero.
-        </p>
-        <p>
-          The normative definition of <a>local time</a> follows the definition
-          of <a>time drift</a> and is found in <a
-          href="#calculating-the-local-time" class="sectionRef"></a>.
+          The <dfn>local time</dfn> of a <a>timed item</a> is the sum of the
+          <a>timed item</a>'s <a>inherited time</a> and its <a>start time</a>.
+          If the <a>inherited time</a> is <code>null</code> then the local time
+          is also <code>null</code>.
         </p>
       </section>
       <section>
