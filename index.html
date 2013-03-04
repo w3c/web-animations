@@ -1326,70 +1326,95 @@
 
     <section>
       <h2>Repeating</h2>
-      <section class="informative">
+      <section>
         <h3>Iteration intervals</h3>
         <p>
           It is possible to specify that a timed item should repeat
-          a fixed number of times or even indefinitely.
+          a fixed number of times or indefinitely.
           This repetition occurs <em>within</em> the <a>active interval</a>.
           The span of time during which a single repetition takes place is
           called an <dfn>iteration interval</dfn>.
         </p>
         <p>
           Unlike the <a>active interval</a>, a timed item can have multiple
-          <a>iteration interval</a>s although typically only the interval
-          corresponding to the <a>current iteration</a> is of interest.
+          <a title="iteration interval">iteration intervals</a> although
+          typically only the interval corresponding to the <a>current
+          iteration</a> is of interest.
         </p>
         <p>
-          The length of a single iteration is called the <a>iteration
-          duration</a>. Comparing the <a>iteration duration</a> and the
-          <a href="#calculating-the-active-duration">active duration</a> we
-          have:
+          The length of a single iteration is called the <dfn>iteration
+          duration</dfn>.
+          The initial <a>iteration duration</a> of a timed item is simply its
+          <a>intrinsic iteration duration</a>.
         </p>
-        <dl>
-          <dt>Iteration duration</dt>
-          <dd>
-            The time taken for a single iteration of the timed item to complete.
-          </dd>
-          <dt>Active duration</dt>
-          <dd>
-            The time taken for the entire timed item to complete, including
-            repetitions.
-            This may be longer or shorter than the <a>iteration duration</a>.
-          </dd>
-        </dl>
         <p>
-          The relationship between the <a>iteration duration</a> and
-          <a href="#calculating-the-active-duration">active duration</a> is
-          illustrated below.
+          The <dfn>intrinsic iteration duration</dfn> of a timed item is zero,
+          however some specific types of timed item such as timing groups
+          override this behavior and provide an alternative intrinsic duration
+          (see <a href="#the-intrinsic-duration-of-a-parallel-timing-group"
+          class="sectionRef"></a> and <a
+          href="#the-intrinsic-duration-of-a-sequence-timing-group"
+          class="sectionRef"></a>).
         </p>
-        <div class="figure">
-          <img src="img/iteration-intervals.svg" width="600">
+        <p>
+          The <a>iteration duration</a> of a <a>timed item</a> may be set by the
+          author to represent a value other than the <a>intrinsic iteration
+          duration</a>.
+        </p>
+        <div class="informative">
+          <p>
+            Comparing the <a>iteration duration</a> and the
+            <a href="#calculating-the-active-duration">active duration</a> we
+            have:
+          </p>
+          <dl>
+            <dt>Iteration duration</dt>
+            <dd>
+              The time taken for a single iteration of the timed item to
+              complete.
+            </dd>
+            <dt>Active duration</dt>
+            <dd>
+              The time taken for the entire timed item to complete, including
+              repetitions.
+              This may be longer or shorter than the <a>iteration duration</a>.
+            </dd>
+          </dl>
+          <p>
+            The relationship between the <a>iteration duration</a> and
+            <a href="#calculating-the-active-duration">active duration</a> is
+            illustrated below.
+          </p>
+          <div class="figure">
+            <img src="img/iteration-intervals.svg" width="600">
+          </div>
+          <p class="caption">
+            A comparison of the iteration and active durations for a timed item
+            with an iteration count of 2.5.
+            Note that the iteration duration for the final iteration does not
+            change, it is simply cut-off by the active duration.
+          </p>
         </div>
-        <p class="caption">
-          A comparison of the iteration and active durations for a timed item
-          with an iteration count of 2.5.
-          Note that the iteration duration for the final iteration does not
-          change, it is simply cut-off by the active duration.
-        </p>
       </section>
       <section class="informative">
         <h3>Iteration time space</h3>
         <p>
           We have already encountered different time spaces in describing
-          <a>local time and inherited time</a>.
+          <a>local time and inherited time</a> (see <a
+          href="#local-time-and-inherited-time" class="sectionRef"></a>).
           Repetition introduces yet another time space: the iteration time
           space.
         </p>
         <p>
-          <dfn>Iteration time space</dfn> is a time space whose zero time is the
+          <em>Iteration time space</em> is a time space whose zero time is the
           beginning of a timed item's current iteration.
         </p>
         <p>
-          Within the Web Animations model we also refer to <dfn>active
-          time</dfn> which is a time relative to the beginning of the active
+          Within the Web Animations model we also refer to <a>active
+          time</a> which is a time relative to the beginning of the active
           interval.
-          This time space, however, is not used in the API.
+          This time space, however, is internal to the model and not exposed in
+          the script interface or in markup.
         </p>
         <p>
           These time spaces are illustrated below.
@@ -1408,15 +1433,15 @@
           time</a> such that they are clamped to a set range as shown in the
           diagram.
           For example, whilst a time of -1 second is a valid time in
-          <a>active time space</a>, the procedure for calculating the
+          <em>active time space</em>, the procedure for calculating the
           <a>active time</a> defined in <a
           href="#calculating-the-active-time" class="sectionRef"></a> will
           never return a negative value.
         </p>
         <p>
           In addition to these time spaces we can also refer to the
-          <dfn>document time space</dfn> which is equivalent to the <a>local
-          time</a> of the <a>DocumentTimeSource</a> of the <a
+          <em>document time space</em> which is time space of the <a title="time
+          value">time values</a> of the <a>document timeline</a> of the <a
           href="http://www.w3.org/TR/html5/browsers.html#active-document">active
           document</a>.
         </p>
@@ -1463,118 +1488,6 @@
           After one iteration, the iteration time is 0, but after two iterations
           (and thereonwards), the iteration time is equal to the iteration
           duration due to the special behavior defined when a timed item fills.
-        </p>
-      </section>
-      <section>
-        <h3>Iteration control interface members</h3>
-        <dl title="partial interface TimedItem" class="idl">
-          <dt>// Iteration control members</dt><dd></dd>
-          <dt>attribute double iterationStart</dt>
-          <dd>
-            <p>
-              A finite real number greater than or equal to zero representing
-              the number of iterations into the timed item at which to begin.
-              For example, a value of 0.5 would cause the timed item to begin
-              half-way through the first iteration.
-            </p>
-            <p>
-              The <code>iterationCount</code> is effectively <em>added</em> to
-              the <code>iterationStart</code> such that a timed item with an
-              <code>iterationStart</code> of &lsquo;0.5&rsquo; and
-              <code>iterationCode</code> of &lsquo;2&rsquo; would still
-              repeat twice however it would begin and end half-way through
-              the timed item's <a>iteration interval</a>.
-            </p>
-            <p>
-              Setting the <code>iterationStart</code> to a value greater than
-              or equal to one is typically only useful in combination with an
-              animation effect that has an <code>accumulateOperation</code>
-              other than &lsquo;replace&rsquo;.
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>IndexSizeError</code></dt>
-              <dd>
-                Raised on setting if the value to set is a real number less
-                than zero.
-              </dd>
-            </dl>
-          </dd>
-          <dt>attribute unrestricted double iterationCount</dt>
-          <dd>
-            <p>
-              A real number greater than or equal to zero (including positive
-              infinity) representing the number of times to repeat the
-              timed item.
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>IndexSizeError</code></dt>
-              <dd>
-                Raised on setting if the value to set is a real number less
-                than zero.
-              </dd>
-            </dl>
-          </dd>
-          <dt>attribute unrestricted double iterationDuration</dt>
-          <dd>
-            <p>
-              The duration in seconds of a single iteration.
-              Unless set, this will reflect the <a>intrinsic iteration
-              duration</a> of the timed item.
-              If set, it must be greater than or equal to zero (including
-              positive infinity).
-            </p>
-            <p>
-              After setting, this attribute can be restored to reflecting the
-              <a>intrinsic iteration duration</a> of the timed item by calling
-              <code>resetIterationDuration</code>.
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>IndexSizeError</code></dt>
-              <dd>
-                Raised on setting if the value to set is a real number less
-                than zero.
-              </dd>
-            </dl>
-            <p class="issue">
-              This used to be called <code>duration</code> for consistency with
-              CSS and SVG.
-              Which is better?
-            </p>
-          </dd>
-          <dt>readonly attribute unsigned long? currentIteration</dt>
-          <dd>
-            The current iteration index beginning with zero for the first
-            iteration as described in <a
-              href="#calculating-the-current-iteration" class="sectionRef"></a>.
-          </dd>
-          <dt>unrestricted double resetIterationDuration()</dt>
-          <dd>
-            <p>
-              Causes the <code>iterationDuration</code> attribute to reflect the
-              <a>intrinsic iteration duration</a> of the timed item, discarding
-              any previously set value for the attribute.
-            </p>
-            <p>
-              Returns the <a>intrinsic iteration duration</a> of the timed item.
-            </p>
-          </dd>
-        </dl>
-        <p class="annotation">
-          In future we may introduce <code>iterationTime</code> which
-          corresponds to the <code>outputTime</code> prior to applying time
-          transformations.
-          The advantage of exposing this is that it could be writeable since the
-          transformation from iteration time to local time should be invertible.
-          It is also probably the time we will use for <a>TimingEvent</a> times.
         </p>
       </section>
     </section>
@@ -5546,6 +5459,12 @@ var frame = effect.frames['0.3'];
               not <a>in effect</a>.
             </p>
           </dd>
+          <dt>readonly attribute unsigned long? currentIteration</dt>
+          <dd>
+            The current iteration index beginning with zero for the first
+            iteration as described in <a
+              href="#calculating-the-current-iteration" class="sectionRef"></a>.
+          </dd>
           <dt>// Specified timing</dt><dd></dd>
           <dt>readonly attribute TimingDictionary specified</dt>
           <dd>
@@ -5576,6 +5495,23 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
             <p>
               The start of the <a>active interval</a> is based on the sum of
               the <code>startTime</code> and <code>specified.startDelay</code>.
+            </p>
+          </dd>
+          <dt>readonly attribute unrestricted double iterationDuration</dt>
+          <dd>
+            <p>
+              The <a>iteration duration</a> of this <a>timed item</a>.
+            </p>
+            <p>
+              Unlike <code>specified.iterationDuration</code>,
+              this attribute never returns the string <code>auto</code>.
+              Instead, such values are expanded to the current calculated value
+              of the <a>intrinsic iteration duration</a>.
+            </p>
+            <p>
+              This attribute cannot be set.
+              To set the timed item's <a>iteration duration</a> use
+              <code>specified.iterationDuration</code>.
             </p>
           </dd>
           <dt>readonly attribute unrestricted double activeDuration</dt>
@@ -5632,6 +5568,14 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
             </p>
           </dd>
         </dl>
+        <p class="annotation">
+          In future we may introduce <code>iterationTime</code> which
+          corresponds to the <code>outputTime</code> prior to applying time
+          transformations.
+          The advantage of exposing this is that it could be writeable since the
+          transformation from iteration time to local time should be invertible.
+          It is also probably the time we will use for <a>TimingEvent</a> times.
+        </p>
       </section>
       <section>
         <h3>The <code>TimingDictionary</code> dictionary</h3>
@@ -5668,29 +5612,59 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
           <dt>double iterationStart = 0.0</dt>
           <dd>
             <p>
-              The number of iterations into the item at which to begin.
-              See <a href="#widl-TimedItem-iterationStart"
-              class="idlType"><code>iterationStart</code></a> on the
-              <a>TimedItem</a> interface.
+              A finite real number greater than or equal to zero representing
+              the number of iterations into the timed item at which to begin.
+              For example, a value of 0.5 would cause the timed item to begin
+              half-way through the first iteration.
+            </p>
+            <p>
+              The <code>iterationCount</code> is effectively <em>added</em> to
+              the <code>iterationStart</code> such that a timed item with an
+              <code>iterationStart</code> of &lsquo;0.5&rsquo; and
+              <code>iterationCount</code> of &lsquo;2&rsquo; would still
+              repeat twice however it would begin and end half-way through
+              the timed item's <a>iteration interval</a>.
+            </p>
+            <p>
+              Setting the <code>iterationStart</code> to a value greater than
+              or equal to one is typically only useful in combination with an
+              animation effect that has an <code>accumulateOperation</code>
+              other than &lsquo;replace&rsquo;.
+            </p>
+            <p>
+              Values less than zero are clamped to zero for the purpose of
+              timing model calculations.
             </p>
           </dd>
           <dt>unrestricted double iterationCount = 1.0</dt>
           <dd>
             <p>
-              The number of times to repeat the item.
-              See <a href="#widl-TimedItem-iterationCount"
-              class="idlType"><code>iterationCount</code></a> on the
-              <a>TimedItem</a> interface.
+              A real number greater than or equal to zero (including positive
+              infinity) representing the number of times to repeat the
+              timed item.
+            </p>
+            <p>
+              Values less than zero are treated as the value <code>1.0</code>
+              for the purpose of timing model calculations.
             </p>
           </dd>
-          <dt>unrestricted double? iterationDuration = null</dt>
+          <dt>(unrestricted double or DOMString) iterationDuration = "auto"</dt>
           <dd>
             <p>
-              The duration in seconds of a single iteration, that is, the
-              <a>iteration duration</a>.
-              See <a href="#widl-TimedItem-duration"
-              class="idlType"><code>duration</code></a> on the <a>TimedItem</a>
-              interface.
+              A real number greater than or equal to zero (including positive
+              infinity) representing the number of times to repeat the
+              timed item, that is, the <a>iteration duration</a>.
+            </p>
+            <p>
+              The string value <code>auto</code> is used to indicated that the
+              <a>iteration duration</a> reflects the timed item's <a>intrinsic
+              iteration duration</a>.
+            </p>
+            <p>
+              Real numbers less than zero and strings other than the value
+              <code>auto</code> (in lowercase) are treated are treated the same
+              as <code>auto</code>, that is, the <a>intrinsic iteration
+              duration</a> for the purpose of timing model calculations.
             </p>
           </dd>
           <dt>double defaultPlaybackRate = 1.0</dt>
