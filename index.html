@@ -1250,7 +1250,7 @@
       <h2>Fill behavior</h2>
       <div class="informative">
         <p>
-          Outside of the <a>active interval</a>, a timed item may still have an
+          Outside of its <a>active interval</a>, a timed item may still have an
           effect depending on its <dfn>fill mode</dfn>.
         </p>
       </div>
@@ -1321,40 +1321,6 @@
           item is only defined (that is, not <code>null</code>) inside the
           <a>active interval</a> <em>or</em> when a fill is applied.
         </p>
-      </section>
-      <section>
-        <h3>The <code>FillMode</code> enumeration</h3>
-        <dl title="enum FillMode" class="idl">
-          <dt>none</dt>
-          <dd>
-            No fill.
-          </dd>
-          <dt>forwards</dt>
-          <dd>
-            Fill forwards.
-          </dd>
-          <dt>backwards</dt>
-          <dd>
-            Fill backwards.
-          </dd>
-          <dt>both</dt>
-          <dd>
-            Fill backwards and forwards.
-          </dd>
-        </dl>
-      </section>
-      <section>
-        <h3>Fill control interface members</h3>
-        <dl title="partial interface TimedItem" class="idl">
-          <dt>// Fill control members</dt><dd></dd>
-          <dt>attribute FillMode fillMode</dt>
-          <dd>
-            <p>
-              The <a>fill mode</a> as specified by one of the <a>FillMode</a>
-              enumeration values.
-            </p>
-          </dd>
-        </dl>
       </section>
     </section>
 
@@ -3125,109 +3091,6 @@ var animC = new Animation(elem,
             we have decided on them.
           </p>
         </section>
-      </section>
-      <section>
-        <h3>The <code>TimingDictionary</code> dictionary</h3>
-        <p>
-          To simplify creation of <a>Timing</a> objects
-          a <code>TimingDictionary</code> can be used.
-        </p>
-        <p>
-          Except where otherwise noted, the acceptable values for each
-          member and their meanings are defined in the <a>Timing</a>
-          interface.
-        </p>
-        <dl title="dictionary TimingDictionary" class="idl">
-          <dt>double startDelay = 0</dt>
-          <dd>
-            <p>
-              The <a>start delay</a> which represents the number of seconds from
-              a <a>timed item</a>'s <code>startTime</code> to the start of the
-              <a>active interval</a>.
-            </p>
-          </dd>
-          <dt>FillMode fillMode = "forwards"</dt>
-          <dd>
-            <p>
-              The <a>fill mode</a> of the animation.
-              See <a href="#widl-TimedItem-fillMode"
-              class="idlType"><code>fillMode</code></a> on the <a>TimedItem</a>
-              interface.
-            </p>
-            <p class="note">
-              Note that in both CSS Animations [[CSS3-ANIMATIONS]] and SVG
-              [[SVG112]] the default fill mode is "none".
-              Web Animations differs in this regard since it was determined
-              that when generating animations from script forwards filling is
-              the more commonly-desired behavior.
-            </p>
-            <p class="issue">
-              Some feedback suggests the default here should be "both".
-            </p>
-          </dd>
-          <dt>double iterationStart = 0.0</dt>
-          <dd>
-            <p>
-              The number of iterations into the item at which to begin.
-              See <a href="#widl-TimedItem-iterationStart"
-              class="idlType"><code>iterationStart</code></a> on the
-              <a>TimedItem</a> interface.
-            </p>
-          </dd>
-          <dt>unrestricted double iterationCount = 1.0</dt>
-          <dd>
-            <p>
-              The number of times to repeat the item.
-              See <a href="#widl-TimedItem-iterationCount"
-              class="idlType"><code>iterationCount</code></a> on the
-              <a>TimedItem</a> interface.
-            </p>
-          </dd>
-          <dt>unrestricted double? iterationDuration = null</dt>
-          <dd>
-            <p>
-              The duration in seconds of a single iteration, that is, the
-              <a>iteration duration</a>.
-              See <a href="#widl-TimedItem-duration"
-              class="idlType"><code>duration</code></a> on the <a>TimedItem</a>
-              interface.
-            </p>
-          </dd>
-          <dt>double defaultPlaybackRate = 1.0</dt>
-          <dd>
-            <p>
-              A multiplier applied to the inherited time potentially causing
-              the item to run at a different rate to its natural speed.
-              See <a href="#widl-TimedItem-defaultPlaybackRate"
-              class="idlType"><code>defaultPlaybackRate</code></a> on the
-              <a>TimedItem</a> interface.
-            </p>
-          </dd>
-          <dt>PlaybackDirection direction = "normal"</dt>
-          <dd>
-            <p>
-              The direction in which animation proceeds, e.g. "reverse".
-              See <a href="#widl-TimedItem-direction"
-              class="idlType"><code>direction</code></a> on the <a>TimedItem</a>
-              interface.
-            </p>
-          </dd>
-          <dt>(DOMString or TimingFunction)? timingFunction = null</dt>
-          <dd>
-            <p>
-              An optional timing function used to scale the time to produce
-              easing effects and the like.
-            </p>
-            <p>
-              Unlike the <a>TimedItem</a> interface, the member here may be set
-              to either a <a>TimingFunction</a> object or
-              a <code>DOMString</code> corresponding to one of the values
-              recognized by <a
-              href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
-              class="idlType"><code>Timing.createFromString</code></a>.
-            </p>
-          </dd>
-        </dl>
       </section>
       <section>
         <h3>Animation targets and pseudo-elements</h3>
@@ -5683,6 +5546,23 @@ var frame = effect.frames['0.3'];
               not <a>in effect</a>.
             </p>
           </dd>
+          <dt>// Specified timing</dt><dd></dd>
+          <dt>readonly attribute TimingDictionary specified</dt>
+          <dd>
+            <p>
+              The timing parameters for this <a>TimedItem</a>.
+            </p>
+            <div class="note">
+              <p>
+                Note that while the <a>TimingDictionary</a> object itself is
+                readonly, its members are writeable. For example:
+              </p>
+              <pre class='example sh_javascript'>
+                anim.specified.startDelay = 3; // OK
+                anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
+              </pre>
+            </div>
+          </dd>
           <dt>// Calculated timing</dt><dd></dd>
           <dt>readonly attribute double startTime</dt>
           <dd>
@@ -5752,6 +5632,123 @@ var frame = effect.frames['0.3'];
             </p>
           </dd>
         </dl>
+      </section>
+      <section>
+        <h3>The <code>TimingDictionary</code> dictionary</h3>
+        <p>
+          Timing parameters for a <a>TimedItem</a> are collected together under
+          the <a>TimingDictionary</a> type.
+        </p>
+        <dl title="dictionary TimingDictionary" class="idl">
+          <dt>double startDelay = 0</dt>
+          <dd>
+            <p>
+              The <a>start delay</a> which represents the number of seconds from
+              a <a>timed item</a>'s <code>startTime</code> to the start of the
+              <a>active interval</a>.
+            </p>
+          </dd>
+          <dt>FillMode fillMode = "forwards"</dt>
+          <dd>
+            <p>
+              The <a>fill mode</a> as specified by one of the <a>FillMode</a>
+              enumeration values.
+            </p>
+            <p class="note">
+              Note that in both CSS Animations [[CSS3-ANIMATIONS]] and SVG
+              [[SVG112]] the default fill mode is "none".
+              Web Animations differs in this regard since it was determined
+              that when generating animations from script, forwards filling is
+              the more commonly-desired behavior.
+            </p>
+            <p class="issue">
+              Some feedback suggests the default here should be "both".
+            </p>
+          </dd>
+          <dt>double iterationStart = 0.0</dt>
+          <dd>
+            <p>
+              The number of iterations into the item at which to begin.
+              See <a href="#widl-TimedItem-iterationStart"
+              class="idlType"><code>iterationStart</code></a> on the
+              <a>TimedItem</a> interface.
+            </p>
+          </dd>
+          <dt>unrestricted double iterationCount = 1.0</dt>
+          <dd>
+            <p>
+              The number of times to repeat the item.
+              See <a href="#widl-TimedItem-iterationCount"
+              class="idlType"><code>iterationCount</code></a> on the
+              <a>TimedItem</a> interface.
+            </p>
+          </dd>
+          <dt>unrestricted double? iterationDuration = null</dt>
+          <dd>
+            <p>
+              The duration in seconds of a single iteration, that is, the
+              <a>iteration duration</a>.
+              See <a href="#widl-TimedItem-duration"
+              class="idlType"><code>duration</code></a> on the <a>TimedItem</a>
+              interface.
+            </p>
+          </dd>
+          <dt>double defaultPlaybackRate = 1.0</dt>
+          <dd>
+            <p>
+              A multiplier applied to the inherited time potentially causing
+              the item to run at a different rate to its natural speed.
+              See <a href="#widl-TimedItem-defaultPlaybackRate"
+              class="idlType"><code>defaultPlaybackRate</code></a> on the
+              <a>TimedItem</a> interface.
+            </p>
+          </dd>
+          <dt>PlaybackDirection direction = "normal"</dt>
+          <dd>
+            <p>
+              The direction in which animation proceeds, e.g. "reverse".
+              See <a href="#widl-TimedItem-direction"
+              class="idlType"><code>direction</code></a> on the <a>TimedItem</a>
+              interface.
+            </p>
+          </dd>
+          <dt>(DOMString or TimingFunction)? timingFunction = null</dt>
+          <dd>
+            <p>
+              An optional timing function used to scale the time to produce
+              easing effects and the like.
+            </p>
+            <p>
+              Unlike the <a>TimedItem</a> interface, the member here may be set
+              to either a <a>TimingFunction</a> object or
+              a <code>DOMString</code> corresponding to one of the values
+              recognized by <a
+              href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
+              class="idlType"><code>Timing.createFromString</code></a>.
+            </p>
+          </dd>
+        </dl>
+        <section>
+          <h4>The <code>FillMode</code> enumeration</h4>
+          <dl title="enum FillMode" class="idl">
+            <dt>none</dt>
+            <dd>
+              No fill.
+            </dd>
+            <dt>forwards</dt>
+            <dd>
+              Fill forwards.
+            </dd>
+            <dt>backwards</dt>
+            <dd>
+              Fill backwards.
+            </dd>
+            <dt>both</dt>
+            <dd>
+              Fill backwards and forwards.
+            </dd>
+          </dl>
+        </section>
       </section>
       <section>
         <h3>Extensions to the <code>Document</code> interface</h3>
