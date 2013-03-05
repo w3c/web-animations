@@ -1895,17 +1895,28 @@
 
     <section>
       <h2>Direction control</h2>
+      <p>
+        <a title="timed item">Timed items</a> may also be configured to run
+        iterations in alternative directions using direction control.
+        For this purpose, <a title="timed item">timed items</a> have
+        a <dfn>playback direction</dfn> parameter which takes one of the
+        following values:
+      </p>
+      <ul>
+        <li>normal,</li>
+        <li>reverse,</li>
+        <li>alternate, or</li>
+        <li>alternate-reverse.</li>
+      </ul>
+      <p>
+        The semantics of these values are incorporated into the calculation of
+        the <a>directed time</a> which follows.
+      </p>
       <div class="informative">
         <p>
-          Timed items may also be configured to run iterations in alternative
-          directions using direction control.
-          Unlike speed control, setting a reverse direction does not invert the
-          <a>effective fill mode</a> of the timed item.
+          A non-normative definition of these values is as follows:
         </p>
-      </div>
-      <section>
-        <h3>The <code>PlaybackDirection</code> enumeration</h3>
-        <dl title="enum PlaybackDirection" class="idl">
+        <dl>
           <dt>normal</dt>
           <dd>
             All iterations are played as specified.
@@ -1926,12 +1937,12 @@
             they are specified, odd iterations are played as specified.
           </dd>
         </dl>
-      </section>
+      </div>
       <section>
         <h3>Calculating the directed time</h3>
         <p>
-          The <dfn>directed time</dfn> is based on the <a>iteration time</a>
-          using the following steps:
+          The <dfn>directed time</dfn> is calculated from the <a>iteration
+          time</a> using the following steps:
         </p>
         <ol>
           <li>
@@ -1939,11 +1950,11 @@
             matching condition from the following list:
             <dl class="switch">
               <dt>
-                If <code>direction</code> is <code>normal</code>,
+                If <a>playback direction</a> is <code>normal</code>,
               </dt>
               <dd>Let the <var>current direction</var> be forwards.</dd>
               <dt>
-                If <code>direction</code> is <code>reverse</code>,
+                If <a>playback direction</a> is <code>reverse</code>,
               </dt>
               <dd>Let the <var>current direction</var> be reverse.</dd>
               <dt>
@@ -1955,7 +1966,7 @@
                     Let <var>d</var> be the <a>current iteration</a>.
                   </li>
                   <li>
-                    If <code>direction</code> is
+                    If <a>playback direction</a> is
                     <code>alternate-reverse</code> increment
                     <var>d</var> by 1.
                   </li>
@@ -1987,19 +1998,6 @@
             </p>
           </li>
         </ol>
-      </section>
-      <section>
-        <h3>Direction control interface members</h3>
-        <dl title="partial interface TimedItem" class="idl">
-          <dt>// Direction control members</dt><dd></dd>
-          <dt>attribute PlaybackDirection direction</dt>
-          <dd>
-            <p>
-              Direction behavior as specified by one of the
-              <a>PlaybackDirection</a> enumeration values.
-            </p>
-          </dd>
-        </dl>
       </section>
     </section>
 
@@ -5431,10 +5429,9 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
           <dt>PlaybackDirection direction = "normal"</dt>
           <dd>
             <p>
-              The direction in which animation proceeds, e.g. "reverse".
-              See <a href="#widl-TimedItem-direction"
-              class="idlType"><code>direction</code></a> on the <a>TimedItem</a>
-              interface.
+              The <a>playback direction</a> of the <a>timed item</a> as
+              specified by one of the <a>PlaybackDirection</a> enumeration
+              values.
             </p>
           </dd>
           <dt>(DOMString or TimingFunction)? timingFunction = null</dt>
@@ -5471,6 +5468,30 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
             <dt>both</dt>
             <dd>
               Fill backwards and forwards.
+            </dd>
+          </dl>
+        </section>
+        <section>
+          <h4>The <code>PlaybackDirection</code> enumeration</h4>
+          <dl title="enum PlaybackDirection" class="idl">
+            <dt>normal</dt>
+            <dd>
+              All iterations are played as specified.
+            </dd>
+            <dt>reverse</dt>
+            <dd>
+              All iterations are played in the reverse direction from the way
+              they are specified.
+            </dd>
+            <dt>alternate</dt>
+            <dd>
+              Even iterations are played as specified, odd iterations are played
+              in the reverse direction from the way they are specified.
+            </dd>
+            <dt>alternate-reverse</dt>
+            <dd>
+              Even iterations are played in the reverse direction from the way
+              they are specified, odd iterations are played as specified.
             </dd>
           </dl>
         </section>
