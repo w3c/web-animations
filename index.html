@@ -1279,17 +1279,19 @@
           <dt>forwards</dt>
           <dd>
             For times that occur later than the <a>active interval</a>, the
-            timed item will continue to produce the same <a>output time
-            value</a> that was used at the end of the <a>active interval</a>.
+            timed item will continue to produce the same <a title="transformed
+            time">transformed time value</a> that was used at the end of the
+            <a>active interval</a>.
 
             For times that occur before the <a>active interval</a>, the
             timed item will have no effect.
           </dd>
           <dt>backwards</dt>
           <dd>
-            For times that occur before the <a>active interval</a>, the
-            timed item will produce the same <a>output time value</a> that
-            will be used at the start of the <a>active interval</a>.
+            For times that occur before the <a>active interval</a>, the timed
+            item will produce the same <a title="transformed time">transformed
+            time value</a> that will be used at the start of the <a>active
+            interval</a>.
 
             For times that occur later than the <a>active interval</a>, the
             timed item will have no effect.
@@ -2186,39 +2188,6 @@
     </section>
 
     <section>
-      <h2>The output time of a timed item</h2>
-      <p>
-        The <dfn>output time</dfn> of a timed item is simply the
-        <a>transformed time</a>.
-      </p>
-      <section>
-        <h3>Output time interface members</h3>
-        <dl title="partial interface TimedItem" class="idl">
-          <dt>// Output time members</dt><dd></dd>
-          <dt>readonly attribute double? outputTime</dt>
-          <dd>
-            <p>
-              The <a>output time</a> in seconds of this timed item.
-              As a result of the steps for calculating this value in <a
-              href="#core-timed-item-calculations" class="sectionRef"></a> and
-              elsewhere, this attribute will be
-              non-<code>null</code> if and only if the timed item is in
-              <a>in effect</a>.
-            </p>
-            <p class="annotation">
-              This attribute is not writeable since doing so would require
-              being able to do a reverse conversion from the value to set into
-              to local time space and then updating the <code>currentTime</code>
-              accordingly.
-              However, that's not possible since timing functions may be applied
-              and some of them are not invertible.
-            </p>
-          </dd>
-        </dl>
-      </section>
-    </section>
-
-    <section>
       <h2>Animations</h2>
       <p>
         Animations are a kind of timed item that apply an animation effect to
@@ -2751,8 +2720,8 @@ new SeqGroup(
       <section>
         <h3>Calculating the time fraction</h3>
         <p>
-          Before passing the <a>output time</a> of an <a>Animation</a> to the
-          animation effect we must convert it to a <em>time fraction</em>.
+          Before passing the <a>transformed time</a> of an <a>Animation</a> to
+          the animation effect we must convert it to a <em>time fraction</em>.
           The <dfn>time fraction</dfn> is calculated according to the
           following steps:
         </p>
@@ -2769,7 +2738,7 @@ new SeqGroup(
                 If <a>local time</a> &lt; <code>startDelay</code>,
               </dt>
               <dd>
-                Return the result of recalculating the <a>output time</a>
+                Return the result of recalculating the <a>transformed time</a>
                 using a <a>local time</a> of zero and an <a>iteration
                 duration</a> of 1.
               </dd>
@@ -2777,7 +2746,7 @@ new SeqGroup(
                 Otherwise,
               </dt>
               <dd>
-                Return the result of recalculating the <a>output time</a>
+                Return the result of recalculating the <a>transformed time</a>
                 using a <a>local time</a> of <code>iterationCount</code> and an
                 <a>iteration duration</a> of 1.
               </dd>
@@ -2787,7 +2756,7 @@ new SeqGroup(
             Otherwise,
           </dt>
           <dd>
-            Return <a>output time</a> / <a>iteration duration</a>.
+            Return <a>transformed time</a> / <a>iteration duration</a>.
           </dd>
         </dl>
         <p class="note">
@@ -5078,8 +5047,7 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
         </dl>
         <p class="annotation">
           In future we may introduce <code>iterationTime</code> which
-          corresponds to the <code>outputTime</code> prior to applying time
-          transformations.
+          corresponds to the <a>iteration time</a>.
           The advantage of exposing this is that it could be writeable since the
           transformation from iteration time to local time should be invertible.
           It is also probably the time we will use for <a>TimingEvent</a> times.
