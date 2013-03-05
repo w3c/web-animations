@@ -2188,587 +2188,6 @@
     </section>
 
     <section>
-      <h2>Animations</h2>
-      <p>
-        Animations are a kind of timed item that apply an animation effect to
-        a target element.
-        The are represented in the Web Animations API by the
-        <code>Animation</code> objects.
-      </p>
-      <section>
-        <h3>The <code>Animation</code> interface</h3>
-        <dl title="interface Animation : TimedItem" class="idl">
-          <dt>Constructor ()</dt>
-          <dd>
-            <p>
-              Creates a new <a>Animation</a> object using the following
-              procedure:
-            </p>
-            <ol>
-              <li>Create a new <a>Animation</a> object,
-                  <var>animation</var>.</li>
-              <li>Establish a temporary timing dictionary, <var>timing
-                 dictionary</var>, based on the type of <var>timing</var> as
-                 follows,
-                <dl class="switch">
-                  <dt>If <var>timing</var> is a <a>TimingDictionary</a>
-                  object,</dt>
-                  <dd>
-                    Let <var>timing dictionary</var> refer to <var>timing</var>.
-                  </dd>
-                  <dt>If <var>timing</var> is a <code>double</code>,</dt>
-                  <dd>
-                    Let <var>timing dictionary</var> be a new <var>timing
-                    dictionary</var> object with all properties set to their
-                    default values and <code>iterationDuration</code> set to
-                    <var>timing</var>.
-                  </dd>
-                  <dt>Otherwise (<var>timing</var> is <code>null</code> or
-                      undefined),</dt>
-                  <dd>
-                    Let <var>timing dictionary</var> be a new <var>timing
-                    dictionary</var> object with all properties set to their
-                    default values.
-                  </dd>
-                </dl>
-              </li>
-              <li>For each member of <var>timing dictionary</var>,
-                <ol>
-                  <li>Assign the value of the member to the
-                      correspondingly-named attribute on
-                      <var>animation</var>.</li>
-                  <li>If member <code>timingFunction</code> is of type
-                      <code>DOMString</code> create a new <a>TimingFunction</a>
-                      object by calling
-                      <a href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
-                      class="idlType"><code>TimingFunction.createFromString</code></a><code>(<var>timing
-                      dictionary</var>.timingFunction)</code> and assign the
-                      result to
-                      <code><var>animation</var>.timingFunction</code>.</li>
-                </ol>
-              </li>
-              <li>Assign the animation effect based on the type of
-                <var>effect</var> as follows,
-                <dl class="switch">
-                  <dt>If <var>effect</var> is an <a>AnimationEffect</a>
-                      object or a <a>CustomAnimationEffect</a> object,</dt>
-                  <dd>
-                    Assign <code><var>animation</var>.effect</code> to
-                    <var>effect</var>.
-                  </dd>
-                  <dt>If <var>effect</var> is <code>null</code>,</dt>
-                  <dd>
-                    Set <code><var>animation</var>.effect</code> to
-                    <code>null</code>.
-                  </dd>
-                  <dt>Otherwise,</dt>
-                  <dd>
-                    Set <code><var>animation</var>.effect</code> to the return
-                    value of calling <a
-                  href="#widl-AnimationEffect-createFromProperties-AnimationEffect-object-properties"
-                  class="idlType"><code>AnimationEffect.createFromProperties</code></a><code>(<var>effect</var>)</code>.
-                  </dd>
-                </dl>
-              </li>
-              <li>Set <code>timeline</code> to the <a>DocumentTimeSource</a> for
-                the <a
-                href="http://www.w3.org/TR/html5/browsers.html#active-document">active
-                document</a>.</li>
-            </ol>
-            <div class="todo">
-              <p>
-                Still need to work out the autoplay behaviour here.
-              </p>
-              <p>
-                I think we want it to work like this:
-              </p>
-              <pre class='example sh_javascript'>
-var anim = new Animation(elem, { left: '100px' }, 3);
-// anim is paused until you call play
-// anim.startTime = ???
-anim.play();
-// anim.startTime = anim.timeline.outputTime
-              </pre>
-            </div>
-            <p>
-              Examples of the usage of this constructor are given in <a
-              href="#creating-a-new-animation-object" class="sectionRef"></a>.
-            </p>
-            <dl class="parameters">
-              <dt>AnimationTarget? element</dt>
-              <dd>
-                The target element or pseudo-element.
-                This may be <code>null</code> for animations that do not target
-                a specific element.
-              </dd>
-              <dt>object? effect</dt>
-              <dd>
-                The animation effect used to set the <code>effect</code>
-                attribute of the newly created <a>Animation</a> object.
-                <p>
-                  If this parameter is an <a>AnimationEffect</a> object or
-                  <a>CustomAnimationEffect</a> object, it will shared with any
-                  other <a>Animation</a> objects referring to the same
-                  <a>AnimationEffect</a> or <a>CustomAnimationEffect</a>
-                  object.
-                  It will <em>not</em> be copied.
-                </p>
-                <p>
-                  If this parameter is <code>null</code>, the newly created
-                  <a>Animation</a> will also have a <code>null</code> animation
-                  effect.
-                </p>
-                <p>
-                  Otherwise, if this parameter is any other type of object, it
-                  will be passed to <a
-                  href="#widl-AnimationEffect-createFromProperties-AnimationEffect-object-properties"
-                  class="idlType"><code>AnimationEffect.createFromProperties</code></a>
-                  and the resulting <a>AnimationEffect</a> object used as the
-                  animation effect.
-                </p>
-              </dd>
-              <dt>optional (double or TimingDictionary)? timing</dt>
-              <dd>
-                <p>
-                  The timing properties of the new animation.
-                </p>
-                <p>
-                  If this parameter is a <code>double</code>, then it
-                  specifies the duration of a single iteration of the animation,
-                  that is, the <a>iteration duration</a>, in seconds.
-                </p>
-                <p>
-                  If this parameter is <code>null</code> the default value for
-                  <a>iteration duration</a> specified in the
-                  <a>TimingDictionary</a> definition will be used, that is,
-                  zero.
-                </p>
-                <p>
-                  If this parameter is of type <a>TimingDictionary</a>, then
-                  the values of the passed-in dictionary will be used.
-                </p>
-                <p>
-                  Finally, if this parameter is not specified, it is as if
-                  a value of <code>null</code> were specified.
-                </p>
-              </dd>
-            </dl>
-          </dd>
-          <dt>attribute (AnimationEffect or CustomAnimationEffect)? effect</dt>
-          <dd>
-            <p>
-              The animation effect to apply (see <a
-              href="#animation-values" class="sectionRef"></a>).
-              May be <code>null</code> in which case the animation will produce
-              no noticeable effect other than dispatching events (see <a
-              href="#timing-events" class="sectionRef"></a>).
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
-              <dd>
-                Raised on setting if this object is linked to a template (i.e.
-                <code>template</code> is not <code>null</code>).
-              </dd>
-            </dl>
-          </dd>
-          <dt>readonly attribute AnimationTarget? target</dt>
-          <dd>
-            <p>
-              The element or pseudo-element being animated by this object.
-              This may be <code>null</code> for animations that do not target
-              a specific element such as an animation that produces a sound
-              using an audio API.
-            </p>
-            <p class="note">
-              Note that in a future version <a>AnimationTarget</a> may be
-              extended to allow targetting, for example, a sequence of elements.
-              Therefore, code that is intended to be used with arbitrary
-              <a>Animation</a> objects should test the concrete type of
-              <code>target</code> before using it and not assume that it refers
-              to an Element.
-            </p>
-            <p class="issue">
-              Allowing <code>target</code> to refer to multiple elements may
-              suggest cancelling works differently so that it is possible to
-              cancel the animation as-applied to a single element.
-              Likewise, it may influence how SVG is mapped to this API if SVG is
-              extended to support multiple targets.
-            </p>
-          </dd>
-        </dl>
-        <section class="informative">
-          <h4>Creating a new <code>Animation</code> object</h4>
-          <p>
-            The <a>Animation</a> constructor offers a number of approaches to
-            creating a new <a>Animation</a> object.
-            At its simplest, an <a>Animation</a> object that changes the
-            &lsquo;left&rsquo; property of <var>elem</var> to 100 over three
-            seconds can be achieved as follows:
-          </p>
-          <pre class='example sh_javascript'>
-var anim = new Animation(elem, { left: '100px' }, 3);
-          </pre>
-          <p>
-            To specify further timing properties such as the playback rate,
-            a <a>TimingDictionary</a> can be used as follows:
-          </p>
-          <pre class='example sh_javascript'>
-var anim = new Animation(elem, { left: '100px' }, { duration: 3, playbackRate: 2 });
-          </pre>
-          <p>
-            The animation effect parameter may specify multiple properties,
-            an <a>AnimationEffect</a> object, or even a callback object.
-          </p>
-          <pre class='example sh_javascript'>
-// Specify multiple properties at once
-var animA = new Animation(elem, { left: '100px', top: '300px' }, 5);
-
-// Share the animation effect of another animation
-var animB = new Animation(elem, animA.effect, 3);
-
-// Supply a specialized animation effect
-var animC = new Animation(elem, new PathAnimationEffect( ... ), 3);
-
-// Supply a custom script-based animation effect
-var animC = new Animation(elem,
-  { 
-    sample: function(time) { 
-      if (time !== null) {
-        document.documentElement.currentScale = 1.0 + time * 2.0;
-      } else {
-        document.documentElement.currentScale = 1.0;
-      }
-    },
-    clone: function { return this; }
-  }, 3);
-          </pre>
-          <p class="todo">
-            Fill in the parameters for <a>PathAnimationEffect</a> above once
-            we have decided on them.
-          </p>
-          <p class="todo">
-            I'm just parking the following section below here for now.
-            Not sure if it really belongs.
-          </p>
-          <p>
-            Since the <a>intrinsic iteration duration</a> of an animation is
-            zero, and the default <code>fillMode</code> when constructing an
-            <a>Animation</a> is <em>forwards</em>, it is possible to
-            create animations that simply set a property without any
-            interpolation as follows,
-          </p>
-          <pre class='example sh_javascript'>
-new Animation(elem, { display: 'none' });
-          </pre>
-          <p>
-            This is particularly useful in combination with other animations
-            or timed items.
-            For example, fading an element before switching
-            &lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
-            follows,
-          </p>
-          <pre class='example sh_javascript'>
-new SeqGroup(
-[
-  new Animation(elem, { opacity: '0%' }, 1),
-  new Animation(elem, { display: 'none' })
-]
-);
-          </pre>
-        </section>
-      </section>
-      <section>
-        <h3>Animation targets and pseudo-elements</h3>
-        <p>
-          Animations may target not only regular elements but also
-          pseudo-elements such as <code>::before</code> and
-          <code>::first-line</code> [[!SELECT]].
-        </p>
-        <p>
-          To represent pseudo-elements, we introduce the <a>PseudoElement</a>
-          interface.
-        </p>
-        <dl title="interface PseudoElement" class="idl">
-          <dt>Constructor (Element element, DOMString pseudoElement)</dt>
-          <dd>
-            Creates a new pseudo-element using <var>element</var> as the <a
-            href="http://www.w3.org/TR/css3-selectors/#subject">subject</a>
-            and <var>pseudoElement</var> as the pseudo-element to match (e.g.
-            &lsquo;<code>::first-line</code>&rsquo;).
-          </dd>
-          <dt>attribute Element element</dt>
-          <dd>
-            The element used as the <a
-            href="http://www.w3.org/TR/css3-selectors/#subject">subject</a> for
-            matching a pseudo-element.
-            <p>Exceptions:</p>
-            <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
-              <dd>
-                Raised on setting if this object is a readonly object.
-              </dd>
-            </dl>
-          </dd>
-          <dt>attribute DOMString pseudoElement</dt>
-          <dd>
-            The pseudo-element including the initial colon(s). For example,
-            &lsquo;<code>::after</code>&rsquo;.
-            <p>Exceptions:</p>
-            <dl class="exceptions">
-              <dt>DOMException of type
-                  <code>NoModificationAllowedError</code></dt>
-              <dd>
-                Raised on setting if this object is a readonly object.
-              </dd>
-            </dl>
-          </dd>
-        </dl>
-        <div class="feedbackWanted">
-          <p>
-            This is an interface that may be useful in other specifications and
-            so there are a few considerations to bear in mind:
-          </p>
-          <ul>
-            <li>
-              <p>
-                Currently no validation is performed at all.
-                You can set <code>pseudoElement</code> to
-                &lsquo;<code>::batman</code>&rsquo; and we'll just ignore it
-                when compositing (still need to define this).
-              </p>
-              <p>
-                This is in order to provide better fallback.
-                For example, if a UA doesn't support a particular pseudo-element
-                it will still run the animation in terms of occupying time and
-                firing events.
-                There simply won't be any visual effect.
-              </p>
-              <p>
-                Also, we have a general pattern in this specification that
-                constructors don't throw.
-              </p>
-              <p>
-                So while this works for this API, is this behavior useful in
-                other specifications?
-              </p>
-            </li>
-            <li>
-              <p>
-                The other issue is that we could just make <a>PseudoElement</a>
-                have an optional <code>pseudoElement</code> attribute and use
-                that everywhere instead of a union of <a>Element</a> or
-                <a>PseudoElement</a> (see <a>AnimationTarget</a>).
-              </p>
-              <p>
-                The reason we don't is that it complicates the 99% case where
-                you're not using pseudo-elements. For example, you have to type
-                <code>anim.target.element</code> which is what so many people
-                don't like about SVG.
-              </p>
-              <p>
-                So, again, this works for this specification, but is it ok for
-                others?
-              </p>
-            </li>
-            <li>
-              While we're at it, should we enforce using double-colons somehow?
-            </li>
-          </ul>
-        </div>
-        <section>
-          <h4>The <a>AnimationTarget</a> typedef</h4>
-          <div class="idl"
-            title="typedef (Element or PseudoElement) AnimationTarget">
-            For simplicity, throughout this specification <a>AnimationTarget</a>
-            is used wherever either an <a>Element</a> or a <a>PseudoElement</a>
-            can be used.
-          </div>
-        </section>
-      </section>
-      <section>
-        <h3>Extensions to the <code>Element</code> interface</h3>
-        <p>
-          To simplify the creation of <a>Animation</a> objects for a given
-          Element, the <a class="externalDFN"
-          href="http://www.w3.org/TR/dom/#interface-element">Element</a>
-          interface [[!DOM4]] is extended as follows:
-        </p>
-        <dl class="idl" title="partial interface Element">
-          <dt>Animation animate()</dt>
-          <dd>
-            <p>
-              Creates a new <a>Animation</a> object whose target element is the
-              Element object on which the method is called, and calls
-              <code>play()</code> on the newly created animation.
-            </p>
-            <p>
-              The following code fragment:
-            </p>
-            <pre class="example sh_javascript">
-              var anim = elem.animate({ 'opacity': 0 }, 2);
-            </pre>
-            <p>
-              is equivalent to:
-            </p>
-            <pre class="example sh_javascript">
-              var anim = new Animation(elem, { 'opacity': 0 }, 2);
-              anim.play();
-            </pre>
-            <p>
-              Returns the newly created <a>Animation</a> object.
-            </p>
-            <dl class="parameters">
-              <dt>object? effect</dt>
-              <dd>
-                The animation effect to apply.
-                This value is passed to the <a
-                href="#widl-ctor-Animation--AnimationTarget-element-object-effect--double-or-TimingDictionary--timing">Animation
-                constructor</a> as the <var>effect</var> parameter and has the
-                same interpretation as defined for that constructor.
-              </dd>
-              <dt>optional (double or TimingDictionary)? timing</dt>
-              <dd>
-                The timing parameters of the animation.
-                This value is passed to the <a
-                href="#widl-ctor-Animation--AnimationTarget-element-object-effect--double-or-TimingDictionary--timing">Animation
-                constructor</a> as the <var>timing</var> parameter and has the
-                same interpretation as defined for that constructor.
-              </dd>
-            </dl>
-          </dd>
-        </dl>
-      </section>
-      <section>
-        <h3>Re-using animations</h3>
-        <p>
-          It is possible to duplicate an <a>Animation</a> using the
-          <code>clone</code> method.
-          Doing so duplicates only the scheduled state of the <a>Animation</a>
-          and not its run-time state.
-        </p>
-        <ol>
-          <li>Let <var>source</var> be a the <a>Animation</a> object to
-              clone.</li>
-          <li>Create a new <a>TimingDictionary</a>,
-              <var>cloned timing</var> with all members set to their default
-              values (see <a href="#the-timingdictionary-dictionary"
-              class="sectionRef"></a>).</li>
-          <li>Set <code><var>cloned timing</var>.timingFunction</code> to
-              the result of calling
-              <code><var>source</var>.timingFunction.clone()</code>
-              or <code>null</code> if
-              <code><var>source</var>.timingFunction</code> is
-              <code>null</code>.</li>
-          <li>Set the remainder of the members of <var>cloned timing</var> to
-              the properties of the same name on <var>source</var>.</li>
-          <li>
-            The <a>AnimationEffect</a> is cloned depending on the type of
-            <code><var>source</var>.effect</code> as follows,
-            <dl class="switch">
-              <dt>If <code><var>source</var>.effect</code> is an
-                  <a>Animation</a> object,</dt>
-              <dd>
-                Let <var>cloned effect</var> be the result of calling
-                <code><var>source</var>.effect.clone()</code>.
-              </dd>
-              <dt>If <code><var>source</var>.effect</code> is a
-                  <a>CustomAnimationEffect</a> object,</dt>
-              <dd>
-                If <code><var>source</var>.effect</code> has a method called
-                <code>clone</code> let <var>cloned effect</var> be the result of
-                calling that method, otherwise let <var>cloned effect</var> be
-                <code><var>source</var>.effect</code>.
-              </dd>
-              <dt>Otherwise,</dt>
-              <dd>
-                Let <var>cloned effect</var> be <code>null</code>.
-              </dd>
-            </dl>
-          </li>
-          <li>Return a new <a>Animation</a> object created by
-              calling the <a
-              href="#widl-ctor-Animation--AnimationTarget-element-object-effect--double-or-TimingDictionary--timing">Animation
-              constructor</a> with parameters
-              <code>Animation(<var>source</var>.target, <var>cloned
-              effect</var>, <var>cloned timing</var>)</code>.</li>
-        </ol>
-        <p class="annotation">
-          This does not attach the cloned animation to
-          <code><var>source</var>.timeline</code>.
-          I think that's the more useful and expected behavior (especially when
-          dealing with children of a sequence group or repeating parallel
-          groups) but we may wish to add a facility in future for simplifying
-          this.
-        </p>
-        <section>
-          <h4>Animation re-use related interface members</h4>
-          <dl title="partial interface Animation" class="idl">
-            <dt>Animation clone ()</dt>
-            <dd>
-              Creates a copy of this <a>Animation</a> object minus its run-time
-              state using the procedure defined in <a
-              href="#re-using-animations" class="sectionRef"></a>.
-            </dd>
-          </dl>
-        </section>
-      </section>
-      <section>
-        <h3>Calculating the time fraction</h3>
-        <p>
-          Before passing the <a>transformed time</a> of an <a>Animation</a> to
-          the animation effect we must convert it to a <em>time fraction</em>.
-          The <dfn>time fraction</dfn> is calculated according to the
-          following steps:
-        </p>
-        <dl class="switch">
-          <dt>
-            If the <a>iteration duration</a> is zero,
-          </dt>
-          <dd>
-            <p>
-              the <a>time fraction</a> is as follows,
-            </p>
-            <dl class="switch">
-              <dt>
-                If <a>local time</a> &lt; <code>startDelay</code>,
-              </dt>
-              <dd>
-                Return the result of recalculating the <a>transformed time</a>
-                using a <a>local time</a> of zero and an <a>iteration
-                duration</a> of 1.
-              </dd>
-              <dt>
-                Otherwise,
-              </dt>
-              <dd>
-                Return the result of recalculating the <a>transformed time</a>
-                using a <a>local time</a> of <code>iterationCount</code> and an
-                <a>iteration duration</a> of 1.
-              </dd>
-            </dl>
-          </dd>
-          <dt>
-            Otherwise,
-          </dt>
-          <dd>
-            Return <a>transformed time</a> / <a>iteration duration</a>.
-          </dd>
-        </dl>
-        <p class="note">
-          Since <a href="#time-transformations">timing functions</a> are
-          allowed to produce output times outside the range [0,1] it is
-          possible that the value calculated for a <a>time fraction</a> also
-          lies outside this range.
-        </p>
-      </section>
-    </section>
-
-    <section>
       <h2>Grouping and synchronization</h2>
       <div class="informative">
       <p>
@@ -3371,6 +2790,587 @@ new SeqGroup(
             </dd>
           </dl>
         </section>
+      </section>
+    </section>
+
+    <section>
+      <h2>Animations</h2>
+      <p>
+        Animations are a kind of timed item that apply an animation effect to
+        a target element.
+        The are represented in the Web Animations API by the
+        <code>Animation</code> objects.
+      </p>
+      <section>
+        <h3>The <code>Animation</code> interface</h3>
+        <dl title="interface Animation : TimedItem" class="idl">
+          <dt>Constructor ()</dt>
+          <dd>
+            <p>
+              Creates a new <a>Animation</a> object using the following
+              procedure:
+            </p>
+            <ol>
+              <li>Create a new <a>Animation</a> object,
+                  <var>animation</var>.</li>
+              <li>Establish a temporary timing dictionary, <var>timing
+                 dictionary</var>, based on the type of <var>timing</var> as
+                 follows,
+                <dl class="switch">
+                  <dt>If <var>timing</var> is a <a>TimingDictionary</a>
+                  object,</dt>
+                  <dd>
+                    Let <var>timing dictionary</var> refer to <var>timing</var>.
+                  </dd>
+                  <dt>If <var>timing</var> is a <code>double</code>,</dt>
+                  <dd>
+                    Let <var>timing dictionary</var> be a new <var>timing
+                    dictionary</var> object with all properties set to their
+                    default values and <code>iterationDuration</code> set to
+                    <var>timing</var>.
+                  </dd>
+                  <dt>Otherwise (<var>timing</var> is <code>null</code> or
+                      undefined),</dt>
+                  <dd>
+                    Let <var>timing dictionary</var> be a new <var>timing
+                    dictionary</var> object with all properties set to their
+                    default values.
+                  </dd>
+                </dl>
+              </li>
+              <li>For each member of <var>timing dictionary</var>,
+                <ol>
+                  <li>Assign the value of the member to the
+                      correspondingly-named attribute on
+                      <var>animation</var>.</li>
+                  <li>If member <code>timingFunction</code> is of type
+                      <code>DOMString</code> create a new <a>TimingFunction</a>
+                      object by calling
+                      <a href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
+                      class="idlType"><code>TimingFunction.createFromString</code></a><code>(<var>timing
+                      dictionary</var>.timingFunction)</code> and assign the
+                      result to
+                      <code><var>animation</var>.timingFunction</code>.</li>
+                </ol>
+              </li>
+              <li>Assign the animation effect based on the type of
+                <var>effect</var> as follows,
+                <dl class="switch">
+                  <dt>If <var>effect</var> is an <a>AnimationEffect</a>
+                      object or a <a>CustomAnimationEffect</a> object,</dt>
+                  <dd>
+                    Assign <code><var>animation</var>.effect</code> to
+                    <var>effect</var>.
+                  </dd>
+                  <dt>If <var>effect</var> is <code>null</code>,</dt>
+                  <dd>
+                    Set <code><var>animation</var>.effect</code> to
+                    <code>null</code>.
+                  </dd>
+                  <dt>Otherwise,</dt>
+                  <dd>
+                    Set <code><var>animation</var>.effect</code> to the return
+                    value of calling <a
+                  href="#widl-AnimationEffect-createFromProperties-AnimationEffect-object-properties"
+                  class="idlType"><code>AnimationEffect.createFromProperties</code></a><code>(<var>effect</var>)</code>.
+                  </dd>
+                </dl>
+              </li>
+              <li>Set <code>timeline</code> to the <a>DocumentTimeSource</a> for
+                the <a
+                href="http://www.w3.org/TR/html5/browsers.html#active-document">active
+                document</a>.</li>
+            </ol>
+            <div class="todo">
+              <p>
+                Still need to work out the autoplay behaviour here.
+              </p>
+              <p>
+                I think we want it to work like this:
+              </p>
+              <pre class='example sh_javascript'>
+var anim = new Animation(elem, { left: '100px' }, 3);
+// anim is paused until you call play
+// anim.startTime = ???
+anim.play();
+// anim.startTime = anim.timeline.outputTime
+              </pre>
+            </div>
+            <p>
+              Examples of the usage of this constructor are given in <a
+              href="#creating-a-new-animation-object" class="sectionRef"></a>.
+            </p>
+            <dl class="parameters">
+              <dt>AnimationTarget? element</dt>
+              <dd>
+                The target element or pseudo-element.
+                This may be <code>null</code> for animations that do not target
+                a specific element.
+              </dd>
+              <dt>object? effect</dt>
+              <dd>
+                The animation effect used to set the <code>effect</code>
+                attribute of the newly created <a>Animation</a> object.
+                <p>
+                  If this parameter is an <a>AnimationEffect</a> object or
+                  <a>CustomAnimationEffect</a> object, it will shared with any
+                  other <a>Animation</a> objects referring to the same
+                  <a>AnimationEffect</a> or <a>CustomAnimationEffect</a>
+                  object.
+                  It will <em>not</em> be copied.
+                </p>
+                <p>
+                  If this parameter is <code>null</code>, the newly created
+                  <a>Animation</a> will also have a <code>null</code> animation
+                  effect.
+                </p>
+                <p>
+                  Otherwise, if this parameter is any other type of object, it
+                  will be passed to <a
+                  href="#widl-AnimationEffect-createFromProperties-AnimationEffect-object-properties"
+                  class="idlType"><code>AnimationEffect.createFromProperties</code></a>
+                  and the resulting <a>AnimationEffect</a> object used as the
+                  animation effect.
+                </p>
+              </dd>
+              <dt>optional (double or TimingDictionary)? timing</dt>
+              <dd>
+                <p>
+                  The timing properties of the new animation.
+                </p>
+                <p>
+                  If this parameter is a <code>double</code>, then it
+                  specifies the duration of a single iteration of the animation,
+                  that is, the <a>iteration duration</a>, in seconds.
+                </p>
+                <p>
+                  If this parameter is <code>null</code> the default value for
+                  <a>iteration duration</a> specified in the
+                  <a>TimingDictionary</a> definition will be used, that is,
+                  zero.
+                </p>
+                <p>
+                  If this parameter is of type <a>TimingDictionary</a>, then
+                  the values of the passed-in dictionary will be used.
+                </p>
+                <p>
+                  Finally, if this parameter is not specified, it is as if
+                  a value of <code>null</code> were specified.
+                </p>
+              </dd>
+            </dl>
+          </dd>
+          <dt>attribute (AnimationEffect or CustomAnimationEffect)? effect</dt>
+          <dd>
+            <p>
+              The animation effect to apply (see <a
+              href="#animation-values" class="sectionRef"></a>).
+              May be <code>null</code> in which case the animation will produce
+              no noticeable effect other than dispatching events (see <a
+              href="#timing-events" class="sectionRef"></a>).
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised on setting if this object is linked to a template (i.e.
+                <code>template</code> is not <code>null</code>).
+              </dd>
+            </dl>
+          </dd>
+          <dt>readonly attribute AnimationTarget? target</dt>
+          <dd>
+            <p>
+              The element or pseudo-element being animated by this object.
+              This may be <code>null</code> for animations that do not target
+              a specific element such as an animation that produces a sound
+              using an audio API.
+            </p>
+            <p class="note">
+              Note that in a future version <a>AnimationTarget</a> may be
+              extended to allow targetting, for example, a sequence of elements.
+              Therefore, code that is intended to be used with arbitrary
+              <a>Animation</a> objects should test the concrete type of
+              <code>target</code> before using it and not assume that it refers
+              to an Element.
+            </p>
+            <p class="issue">
+              Allowing <code>target</code> to refer to multiple elements may
+              suggest cancelling works differently so that it is possible to
+              cancel the animation as-applied to a single element.
+              Likewise, it may influence how SVG is mapped to this API if SVG is
+              extended to support multiple targets.
+            </p>
+          </dd>
+        </dl>
+        <section class="informative">
+          <h4>Creating a new <code>Animation</code> object</h4>
+          <p>
+            The <a>Animation</a> constructor offers a number of approaches to
+            creating a new <a>Animation</a> object.
+            At its simplest, an <a>Animation</a> object that changes the
+            &lsquo;left&rsquo; property of <var>elem</var> to 100 over three
+            seconds can be achieved as follows:
+          </p>
+          <pre class='example sh_javascript'>
+var anim = new Animation(elem, { left: '100px' }, 3);
+          </pre>
+          <p>
+            To specify further timing properties such as the playback rate,
+            a <a>TimingDictionary</a> can be used as follows:
+          </p>
+          <pre class='example sh_javascript'>
+var anim = new Animation(elem, { left: '100px' }, { duration: 3, playbackRate: 2 });
+          </pre>
+          <p>
+            The animation effect parameter may specify multiple properties,
+            an <a>AnimationEffect</a> object, or even a callback object.
+          </p>
+          <pre class='example sh_javascript'>
+// Specify multiple properties at once
+var animA = new Animation(elem, { left: '100px', top: '300px' }, 5);
+
+// Share the animation effect of another animation
+var animB = new Animation(elem, animA.effect, 3);
+
+// Supply a specialized animation effect
+var animC = new Animation(elem, new PathAnimationEffect( ... ), 3);
+
+// Supply a custom script-based animation effect
+var animC = new Animation(elem,
+  { 
+    sample: function(time) { 
+      if (time !== null) {
+        document.documentElement.currentScale = 1.0 + time * 2.0;
+      } else {
+        document.documentElement.currentScale = 1.0;
+      }
+    },
+    clone: function { return this; }
+  }, 3);
+          </pre>
+          <p class="todo">
+            Fill in the parameters for <a>PathAnimationEffect</a> above once
+            we have decided on them.
+          </p>
+          <p class="todo">
+            I'm just parking the following section below here for now.
+            Not sure if it really belongs.
+          </p>
+          <p>
+            Since the <a>intrinsic iteration duration</a> of an animation is
+            zero, and the default <code>fillMode</code> when constructing an
+            <a>Animation</a> is <em>forwards</em>, it is possible to
+            create animations that simply set a property without any
+            interpolation as follows,
+          </p>
+          <pre class='example sh_javascript'>
+new Animation(elem, { display: 'none' });
+          </pre>
+          <p>
+            This is particularly useful in combination with other animations
+            or timed items.
+            For example, fading an element before switching
+            &lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
+            follows,
+          </p>
+          <pre class='example sh_javascript'>
+new SeqGroup(
+[
+  new Animation(elem, { opacity: '0%' }, 1),
+  new Animation(elem, { display: 'none' })
+]
+);
+          </pre>
+        </section>
+      </section>
+      <section>
+        <h3>Animation targets and pseudo-elements</h3>
+        <p>
+          Animations may target not only regular elements but also
+          pseudo-elements such as <code>::before</code> and
+          <code>::first-line</code> [[!SELECT]].
+        </p>
+        <p>
+          To represent pseudo-elements, we introduce the <a>PseudoElement</a>
+          interface.
+        </p>
+        <dl title="interface PseudoElement" class="idl">
+          <dt>Constructor (Element element, DOMString pseudoElement)</dt>
+          <dd>
+            Creates a new pseudo-element using <var>element</var> as the <a
+            href="http://www.w3.org/TR/css3-selectors/#subject">subject</a>
+            and <var>pseudoElement</var> as the pseudo-element to match (e.g.
+            &lsquo;<code>::first-line</code>&rsquo;).
+          </dd>
+          <dt>attribute Element element</dt>
+          <dd>
+            The element used as the <a
+            href="http://www.w3.org/TR/css3-selectors/#subject">subject</a> for
+            matching a pseudo-element.
+            <p>Exceptions:</p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised on setting if this object is a readonly object.
+              </dd>
+            </dl>
+          </dd>
+          <dt>attribute DOMString pseudoElement</dt>
+          <dd>
+            The pseudo-element including the initial colon(s). For example,
+            &lsquo;<code>::after</code>&rsquo;.
+            <p>Exceptions:</p>
+            <dl class="exceptions">
+              <dt>DOMException of type
+                  <code>NoModificationAllowedError</code></dt>
+              <dd>
+                Raised on setting if this object is a readonly object.
+              </dd>
+            </dl>
+          </dd>
+        </dl>
+        <div class="feedbackWanted">
+          <p>
+            This is an interface that may be useful in other specifications and
+            so there are a few considerations to bear in mind:
+          </p>
+          <ul>
+            <li>
+              <p>
+                Currently no validation is performed at all.
+                You can set <code>pseudoElement</code> to
+                &lsquo;<code>::batman</code>&rsquo; and we'll just ignore it
+                when compositing (still need to define this).
+              </p>
+              <p>
+                This is in order to provide better fallback.
+                For example, if a UA doesn't support a particular pseudo-element
+                it will still run the animation in terms of occupying time and
+                firing events.
+                There simply won't be any visual effect.
+              </p>
+              <p>
+                Also, we have a general pattern in this specification that
+                constructors don't throw.
+              </p>
+              <p>
+                So while this works for this API, is this behavior useful in
+                other specifications?
+              </p>
+            </li>
+            <li>
+              <p>
+                The other issue is that we could just make <a>PseudoElement</a>
+                have an optional <code>pseudoElement</code> attribute and use
+                that everywhere instead of a union of <a>Element</a> or
+                <a>PseudoElement</a> (see <a>AnimationTarget</a>).
+              </p>
+              <p>
+                The reason we don't is that it complicates the 99% case where
+                you're not using pseudo-elements. For example, you have to type
+                <code>anim.target.element</code> which is what so many people
+                don't like about SVG.
+              </p>
+              <p>
+                So, again, this works for this specification, but is it ok for
+                others?
+              </p>
+            </li>
+            <li>
+              While we're at it, should we enforce using double-colons somehow?
+            </li>
+          </ul>
+        </div>
+        <section>
+          <h4>The <a>AnimationTarget</a> typedef</h4>
+          <div class="idl"
+            title="typedef (Element or PseudoElement) AnimationTarget">
+            For simplicity, throughout this specification <a>AnimationTarget</a>
+            is used wherever either an <a>Element</a> or a <a>PseudoElement</a>
+            can be used.
+          </div>
+        </section>
+      </section>
+      <section>
+        <h3>Extensions to the <code>Element</code> interface</h3>
+        <p>
+          To simplify the creation of <a>Animation</a> objects for a given
+          Element, the <a class="externalDFN"
+          href="http://www.w3.org/TR/dom/#interface-element">Element</a>
+          interface [[!DOM4]] is extended as follows:
+        </p>
+        <dl class="idl" title="partial interface Element">
+          <dt>Animation animate()</dt>
+          <dd>
+            <p>
+              Creates a new <a>Animation</a> object whose target element is the
+              Element object on which the method is called, and calls
+              <code>play()</code> on the newly created animation.
+            </p>
+            <p>
+              The following code fragment:
+            </p>
+            <pre class="example sh_javascript">
+              var anim = elem.animate({ 'opacity': 0 }, 2);
+            </pre>
+            <p>
+              is equivalent to:
+            </p>
+            <pre class="example sh_javascript">
+              var anim = new Animation(elem, { 'opacity': 0 }, 2);
+              anim.play();
+            </pre>
+            <p>
+              Returns the newly created <a>Animation</a> object.
+            </p>
+            <dl class="parameters">
+              <dt>object? effect</dt>
+              <dd>
+                The animation effect to apply.
+                This value is passed to the <a
+                href="#widl-ctor-Animation--AnimationTarget-element-object-effect--double-or-TimingDictionary--timing">Animation
+                constructor</a> as the <var>effect</var> parameter and has the
+                same interpretation as defined for that constructor.
+              </dd>
+              <dt>optional (double or TimingDictionary)? timing</dt>
+              <dd>
+                The timing parameters of the animation.
+                This value is passed to the <a
+                href="#widl-ctor-Animation--AnimationTarget-element-object-effect--double-or-TimingDictionary--timing">Animation
+                constructor</a> as the <var>timing</var> parameter and has the
+                same interpretation as defined for that constructor.
+              </dd>
+            </dl>
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Re-using animations</h3>
+        <p>
+          It is possible to duplicate an <a>Animation</a> using the
+          <code>clone</code> method.
+          Doing so duplicates only the scheduled state of the <a>Animation</a>
+          and not its run-time state.
+        </p>
+        <ol>
+          <li>Let <var>source</var> be a the <a>Animation</a> object to
+              clone.</li>
+          <li>Create a new <a>TimingDictionary</a>,
+              <var>cloned timing</var> with all members set to their default
+              values (see <a href="#the-timingdictionary-dictionary"
+              class="sectionRef"></a>).</li>
+          <li>Set <code><var>cloned timing</var>.timingFunction</code> to
+              the result of calling
+              <code><var>source</var>.timingFunction.clone()</code>
+              or <code>null</code> if
+              <code><var>source</var>.timingFunction</code> is
+              <code>null</code>.</li>
+          <li>Set the remainder of the members of <var>cloned timing</var> to
+              the properties of the same name on <var>source</var>.</li>
+          <li>
+            The <a>AnimationEffect</a> is cloned depending on the type of
+            <code><var>source</var>.effect</code> as follows,
+            <dl class="switch">
+              <dt>If <code><var>source</var>.effect</code> is an
+                  <a>Animation</a> object,</dt>
+              <dd>
+                Let <var>cloned effect</var> be the result of calling
+                <code><var>source</var>.effect.clone()</code>.
+              </dd>
+              <dt>If <code><var>source</var>.effect</code> is a
+                  <a>CustomAnimationEffect</a> object,</dt>
+              <dd>
+                If <code><var>source</var>.effect</code> has a method called
+                <code>clone</code> let <var>cloned effect</var> be the result of
+                calling that method, otherwise let <var>cloned effect</var> be
+                <code><var>source</var>.effect</code>.
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                Let <var>cloned effect</var> be <code>null</code>.
+              </dd>
+            </dl>
+          </li>
+          <li>Return a new <a>Animation</a> object created by
+              calling the <a
+              href="#widl-ctor-Animation--AnimationTarget-element-object-effect--double-or-TimingDictionary--timing">Animation
+              constructor</a> with parameters
+              <code>Animation(<var>source</var>.target, <var>cloned
+              effect</var>, <var>cloned timing</var>)</code>.</li>
+        </ol>
+        <p class="annotation">
+          This does not attach the cloned animation to
+          <code><var>source</var>.timeline</code>.
+          I think that's the more useful and expected behavior (especially when
+          dealing with children of a sequence group or repeating parallel
+          groups) but we may wish to add a facility in future for simplifying
+          this.
+        </p>
+        <section>
+          <h4>Animation re-use related interface members</h4>
+          <dl title="partial interface Animation" class="idl">
+            <dt>Animation clone ()</dt>
+            <dd>
+              Creates a copy of this <a>Animation</a> object minus its run-time
+              state using the procedure defined in <a
+              href="#re-using-animations" class="sectionRef"></a>.
+            </dd>
+          </dl>
+        </section>
+      </section>
+      <section>
+        <h3>Calculating the time fraction</h3>
+        <p>
+          Before passing the <a>transformed time</a> of an <a>Animation</a> to
+          the animation effect we must convert it to a <em>time fraction</em>.
+          The <dfn>time fraction</dfn> is calculated according to the
+          following steps:
+        </p>
+        <dl class="switch">
+          <dt>
+            If the <a>iteration duration</a> is zero,
+          </dt>
+          <dd>
+            <p>
+              the <a>time fraction</a> is as follows,
+            </p>
+            <dl class="switch">
+              <dt>
+                If <a>local time</a> &lt; <code>startDelay</code>,
+              </dt>
+              <dd>
+                Return the result of recalculating the <a>transformed time</a>
+                using a <a>local time</a> of zero and an <a>iteration
+                duration</a> of 1.
+              </dd>
+              <dt>
+                Otherwise,
+              </dt>
+              <dd>
+                Return the result of recalculating the <a>transformed time</a>
+                using a <a>local time</a> of <code>iterationCount</code> and an
+                <a>iteration duration</a> of 1.
+              </dd>
+            </dl>
+          </dd>
+          <dt>
+            Otherwise,
+          </dt>
+          <dd>
+            Return <a>transformed time</a> / <a>iteration duration</a>.
+          </dd>
+        </dl>
+        <p class="note">
+          Since <a href="#time-transformations">timing functions</a> are
+          allowed to produce output times outside the range [0,1] it is
+          possible that the value calculated for a <a>time fraction</a> also
+          lies outside this range.
+        </p>
       </section>
     </section>
 
