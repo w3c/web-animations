@@ -1099,7 +1099,7 @@
           <dt>If the <a>timed item</a> has a parent <a>timing group</a>,</dt>
           <dd>
             the inherited time is the parent <a>timing group</a>'s current
-            <a>scaled time value</a>.
+            <a title="transformed time">transformed time value</a>.
           </dd>
           <dt>If the <a>timed item</a> is directly associated with
               a <a>player</a>,</dt>
@@ -1200,10 +1200,10 @@
               a time where the item's <a>fill mode</a> (see <a
               href="#fill-behavior" class="sectionRef"></a>) causes it to affect
               its target.
-              <a title="timed item">Timed items</a> only produce a <a>scaled
-              time</a> when the item is <a>in effect</a>.
-              At all other times, the <a>scaled time</a> of a <a>timed item</a>
-              is <code>null</code>.
+              <a title="timed item">Timed items</a> only produce
+              a <a>transformed time</a> when the item is <a>in effect</a>.
+              At all other times, the <a>transformed time</a> of a <a>timed
+              item</a> is <code>null</code>.
             </dd>
           </dl>
           <p>
@@ -1563,8 +1563,8 @@
         rate</dfn> parameter.
         The <a title="timed item playback rate">playback rate</a> of a <a>timed
         item</a> is a finite real number that acts as a multiplier when
-        calculating the <a>timed item</a>'s <a>scaled time</a> from its <a>local
-        time</a>.
+        calculating the <a>timed item</a>'s <a>transformed time</a> from its
+        <a>local time</a>.
       </p>
       <p>
         The effect of setting the <a title="timed item playback rate">playback
@@ -1632,16 +1632,17 @@
         <h3>Overview</h3>
         <p>
           At the core of the Web Animations timing model is the process that
-          takes an inherited time value and converts it to an <a>iteration
-          time</a>.
+          takes an <a>inherited time</a> value and converts it to an
+          <a>iteration time</a>.
         </p>
         <p>
           Following this further transformations are applied before resulting at
-          a final <a>output time</a>.
+          a final <a>transformed time</a>.
         </p>
         <p>
           The first step in this process is to calculate the boundary when the
-          item is active, that is, the <a>active duration</a>.
+          <a>timed item</a> is <a>active</a>, that is, the <a>active
+          duration</a>.
         </p>
         <p>
           This process is illustrated below.
@@ -1652,7 +1653,8 @@
         <p class="caption">
           Calculation of the <a>active duration</a> is based on
           multiplying the <a>iteration duration</a> by the <a>iteration
-          count</a> and then dividing by the <a>playback rate</a>.
+          count</a> and then dividing by the <a title="timed item playback
+          rate">playback rate</a>.
         </p>
         <p>
           The process for calculating the <a>active duration</a> is normatively
@@ -1661,7 +1663,7 @@
         </p>
         <p>
           Having established the <a>active duration</a>, the process for
-          transforming a timed item's <a>inherited time</a> into its
+          transforming a <a>timed item</a>'s <a>inherited time</a> into its
           <a>transformed time</a> is illustrated below.
         </p>
         <div class="figure">
@@ -1684,9 +1686,9 @@
           time</a> to produce the <a>transformed time</a>.
         </p>
         <p>
-          Steps 2 to 4 in the diagram are described following.
+          Steps 2 to 4 in the diagram are described in the following sections.
           The first step, calculating the <a>local time</a> is described in <a
-          href="#calculating-the-local-time" class="sectionRef"></a>.
+          href="#local-time-and-inherited-time" class="sectionRef"></a>.
           Steps 5 and 6 are described in
           <a href="#calculating-the-directed-time" class="sectionRef"></a>
           and
@@ -1695,105 +1697,30 @@
         </p>
       </section>
       <section>
-        <h3>Calculating the duration</h3>
-        <section>
-          <h4>Calculating the iteration duration</h4>
-          <p>
-            The <dfn>iteration duration</dfn>, unless overridden (see below), is
-            simply its <em>intrinsic iteration duration</em>.
-          </p>
-          <p>
-            The <dfn>intrinsic iteration duration</dfn> of a timed item is zero,
-            however some specific types of timed item such as timing groups
-            override this behavior and provide an alternative intrinsic duration
-            (see <a href="#the-intrinsic-duration-of-a-parallel-timing-group"
-            class="sectionRef"></a> and <a
-            href="#the-intrinsic-duration-of-a-sequence-timing-group"
-            class="sectionRef"></a>).
-          </p>
-          <p>
-            The Web Animations API also provides a means to
-            override the <a>intrinsic iteration duration</a> and provide another
-            value for the <a>iteration duration</a> via that
-            <code>iterationDuration</code> attribute.
-          </p>
-          <div class="informative">
-            <p>
-              Since the <a>intrinsic iteration duration</a> of an animation is
-              zero, and the default <code>fillMode</code> when constructing an
-              <a>Animation</a> is <em>forwards</em>, it is possible to
-              create animations that simply set a property without any
-              interpolation as follows,
-            </p>
-            <pre class='example sh_javascript'>
-new Animation(elem, { display: 'none' });
-            </pre>
-            <p>
-              This is particularly useful in combination with other animations
-              or timed items.
-              For example, fading an element before switching
-              &lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
-              follows,
-            </p>
-            <pre class='example sh_javascript'>
-new SeqGroup(
-  [
-    new Animation(elem, { opacity: '0%' }, 1),
-    new Animation(elem, { display: 'none' })
-  ]
-);
-            </pre>
-          </div>
-        </section>
-        <section>
-          <h4>Calculating the active duration</h4>
-          <p>
-            The active duration is based on the timed item's playback rate of
-            which we have both the <a>default playback rate</a> and <a>run-time
-            playback rate</a>.
-            As a result, we can define both the <a>default active duration</a>
-            and <a>run-time active duration</a>.
-            As with the playback rate, the <a>default active duration</a> is
-            used by timing groups to schedule children whilst the <a>run-time
-            active duration</a> is used to control playback.
-          </p>
-          <p>
-            In order to calculate the <a>default active duration</a> we
-            first define the <a>repeated duration</a> as follows:
-          </p>
-          <blockquote>
-            <dfn>repeated duration</dfn> =
-              <code><a>iteration duration</a> *
-                    <a>iterationCount</a></code>
-          </blockquote>
-          <p>
-            The <dfn>default active duration</dfn> is calculated according
-            to the following steps:
-          </p>
-          <ol>
-            <li>
-              If the <a>default playback rate</a> is zero, return
-              <code>Infinity</code>.
-            </li>
-            <li>
-              Otherwise, return <code><a>repeated duration</a>
-              / abs(<a>default playback rate</a>)</code>.
-            </li>
-          </ol>
-          <p>
-            For the <a>run-time active duration</a>, we first define
-            the <dfn>intrinsic run-time active duration</dfn> as the result of
-            following the same steps for calculating the <a>default active
-            duration</a> but substituting the <a>effective run-time playback
-            rate</a> for the <a>default playback rate</a>.
-          </p>
-          <p>
-            Next we define the <dfn>run-time active duration</dfn> as simply the
-            <a>intrinsic run-time active duration</a> unless overridden by
-            providing another value for the run-time active duration via the
-            <code>activeDuration</code> attribute.
-          </p>
-        </section>
+        <h3>Calculating the active duration</h3>
+        <p>
+          In order to calculate the <a>active duration</a> we first define the
+          <a>repeated duration</a> as follows:
+        </p>
+        <blockquote>
+          <dfn>repeated duration</dfn> =
+            <code><a>iteration duration</a> *
+                  <a>iteration count</a></code>
+        </blockquote>
+        <p>
+          The <dfn>active duration</dfn> is calculated according
+          to the following steps:
+        </p>
+        <ol>
+          <li>
+            If the <a title="timed item playback rate">playback rate</a> is
+            zero, return <code>Infinity</code>.
+          </li>
+          <li>
+            Otherwise, return <code><a>repeated duration</a>
+            / abs(<a title="timed item playback rate">playback rate</a>)</code>.
+          </li>
+        </ol>
       </section>
       <section>
         <h3>Transforming the local time</h3>
@@ -2789,6 +2716,35 @@ var animC = new Animation(elem,
             Fill in the parameters for <a>PathAnimationEffect</a> above once
             we have decided on them.
           </p>
+          <p class="todo">
+            I'm just parking the following section below here for now.
+            Not sure if it really belongs.
+          </p>
+          <p>
+            Since the <a>intrinsic iteration duration</a> of an animation is
+            zero, and the default <code>fillMode</code> when constructing an
+            <a>Animation</a> is <em>forwards</em>, it is possible to
+            create animations that simply set a property without any
+            interpolation as follows,
+          </p>
+          <pre class='example sh_javascript'>
+new Animation(elem, { display: 'none' });
+          </pre>
+          <p>
+            This is particularly useful in combination with other animations
+            or timed items.
+            For example, fading an element before switching
+            &lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
+            follows,
+          </p>
+          <pre class='example sh_javascript'>
+new SeqGroup(
+[
+  new Animation(elem, { opacity: '0%' }, 1),
+  new Animation(elem, { display: 'none' })
+]
+);
+          </pre>
         </section>
       </section>
       <section>
@@ -5275,8 +5231,8 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
             <p>
               The <a>start time</a> of this <a>timed item</a> in seconds.
               This is the time at which the parent <a>timing group</a>, if any,
-              has scheduled this child to run within its <a title="scaled
-              time">scaled time space</a>, that is, the <a>timed item</a>'s
+              has scheduled this child to run within its <a title="transformed
+              time">transformed time space</a>, that is, the <a>timed item</a>'s
               <a title="inherited time">inherited time space</a>.
             </p>
             <p>
