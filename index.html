@@ -1728,9 +1728,9 @@
           <h4>Calculating the active time</h4>
           <p>
             The <dfn>active time</dfn> is based on the <a>local time</a>
-            and <code>startDelay</code>.
-            It is defined only when the timed item is <a>in effect</a> and is
-            calculated according to the following steps:
+            and <a>start delay</a>.
+            It is defined only when the <a>timed item</a> is <a>in effect</a>
+            and is calculated according to the following steps:
           </p>
           <ol>
             <li>
@@ -1738,11 +1738,11 @@
               <code>null</code>.
             </li>
             <li>
-              If <code><a>local time</a> &lt; startDelay</code>
-              the result depends on the <code>fillMode</code> as follows,
+              If <code><a>local time</a> &lt; <a>start delay</a></code>
+              the result depends on the <a>fill mode</a> as follows,
               <dl class="switch">
                 <dt>
-                  If the <a>effective fill mode</a> is <em>backwards</em> or
+                  If the <a>fill mode</a> is <em>backwards</em> or
                   <em>both</em>,
                 </dt>
                 <dd>
@@ -1757,20 +1757,18 @@
               </dl>
             </li>
             <li>
-              If <code><a>local time</a> &lt; startTime + <a>run-time active
+              If <code><a>local time</a> &lt; <a>start time</a> + <a>active
               duration</a></code>, return <code><a>local time</a>
-              - startDelay</code>.
+              - <a>start delay</a></code>.
             </li>
             <li>
-              Otherwise, the result depends on the <a>effective fill mode</a> as
-              follows,
+              Otherwise, the result depends on the <a>fill mode</a> as follows,
               <dl class="switch">
                 <dt>
-                  If the <a>effective fill mode</a> is <em>forwards</em> or
-                  <em>both</em>,
+                  If the <a>fill mode</a> is <em>forwards</em> or <em>both</em>,
                 </dt>
                 <dd>
-                  return the <a>run-time active duration</a>.
+                  return the <a>active duration</a>.
                 <dd>
                 <dt>
                   Otherwise,
@@ -1786,9 +1784,10 @@
           <h4>Calculating the scaled active time</h4>
           <p>
             Before the <a>active time</a> can be converted to an <a>iteration
-            time</a> we must factor in the timed item's <a>effective run-time
-            playback rate</a> and <code>iterationStart</code>.
-            This is called the <a>scaled active time</a>.
+            time</a> we must factor in the <a>timed item</a>'s <a
+            title="timed item playback rate">playback rate</a> and <a>iteration
+            start</a>.
+            The return is called the <a>scaled active time</a>.
           </p>
           <p>
             In order to calculate the <a>scaled active time</a> we first
@@ -1796,7 +1795,7 @@
           </p>
           <blockquote>
             <dfn>start offset</dfn> =
-              <code>iterationStart * <a>iteration duration</a></code>
+              <code><a>iteration start</a> * <a>iteration duration</a></code>
           </blockquote>
           <p>
             The <dfn>scaled active time</dfn> is calculated according to
@@ -1809,19 +1808,20 @@
             </li>
             <li>
               Return the scaled active time based on the
-              <a>effective run-time playback rate</a> as follows,
+              <a title="timed item playback rate">playback rate</a> as follows,
               <dl class="switch">
-                <dt>If <a>effective run-time playback rate</a> is negative,</dt>
+                <dt>If the <a title="timed item playback rate">playback rate</a>
+                    is negative,</dt>
                 <dd>
                 Return <code>(<a>active time</a> -
-                              <a>run-time active duration</a>)
-                        * <a>effective run-time playback rate</a>
+                              <a>active duration</a>)
+                        * <a title="timed item playback rate">playback rate</a>
                         + <a>start offset</a></code>.
                 </dd>
                 <dt>Otherwise,</dt>
                 <dd>
                   Return <code><a>active time</a>
-                  * <a>effective run-time playback rate</a>
+                  * <a title="timed item playback rate">playback rate</a>
                   + <a>start offset</a></code>.
                 </dd>
             </li>
@@ -1844,13 +1844,14 @@
             <li>
               If <code><a>scaled active time</a> - <a>start
               offset</a></code> is equal to the <a>repeated duration</a>,
-              and <code>iterationCount</code> is not zero,
-              and <code>(iterationCount + iterationStart) % 1</code> is zero,
+              and <a>iteration count</a> is not zero,
+              and <code>(<a>iteration count</a> + <a>iteration start</a>)
+              % 1</code> is zero,
               return the <a>iteration duration</a>.
             </li>
             <li>
               Otherwise, return <code><a>scaled active time</a>
-              % <var>iteration duration</var></code>.
+              % <a>iteration duration</a></code>.
             </li>
           </ol>
         </section>
@@ -1871,12 +1872,12 @@
           </li>
           <li>
             If the <a>iteration duration</a> is zero, return
-            <code>floor(timing.iterationStart + timing.iterationCount)</code>.
+            <code>floor(<a>iteration start</a> + <a>iteration count</a>)</code>.
           </li>
           <li>
-            If the <a>unscaled iteration time</a> equals the <a>iteration
-            duration</a>, return <code>timing.iterationStart
-            + timing.iterationCount - 1</code>.
+            If the <a>iteration time</a> equals the <a>iteration
+            duration</a>, return <code><a>iteration start</a>
+            + <a>iteration count</a> - 1</code>.
           </li>
           <li>
             Return <code>floor(<a>scaled active time</a> /
