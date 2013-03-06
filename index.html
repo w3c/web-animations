@@ -582,7 +582,7 @@
       <p>
         A <a>player</a> records the <a>time value</a> of its <a>timeline</a>
         at which its <a>source content</a> is scheduled to begin
-        as the <dfn>start time</dfn>.
+        as the <dfn title="player start time">start time</dfn>.
       </p>
       <section>
         <h3>The current time of a player</h3>
@@ -594,9 +594,9 @@
         </p>
         <blockquote>
           <code><a>current time</a> =
-          (<var>timeline time</var> - <a>start time</a>) * <a
-          title="player playback rate">playback rate</a> - <a>time
-          drift</a></code>
+          (<var>timeline time</var> - <a title="player start time">start
+          time</a>) * <a title="player playback rate">playback rate</a>
+          - <a>time drift</a></code>
         </blockquote>
         <p>
           Where:
@@ -604,7 +604,8 @@
         <ul>
           <li><var>timeline time</var> is the current <a>time value</a> of the
           <a>timeline</a> with which this <a>player</a> is associated.</li>
-          <li><var>start time</var> is the player's <a>start time</a>.</li>
+          <li><var>start time</var> is the player's <a
+          title="player start time">start time</a>.</li>
           <li><var>playback rate</var> is the <a
           title="player playback rate">playback rate</a> value described in <a
           href="#speed-control" class="sectionRef"></a>.</li>
@@ -642,10 +643,11 @@
             between timed items.
           </p>
           <p>
-            However, in Web Animations, the <a>start time</a> of a player has
-            special significance in determining the priority of animations (see
-            <a href="#combining-animations" class="sectionRef"></a>) and so we
-            cannot simply adjust the <a>start time</a>.
+            However, in Web Animations, the <a title="player start time">start
+            time</a> of a <a>player</a> has special significance in determining
+            the priority of animations (see <a href="#combining-animations"
+            class="sectionRef"></a>) and so we cannot simply adjust the <a
+            title="player start time">start time</a>.
             Instead, an additional offset is introduced called the <a>time
             drift</a> that further offsets a player's <a>current time</a> from
             its timeline.
@@ -659,8 +661,8 @@
             At time <var>t</var>, a seek is performed on the player changing its
             <a>current time</a> from 1.5s to 2s.<br>
             As a result, the <a>time drift</a> is set to -0.5s.<br>
-            Note that the <a>start time</a> indicated by a red star does not
-            change.
+            Note that the <a title="player start time">start time</a> indicated
+            by a red star does not change.
           </p>
           <p>
             It is possible to seek a player even if its <a>timeline</a> is
@@ -678,9 +680,9 @@
             setting the <a>time drift</a>.
           </p>
           <p>
-            Pausing before a player's <a>start time</a> will cause the player's
-            <a>source content</a> to begin in a paused state but does not delay
-            its start as is illustrated below.
+            Pausing before a player's <a title="player start time">start
+            time</a> will cause the player's <a>source content</a> to begin in
+            a paused state but does not delay its start as is illustrated below.
           </p>
           <div class="figure">
             <img src="img/pausing.svg" width="600">
@@ -690,13 +692,14 @@
             In case A, the player is paused and unpaused before its <a>start
             time</a>.
             The pause has no effect.<br><br>
-            In case B, the player is paused before the <a>start time</a> and
-            remains paused.
-            At the scheduled <a>start time</a> the <a>source content</a> begins
-            playing in a paused state.
+            In case B, the player is paused before the
+            <a title="player start time">start time</a> and remains paused.
+            At the scheduled <a title="player start time">start time</a> the
+            <a>source content</a> begins playing in a paused state.
             When the player is unpaused it continues playing.
             The resulting player has a <a>time drift</a> equivalent to the
-            interval from the <a>start time</a> to when it was unpaused.<br><br>
+            interval from the <a title="player start time">start time</a> to
+            when it was unpaused.<br><br>
             In case C, the player is paused and unpaused during the <a>active
             interval</a> of the source content.
             After unpausing, the player has a <a>time drift</a> equivalent to
@@ -717,8 +720,9 @@
             <dt><dfn>time drift</dfn></dt>
             <dd>
               The offset from a player's scheduled current time as defined by
-              its <a>start time</a>, and its actual current time after
-              accounting for the effects of seeking and pausing.
+              its <a title="player start time">start time</a>, and its actual
+              current time after accounting for the effects of seeking and
+              pausing.
               The <a>time drift</a> is initially zero and is updated as per the
               definition in <a href="#calculating-the-time-drift"
               class="sectionRef"></a>.
@@ -779,7 +783,8 @@
             <dt>If the <a>paused state</a> is true,</dt>
             <dd>
               Return the result of 
-              <code>(<a>effective timeline time</a> - <a>start time</a>) * <a
+              <code>(<a>effective timeline time</a> - <a
+              title="player start time">start time</a>) * <a
               title="player playback rate">playback rate</a> -
               max(<a>pause start time</a>, <a>earliest moment</a>)</code>.
             </dd>
@@ -847,7 +852,8 @@
                 <dd>
                   Set the stored value for the <a>time drift</a> to
                   the result of evaluating
-                  <code>(<a>effective timeline time</a> - <a>start time</a>)
+                  <code>(<a>effective timeline time</a> - <a
+                     title="player start time">start time</a>)
                      * <a title="player playback rate">playback rate</a> -
                      <var>seek time</var></code>.
                 </dd>
@@ -955,9 +961,9 @@
         a <a>player</a> via an ancestor <a>timing group</a>.
         Only the root <a>timed item</a> of such a hierarchy can be associated
         directly with a <a>timed item</a>.
-        Attempting to associate a <a>timed item</a> that has a parent <a>timing
+        Attempting to associate a <a>timed item</a> that has a <a>parent timing
         group</a> with a <a>player</a> results in the <a>timed item</a> being
-        removed from the parent <a>timing group</a>.
+        removed from the <a>parent timing group</a>.
       </p>
       <p>
         All types of <a>timed item</a> define a number of common properties.
@@ -972,16 +978,18 @@
           </p>
           <p>
             The lower bound of the <a>active interval</a> is determined by the
-            <a>start time</a> of the <a>timed item</a> but may be shifted by
-            a <a>start delay</a> on the <a>timed item</a>.
+            <a title="timed item start time">start time</a> of the <a>timed
+            item</a> but may be shifted by a <a>start delay</a> on the <a>timed
+            item</a>.
           </p>
           <p>
             The upper bound of the interval is determined by the <a>active
             duration</a>.
           </p>
           <p>
-            The relationship between the <a>start time</a>, <a>start delay</a>,
-            and <a>active duration</a> is illustrated below.
+            The relationship between the <a title="timed item start time">start
+            time</a>, <a>start delay</a>, and <a>active duration</a> is
+            illustrated below.
           </p>
           <div class="figure">
             <img src="img/active-interval-examples.svg" width="600">
@@ -989,12 +997,13 @@
           <p class="caption">
             Examples of the effect of the <a>start delay</a> on the endpoints of
             the <a>active interval</a>.<br>
-            (a) A timed item with no delay; the start time and beginning of the
-            active interval are coincident.<br>
-            (b) A timed item with a positive delay; the beginning of the active
-            interval is deferred by the delay.<br>
-            (c) A timed item with a negative delay; the beginning of the active
-            interval is brought forward by the delay.
+            (a) A timed item with no delay; the <a title="timed item start
+            time">start time</a> and beginning of the <a>active interval</a> are
+            coincident.<br>
+            (b) A timed item with a positive delay; the beginning of the
+            <a>active interval</a> is deferred by the delay.<br>
+            (c) A timed item with a negative delay; the beginning of the
+            <a>active interval</a> is brought forward by the delay.
           </p>
         </div>
         <p>
@@ -1005,34 +1014,36 @@
         </p>
         <p>
           The lower bound of the <a>active interval</a> is defined by the
-          combination of the timed item's <a>start time</a> and <a>start
-          delay</a>
+          combination of the timed item's <a title="timed item start time">start
+          time</a> and <a>start delay</a>
         </p>
         <p>
-          A <a>timed item</a>'s <dfn>start time</dfn> is the moment at which the
-          <em>parent timing group</em>, if any, has scheduled the <a>timed
-          item</a> to begin.
+          A <a>timed item</a>'s <dfn title="timed item start time">start
+          time</dfn> is the moment at which the <a>parent timing group</a>, if
+          any, has scheduled the <a>timed item</a> to begin.
           It is expressed in <a>inherited time</a>.
           In most cases, including the case when the <a>timed item</a> has no
-          parent timing group, the <a>start time</a> is zero.
-          The singular exception is <a title="sequence timing
-          group">sequence timing groups</a> which set the <a title="start
-          time">start times</a> of their children as described in <a
+          <a>parent timing group</a>, the <a title="timed item start time">start
+          time</a> is zero.
+          The singular exception is <a title="sequence timing group">sequence
+          timing groups</a> which set the <a title="timed item start time">start
+          times</a> of their children as described in <a
           href="#the-start-time-of-children-of-a-sequence-timing-group"
           class="sectionRef"></a>.
         </p>
         <p>
-          In addition to the <a>start time</a>, a <a>timed item</a> also has
-          a <dfn>start delay</dfn> which is an offset from the <a>start
-          time</a>.
-          Unlike the <a>start time</a> which is determined by the parent timing
-          group, the <a>start delay</a> is a property of the <a>timed item</a>
-          itself.
+          In addition to the <a title="timed item start time">start time</a>,
+          a <a>timed item</a> also has a <dfn>start delay</dfn> which is an
+          offset from the <a title="timed item start time">start time</a>.
+          Unlike the <a title="timed item start time">start time</a> which is
+          determined by the <a>parent timing group</a>, the <a>start delay</a>
+          is a property of the <a>timed item</a> itself.
         </p>
         <p>
           The lower bound of the <a>active interval<a> of a <a>timed item</a>,
           expressed in <a title="inherited time">inherited time space</a>, is
-          the sum of the <a>start time</a> and the <a>start delay</a>.
+          the sum of the <a title="timed item start time">start time</a> and the
+          <a>start delay</a>.
         </p>
         <p>
           These definitions are incorporated in the calculation of the <a>local
@@ -1063,16 +1074,17 @@
             Just as with coordinate spaces, time spaces can also be nested.
             <a title="timing group">Timing groups</a> typically perform some
             transformations on the <a title="time value">time values</a> they
-            receive from their parent or <a>player</a> before passing on the
-            transformed <a title="time value">time values</a> to their children.
+            receive from their <a title="parent timing group">parent</a> or
+            <a>player</a> before passing on the transformed <a
+            title="time value">time values</a> to their children.
             Child <a title="timed item">timed items</a> then operate
             <em>within</em> that transformed time space.
           </p>
           <p>
             Children take the transformed time values from their
             parent&mdash;called the <a>inherited time</a>&mdash; and add their
-            <a>start time</a> to establish their own <a title="local time">local
-            time space</a> as illustrated below.
+            <a title="timed item start time">start time</a> to establish their
+            own <a title="local time">local time space</a> as illustrated below.
           </p>
           <div class="figure">
             <img src="img/local-time.svg" width="600">
@@ -1080,13 +1092,15 @@
           <p class="caption">
             Inherited time and local time.<br>
             At time <var>t</var>, the <a>inherited time</a> is 2.5.<br>
-            For <a>timed item</a> (a) which has a <a>start time</a> of 1,
-              the <a>local time</a> is 1.5.<br>
-            For <a>timed item</a> (b) which has a <a>start time</a> of 1
+            For <a>timed item</a> (a) which has a <a
+              title="timed item start time">start time</a> of 1, the <a>local
+              time</a> is 1.5.<br>
+            For <a>timed item</a> (b) which has a <a
+              title="timed item start time">start time</a> of 1
               and a <a>start delay</a> of 1,
               the <a>local time</a> is also 1.5
               since <a>local time</a> is based on a <a>timed item</a>'s
-              <a>start time</a> only,
+              <a title="timed item start time">start time</a> only,
               and not on its <a>start delay</a>.
           </p>
         </div>
@@ -1096,9 +1110,9 @@
           following:
         </p>
         <dl class="switch">
-          <dt>If the <a>timed item</a> has a parent <a>timing group</a>,</dt>
+          <dt>If the <a>timed item</a> has a <a>parent timing group</a>,</dt>
           <dd>
-            the inherited time is the parent <a>timing group</a>'s current
+            the inherited time is the <a>parent timing group</a>'s current
             <a title="transformed time">transformed time value</a>.
           </dd>
           <dt>If the <a>timed item</a> is directly associated with
@@ -1114,7 +1128,8 @@
         </dl>
         <p>
           The <dfn>local time</dfn> of a <a>timed item</a> is the sum of the
-          <a>timed item</a>'s <a>inherited time</a> and its <a>start time</a>.
+          <a>timed item</a>'s <a>inherited time</a> and its <a
+          title="timed item start time">start time</a>.
           If the <a>inherited time</a> is <code>null</code> then the local time
           is also <code>null</code>.
         </p>
@@ -1217,7 +1232,7 @@
         <ol>
           <li>the timed item's <a>local time</a> is not <code>null</code> and is
               less than the item's <code>startDelay</code>, or</li>
-          <li>the timed item has a parent <a>timing group</a> which is
+          <li>the timed item has a <a>parent timing group</a> which is
               a <a>scheduled</a> timed item.</li>
         </ol>
         <p>
@@ -1234,8 +1249,8 @@
         </ol>
         <p>
           A timed item is <dfn>current</dfn> if it is either <a>scheduled</a> or
-          <a>active</a> or it has a parent <a>timing group</a> and the parent
-          <a>timing group</a> is <a>current</a>.
+          <a>active</a> or it has a <a>parent timing group</a> and the
+          <a>parent timing group</a> is <a>current</a>.
         </p>
         <p>
           A timed item is <dfn>in effect</dfn> if its <a>active time</a> as
@@ -1396,10 +1411,10 @@
             <img src="img/iteration-intervals.svg" width="600">
           </div>
           <p class="caption">
-            A comparison of the iteration and active durations for a timed item
-            with an iteration count of 2.5.
-            Note that the iteration duration for the final iteration does not
-            change, it is simply cut-off by the active duration.
+            A comparison of the <a>iteration duration</a> and <a>active
+            duration</a> of a timed item with an <a>iteration count</a> of 2.5.
+            Note that the <a>iteration duration</a> for the final iteration does
+            not change, it is simply cut-off by the <a>active duration</a>.
           </p>
         </div>
       </section>
@@ -1674,7 +1689,8 @@
         <p class="caption">
           An overview of timing model calculations.<br>
           (1) The <a>inherited time</a> is converted into a <a>local time</a> by
-          incorporating the <a>start time</a> and <a>time drift</a>.<br>
+          incorporating the <a title="timed item start time">start time</a> and
+          <a>time drift</a>.<br>
           (2) The <a>local time</a> is converted into an <a>active time</a> by
           incorporating the <a>start delay</a>.<br>
           (3) The <a>playback rate</a> and <a>iteration start</a> properties are
@@ -1710,8 +1726,8 @@
                   <a>iteration count</a></code>
         </blockquote>
         <p>
-          The <dfn>active duration</dfn> is calculated according
-          to the following steps:
+          The <a>active duration</a> is calculated according to the following
+          steps:
         </p>
         <ol>
           <li>
@@ -1759,9 +1775,10 @@
               </dl>
             </li>
             <li>
-              If <code><a>local time</a> &lt; <a>start time</a> + <a>active
-              duration</a></code>, return <code><a>local time</a>
-              - <a>start delay</a></code>.
+              If <code><a>local time</a> &lt; <a
+              title="timed item start time">start time</a> + <a>active
+              duration</a></code>, return <code><a>local time</a> - <a>start
+              delay</a></code>.
             </li>
             <li>
               Otherwise, the result depends on the <a>fill mode</a> as follows,
@@ -2190,106 +2207,136 @@
     <section>
       <h2>Grouping and synchronization</h2>
       <div class="informative">
-      <p>
-        While it is possible to set the timing properties of animations
-        individually, it is often useful to bundle animations together and
-        control their timing as a group.
-      </p>
-      <p>
-        This can be used to share common timing properties as illustrated below:
-      </p>
-      <div class="figure">
-        <img src="img/grouping-delay.svg" width="800">
+        <p>
+          While it is possible to set the timing properties of <a title="timed
+          item">timed items</a> individually, it is often useful to synchronize
+          <a title="timed item">timed items</a> so that they share common timing
+          properties and maintain their temporal relationship.
+          This is achieved using a <a>timing group</a>.
+        </p>
+        <p>
+          A simple example is illustrated below.
+        </p>
+        <div class="figure">
+          <img src="img/grouping-delay.svg" width="800">
+        </div>
+        <p class="caption">
+          Using groups to share common timing properties.<br>
+          (a) Shows setting a delay of 5 seconds on individual animations.<br>
+          (b) Produces the same effect by setting the delay on the group.
+        </p>
+        <p>
+          When a <a>timing group</a> is directly associated with
+          a <a>player</a>, the <a title="timed item">timed items</a> associated
+          with the <a>timing group</a> can be seeked, paused, and stopped as
+          a unit.
+        </p>
       </div>
-      <p class="caption">
-        Using groups to share common timing properties.<br>
-        (a) Shows setting a delay of 5 seconds on individual animations.<br>
-        (b) Produces the same effect by setting the delay on the group.
+      <p>
+        A <dfn>timing group</dfn> is a type of <a>timed item</a> that contains
+        an ordered sequence of zero or more <a title="timed item">timed
+        items</a> known as <dfn title="child timed item">child timed
+        items</dfn>.
+        At a given moment, a <a>timed item</a> may be a <a>child timed item</a>
+        of at most one <a>timing group</a> known as the <dfn>parent timing
+        group</dfn>.
+        Furthermore, the <a>parent timing group</a> cannot be the same <a>timed
+        item</a> as the <a>child timed item</a> itself.
       </p>
       <p>
-        As well as sharing timing information, by grouping animations together
-        they can be seeked, paused, and stopped as a unit.
+        The temporal relationship between a <a>child timed item</a> and its
+        <a>parent timing group</a> is incorporated in the definition of
+        <a>inherited time</a> (see <a href="#local-time-and-inherited-time"
+        class="sectionRef"></a>).
       </p>
-      </div>
       <section class="informative">
         <h3>Relationship of group time to child time</h3>
         <p>
-          The timing of the children of a group is based on the timing of the
-          group. Specifically, times for the children are based on the parent's
-          <em>iteration time</em>. That is, the children animate <em>inside</em>
-          an iteration of the parent.
+          The timing of the children of a <a>timing group</a> is based on the
+          timing of the group.
+          Specifically, times for the children are based on the parent's
+          <a>transformed time</a>.
+          With regards to repetition, this means the children operate
+          <em>inside</em> an iteration of the parent.
         </p>
         <p>
-          As an example, consider repetition. If a group has an iteration count
-          of 2, then the children of of the group will all play twice since they
+          For example, if a <a>timing group</a> has an <a>iteration count</a> of
+          2, then the children of of the group will all play twice since they
           effectively play <em>inside</em> the group's iterations.
         </p>
         <div class="figure">
           <img src="img/grouping-repetition.svg" width="600">
         </div>
         <p class="caption">
-          Since children of an timing group base their timing on the group's
-          <var>iteration time</var>, when the group repeats, the children play
-          again.
+          Since children of an <a>timing group</a> base their timing on the
+          group's <a>transformed time</a>, when the group repeats, the
+          children play again.
         </p>
         <p>
-          If an iteration count is specified for the children of a group as well
-          as for the group the effect is as if the iteration count of the group
-          was multiplied with the iteration count of the children.
+          Note that even in this case, the child <a title="timed item">timed
+          items</a> still have only <em>one</em> <a>active interval</a>.
+          However, as a result of the parent's timing, the <a>active
+          interval</a> is played twice.
+        </p>
+        <p>
+          If an <a>iteration count</a> is specified for the children of a group
+          as well as for the group itself, the effect is as if the <a>iteration
+          count</a> of the group was multiplied with the <a>iteration count</a>
+          of the children.
         </p>
         <div class="figure">
           <img src="img/grouping-repetition-and-animation-repetition.svg"
             width="600">
         </div>
         <p class="caption">
-          Specifying an iteration count of 2 on an timing group and an
-          iteration count of 3 on one of its children results in that child
-          playing 6 times.
+          Specifying an <a>iteration count</a> of 2 on an <a>timing group</a>
+          and an <a>iteration count</a> of 3 on one of its children results in
+          that child playing 6 times.
         </p>
         <p>
-          A further result of the children of a group basing their timing on the
-          group's <var>iteration time</var> is that they cannot animate outside
-          of the group's <a>animation interval</a>.
-          This is because the <var>iteration time</var> of a group will not
-          change outside its animation interval.
-          This allows groups to clip the playback of their children.
+          A further result of the children of a <a>timing group</a> basing their
+          timing on the group's <a>transformed time</a> is that they cannot
+          animate outside of the group's <a>active interval</a>.
+          This is because the <a>transformed time</a> of a group will not
+          change outside its <a>active interval</a>.
+          This allows groups to <em>clip</em> the playback of their children.
         </p>
         <div class="figure">
           <img src="img/grouping-clipping.svg" width="600">
         </div>
         <p class="caption">
-          In the first instance, an animation has a negative delay and an
-          infinite iteration count.<br>
-          However, when a similar animation is placed inside a group with
-          a specified duration it has the effect of clipping the animation's
-          duration.
+          In the first instance, a <a>timed item</a> has a negative delay and an
+          infinite <a>iteration count</a>.<br>
+          However, when a similar <a>timed item</a> is placed inside a <a>timing
+          group</a> with a specified <a>iteration duration</a> it has the effect
+          of clipping the child <a>timed item</a>'s <a>active interval</a>.
         </p>
         <p>
-          Some further consequences of group children basing their timing on
-          their parent group's <var>iteration time</var> are:
+          Some further consequences of <a>timing group</a> children basing their
+          timing on their parent group's <a>transformed time</a> are:
         </p>
         <ul>
           <li>
-            Setting the playback rate of an timing group will speed up or
-            slow down all children.
+            Setting the <a title="timed item playback rate">playback rate</a> of
+            a <a>timing group</a> will speed up or slow down all children.
           </li>
           <li>
-            Changing the playback direction of an timing group will change
-            the direction of all children.
+            Changing the <a>playback direction</a> of a <a>timing group</a> will
+            change the direction of all children.
           </li>
           <li>
-            Applying a timing function to an timing group will affect the
-            playback rate of all children.
+            Applying a <a>timing function</a> to a <a>timing group</a> will
+            affect the progress of all children.
           </li>
         </p>
       </section>
       <section class="informative">
-        <h3>Types of groups</h3>
+        <h3>Types of timing groups</h3>
         <p>
-          Groups can be used to provide synchronization behavior for its
-          children.
-          For example, one type of group runs its children in parallel, whilst
-          another type runs the children in sequence.
+          <a>Timing groups</a> can be used to provide different kinds of
+          synchronization behavior for their children.
+          For example, one type of <a>timing group</a> runs its children in
+          parallel, whilst another type runs the children in sequence.
         </p>
         <p>
           Compare the two arrangements illustrated below:
@@ -2298,497 +2345,219 @@
           <img src="img/grouping-types.svg" width="600">
         </div>
         <p class="caption">
-          Two types of timing groups.<br>
-          (a) is a parallel group where all the children run simultaneously.<br>
-          (b) is a sequence group where the children run in turn.
+          Two types of <a title="timing group">timing groups</a>.<br>
+          (a) is a <a>parallel timing group</a> where all the children run
+              simultaneously.<br>
+          (b) is a <a>sequence timing group</a> where the children run in turn.
         </p>
         <p>
-          Groups can also contain other groups which allows for more
+          <a title="timing group">Timing groups</a> can also contain other
+          <a title="timing group">timing groups</a> which allows for more
           sophisticated synchronization.
+          An example is illustrated below.
         </p>
         <div class="figure">
           <img src="img/grouping-nesting.svg" width="600">
         </div>
         <p class="caption">
-          A sequence timing group that contains a parallel timing group as
-          a child.<br>
-          The parallel group waits for the previous child of the sequence
-          group to finish, and then the children of the parallel group play
-          simultaneously.
-          After they have finished the next child of the sequence group plays.
+          A <a>sequence timing group</a> that contains a <a>parallel timing
+          group</a> as a child.<br>
+          The <a>parallel timing group</a> waits for the previous child of the
+          <a>sequence timing group</a> to finish, and then the children of the
+          <a>parallel timing group</a> play simultaneously.
+          After they have finished the next child of the <a>sequence timing
+          group</a> plays.
         </p>
         <p>
-          Web Animations defines two types of timing groups.
+          Web Animations defines two types of <a title="timing group">timing
+          groups</a>.
         </p>
         <dl>
-          <dt>Parallel groups</dt>
+          <dt><a title="parallel timing group">Parallel timing groups</a></dt>
           <dd>
             Children of the group play simultaneously.
-            The start time of children is taken as relative to the start of the
-            current iteration of the group, that is, it is in the group's
-            <em>iteration time space</em>.
+            The <a title="timed item start time">start time</a> of each child
+            coincides with the beginning of the group's <a>iteration
+            interval</a>.
           </dd>
-          <dt>Sequence groups</dt>
+          <dt><a title="sequence timing group">Sequence timing groups</a></dt>
           <dd>
             Children of the group play in turn beginning with the first child
             and proceeding to the last.
-            Any start time specified on children is ignored and replaced with
-            the time calculated using the procedure in <a
-            href="#the-start-time-of-children-of-a-sequence-timing-group"
-            class="sectionRef"></a>.
-          </dd>
-        </dl>
-      </section>
-      <section>
-        <h3>The <code>TimingGroup</code> interface</h3>
-        <p>
-          Represents a list of timed items grouped together for the purposes of
-          synchronization.
-        </p>
-        <p>
-          The <code>TimingGroup</code> interface supports indexed
-          properties with indices in the range 0 &le; <var>index</var> &lt;
-          <code>group.size</code>. 
-        </p>
-        <dl title="interface TimingGroup : TimedItem"
-          class="idl">
-          <dt>readonly attribute unsigned long length</dt>
-          <dd>
-            The number of timed items in the group.
-          </dd>
-          <dt>void clear ()</dt>
-          <dd>
-            <p>
-              Removes all child timed items from the group.
-            </p>
-          </dd>
-          <dt>getter TimedItem? (unsigned long index)</dt>
-          <dd>
-            <p>
-              Returns the item at <code>index</code>.
-              If <code>index</code> is greater than or equal to
-              <code>length</code> returns <code>null</code>.
-            </p>
-          </dd>
-          <dt>setter TimedItem (unsigned long index, TimedItem newItem)</dt>
-          <dd>
-            <p>
-              Replaces the item at <code>index</code> with <code>newItem</code>
-              by calling <code>splice(index, 1, newItem)</code>.
-            </p>
-            <p>
-              No attempt is made to check if the item at <code>index</code> is
-              already <code>newItem</code>. In such a case, <code>newItem</code>
-              will be removed from this group and re-added as per the usual
-              operation of <code>slice</code>.
-            </p>
-            <p>
-              Returns <code>newItem</code>.
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>HierarchyRequestError</code></dt>
-              <dd>
-                Raised if <code>newItem</code> is the timeline for a document
-                (see <a href="#the-document-timeline" class="sectionRef"></a>).
-              </dd>
-              <dt>DOMException of type <code>IndexSizeError</code></dt>
-              <dd>
-                Raised if <code>index</code> is outside of the range 0 &le;
-                <var>index</var> &lt; <code>group.length</code>.
-              </dd>
-            </dl>
-            <div class="note">
-              <p>
-                Whilst <code>splice</code> allows negative indices,
-                WebIDL requires index property setters to take an index of type
-                <code>unsigned long</code> and hence <code>index</code> is
-                restricted to the range 0 &le; <var>index</var> &lt;
-                <code>group.length</code>.
-              </p>
-            </div>
-          </dd>
-          <dt>sequence&lt;TimedItem&gt; add (TimedItem newItem,
-                                             TimedItem... otherItems)</dt>
-          <dd>
-            <p>
-              Add <code>newItem</code> and each <code>otherItems</code> as the
-              last item(s) in the group by calling <code>splice(group.length, 0,
-              newItem, otherItem1, ... otherItemN)</code>.
-            </p>
-            <p>
-              Returns a sequence containing the added items:
-              <code>[newItem, otherItem1, ... otherItemN]</code>.
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>HierarchyRequestError</code></dt>
-              <dd>
-                Raised if any of the items to add is the timeline for a document
-                (see <a href="#the-document-timeline" class="sectionRef"></a>).
-                If this exception is thrown none of the <code>newItem</code>
-                objects will be added to the group.
-              </dd>
-            </dl>
-          </dd>
-          <dt>sequence&lt;TimedItem&gt; remove (
-                long index, optional unsigned long count = 1)</dt>
-          <dd>
-            <p>
-              Removes the item(s) at <code>index</code> by calling
-              <code>splice(index, count)</code>.
-            </p>
-            <p>
-              Returns the removed items.
-            </p>
-          </dd>
-          <dt>
-            sequence&lt;TimedItem&gt; splice ()
-          </dt>
-          <dd>
-            <p>
-              Modifies the list of children of this group by first removing
-              <code>deleteCount</code> items from <code>start</code> followed by
-              adding <code>newItems</code> at the same point.
-            </p>
-            <p>
-              The operation of slice is based on <a
-                href="http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262%205th%20edition%20December%202009.pdf#page=140">ECMAScript 5's
-                Array.prototype.splice</a>.
-            </p>
-            <p>
-              Returns a sequence of the items removed from group during the
-              removal step (regardless of whether these items were re-added
-              during the addition step).
-            </p>
-            <dl class="parameters">
-              <dt>long start</dt>
-              <dd>
-                The index at which items should be removed and inserted.
-                Negative indices represent an offset from the end of the list of
-                items.
-                This value is clamped to the range [-<code>length</code>,
-                <code>length</code>].
-              </dd>
-              <dt>unsigned long deleteCount</dt>
-              <dd>
-                The number of items to remove from the group beginning at
-                <code>start</code>.
-                Negative values are clamped to zero, and all other values are
-                clamped such that
-                0 &lt; <code>start</code> + <code>deleteCount</code> &le;
-                length.
-              </dd>
-              <dt>sequence&lt;TimedItem&gt; newItems</dt>
-              <dd>
-                The items to be added at <code>start</code>.
-                Each item, if it already has a parent group (including this
-                group), is first removed from its parent group before being
-                added to this group.
-              </dd>
-            </dl>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>HierarchyRequestError</code></dt>
-              <dd>
-                Raised if any of the items in <code>newItem</code> is the
-                timeline for a document (see <a href="#the-document-timeline"
-                class="sectionRef"></a>).
-              </dd>
-            </dl>
-          </dd>
-          <dt>
-            sequence&lt;TimedItem&gt; splice (long start,
-              unsigned long deleteCount, TimedItem... newItem)
-          </dt>
-          <dd>
-            An overload of <code>splice</code> to take a variadic list of items
-            rather than requiring a sequence.
-            The operation is identical to <code>splice(unsigned long start,
-            unsigned long deleteCount, sequence&lt;TimedItem&gt;
-            newItems)</code>.
-          </dd>
-          <dt>long indexOf (TimedItem item)</dt>
-          <dd>
-            Returns the index of <code>item</code> within the group.
-            If <code>item</code> is not in the group, returns <code>-1</code>.
+            The <a title="timed item start time">start time</a> of each child is
+            set to the end of the <a>active interval</a> of the previous
+            sibling.
           </dd>
         </dl>
       </section>
       <section>
         <h3>Parallel timing groups</h3>
         <p>
-          Parallel timing groups run their children such they potentially play
-          simultaneously.
-          The start time of each child depends on its own <code>startTime</code>
-          attribute.
+          A <dfn>parallel timing group</dfn> is a type of <a>timing group</a>
+          that schedules its <a title="child timed item">child timed items</a>
+          such that they play simultaneously.
+        </p>
+        <p>
+          The <a title="timed item start time">start time</a> of a <a>child
+          timed item</a> of a <a>parallel timing group</a> is zero.
         </p>
         <section>
-          <h4>The intrinsic duration of a parallel timing group</h4>
+          <h4>The intrinsic iteration duration of a parallel timing group</h4>
           <p>
-            The intrinsic duration of a parallel timing group is the maximum of
-            <a>default end time</a> of each child <a>TimedItem</a>.
+            The <a>intrinsic iteration duration</a> of a <a>parallel timing
+            group</a> is based on the time when the last <a>child timed item</a>
+            completes its <a>active interval</a> and is calculated using the
+            following procedure.
           </p>
-          <p>
-            If the group has no children then the intrinsic duration is zero.
-          </p>
-          <p>
-            The <a>default end time</a> of a <a>TimedItem</a> is defined as
-            follows:
-          </p>
-          <blockquote>
-            <dfn>default end time</dfn> =
-            <code>startTime + startDelay + <a>default active duration</a></code>
-          </blockquote>
-        </section>
-        <section>
-          <h4>The <code>ParGroup</code> interface</h4>
-          <p>
-            Parallel timing groups are represented by <code>ParGroup</code>
-            objects.
-          </p>
-          <dl title="interface ParGroup : TimingGroup" class="idl">
-            <dt>Constructor ()</dt>
-            <dd>
+          <ol>
+            <li>
+              <p>Define the <a>end time</a> of a <a>timed item</a> as
+              :</p>
+              <blockquote>
+                <dfn>end time</dfn> =
+                <code><a title="timed item start time">start time</a> + <a>start
+                delay</a> + <a>active duration</a></code>
+              </blockquote>
+            </li>
+            <li>
               <p>
-                Creates a new <a>ParGroup</a> object using the following
-                procedure:
+                The <a>intrinsic iteration duration</a> depends on the number of
+                <a title="child timed item">child timed items</a> as follows,
               </p>
-              <ol>
-                <li>Create a new <a>ParGroup</a> object, <var>group</var>.</li>
-                <li>Establish a temporary timing dictionary, <var>timing
-                   dictionary</var>, based on the type of <var>timing</var> as
-                   follows,
-                  <dl class="switch">
-                    <dt>If <var>timing</var> is a <a>TimingDictionary</a>
-                    object,</dt>
-                    <dd>
-                      Let <var>timing dictionary</var> refer to
-                      <var>timing</var>.
-                    </dd>
-                    <dt>If <var>timing</var> is a <code>double</code>,</dt>
-                    <dd>
-                      Let <var>timing dictionary</var> be a new <var>timing
-                      dictionary</var> object with all properties set to their
-                      default values and <code>iterationDuration</code> set to
-                      <var>timing</var>.
-                    </dd>
-                    <dt>Otherwise (<var>timing</var> is <code>null</code> or
-                        undefined),</dt>
-                    <dd>
-                      Let <var>timing dictionary</var> be a new <var>timing
-                      dictionary</var> object with all properties set to their
-                      default values.
-                    </dd>
-                  </dl>
-                </li>
-                <li>For each member of <var>timing dictionary</var>,
-                  <ol>
-                    <li>Assign the value of the member to the
-                        correspondingly-named attribute on
-                        <var>group</var>.</li>
-                    <li>If member <code>timingFunction</code> is of type
-                        <code>DOMString</code> create a new <a>TimingFunction</a>
-                        object by calling
-                        <a href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
-                        class="idlType"><code>TimingFunction.createFromString</code></a><code>(<var>timing
-                        dictionary</var>.timingFunction)</code> and assign the
-                        result to
-                        <code><var>group</var>.timingFunction</code>.</li>
-                  </ol>
-                </li>
-                <li>
-                  Add <var>children</var> to the group by calling
-                  <code><var>group</var>.splice(0, 0,
-                  <var>children</var>)</code>.
-                </li>
-                <li>Set <code>timeline</code> to the <a>DocumentTimeSource</a> for
-                  the <a
-                  href="http://www.w3.org/TR/html5/browsers.html#active-document">active
-                  document</a>.</li>
-              </ol>
-              <dl class="parameters">
-                <dt>sequence&lt;TimedItem&gt;? children</dt>
+              <dl class="switch">
+                <dt>If the group has no <a title="child timed item">child timed
+                  items</a>,</dt>
                 <dd>
-                  <p>
-                    A sequence of timed items to add as children of this group.
-                  </p>
-                  <p>
-                    These children are appended in sequence using the same
-                    semantics as the <code><a>TimingGroup</a>.add</code> method.
-                  </p>
+                  the <a>intrinsic iteration duration</a> is zero.
                 </dd>
-                <dt>optional (double or TimingDictionary)? timing</dt>
+                <dt>Otherwise,</dt>
                 <dd>
-                  <p>
-                    The timing properties of the new timing group.
-                  </p>
-                  <p>
-                    If this parameter is a <code>double</code>, then it
-                    specifies the duration of a single iteration of the
-                    animation, that is, the <a>iteration duration</a>, in
-                    seconds.
-                  </p>
-                  <p>
-                    If this parameter is <code>null</code> the default value for
-                    <a>iteration duration</a> specified in the
-                    <a>TimingDictionary</a> definition will be used, that is,
-                    zero.
-                  </p>
-                  <p>
-                    If this parameter is of type <a>TimingDictionary</a>, then
-                    the values of the passed-in dictionary will be used.
-                  </p>
-                  <p>
-                    Finally, if this parameter is not specified, it is as if
-                    a value of <code>null</code> were specified.
-                  </p>
+                  <ol>
+                    <li>Let <var>maximum end time</var> be the maximum value
+                        after calculating the <a>end time</a> of each <a>child
+                        timed item</a> in the group.</li>
+                    <li>The <a>intrinsic iteration duration</a> is the result of
+                        evaluating <code>max(0, <var>maximum end
+                        time</var>)</code>.</li>
+                  </ol>
                 </dd>
               </dl>
-            </dd>
-            <dt>ParGroup clone ()</dt>
-            <dd>
-              <p>
-                Creates a deep copy of this <a>ParGroup</a> object minus its
-                run-time state using the following procedure.
-              </p>
-              <ol>
-                <li>Let <var>source</var> be this <a>ParGroup</a> object, the
-                    object to be cloned.</li>
-                <li>Create a new <a>TimingDictionary</a>,
-                    <var>cloned timing</var> with all members set to their
-                    default values (see <a
-                    href="#the-timingdictionary-dictionary"
-                    class="sectionRef"></a>).</li>
-                <li>Set <code><var>cloned timing</var>.timingFunction</code> to
-                    the result of calling
-                    <code><var>source</var>.timingFunction.clone()</code>
-                    or <code>null</code> if
-                    <code><var>source</var>.timingFunction</code> is
-                    <code>null</code>.</li>
-                <li>Set the remainder of the members of <var>cloned timing</var>
-                    to the properties of the same name on
-                    <var>source</var>.</li>
-                <li>Let <var>cloned children</var> be an empty sequence of
-                    <a>TimedItem</a> objects.</li>
-                <li>For each <var>child</var> in
-                    <code><var>source</var>.children</code>, append the result
-                    of calling <code><var>child</var>.clone()</code>
-                    to <var>cloned children</var>.
-                <li>Return a new <a>ParGroup</a> object created by
-                    calling the <a>ParGroup</a> constructor with parameters
-                    <code>ParGroup(<var>cloned children</var>,
-                    <var>cloned timing</var>)</code>.</li>
-              </ol>
-            </dd>
-          </dl>
+            </li>
+          </ol>
+          <p class="note">
+            Note that for children of a <a>parallel timing group</a>, the <a
+            title="timed item start time">start time</a> will always be zero but
+            it is included in the definition of <a>end time</a> here since the
+            <a>end time</a> is also used to define the <a>intrinsic iteration
+            duration</a> of a <a>sequence timing group</a>
+            (see <a
+            href="#the-intrinsic-iteration-duration-of-a-sequence-timing-group"
+            class="sectionRef"></a>).
+          </p>
         </section>
       </section>
       <section>
         <h3>Sequence timing groups</h3>
         <p>
-          Sequence timing groups run their children in turn
-          following their order in the group.
-          This ordering is achieved by adjusting the <var>start time</var> of
-          each child in the group.
+          A <dfn>sequence timing group</dfn> is a type of <a>timing group</a>
+          that schedules its <a title="child timed item">child timed items</a>
+          such that they play in turn following their order in the group.
+          This ordering is achieved by adjusting the <a
+          title="timed item start time">start time</a> of each <a>child timed
+          item</a> in the group.
         </p>
-        <div class="informative">
-          <p>
-            Since the <var>start delay</var> is added to the <var>start
-            time</var>, it can be used to adjust the timing of the <a>animation
-            interval</a> relative to calculated <var>start time</var> as shown
-            in the following diagram.
-          </p>
-          <div class="figure">
-            <img src="img/sequence-groups-and-start-delays.svg" width="600">
-          </div>
-          <p>
-            A negative <var>start delay</var> can be used to cause the
-            <a>animation interval</a> of two children to overlap.
-            Note that the <var>start delay</var> affects the <var>start
-            time</var> of subsequent children in the group.
-          </p>
-        </div>
         <section>
           <h4>The start time of children of a sequence timing group</h4>
           <p>
-            The start time for the children of a sequence timing group
-            is calculated according to the following procedure:
+            The <a title="timed item start time">start time</a> of the <a
+            title="child timed item">child timed items</a> of a <a>sequence
+            timing group</a> is established according to the following
+            procedure.
           </p>
           <ol>
             <li>Let the <var>accumulated start time</var> be zero.
             <li>
-              Iterate over each child in the group beginning with the first item
-              in the group and proceeding to the last.
-              For each child perform the following steps:
+              <p>
+                Iterate over each <a>child timed item</a> in the group beginning
+                with the first item in the group and proceed to the last.
+                For each child perform the following steps:
+              </p>
               <ol>
                 <li>
                   Let <var>child</var> be the current child.
                 </li>
                 <li>
-                  Let <code><var>child</var>.startTime</code> be
-                  <var>accumulated start time</var>.
+                  Let the <a title="timed item start time">start time</a> of
+                  <var>child</var> be <var>accumulated start time</var>.
                 </li>
                 <li>
                   Let <var>accumulated start time</var> be
-                  the <a>default end time</a> of <var>child</var> after updating
-                  its <code>startTime</code>.
+                  the <a>end time</a> of <var>child</var> after updating
+                  its <a title="timed item start time">start time</a>.
                 </li>
               </ol>
             </li>
           </ol>
-          <p class="note">
-            When <code>activeDuration</code> is positive infinity the
-            behavior is defined by IEEE 754-2008.
-            As a result, if any of the children of a sequence timing group
-            has an infinite <a>default active duration</a>, any children that
-            occur later in the sequence will not play.
-          </p>
+          <div class="note">
+            <p>
+              When the <a>active duration</a> is positive infinity the behavior
+              for calculating the <a>end time</a> of an <a>timed item</a> and
+              the <a title="timed item start time">start time</a> of subsequent
+              children follows the usual behavior defined by IEEE 754-2008.
+              As a result, if any of the children of a <a>sequence timing
+              group</a> has an infinite <a>active duration</a>, any children
+              that occur later in the sequence will not play.
+            </p>
+            <p>
+              Similarly, the above procedure does not restrict
+              <a title="timed item start time">start times</a> to positive
+              values and hence some children may not play due to a negative
+              <a>start delay</a> on children that occur earlier in the group
+              since their <a>active interval</a> may end before the group's <a
+              title="timed item start time">start time</a>.
+            </p>
+            <p class="todo">
+              Need to define if events fire in this case.
+            </p>
+          </div>
+          <div class="informative">
+            <p>
+              Because the start of the <a>active interval</a> is based on the
+              sum of a <a>timed item</a>'s <a
+              title="timed item start time">start time</a> <em>and</em> <a>start
+              delay</a>, the <a title="active interval">active intervals</a> of
+              children of a <a>sequence timing group</a> need not run in strict
+              sequence but can be shifted back and forth by using the <a>start
+              delay</a> as shown in the following diagram.
+            </p>
+            <div class="figure">
+              <img src="img/sequence-groups-and-start-delays.svg" width="600">
+            </div>
+            <p>
+              A negative <a>start delay</a> can be used to cause the <a>active
+              interval</a> of two children to overlap.  Note that the <a>start
+              delay</a> affects the <a title="timed item start time">start
+              time</a> of subsequent children in the group.
+            </p>
+          </div>
         </section>
         <section>
-          <h4>The intrinsic duration of a sequence timing group</h4>
+          <h4>The intrinsic iteration duration of a sequence timing group</h4>
           <p>
-            The instrinsic duration of a sequence timing group is
-            equivalent to the <var>start time</var> of a hypothetical child
-            appended to the group's children using the procedure described in <a
+            The <a>intrinsic iteration duration</a> of a <a>sequence timing
+            group</a> is equivalent to the <a
+            title="timed item start time">start time</a> of a hypothetical
+            <a>child timed item</a> appended to the group's children calculated
+            according to the procedure described in <a
             href="#the-start-time-of-children-of-a-sequence-timing-group"
-            class="sectionRef"></a>.
+            class="sectionRef"></a> unless that produces a negative value, in
+            which case the <a>intrinsic iteration duration</a> is zero.
           </p>
-        </section>
-        <section>
-          <h4>The <code>SeqGroup</code> interface</h4>
           <p>
-            Sequence timing groups are represented by <code>SeqGroup</code>
-            objects.
+            As a result, if the <a>sequence timing group</a> has no <a
+            title="child timed item">child timed items</a> the <a>intrinsic
+            iteration duration</a> will be zero.
           </p>
-          <dl title="interface SeqGroup : TimingGroup"
-            class="idl">
-            <dt>
-            Constructor (sequence&lt;TimedItem&gt;? children,
-                optional (double or TimingDictionary)? timing)
-            </dt>
-            <dd>
-              The meaning and handling of each of the parameters in this
-              constructor is identical to the constructor for
-              <a>ParGroup</a>.
-            </dd>
-            <dt>SeqGroup clone ()</dt>
-            <dd>
-              <p>
-                Creates a deep copy of this <a>SeqGroup</a> object minus its
-                run-time state using the same procedure as defined for <a
-                href="#widl-ParGroup-clone-ParGroup">ParGroup.clone</a> except
-                that a new <a>SeqGroup</a> object is created instead of
-                a <a>ParGroup</a>.
-              </p>
-            </dd>
-          </dl>
         </section>
       </section>
     </section>
@@ -5504,6 +5273,360 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
             </dd>
           </dl>
         </section>
+      </section>
+      <section>
+        <h3>The <code>TimingGroup</code> interface</h3>
+        <p>
+          The different types of <a title="timing group">timing groups</a>
+          defined by Web Animations share a common <a>TimingGroup</a>
+          interface as defined below.
+        </p>
+        <p>
+          The <code>TimingGroup</code> interface supports indexed
+          properties with indices in the range 0 &le; <var>index</var> &lt;
+          <code>group.size</code>. 
+        </p>
+        <dl title="interface TimingGroup : TimedItem"
+          class="idl">
+          <dt>readonly attribute unsigned long length</dt>
+          <dd>
+            The number of timed items in the group.
+          </dd>
+          <dt>void clear ()</dt>
+          <dd>
+            <p>
+              Removes all child timed items from the group.
+            </p>
+          </dd>
+          <dt>getter TimedItem? (unsigned long index)</dt>
+          <dd>
+            <p>
+              Returns the item at <code>index</code>.
+              If <code>index</code> is greater than or equal to
+              <code>length</code> returns <code>null</code>.
+            </p>
+          </dd>
+          <dt>setter TimedItem (unsigned long index, TimedItem newItem)</dt>
+          <dd>
+            <p>
+              Replaces the item at <code>index</code> with <code>newItem</code>
+              by calling <code>splice(index, 1, newItem)</code>.
+            </p>
+            <p>
+              No attempt is made to check if the item at <code>index</code> is
+              already <code>newItem</code>. In such a case, <code>newItem</code>
+              will be removed from this group and re-added as per the usual
+              operation of <code>slice</code>.
+            </p>
+            <p>
+              Returns <code>newItem</code>.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type <code>HierarchyRequestError</code></dt>
+              <dd>
+                Raised if <code>newItem</code> is the timeline for a document
+                (see <a href="#the-document-timeline" class="sectionRef"></a>).
+              </dd>
+              <dt>DOMException of type <code>IndexSizeError</code></dt>
+              <dd>
+                Raised if <code>index</code> is outside of the range 0 &le;
+                <var>index</var> &lt; <code>group.length</code>.
+              </dd>
+            </dl>
+            <div class="note">
+              <p>
+                Whilst <code>splice</code> allows negative indices,
+                WebIDL requires index property setters to take an index of type
+                <code>unsigned long</code> and hence <code>index</code> is
+                restricted to the range 0 &le; <var>index</var> &lt;
+                <code>group.length</code>.
+              </p>
+            </div>
+          </dd>
+          <dt>sequence&lt;TimedItem&gt; add (TimedItem newItem,
+                                             TimedItem... otherItems)</dt>
+          <dd>
+            <p>
+              Add <code>newItem</code> and each <code>otherItems</code> as the
+              last item(s) in the group by calling <code>splice(group.length, 0,
+              newItem, otherItem1, ... otherItemN)</code>.
+            </p>
+            <p>
+              Returns a sequence containing the added items:
+              <code>[newItem, otherItem1, ... otherItemN]</code>.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type <code>HierarchyRequestError</code></dt>
+              <dd>
+                Raised if any of the items to add is the timeline for a document
+                (see <a href="#the-document-timeline" class="sectionRef"></a>).
+                If this exception is thrown none of the <code>newItem</code>
+                objects will be added to the group.
+              </dd>
+            </dl>
+          </dd>
+          <dt>sequence&lt;TimedItem&gt; remove (
+                long index, optional unsigned long count = 1)</dt>
+          <dd>
+            <p>
+              Removes the item(s) at <code>index</code> by calling
+              <code>splice(index, count)</code>.
+            </p>
+            <p>
+              Returns the removed items.
+            </p>
+          </dd>
+          <dt>
+            sequence&lt;TimedItem&gt; splice ()
+          </dt>
+          <dd>
+            <p>
+              Modifies the list of children of this group by first removing
+              <code>deleteCount</code> items from <code>start</code> followed by
+              adding <code>newItems</code> at the same point.
+            </p>
+            <p>
+              The operation of slice is based on <a
+                href="http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262%205th%20edition%20December%202009.pdf#page=140">ECMAScript 5's
+                Array.prototype.splice</a>.
+            </p>
+            <p>
+              Returns a sequence of the items removed from group during the
+              removal step (regardless of whether these items were re-added
+              during the addition step).
+            </p>
+            <dl class="parameters">
+              <dt>long start</dt>
+              <dd>
+                The index at which items should be removed and inserted.
+                Negative indices represent an offset from the end of the list of
+                items.
+                This value is clamped to the range [-<code>length</code>,
+                <code>length</code>].
+              </dd>
+              <dt>unsigned long deleteCount</dt>
+              <dd>
+                The number of items to remove from the group beginning at
+                <code>start</code>.
+                Negative values are clamped to zero, and all other values are
+                clamped such that
+                0 &lt; <code>start</code> + <code>deleteCount</code> &le;
+                length.
+              </dd>
+              <dt>sequence&lt;TimedItem&gt; newItems</dt>
+              <dd>
+                The items to be added at <code>start</code>.
+                Each item, if it already has a parent group (including this
+                group), is first removed from its parent group before being
+                added to this group.
+              </dd>
+            </dl>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type <code>HierarchyRequestError</code></dt>
+              <dd>
+                Raised if any of the items in <code>newItem</code> is the
+                timeline for a document (see <a href="#the-document-timeline"
+                class="sectionRef"></a>).
+              </dd>
+            </dl>
+          </dd>
+          <dt>
+            sequence&lt;TimedItem&gt; splice (long start,
+              unsigned long deleteCount, TimedItem... newItem)
+          </dt>
+          <dd>
+            An overload of <code>splice</code> to take a variadic list of items
+            rather than requiring a sequence.
+            The operation is identical to <code>splice(unsigned long start,
+            unsigned long deleteCount, sequence&lt;TimedItem&gt;
+            newItems)</code>.
+          </dd>
+          <dt>long indexOf (TimedItem item)</dt>
+          <dd>
+            Returns the index of <code>item</code> within the group.
+            If <code>item</code> is not in the group, returns <code>-1</code>.
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>ParGroup</code> interface</h3>
+        <p>
+          <a title="parallel timing group">Parallel timing groups</a> are
+          represented by the <code>ParGroup</code> interface.
+        </p>
+        <dl title="interface ParGroup : TimingGroup" class="idl">
+          <dt>Constructor ()</dt>
+          <dd>
+            <p>
+              Creates a new <a>ParGroup</a> object using the following
+              procedure:
+            </p>
+            <ol>
+              <li>Create a new <a>ParGroup</a> object, <var>group</var>.</li>
+              <li>Establish a temporary timing dictionary, <var>timing
+                 dictionary</var>, based on the type of <var>timing</var> as
+                 follows,
+                <dl class="switch">
+                  <dt>If <var>timing</var> is a <a>TimingDictionary</a>
+                  object,</dt>
+                  <dd>
+                    Let <var>timing dictionary</var> refer to
+                    <var>timing</var>.
+                  </dd>
+                  <dt>If <var>timing</var> is a <code>double</code>,</dt>
+                  <dd>
+                    Let <var>timing dictionary</var> be a new <var>timing
+                    dictionary</var> object with all properties set to their
+                    default values and <code>iterationDuration</code> set to
+                    <var>timing</var>.
+                  </dd>
+                  <dt>Otherwise (<var>timing</var> is <code>null</code> or
+                      undefined),</dt>
+                  <dd>
+                    Let <var>timing dictionary</var> be a new <var>timing
+                    dictionary</var> object with all properties set to their
+                    default values.
+                  </dd>
+                </dl>
+              </li>
+              <li>For each member of <var>timing dictionary</var>,
+                <ol>
+                  <li>Assign the value of the member to the
+                      correspondingly-named attribute on
+                      <var>group</var>.</li>
+                  <li>If member <code>timingFunction</code> is of type
+                      <code>DOMString</code> create a new <a>TimingFunction</a>
+                      object by calling
+                      <a href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
+                      class="idlType"><code>TimingFunction.createFromString</code></a><code>(<var>timing
+                      dictionary</var>.timingFunction)</code> and assign the
+                      result to
+                      <code><var>group</var>.timingFunction</code>.</li>
+                </ol>
+              </li>
+              <li>
+                Add <var>children</var> to the group by calling
+                <code><var>group</var>.splice(0, 0,
+                <var>children</var>)</code>.
+              </li>
+              <li>Set <code>timeline</code> to the <a>DocumentTimeSource</a> for
+                the <a
+                href="http://www.w3.org/TR/html5/browsers.html#active-document">active
+                document</a>.</li>
+            </ol>
+            <dl class="parameters">
+              <dt>sequence&lt;TimedItem&gt;? children</dt>
+              <dd>
+                <p>
+                  A sequence of timed items to add as children of this group.
+                </p>
+                <p>
+                  These children are appended in sequence using the same
+                  semantics as the <code><a>TimingGroup</a>.add</code> method.
+                </p>
+              </dd>
+              <dt>optional (double or TimingDictionary)? timing</dt>
+              <dd>
+                <p>
+                  The timing properties of the new timing group.
+                </p>
+                <p>
+                  If this parameter is a <code>double</code>, then it
+                  specifies the duration of a single iteration of the
+                  animation, that is, the <a>iteration duration</a>, in
+                  seconds.
+                </p>
+                <p>
+                  If this parameter is <code>null</code> the default value for
+                  <a>iteration duration</a> specified in the
+                  <a>TimingDictionary</a> definition will be used, that is,
+                  zero.
+                </p>
+                <p>
+                  If this parameter is of type <a>TimingDictionary</a>, then
+                  the values of the passed-in dictionary will be used.
+                </p>
+                <p>
+                  Finally, if this parameter is not specified, it is as if
+                  a value of <code>null</code> were specified.
+                </p>
+              </dd>
+            </dl>
+          </dd>
+          <dt>ParGroup clone ()</dt>
+          <dd>
+            <p>
+              Creates a deep copy of this <a>ParGroup</a> object minus its
+              run-time state using the following procedure.
+            </p>
+            <ol>
+              <li>Let <var>source</var> be this <a>ParGroup</a> object, the
+                  object to be cloned.</li>
+              <li>Create a new <a>TimingDictionary</a>,
+                  <var>cloned timing</var> with all members set to their
+                  default values (see <a
+                  href="#the-timingdictionary-dictionary"
+                  class="sectionRef"></a>).</li>
+              <li>Set <code><var>cloned timing</var>.timingFunction</code> to
+                  the result of calling
+                  <code><var>source</var>.timingFunction.clone()</code>
+                  or <code>null</code> if
+                  <code><var>source</var>.timingFunction</code> is
+                  <code>null</code>.</li>
+              <li>Set the remainder of the members of <var>cloned timing</var>
+                  to the properties of the same name on
+                  <var>source</var>.</li>
+              <li>Let <var>cloned children</var> be an empty sequence of
+                  <a>TimedItem</a> objects.</li>
+              <li>For each <var>child</var> in
+                  <code><var>source</var>.children</code>, append the result
+                  of calling <code><var>child</var>.clone()</code>
+                  to <var>cloned children</var>.
+              <li>Return a new <a>ParGroup</a> object created by
+                  calling the <a>ParGroup</a> constructor with parameters
+                  <code>ParGroup(<var>cloned children</var>,
+                  <var>cloned timing</var>)</code>.</li>
+            </ol>
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>SeqGroup</code> interface</h3>
+        <p>
+          <a title="sequence timing group">Sequence timing groups</a> are
+          represented by the <code>SeqGroup</code> interface.
+        </p>
+        <dl title="interface SeqGroup : TimingGroup"
+          class="idl">
+          <dt>
+          Constructor (sequence&lt;TimedItem&gt;? children,
+              optional (double or TimingDictionary)? timing)
+          </dt>
+          <dd>
+            The meaning and handling of each of the parameters in this
+            constructor is identical to the constructor for
+            <a>ParGroup</a>.
+          </dd>
+          <dt>SeqGroup clone ()</dt>
+          <dd>
+            <p>
+              Creates a deep copy of this <a>SeqGroup</a> object minus its
+              run-time state using the same procedure as defined for <a
+              href="#widl-ParGroup-clone-ParGroup">ParGroup.clone</a> except
+              that a new <a>SeqGroup</a> object is created instead of
+              a <a>ParGroup</a>.
+            </p>
+          </dd>
+        </dl>
       </section>
       <section>
         <h3>Extensions to the <code>Document</code> interface</h3>
