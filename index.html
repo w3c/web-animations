@@ -5290,18 +5290,20 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
           class="idl">
           <dt>readonly attribute unsigned long length</dt>
           <dd>
-            The number of timed items in the group.
+            The number of <a title="child timed item">child timed items</a> in
+            the group.
           </dd>
           <dt>void clear ()</dt>
           <dd>
             <p>
-              Removes all child timed items from the group.
+              Removes all <a title="child timed item">child timed items</a> from
+              the group.
             </p>
           </dd>
           <dt>getter TimedItem? (unsigned long index)</dt>
           <dd>
             <p>
-              Returns the item at <code>index</code>.
+              Returns the <a>child timed item</a> at <code>index</code>.
               If <code>index</code> is greater than or equal to
               <code>length</code> returns <code>null</code>.
             </p>
@@ -5309,14 +5311,16 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
           <dt>setter TimedItem (unsigned long index, TimedItem newItem)</dt>
           <dd>
             <p>
-              Replaces the item at <code>index</code> with <code>newItem</code>
-              by calling <code>splice(index, 1, newItem)</code>.
+              Replaces the <a>child timed item</a> at <code>index</code> with
+              <code>newItem</code> by calling <code>splice(index, 1,
+              newItem)</code>.
             </p>
             <p>
               No attempt is made to check if the item at <code>index</code> is
-              already <code>newItem</code>. In such a case, <code>newItem</code>
-              will be removed from this group and re-added as per the usual
-              operation of <code>slice</code>.
+              already <code>newItem</code>.
+              In such a case, <code>newItem</code> will be removed from this
+              group and re-added as per the usual operation of
+              <code>slice</code>.
             </p>
             <p>
               Returns <code>newItem</code>.
@@ -5325,32 +5329,25 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
               Exceptions:
             </p>
             <dl class="exceptions">
-              <dt>DOMException of type <code>HierarchyRequestError</code></dt>
-              <dd>
-                Raised if <code>newItem</code> is the timeline for a document
-                (see <a href="#the-document-timeline" class="sectionRef"></a>).
-              </dd>
               <dt>DOMException of type <code>IndexSizeError</code></dt>
               <dd>
                 Raised if <code>index</code> is outside of the range 0 &le;
-                <var>index</var> &lt; <code>group.length</code>.
+                <var>index</var> &lt; <code>length</code>.
               </dd>
             </dl>
             <div class="note">
-              <p>
-                Whilst <code>splice</code> allows negative indices,
-                WebIDL requires index property setters to take an index of type
-                <code>unsigned long</code> and hence <code>index</code> is
-                restricted to the range 0 &le; <var>index</var> &lt;
-                <code>group.length</code>.
-              </p>
+              Whilst <code>splice</code> allows negative indices,
+              WebIDL requires index property setters to take an index of type
+              <code>unsigned long</code> and hence <code>index</code> is
+              restricted to the range 0 &le; <var>index</var> &lt;
+              <code>group.length</code>.
             </div>
           </dd>
           <dt>sequence&lt;TimedItem&gt; add (TimedItem newItem,
                                              TimedItem... otherItems)</dt>
           <dd>
             <p>
-              Add <code>newItem</code> and each <code>otherItems</code> as the
+              Adds <code>newItem</code> and each <code>otherItems</code> as the
               last item(s) in the group by calling <code>splice(group.length, 0,
               newItem, otherItem1, ... otherItemN)</code>.
             </p>
@@ -5358,18 +5355,6 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
               Returns a sequence containing the added items:
               <code>[newItem, otherItem1, ... otherItemN]</code>.
             </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>HierarchyRequestError</code></dt>
-              <dd>
-                Raised if any of the items to add is the timeline for a document
-                (see <a href="#the-document-timeline" class="sectionRef"></a>).
-                If this exception is thrown none of the <code>newItem</code>
-                objects will be added to the group.
-              </dd>
-            </dl>
           </dd>
           <dt>sequence&lt;TimedItem&gt; remove (
                 long index, optional unsigned long count = 1)</dt>
@@ -5387,9 +5372,10 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
           </dt>
           <dd>
             <p>
-              Modifies the list of children of this group by first removing
-              <code>deleteCount</code> items from <code>start</code> followed by
-              adding <code>newItems</code> at the same point.
+              Modifies the sequence of <a title="child timed item">child timed
+              items</a> of this group by first removing <code>deleteCount</code>
+              items from <code>start</code> followed by adding
+              <code>newItems</code> at the same point.
             </p>
             <p>
               The operation of slice is based on <a
@@ -5427,25 +5413,14 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
                 added to this group.
               </dd>
             </dl>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>HierarchyRequestError</code></dt>
-              <dd>
-                Raised if any of the items in <code>newItem</code> is the
-                timeline for a document (see <a href="#the-document-timeline"
-                class="sectionRef"></a>).
-              </dd>
-            </dl>
           </dd>
           <dt>
             sequence&lt;TimedItem&gt; splice (long start,
               unsigned long deleteCount, TimedItem... newItem)
           </dt>
           <dd>
-            An overload of <code>splice</code> to take a variadic list of items
-            rather than requiring a sequence.
+            An overload of <code>splice</code> that takes a variadic list of
+            items rather than requiring a sequence.
             The operation is identical to <code>splice(unsigned long start,
             unsigned long deleteCount, sequence&lt;TimedItem&gt;
             newItems)</code>.
@@ -5472,7 +5447,7 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
             </p>
             <ol>
               <li>Create a new <a>ParGroup</a> object, <var>group</var>.</li>
-              <li>Establish a temporary timing dictionary, <var>timing
+              <li>Establish a temporary <a>TimingDictionary</a>, <var>timing
                  dictionary</var>, based on the type of <var>timing</var> as
                  follows,
                 <dl class="switch">
@@ -5484,44 +5459,37 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
                   </dd>
                   <dt>If <var>timing</var> is a <code>double</code>,</dt>
                   <dd>
-                    Let <var>timing dictionary</var> be a new <var>timing
-                    dictionary</var> object with all properties set to their
-                    default values and <code>iterationDuration</code> set to
-                    <var>timing</var>.
+                    Let <var>timing dictionary</var> be a new
+                    <a>TimingDictionary</a> object with all properties set to
+                    their default values and <code>iterationDuration</code> set
+                    to <var>timing</var>.
                   </dd>
-                  <dt>Otherwise (<var>timing</var> is <code>null</code> or
-                      undefined),</dt>
+                  <dt>Otherwise (<var>timing</var> is <code>null</code>),</dt>
                   <dd>
-                    Let <var>timing dictionary</var> be a new <var>timing
-                    dictionary</var> object with all properties set to their
-                    default values.
+                    Let <var>timing dictionary</var> be a new
+                    <a>TimingDictionary</a> object with all properties set to
+                    their default values.
                   </dd>
                 </dl>
               </li>
-              <li>For each member of <var>timing dictionary</var>,
-                <ol>
-                  <li>Assign the value of the member to the
-                      correspondingly-named attribute on
-                      <var>group</var>.</li>
-                  <li>If member <code>timingFunction</code> is of type
-                      <code>DOMString</code> create a new <a>TimingFunction</a>
-                      object by calling
-                      <a href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
-                      class="idlType"><code>TimingFunction.createFromString</code></a><code>(<var>timing
-                      dictionary</var>.timingFunction)</code> and assign the
-                      result to
-                      <code><var>group</var>.timingFunction</code>.</li>
-                </ol>
+              <li>
+                <p class="issue">
+                  We want to clone <var>timing dictionary</var> to the
+                  <code>specified</code> member of <var>group</var> but it seems
+                  like WebIDL doesn't allow live dictionaries.
+                  Also, we need to decide if we expand timing functions defined
+                  by strings, e.g. <code>ease-in</code>, into real
+                  <a>TimingFunction</a> objects using
+                  <a
+                  href="#widl-TimingFunction-createFromString-TimingFunction-DOMString-spec"
+                  class="idlType"><code>TimingFunction.createFromString</code></a>.
+                </p>
               </li>
               <li>
                 Add <var>children</var> to the group by calling
                 <code><var>group</var>.splice(0, 0,
                 <var>children</var>)</code>.
               </li>
-              <li>Set <code>timeline</code> to the <a>DocumentTimeSource</a> for
-                the <a
-                href="http://www.w3.org/TR/html5/browsers.html#active-document">active
-                document</a>.</li>
             </ol>
             <dl class="parameters">
               <dt>sequence&lt;TimedItem&gt;? children</dt>
@@ -5534,7 +5502,7 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
                   semantics as the <code><a>TimingGroup</a>.add</code> method.
                 </p>
               </dd>
-              <dt>optional (double or TimingDictionary)? timing</dt>
+              <dt>optional (double or TimingDictionary)? timing = null</dt>
               <dd>
                 <p>
                   The timing properties of the new timing group.
@@ -5565,8 +5533,8 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
           <dt>ParGroup clone ()</dt>
           <dd>
             <p>
-              Creates a deep copy of this <a>ParGroup</a> object minus its
-              run-time state using the following procedure.
+              Creates a deep copy of this <a>ParGroup</a> object using the
+              following procedure.
             </p>
             <ol>
               <li>Let <var>source</var> be this <a>ParGroup</a> object, the
@@ -5576,12 +5544,36 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
                   default values (see <a
                   href="#the-timingdictionary-dictionary"
                   class="sectionRef"></a>).</li>
-              <li>Set <code><var>cloned timing</var>.timingFunction</code> to
-                  the result of calling
-                  <code><var>source</var>.timingFunction.clone()</code>
-                  or <code>null</code> if
-                  <code><var>source</var>.timingFunction</code> is
-                  <code>null</code>.</li>
+              <li>
+                <p>
+                  Set <code><var>cloned timing</var>.timingFunction</code> based
+                  on the type of
+                  <code><var>source</var>.specified.timingFunction</code> as
+                  follows:
+                </p>
+                <dl class="switch">
+                  <dt>If <code><var>source</var>.specified.timingFunction</code>
+                  is a <a>TimingFunction</a> object,</dt>
+                  <dd>
+                    Set <code><var>cloned timing</var>.timingFunction</code> to
+                    the result of calling
+                    <code><var>source</var>.timingFunction.clone()</code>.
+                  </dd>
+                  <dt>If <code><var>source</var>.specified.timingFunction</code>
+                  is a DOMString,</dt>
+                  <dd>
+                    Set <code><var>cloned timing</var>.timingFunction</code> to
+                    <code><var>source</var>.specified.timingFunction</code>.
+                  </dd>
+                  <dt>Otherwise
+                  <code><var>source</var>.specified.timingFunction</code>
+                  (<code>null</code>),</dt>
+                  <dd>
+                    Set <code><var>cloned timing</var>.timingFunction</code> to
+                    <code>null</code>.
+                  </dd>
+                </dl>
+              </li>
               <li>Set the remainder of the members of <var>cloned timing</var>
                   to the properties of the same name on
                   <var>source</var>.</li>
@@ -5609,7 +5601,7 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
           class="idl">
           <dt>
           Constructor (sequence&lt;TimedItem&gt;? children,
-              optional (double or TimingDictionary)? timing)
+              optional (double or TimingDictionary)? timing = null)
           </dt>
           <dd>
             The meaning and handling of each of the parameters in this
@@ -5619,8 +5611,8 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
           <dt>SeqGroup clone ()</dt>
           <dd>
             <p>
-              Creates a deep copy of this <a>SeqGroup</a> object minus its
-              run-time state using the same procedure as defined for <a
+              Creates a deep copy of this <a>SeqGroup</a> object using the same
+              procedure as defined for <a
               href="#widl-ParGroup-clone-ParGroup">ParGroup.clone</a> except
               that a new <a>SeqGroup</a> object is created instead of
               a <a>ParGroup</a>.
