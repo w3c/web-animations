@@ -2732,331 +2732,124 @@
           all animation effects.
           Need to point to where this is defined.
         </p>
-        <section>              
-          <h4>Calculating the iteration value for a 
-            <code>KeyframeAnimationEffect</code></h4>
-          <p>
-            When an <code>AnimationTemplate</code> contains a pointer to a
-            <code>KeyframeAnimationEffect</code> <var>keyframes</var>, the
-            <var>animation value</var> for that animation at given current time
-            <var>t</var> is calculated according to the following steps:
-          </p>
-          <ol>
-            <li>
-              Convert <var>t</var> to the <var>time fraction</var> 
-              (see <a href="#calculating-the-time-fraction"
-              class="sectionRef"></a>).
-            </li>
-            <li>
-              Generate a <var>sorted frame list</var> by sorting the list of
-              <code>Keyframe</code> objects contained within the
-              <code>KeyframeList</code> object stored in <var>keyframes.frames</var> 
-              by their <var>offset</var>.
-              If there are no frames in the <var>sorted frame list</var>
-              then no animation occurs and the <var>iteration value</var> is
-              just the <var>base value</var> of the property being animated.
-            </li>
-            <li>
-              Otherwise, find the <var>after frame</var> by iterating through
-              the <var>sorted frame list</var> until the last
-              <code>Keyframe</code> with an <var>offset</var>
-              larger than the <var>time fraction</var> is
-              encountered.
-            </li>
-            <li>
-              If the <var>after frame</var> is the first frame in the
-              <var>sorted frame list</var>, then construct a 
-              <var>before frame</var> with an <var>offset</var> of 0 and a
-              value equal to the <var>base value</var> of the property being
-              animated.
-            </li>
-            <li>
-              If the <var>after frame</var> does not exist (i.e. all frames
-              have an <var>offset</var> less than the <var>time 
-              fraction</var>) then construct an <var>after frame</var> with
-              an <var>offset</var> of 1 and a value equal to the
-              <var>base value</var> of the property being animated, and
-              Set the <var>before frame</var> to the last frame in the 
-              <var>sorted frame list</var>.
-            </li> 
-            <li>
-              Otherwise (the <var>after frame</var> exists and is not the
-              first frame in the <var>sorted frame list</var>) set the 
-              <var>before frame</var> to the frame immediately prior to the
-              <var>after frame</var> in the <var>sorted frame list</var>.
-            </li>
-            <li>
-              The <var>local time function</var> is the
-              <var>timingFunction</var> of the <var>before frame</var>, if 
-              it exists; otherwise the <var>timingFunction</var> of the
-              <code>Animation</code> interface's <var>timing</var> attribute.
-            </li>
-            <li>
-              Find the <var>local time fraction</var> by subtracting
-              the <var>offset</var> of the <var>before frame</var> from
-              the <var>time fraction</var>, then dividing the result
-              by the difference between the <var>offset</var> of the
-              <var>after frame</var> and the <var>offset</var> of the
-              <var>before frame</var>.
-            <li>
-              Calculate the <var>effective time fraction</var> by applying
-              the <var>local time function</var> to the <var>local time
-              fraction</var>.
-            <li>
-              Calculate the <var>animation value</var> by linearly 
-              interpolating the values of the <var>before frame</var> and
-              <var>after frame</var>, using the 
-              <var>effective time fraction</var> as interpolation parameter (see <a href="#linear-interpolation" class="sectionRef"></a>).
-            </li>
-          </ol>
-        </section>
-        <section>
-          <h4>Calculating the iteration value for a 
-            <code>PathAnimationEffect</code></h4>
-          <p>
-            When an <code>AnimationTemplate</code> contains a pointer to a
-            <code>PathAnimationEffect</code> and <var>rotate</var> is set
-            to false, the <var>animation value</var> for that animation at
-            given current time <var>t</var> is the transform defined by a
-            translation equal to the location on the path at <var>t</var>.
-          </p>
-          <p>
-            When <var>rotate</var> is set to true, the
-            <var>animation value</var> is the transform defined by the above
-            translation followed by a rotation defined by the following
-            process:
-          </p>
-          <ol>
-            <li>
-              Calculate the <var>normal</var> to the path at <var>t</var> (see <a href="#calculating-the-normal-to-a-path" class="sectionRef"></a>).
-            </li>
-            <li>
-              Determine the <var>normal rotation</var>, which is given by 
-              <code>atan2(normal.y, normal.x)</code>.
-            </li>
-            <li>
-              The <var>rotation</var> is the transform that rotates by
-              the <var>normal rotation</var>.
-            </li>
-          </ol>
-        </section>
-        <section>
-          <h4>Calculating the iteration value for a 
-            <code>GroupedAnimationEffect</code></h4>
-          <p>
-            When an <code>AnimationTemplate</code> contains a pointer to a
-            <code>GroupedAnimationEffect</code>, the <var>animation
-            value</var> for that animation at given current time <var>t</var> 
-            is calculated by following the procedure outlined in
-            <a href="#resolving-animation-stacks" class="sectionRef"></a>, 
-            treating the list of <code>AnimationEffect</code> objects 
-            contained within the <code>GroupedAnimationEffect</code> as 
-            the animation stack and using an initial animation value 
-            of 0 for all simple properties and id for transform.
-          </p>
-        </section>
       </section>
+    </section>
+
+    <section>
+      <h2>Key frames animation effects</h2>
+      <p class="todo">
+        Define these things in general terms and how missing keyframes at 0% and
+        100% are handled (perhaps non-normatively if it's normative above).
+      </p>
+      <section>              
+        <h4>The iteration value of a key frames animation effect</h4>
+        <p>
+          When an <code>AnimationTemplate</code> contains a pointer to a
+          <code>KeyframeAnimationEffect</code> <var>keyframes</var>, the
+          <var>animation value</var> for that animation at given current time
+          <var>t</var> is calculated according to the following steps:
+        </p>
+        <ol>
+          <li>
+            Convert <var>t</var> to the <var>time fraction</var> 
+            (see <a href="#calculating-the-time-fraction"
+            class="sectionRef"></a>).
+          </li>
+          <li>
+            Generate a <var>sorted frame list</var> by sorting the list of
+            <code>Keyframe</code> objects contained within the
+            <code>KeyframeList</code> object stored in <var>keyframes.frames</var> 
+            by their <var>offset</var>.
+            If there are no frames in the <var>sorted frame list</var>
+            then no animation occurs and the <var>iteration value</var> is
+            just the <var>base value</var> of the property being animated.
+          </li>
+          <li>
+            Otherwise, find the <var>after frame</var> by iterating through
+            the <var>sorted frame list</var> until the last
+            <code>Keyframe</code> with an <var>offset</var>
+            larger than the <var>time fraction</var> is
+            encountered.
+          </li>
+          <li>
+            If the <var>after frame</var> is the first frame in the
+            <var>sorted frame list</var>, then construct a 
+            <var>before frame</var> with an <var>offset</var> of 0 and a
+            value equal to the <var>base value</var> of the property being
+            animated.
+          </li>
+          <li>
+            If the <var>after frame</var> does not exist (i.e. all frames
+            have an <var>offset</var> less than the <var>time 
+            fraction</var>) then construct an <var>after frame</var> with
+            an <var>offset</var> of 1 and a value equal to the
+            <var>base value</var> of the property being animated, and
+            Set the <var>before frame</var> to the last frame in the 
+            <var>sorted frame list</var>.
+          </li> 
+          <li>
+            Otherwise (the <var>after frame</var> exists and is not the
+            first frame in the <var>sorted frame list</var>) set the 
+            <var>before frame</var> to the frame immediately prior to the
+            <var>after frame</var> in the <var>sorted frame list</var>.
+          </li>
+          <li>
+            The <var>local time function</var> is the
+            <var>timingFunction</var> of the <var>before frame</var>, if 
+            it exists; otherwise the <var>timingFunction</var> of the
+            <code>Animation</code> interface's <var>timing</var> attribute.
+          </li>
+          <li>
+            Find the <var>local time fraction</var> by subtracting
+            the <var>offset</var> of the <var>before frame</var> from
+            the <var>time fraction</var>, then dividing the result
+            by the difference between the <var>offset</var> of the
+            <var>after frame</var> and the <var>offset</var> of the
+            <var>before frame</var>.
+          <li>
+            Calculate the <var>effective time fraction</var> by applying
+            the <var>local time function</var> to the <var>local time
+            fraction</var>.
+          <li>
+            Calculate the <var>animation value</var> by linearly 
+            interpolating the values of the <var>before frame</var> and
+            <var>after frame</var>, using the 
+            <var>effective time fraction</var> as interpolation parameter (see <a href="#linear-interpolation" class="sectionRef"></a>).
+          </li>
+        </ol>
+      </section>
+    </section>
+
+    <section>
+      <h2>Path animation effects</h2>
       <section>
-        <h3>Custom animation effects</h3>
-        <div class="informative">
-          <p>
-            In some situations the animation effects provided by Web Animations
-            may be insufficient.
-            For example, the animation effects defined here are only able to
-            target certain CSS properties and DOM attributes.
-            They are unable, therefore, to modify the <a
-            href="#http://www.w3.org/TR/SVG11/struct.html#__svg__SVGSVGElement__currentScale"><code>currentScale</code></a>
-            property of an SVG element to smoothly zoom the viewport without
-            affecting the document content.
-          </p>
-          <p>
-            In such cases where the provided animation effects do not provide
-            needed functionality, an animation effect defined by script may be
-            used.
-            Such animation effects receive a time fraction from the timing
-            model and are responsible for producing the animation effect
-            corresponding to the specified time.
-          </p>
-          <p>
-            Using an animation effect defined in script it is possible to
-            animate not only previously un-animatable attributes and properties,
-            but potentially anything that is accessible via script, including
-            even producing audio or creating vibrations.
-          </p>
-          <p>
-            For example, using an animation effect that draws to a <a
-            href="http://www.w3.org/TR/html5/the-canvas-element.html#the-canvas-element"><code>canvas</code></a>
-            element it is possible to produce a complex animated effect
-            featuring patterns that may be difficult to create using CSS or
-            SVG.
-            Compared to using the <a
-            href="http://www.w3.org/TR/animation-timing/">WindowAnimationTiming</a>
-            interface, this approach ensures the animation is frame-rate
-            independent and can be paused, reversed, eased with timing effects,
-            accelerated, synchronized with other animations, and be controlled
-            in the same manner as any other Web Animations animation without any
-            additional programming.
-          </p>
-        </div> <!-- informative -->
-        <div class="annotation">
-          <p>
-            I think we want two types of custom animation effects.
-            Following is the general-purpose animate-anything kind of effect.
-            The other type, which is not defined here, is the one that can
-            participate in the animation sandwich just like any other.
-          </p>
-          <p>
-            This, second, native-like animation effect, would have the
-            following features:
-          </p>
-          <ul>
-            <li>Shares the same function signature as
-                <code><a>AnimationEffect</a>.sample</code></li>
-            <li>Gets passed the underlying value and passes out the animated
-                value.</li>
-            <li>Has a target attribute and is sorted against other
-                <a>AnimationEffect</a> objects (including platform
-                objects)</li>
-            <li>Can be added as a child of
-                a <a>GroupedAnimationEffect</a>.</li>
-          </ul>
-          <p>
-            That's a bit more difficult since you have to be careful that the
-            custom effect doesn't do anything naughty while you're in the
-            middle of compositing the animation sandwich.
-            I think we should postpone this until Web Animations 2.
-          </p>
-        </div>
-        <section>
-          <h4>Execution order of custom animation effects</h4>
-          <p>
-            Custom animation effects allow authors to define animation effects
-            using script.
-            Such animation effects are not limited to a single CSS property or
-            DOM attribute and therefore the steps for assessing their order of
-            execution differs from regular animation effects.
-          </p>
-          <p>
-            Custom animation effects are executed after all other
-            <a>AnimationEffect</a> objects have completed and applied their
-            effects to their targets.
-          </p>
-          <p class="issue">
-            Need to define this more precisely.
-            Are styles flushed?
-            Presumably they are.
-            Can we suspend reflow for the duration of executing the script-based
-            animation effects and just do it once afterwards?
-          </p>
-          <p>
-            Within the set of custom animation effects, the order of execution
-            is mostly the same as that for other animation effects and is
-            defined in <a href="#the-global-animation-stack"
-            class="sectionRef"></a>.
-            However, custom animation effects may also override this
-            ordering through the <code>priority</code> attribute, which, if
-            defined, specifies the priority of the effects with lower numbers
-            are executed sooner.
-          </p>
-          <p>
-            In deciding which of two <a>CustomAnimationEffect</a> objects,
-            <var>A</var> and <var>B</var>, should be executed the following
-            rules are applied.
-          </p>
-          <ol>
-            <li>Sort <var>A</var> and <var>B</var> based on their
-                <code>priority</code> such that lower priorities are sorted
-                first.
-                If either does not have a defined <code>priority</code>,
-                then treat the priority as being positive infinity for the
-                purposes of sorting.</li>
-            <li>If <var>A</var> and <var>B</var> have the same priority,
-                sort according to the <code>startTime</code>s of the
-                <a>TimedItem</a>s with which <var>A</var> and <var>B</var> are
-                associated such that earlier start times are sorted first.
-            <li>If <var>A</var> and <var>B</var> have the same priority and
-                start time, sort by the position of the corresponding
-                <a>Animation</a> objects occur within the animation tree (see
-                issue below).</li>
-          </ol>
-          <p>
-            Items sorted earlier, are executed first.
-          </p>
-          <p class="issue">
-            That last point is quite wrong. I don't think we've specified
-            exactly what script order is in <a
-            href="#the-global-animation-stack" class="sectionRef"></a>.
-            But I wonder if it makes more sense to effectively enumerate all the
-            script-based nodes in the animation tree using some well-defined
-            order and use that index.
-            Can that be done efficiently?
-          </p>
-        </section>
-        <section>
-          <h4>The <code>CustomAnimationEffect</code> callback interface</h4>
-          <p>
-            Custom animation effects can be defined in script using the
-            <a>CustomAnimationEffect</a> interface.
-          </p>
-          <p class="issue">
-            Should this be a dictionary?
-            I'd like to make <code>clone</code> optional.
-          </p>
-          <div title="callback interface CustomAnimationEffect" class="idl">
-            <dt>attribute unsigned integer priority</dt>
-            <dd>
-              The order in which this animation effect will be executed in
-              relation to other custom animation effects such that items with
-              a lower priority are executed earlier as defined in <a
-              href="#execution-order-of-custom-animation-effects"
-              class="sectionRef"></a>.
-            </dd>
-            <dt>void sample ()</dt>
-            <dd>
-              The callback used to produce the animation effect corresponding to
-              the sample time determined by the timing model.
-              <dl class="parameters">
-                <dt>double? timeFraction</dt>
-                <dd>
-                  The distance within a single iteration of the animation effect
-                  of the current sample.
-                  When this is <code>null</code>, the callback object SHOULD
-                  remove the animation effect.
-                </dd>
-                <dt>double currentIteration</dt>
-                <dd>
-                  The current iteration index beginning with zero for the first
-                  iteration.
-                </dd>
-                <dt>AnimationTarget? target</dt>
-                <dd>
-                  The element to which the effect should be applied, if any.
-                  When this method is called as a result of this object being
-                  associated with an <a>Animation</a> object, it will be
-                  <code><a>Animation</a>.target</code>
-                </dd>
-              </dl>
-            </dd>
-            <dt>CustomAnimationEffect clone ()</dt>
-            <dd>
-              Creates an independent copy of this object.
-            </dd>
-          </div>
-          <p class="issue">
-            Do we need to pass in the <a>TimedItem</a> as well?
-            If possible I'd prefer not to but it may necessary for some types of
-            effect.
-            Might be an additional parameter to add later if it proves
-            necessary?
-          </p>
-          <p class="issue">
-            I think we will also need to pass the previous time fraction.
-            Animations will often use this to check if they are paused, playing
-            in reverse etc.
-            They can track this themselves but then you need a separate object
-            everywhere you use it.
-          </p>
-        </section>
+        <h4>The iteration value of a path animation effect</h4>
+        <p>
+          When an <code>AnimationTemplate</code> contains a pointer to a
+          <code>PathAnimationEffect</code> and <var>rotate</var> is set
+          to false, the <var>animation value</var> for that animation at
+          given current time <var>t</var> is the transform defined by a
+          translation equal to the location on the path at <var>t</var>.
+        </p>
+        <p>
+          When <var>rotate</var> is set to true, the
+          <var>animation value</var> is the transform defined by the above
+          translation followed by a rotation defined by the following
+          process:
+        </p>
+        <ol>
+          <li>
+            Calculate the <var>normal</var> to the path at <var>t</var> (see <a href="#calculating-the-normal-to-a-path" class="sectionRef"></a>).
+          </li>
+          <li>
+            Determine the <var>normal rotation</var>, which is given by 
+            <code>atan2(normal.y, normal.x)</code>.
+          </li>
+          <li>
+            The <var>rotation</var> is the transform that rotates by
+            the <var>normal rotation</var>.
+          </li>
+        </ol>
       </section>
     </section>
 
@@ -3082,6 +2875,7 @@
         <p class="todo">Write me</p>
       </section>
     </section>
+
     <section>
       <h2>Combining animations</h2>
       <section>
@@ -3277,6 +3071,144 @@
             </p>
           </ol>
         </section>
+      </section>
+    </section>
+
+    <section>
+      <h3>Custom animation effects</h3>
+      <div class="informative">
+        <p>
+          In some situations the animation effects provided by Web Animations
+          may be insufficient.
+          For example, the animation effects defined here are only able to
+          target certain CSS properties and DOM attributes.
+          They are unable, therefore, to modify the <a
+          href="#http://www.w3.org/TR/SVG11/struct.html#__svg__SVGSVGElement__currentScale"><code>currentScale</code></a>
+          property of an SVG element to smoothly zoom the viewport without
+          affecting the document content.
+        </p>
+        <p>
+          In such cases where the provided animation effects do not provide
+          needed functionality, an animation effect defined by script may be
+          used.
+          Such animation effects receive a time fraction from the timing
+          model and are responsible for producing the animation effect
+          corresponding to the specified time.
+        </p>
+        <p>
+          Using an animation effect defined in script it is possible to
+          animate not only previously un-animatable attributes and properties,
+          but potentially anything that is accessible via script, including
+          even producing audio or creating vibrations.
+        </p>
+        <p>
+          For example, using an animation effect that draws to a <a
+          href="http://www.w3.org/TR/html5/the-canvas-element.html#the-canvas-element"><code>canvas</code></a>
+          element it is possible to produce a complex animated effect
+          featuring patterns that may be difficult to create using CSS or
+          SVG.
+          Compared to using the <a
+          href="http://www.w3.org/TR/animation-timing/">WindowAnimationTiming</a>
+          interface, this approach ensures the animation is frame-rate
+          independent and can be paused, reversed, eased with timing effects,
+          accelerated, synchronized with other animations, and be controlled
+          in the same manner as any other Web Animations animation without any
+          additional programming.
+        </p>
+      </div> <!-- informative -->
+      <div class="annotation">
+        <p>
+          I think we want two types of custom animation effects.
+          Following is the general-purpose animate-anything kind of effect.
+          The other type, which is not defined here, is the one that can
+          participate in the animation sandwich just like any other.
+        </p>
+        <p>
+          This, second, native-like animation effect, would have the
+          following features:
+        </p>
+        <ul>
+          <li>Shares the same function signature as
+              <code><a>AnimationEffect</a>.sample</code></li>
+          <li>Gets passed the underlying value and passes out the animated
+              value.</li>
+          <li>Has a target attribute and is sorted against other
+              <a>AnimationEffect</a> objects (including platform
+              objects)</li>
+          <li>Can be added as a child of
+              a <a>GroupedAnimationEffect</a>.</li>
+        </ul>
+        <p>
+          That's a bit more difficult since you have to be careful that the
+          custom effect doesn't do anything naughty while you're in the
+          middle of compositing the animation sandwich.
+          I think we should postpone this until Web Animations 2.
+        </p>
+      </div>
+      <section>
+        <h4>Execution order of custom animation effects</h4>
+        <p>
+          Custom animation effects allow authors to define animation effects
+          using script.
+          Such animation effects are not limited to a single CSS property or
+          DOM attribute and therefore the steps for assessing their order of
+          execution differs from regular animation effects.
+        </p>
+        <p>
+          Custom animation effects are executed after all other
+          <a>AnimationEffect</a> objects have completed and applied their
+          effects to their targets.
+        </p>
+        <p class="issue">
+          Need to define this more precisely.
+          Are styles flushed?
+          Presumably they are.
+          Can we suspend reflow for the duration of executing the script-based
+          animation effects and just do it once afterwards?
+        </p>
+        <p>
+          Within the set of custom animation effects, the order of execution
+          is mostly the same as that for other animation effects and is
+          defined in <a href="#the-global-animation-stack"
+          class="sectionRef"></a>.
+          However, custom animation effects may also override this
+          ordering through the <code>priority</code> attribute, which, if
+          defined, specifies the priority of the effects with lower numbers
+          are executed sooner.
+        </p>
+        <p>
+          In deciding which of two <a>CustomAnimationEffect</a> objects,
+          <var>A</var> and <var>B</var>, should be executed the following
+          rules are applied.
+        </p>
+        <ol>
+          <li>Sort <var>A</var> and <var>B</var> based on their
+              <code>priority</code> such that lower priorities are sorted
+              first.
+              If either does not have a defined <code>priority</code>,
+              then treat the priority as being positive infinity for the
+              purposes of sorting.</li>
+          <li>If <var>A</var> and <var>B</var> have the same priority,
+              sort according to the <code>startTime</code>s of the
+              <a>TimedItem</a>s with which <var>A</var> and <var>B</var> are
+              associated such that earlier start times are sorted first.
+          <li>If <var>A</var> and <var>B</var> have the same priority and
+              start time, sort by the position of the corresponding
+              <a>Animation</a> objects occur within the animation tree (see
+              issue below).</li>
+        </ol>
+        <p>
+          Items sorted earlier, are executed first.
+        </p>
+        <p class="issue">
+          That last point is quite wrong. I don't think we've specified
+          exactly what script order is in <a
+          href="#the-global-animation-stack" class="sectionRef"></a>.
+          But I wonder if it makes more sense to effectively enumerate all the
+          script-based nodes in the animation tree using some well-defined
+          order and use that index.
+          Can that be done efficiently?
+        </p>
       </section>
     </section>
 
@@ -5482,67 +5414,69 @@ var frame = effect.frames['0.3'];
         </dl>
       </section>
       <section>
-        <h3>The <code>GroupedAnimationEffect</code> interface</h3>
+        <h3>The <code>CustomAnimationEffect</code> callback interface</h3>
         <p>
-          The <code>GroupedAnimationEffect</code> interface represents a
-          set of animation effects that share the same
-          <code>AnimationTemplate</code> parent.
+          Custom animation effects can be defined in script using the
+          <a>CustomAnimationEffect</a> interface.
         </p>
-        <p class="todo">
-          If the group contains multiple effects that target the same property
-          does order in the group matter? If so, we need to add a means for
-          re-ordering the group other than popping and pushing. For example,
-          <code>insertBefore</code>.
+        <p class="issue">
+          Should this be a dictionary?
+          I'd like to make <code>clone</code> optional.
         </p>
-        <dl title="interface GroupedAnimationEffect : AnimationEffect"
-          class="idl">
-          <dt>Constructor (object properties)</dt>
+        <div title="callback interface CustomAnimationEffect" class="idl">
+          <dt>attribute unsigned integer priority</dt>
           <dd>
-            <p class="todo">
-              TBD whilst we decide whether we need this interface or whether we
-              can merge it with <a>KeyframeAnimationEffect</a> somehow.
-            </p>
+            The order in which this animation effect will be executed in
+            relation to other custom animation effects such that items with
+            a lower priority are executed earlier as defined in <a
+            href="#execution-order-of-custom-animation-effects"
+            class="sectionRef"></a>.
           </dd>
-          <dt>readonly attribute unsigned long length</dt>
+          <dt>void sample ()</dt>
           <dd>
-            The number of animation effects in the group.
+            The callback used to produce the animation effect corresponding to
+            the sample time determined by the timing model.
+            <dl class="parameters">
+              <dt>double? timeFraction</dt>
+              <dd>
+                The distance within a single iteration of the animation effect
+                of the current sample.
+                When this is <code>null</code>, the callback object SHOULD
+                remove the animation effect.
+              </dd>
+              <dt>double currentIteration</dt>
+              <dd>
+                The current iteration index beginning with zero for the first
+                iteration.
+              </dd>
+              <dt>AnimationTarget? target</dt>
+              <dd>
+                The element to which the effect should be applied, if any.
+                When this method is called as a result of this object being
+                associated with an <a>Animation</a> object, it will be
+                <code><a>Animation</a>.target</code>
+              </dd>
+            </dl>
           </dd>
-          <dt>void clear()</dt>
+          <dt>CustomAnimationEffect clone ()</dt>
           <dd>
-            Removes all effects from this group.
+            Creates an independent copy of this object.
           </dd>
-          <dt>getter AnimationEffect? (unsigned long index)</dt>
-          <dd>
-            Returns the effect at <var>index</var> if it exists, or
-            <code>null</code> otherwise.
-          </dd>
-          <dt>AnimationEffect add(AnimationEffect effect)</dt>
-          <dd>
-            <p>
-              Appends <code>effect</code> to the end of the group such that
-              <code>group.indexOf(<var>effect</var>)</code> equals
-              <code>group.length - 1</code>.
-            </p>
-            <p class="todo">
-              I'm assuming that <a>AnimationEffect</a>s can be shared amongst
-              animations and groups.
-              Or does <var>effect</var> need to be removed from any previous
-              <a>AnimationEffect</a>s or <a>Animation</a>s first?
-            </p>
-          </dd>
-          <dt>AnimationEffect? remove(unsigned long index)</dt>
-          <dd>
-            Removes the effect at <code>index</code> and returns it. If
-            <var>index</var> is outside the range [0, <code>length</code>), then
-            <code>null</code> is returned.
-          </dd>
-          <dt>long indexOf(AnimationEffect effect)</dt>
-          <dd>
-            Returns the index of <var>effect</var> within the group.
-            If <var>effect</var> is not a member of the group, returns
-            <code>-1</code>.
-          </dd>
-        </dl>
+        </div>
+        <p class="issue">
+          Do we need to pass in the <a>TimedItem</a> as well?
+          If possible I'd prefer not to but it may necessary for some types of
+          effect.
+          Might be an additional parameter to add later if it proves
+          necessary?
+        </p>
+        <p class="issue">
+          I think we will also need to pass the previous time fraction.
+          Animations will often use this to check if they are paused, playing
+          in reverse etc.
+          They can track this themselves but then you need a separate object
+          everywhere you use it.
+        </p>
       </section>
       <section>
         <h3>Extensions to the <code>Document</code> interface</h3>
