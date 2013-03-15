@@ -1451,12 +1451,8 @@
           <p>
             Note that values of <a>iteration start</a> greater than or equal to
             one are generally not useful unless used in combination with an
-            animation effect that has an accumulate operation other than
-            replace.
-          </p>
-          <p class="todo">
-            Need a reference here to accumlate operations once we've rewritten
-            that part.
+            animation effect that has an <a>accumulation operation</a> property
+            of <a title="accumulation operation accumulate">accumulate</a>.
           </p>
         </div>
       </section>
@@ -4841,7 +4837,18 @@ new SeqGroup(
           concrete subinterfaces are provided.
         </p>
         <dl title="interface AnimationEffect" class="idl">
-          <dt>attribute CompositeOperation operation</dt>
+          <dt>attribute AccumulateOperation accumulate</dt>
+          <dd>
+            <p>
+              The <a>accumulation operation</a> property of this <a>animation
+              effect</a> as specified by one of the <a>AccumulateOperation</a>
+              constants.
+            </p>
+            <p>
+              This value defaults to <code>"replace"</code>.
+            </p>
+          </dd>
+          <dt>attribute CompositeOperation composite</dt>
           <dd>
             <p>
               The operation used to composite this animation with the stack, as 
@@ -4850,17 +4857,6 @@ new SeqGroup(
             </p>
             <p>
               This value defaults to <code>"replace"</code>
-            </p>
-          </dd>
-          <dt>attribute AccumulateOperation accumulate</dt>
-          <dd>
-            <p>
-              The <a>accumulate operation</a> property of this <a>animation
-              effect</a> as specified by one of the <a>AccumulateOperation</a>
-              constants.
-            </p>
-            <p>
-              This value defaults to <code>"replace"</code>.
             </p>
           </dd>
           <dt>AnimationEffect clone ()</dt>
@@ -4924,8 +4920,8 @@ new SeqGroup(
                     properties</var> will be sorted before being iterated over.
                   </p>
                   <p class="issue">
-                    How do we handle <code>operation</code> and
-                    <code>compositeOperation</code>? We'd like to be able to
+                    How do we handle <code>accumulate</code> and
+                    <code>composite</code>? We'd like to be able to
                     list them in the same property bag but that would mean we
                     could never animate properties of the same name.
                   </p>
@@ -5091,8 +5087,8 @@ elem.animate(
           class="idl">
           <dt>Constructor (DOMString property,
       (DOMString or sequence&lt;(KeyframeDictionary or DOMString)&gt;) frames,
-      optional CompositeOperation operation = "replace",
-      optional CompositeOperation compositeOperation = "replace")</dt>
+      optional AccumulateOperation accumulate = "none",
+      optional CompositeOperation composite = "replace")</dt>
           <dd>
             <p>
               Creates a new <a>KeyframeAnimationEffect</a> object for the
@@ -5112,8 +5108,8 @@ elem.animate(
               <a>Keyframe</a>s are distributed evenly from 0 to 1.
             </p>
             <p>
-              The <var>property</var>, <var>operation</var> and
-              <var>compositeOperation</var> arguments are assigned to the
+              The <var>property</var>, <var>accumulate</var> and
+              <var>composite</var> arguments are assigned to the
               attributes of the same names.
             </p>
             <p>
