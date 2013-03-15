@@ -2550,16 +2550,17 @@
       <h2>Animations</h2>
       <p>
         <dfn title="animation">Animations</dfn> are a kind of <a>timed item</a>
-        that apply an animation effect to a target element or pseudo-element
-        such as <code>::before</code> and <code>::first-line</code> [[!SELECT]].
+        that apply an <a>animation effect</a> to a target element or
+        pseudo-element such as <code>::before</code> and
+        <code>::first-line</code> [[!SELECT]].
       </p>
       <section>
         <h3>Calculating the time fraction</h3>
         <p>
           Before passing the <a>transformed time</a> of an <a>animation</a> to
-          its animation effect we must convert it to a <em>time fraction</em>.
-          The <dfn>time fraction</dfn> of a <a>timed item</a> is calculated
-          according to the following steps:
+          its <a>animation effect</a> we must convert it to a <em>time
+          fraction</em>.  The <dfn>time fraction</dfn> of a <a>timed item</a> is
+          calculated according to the following steps:
         </p>
         <dl class="switch">
           <dt>
@@ -2604,716 +2605,133 @@
       </section>
     </section>
 
+    <section class="informative">
+      <h2>Overview of the animation model</h2>
+      <p>
+        The Web Animations <em>animation model</em> takes the <a
+        title="time fraction">time fractions</a> produced by the <em>timing
+        model</em> for a given <a>animation</a> and applies it as the input to
+        an <a>animation effect</a> defined for the <a>animation</a>.
+        The output of each <em>animation effect</em> is then combined using
+        a global animation stack before being applied to the target properties
+        (see <a href="#combining-animations" class="sectionRef"></a>).
+      </p>
+      <p>
+        In order to support <a>accumulation</a> behavior the animation model
+        also requires the timing model to supply an <a>animation</a>'s
+        <a>current iteration</a> along with its <a>time fraction</a>.
+      </p>
+    </section>
+
     <section>
-      <h2>Animation values</h2>
-      <div class="informative">
+      <h2>Animation effects</h2>
+      <p>
+        An <dfn>animation effect</dfn> takes a <a>time fraction</a> and uses it
+        to calculate an <a>animation value</a> for its target property.
+        Each <a>animation</a> may have at most one <a>animation effect</a>
+        associated with it.
+      </p>
+      <p class="issue">
+        We will probably lift this restriction and allow animations to have
+        multiple effects.
+      </p>
+      <p>
+        Since the result of an <a>animation effect</a> is based on the
+        <a>time fraction</a> it is updated whenever the timing model is <a
+        title="sampling">sampled</a>.
+        Note that changes to the timing model caused by using the <a
+        href="#script-interface">programming interface</a> do not cause the
+        animation model to be updated as described in <a
+        href="#interaction-with-script" class="sectionRef"></a>.
+      </p>
+      <section>
+        <h3>Accumulating animation values</h3>
         <p>
-          The Web Animations <em>animation model</em> takes the <a
-          title="time fraction">time fractions</a> produced by the <em>timing
-          model</em> for a given <a>Animation</a> and applies it as the input to
-          the <em>animation effect</em> defined for the <a>Animation</a> object.
-          The output of each <em>animation effect</em> is then combined using
-          a global animation stack before being applied to the target property
-          (see <a href="#combining-animations" class="sectionRef"></a>).
+          <a title="animation effect">Animation effects</a> may be defined such
+          that as the <a>animation</a> with which they are associated is
+          repeated the <a>animation value</a> produced builds on the value
+          produced by previous iterations.
+          This behavior is called <dfn>accumulation</dfn>.
         </p>
         <p>
-          The entry-point to the <em>animation model</em> is the
-          <a>AnimationEffect</a> or <a>CustomAnimationEffect</a> object
-          associated with each <a>Animation</a>.
-          These objects describe how animation values should be calculated for
-          the <a>Animation</a> for any given time.
-          <a>AnimationEffect</a> serves as an abstract interface of which
-          several concrete subclasses are provided.
+          The <a>accumulation</a> behavior of an <a>animation effect</a> is
+          specified by the <a>animation effect</a>'s <dfn>accumulation
+          operation</dfn> property.
+          The <a>accumulation operation</a> property takes one of the following
+          two values.
         </p>
-      </div>
-      <section>
-        <h3>The <code>AnimationEffect</code> interface</h3>
-        <dl title="interface AnimationEffect" class="idl">
-          <dt>attribute CompositeOperation operation</dt>
+        <dl>
+          <dt><dfn
+            title="accumulation operation accumulate">accumulate</dfn></dt>
           <dd>
             <p>
-              The operation used to composite this animation with the stack, as 
-              specified by one of the <a>CompositeOperation</a> enumeration
-              values.
+              The <a>animation value</a> for the <a>animation effect</a> is
+              added to the final <a>animation value</a> of the previous
+              iteration.
             </p>
-            <p>
-              This value defaults to <code>"replace"</code>
+            <p class="issue">
+              Should this be called <code>linear</code>?
+              The only other sort of values I can imagine being used here would
+              be things like <code>exponential</code> etc.
             </p>
           </dd>
-          <dt>attribute CompositeOperation accumulateOperation</dt>
+          <dt><dfn
+            title="accumulation operation none">none</dfn></dt>
           <dd>
-            <p>
-              The operation used to composite each iteration of this animation
-              with the result of compositing the previous animation, as
-              specified by one of the <a>CompositeOperation</a> constants
-              defined in this interface.
-            </p>
-            <p>
-              This value defaults to <code>"replace"</code>.
-            </p>
-          </dd>
-          <dt>AnimationEffect clone ()</dt>
-          <dd>
-            <p>
-              Creates and returns a new object of the same type as this object's
-              most-derived interface such that it will produce the same output
-              as this object.
-            </p>
-            <p class="todo">
-              We either need a more rigorous definition here or (probably
-              better) a sets of steps on a per-subclass basis.
-            </p>
-          </dd>
-          <dt>static AnimationEffect? createFromProperties ()</dt>
-          <dd>
-            <p>
-              Creates an <a>AnimationEffect</a> representing the passed-in
-              collection of properties.
-            </p>
-            <div class="note">
-              <p>
-                Note that this method requires handling the passed in parameter
-                in a manner not yet supported by Web IDL and hence this method
-                is ECMAScript-specific.
-              </p>
-              <p>
-                Since accessing the properties of an ECMAScript user object can
-                have side effects, the manner in which these properties is
-                accessed is important.
-                In light of this consideration the following procedure has the
-                following properties:
-              </p>
-              <ul>
-                <li>Every property is read only once.</li>
-                <li>Properties are read in a well-defined order.</li>
-                <li>Properties corresponding to unsupported target properties or
-                    attributes are not read.</li>
-              </ul>
-            </div>
-            <p>
-              The interpretation of the passed-in <code>properties</code> object
-              can be described in three parts.
-            </p>
-            <p><strong>Part 1 &ndash; Determine the set of
-               animation properties</strong></p>
-            <ol>
-              <li>Create a list, <var>supported properties</var>, of property
-                  names and attribute names that can be animated by the
-                  implementation.</li>
-              <li>Let <var>animation properties</var> be an empty sequence.</li>
-              <li>Iterate through the properties of <code>properties</code>. For
-                  each <var>property</var> in <code>properties</code>, if
-                  <var>property</var> also exists in <var>supported
-                  properties</var> based on a case-sensitive comparison, append
-                  <var>property</var> to <var>animation properties</var>.
-                  <p class="note">
-                    Whilst the iteration order for properties of an ECMAScript
-                    object is implementation-dependent, the order here is not
-                    significant to the outcome as <var>animation
-                    properties</var> will be sorted before being iterated over.
-                  </p>
-                  <p class="issue">
-                    How do we handle <code>operation</code> and
-                    <code>compositeOperation</code>? We'd like to be able to
-                    list them in the same property bag but that would mean we
-                    could never animate properties of the same name.
-                  </p>
-              </li>
-            </ol>
-            <p><strong>Part 2 &ndash; Create the <a>AnimationEffect</a>
-               objects</strong></p>
-            <p>
-              The <a>AnimationEffect</a> object produced depends on the length
-              of <var>animation properties</var> as follows:
-            </p>
-            <dl class="switch">
-              <dt>If <var>animation properties</var> is of zero length,</dt>
-              <dd>
-                return <code>null</code>.
-                <div class="note">
-                  <p>
-                    This behavior of returning <code>null</code> allows
-                    alternative animation effects to be provided based on the
-                    capabilities of the user agent as follows:
-                  </p>
-                  <pre class="example sh_javascript">
-elem.animate(
-  AnimationEffect.createFromProperties({ transform: 'translate(-100px)' }) ||
-  AnimationEffect.createFromProperties({ top: '-100px' }),
-  3);
-                  </pre>
-                </div>
-              </dd>
-              <dt>If <var>animation properties</var> has only one element,</dt>
-              <dd>
-                <ol>
-                  <li>Let <var>name</var> be the value of the element
-                      in <var>animation properties</var>.</li>
-                  <li>Let <var>value</var> be the value of
-                      <code>properties.<var>name</var></code>.</li>
-                  <li>Return a new <a>KeyframeAnimationEffect</a> object
-                      according to the steps in part 3 below based on
-                      <var>name</var> and <var>value</var>.</li>
-                </ol>
-              </dd>
-              <dt>Otherwise,</dt>
-              <dd>
-                <ol>
-                  <li>Let <var>group</var> be a newly constructed
-                      <a>GroupedAnimationEffect</a>.</li>
-                  <li>Sort <var>animation properties</var> lexicographically by
-                      the Unicode codepoints that define each property
-                      name.</li>
-                  <li>For user agents that support both a prefixed and an
-                      unprefixed version of some CSS properties, remove all
-                      prefixed properties from <var>animation properties</var>
-                      where the corresponding unprefixed version is also
-                      present.</li>
-                  <li>Iterate through <var>animation properties</var>. For each
-                      <var>name</var> in <var>animation properties</var>:
-                    <ol>
-                      <li>Let <var>value</var> be the value of
-                          <code>properties.<var>name</var></code>.</li>
-                      <li>Create a new <a>KeyframeAnimationEffect</a>,
-                          <var>effect</var> object according to the steps in
-                          part 3 below based on <var>name</var> and
-                          <var>value</var>.</li>
-                      <li>Append <var>effect</var> to <var>group</var>.
-                    </ol>
-                  </li>
-                  <li>Return <var>group</var>.
-                </ol>
-              </dd>
-            </dl>
-            <p><strong>Part 3 &ndash; Create each
-               <a>KeyframeAnimationEffect</a> object</strong></p>
-            <p>
-              Based on a given <var>name</var> and <var>value</var>, a new
-              <a>KeyframeAnimationEffect</a> is created as follows:
-            </p>
-            <dl class="switch">
-              <dt>If <var>value</var> is not of type <code>(DOMString or
-              sequence&lt;(<a>KeyframeDictionary</a> or
-              DOMString)&gt;)</code>,</dt>
-              <dd>
-                Throw a <code>TypeError</code> as defined by [[!ECMA-262]].
-              </dd>
-              <dt>Otherwise,</dt>
-              <dd>
-                Construct a new <a>KeyframeAnimationEffect</a> by calling
-                <code>KeyframeAnimationEffect(<var>name</var>,
-                <var>value</var>)</code>.
-              </dd>
-            </dl>
-            <dl class="parameters">
-              <dt>object properties</dt>
-              <dd>
-                An object whose object properties represent the CSS properties
-                or element attributes to be animated.
-                The values corresponding to these properties are the animation
-                values to be applied as described above.
-              </dd>
-            </dl>
+            The <a>animation value</a> for the <a>animation effect</a> is
+            calculated independently of the <a>current iteration</a>.
           </dd>
         </dl>
-        <div class="annotation">
-          In future, we may expose <code>any sample (double?  timeFraction,
-          double currentIteration, AnimationTarget? target, any
-          underlyingValue)</code> so that the animation effects can be driven
-          apart from the timing model.
-          Also, doing so would allow us to do real native custom animation
-          effects if we decide to go in that direction
-          (see annotation in <a href="#custom-animation-effects"
-          class="sectionRef"></a>).
-        </div>
+        <p class="issue">
+          Does accumulation actually make sense for path animations or should we
+          define this as a property of key frame animations effects only?
+        </p>
       </section>
       <section>
-        <h3>The <code>CompositeOperation</code> enumeration</h3>
-        <dl title="enum CompositeOperation" class="idl">
-          <dt>replace</dt>
+        <h3>Calculating the animation value</h3>
+        <p>
+          The <a>animation value</a> of an <a>animation effect</a> for a given
+          <a>time fraction</a> and <a>current iteration</a> is produced by first
+          calculating the value independently of any <a>accumulation</a>
+          behavior.
+          This initial value is called the <dfn>iteration value</dfn> and is
+          defined for each concrete type of <a>animation effect</a>.
+        </p>
+        <p>
+          Having calculated an <a>iteration value</a> for an <a>animation
+          effect</a>, the <dfn>animation value</dfn> is as follows:
+        </p>
+        <dl class="switch">
+          <dt>If <a>accumulation operation</a> is <a
+            title="accumulation operation none">none</a>,</dt>
           <dd>
-            The animation should replace the value it is composited with.
+            Return the <a>iteration value</a>.
           </dd>
-          <dt>accumulate</dt>
+          <dt>Otherwise,</dt>
           <dd>
-            The animation should add to the value it is composited with.
-            The meaning of addition is dependent on the type of animation.
-          </dd>
-          <dt>merge</dt>
-          <dd>
-            The animation should merge with the value it is composited with.
-            The meaning of merge is dependent on the type of animation.
-            The duration of the merge is the calculated animation duration
-            of the <code>AnimationTemplate</code> containing this
-            <code>AnimationEffect</code>.
-          </dd>
-        </dl>
-      </section>
-      <section>
-        <h3>The <code>KeyframeAnimationEffect</code> interface</h3>
-        <dl title="interface KeyframeAnimationEffect : AnimationEffect"
-          class="idl">
-          <dt>Constructor (DOMString property,
-      (DOMString or sequence&lt;(KeyframeDictionary or DOMString)&gt;) frames,
-      optional CompositeOperation operation = "replace",
-      optional CompositeOperation compositeOperation = "replace")</dt>
-          <dd>
-            <p>
-              Creates a new <a>KeyframeAnimationEffect</a> object for the
-              specified property from the given list of keyframes.
-            </p>
-            <p>
-              The list of keyframes may be a sequence of
-              <a>KeyframeDictionary</a> dictionaries, a sequence of
-              <code>DOMString</code>s, a combination of both, or
-              a single <code>DOMString</code>.
-            </p>
-            <p>
-              <code>DOMString</code>s are used to create keyframes with an
-              offset of 1.
-              When the list of keyframes is a sequence consisting entirely of
-              <code>DOMString</code>s the offsets of the newly created
-              <a>Keyframe</a>s are distributed evenly from 0 to 1.
-            </p>
-            <p>
-              The <var>property</var>, <var>operation</var> and
-              <var>compositeOperation</var> arguments are assigned to the
-              attributes of the same names.
-            </p>
-            <p>
-              The <var>frames</var> argument is processed as follows:
-            </p>
             <ol>
-              <li>Let <var>effect</var> be the
-                  <a>KeyframeAnimationEffect</a> currently under construction.
-              </li>
-              <li>
-                <p>
-                  The processing of <var>frames</var> depends on its type as
-                  follows:
-                </p>
-                <dl class="switch">
-                  <dt>If <var>frames</var> is a <code>DOMString</code>,</dt>
-                  <dd>
-                    <ol>
-                      <li>
-                        Let <var>frame</var> be a new <a>Keyframe</a>
-                        constructed from a <a>KeyframeDictionary</a> whose
-                        <code>value</code> member is set to
-                        <var>frames</var> and whose other members are set
-                        to their default values.
-                      </li>
-                      <li>
-                        Call
-                <code><var>effect</var>.frames.add(<var>frame</var>)</code>.
-                      </li>
-                    </ol>
-                  </dd>
-                  <dt>If <var>frames</var> is a sequence of <code>(DOMString
-                      or <a>KeyframeDictionary</a>)</code>,</dt>
-                  <dd>
-                    <ol>
-                      <li>Set a flag <var>all strings</var> to
-                          <code>true</code>.</li>
-                      <li>
-                        For each <var>item</var> in <var>frames</var>:
-                        <ol>
-                          <li>
-                            <dl class="switch">
-                              <dt>If <var>item</var> is
-                                  a <code>DOMString</code>,</dt>
-                              <dd>
-                                Let <var>frame</var> be a new <a>Keyframe</a>
-                                constructed from a <a>KeyframeDictionary</a>
-                                whose <code>value</code> member is set to
-                                <var>item</var> and whose other members are
-                                set to their default values.
-                              </dd>
-                              <dt>Otherwise (<var>item</var> is
-                                  a <a>KeyframeDictionary</a>),</dt>
-                              <dd>
-                                <ol>
-                                  <li>
-                                    Let <var>frame</var> be a new
-                                    <a>Keyframe</a> constructed by calling
-                                    <code>Keyframe(<var>item</var>)</code>.
-                                  </li>
-                                  <li>
-                                    Set <var>all strings</var> to
-                                    <code>false</code>.
-                                  </li>
-                                </ol>
-                              </dd>
-                            </dl>
-                          </li>
-                          <li>
-                            Call
-                <code><var>effect</var>.frames.add(<var>frame</var>)</code>.
-                          </li>
-                        </ol>
-                      </li>
-                      <li>If flag <var>all strings</var> is
-                          <code>true</code> call
-                        <code><var>effect</var>.frames.distribute()</code>.
-                      </li>
-                    </ol>
-                  </dd>
-                </dl>
-              </li>
+              <li>Let <var>last value</var> be the result of evaluating
+                  the <a>iteration value</a> of the <a>animation effect</a>
+                  with a <a>time fraction</a> of 1.</li>
+              <li>Let <var>previous iteration value</var> be the result of
+                  adding <var>last value</var> to itself <a>current
+                  iteration</a> times.
+              <li>Return the result of adding together <var>previous iteration
+                  value</var> and the current <a>iteration value</a> of the
+                  <a>animation value</a> (that is, the <a>iteration value</a>
+                  calculated for the current <a>time fraction</a>).</li>
             </ol>
           </dd>
-          <dt>attribute DOMString property</dt>
-          <dd>
-            The name of the target property or attribute.
-          </dd>
-          <dt>readonly attribute KeyframeList frames</dt>
-          <dd>
-            The series of values that make up this effect sorted by their
-            offset within the iteration duration of the animation.
-          </dd>
         </dl>
-      </section>
-      <section>
-        <h3>The <code>KeyframeList</code> interface</h3>
-        <p>
-          The <a>KeyframeList</a> object is a collection of <a>Keyframe</a>
-          objects sorted by the offset of each <a>Keyframe</a>.
-        </p>
-        <dl title="interface KeyframeList" class="idl">
-          <dt>readonly attribute unsigned long length</dt>
-          <dd>
-            The number of frames in the list.
-          </dd>
-          <dt>void clear ()</dt>
-          <dd>
-            Removes all frames from this list.
-          </dd>
-          <dt>getter Keyframe? (unsigned long index)</dt>
-          <dd>
-            Returns the frame at <code>index</code> if it exists or
-            <code>null</code> otherwise.
-          </dd>
-          <dt>Keyframe add((Keyframe or KeyframeDictionary) frame)</dt>
-          <dd>
-            <p>
-              Adds <var>frame</var> to the list such that the list remains
-              sorted by the offset of the frames.
-            </p>
-            <p>
-              If <var>frame</var> is of type <a>KeyframeDictionary</a> then
-              a <a>Keyframe</a> object is first constructed by calling
-              <code>Keyframe(<var>frame</var>)</code> before adding the
-              newly constructed <a>Keyframe</a> to the list.
-            </p>
-            <p>
-              If there already exists a frame in this list with offset
-              <code><var>frame</var>.offset</code>, the newly added
-              <var>frame</var> will appear in the list <em>after</em> the
-              already existing frames in the list with the same offset.
-            </p>
-            <p>
-              If <var>frame</var> is already part of another <a>KeyframeList</a>
-              it is first removed from that list before being added to this
-              list.
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>IndexSizeError</code></dt>
-              <dd>
-                Raised if <var>frame</var> is a <a>KeyframeDictionary</a> whose
-                offset is outside the range [0,1] or missing.
-              </dd>
-            </dl>
-          </dd>
-          <dt>Keyframe? remove(unsigned long index)</dt>
-          <dd>
-            Removes the frame at position <var>index</var> and returns it.
-            If index is outside the range [0, length), then <code>null</code> is
-            returned.
-          </dd>
-          <dt>long indexOf(Keyframe frame)</dt>
-          <dd>
-            Returns the index of <var>frame</var> within the list. If
-            <var>frame</var> is not a member of the list, returns
-            <code>-1</code>.
-          </dd>
-          <dt>KeyframeList distribute()</dt>
-          <dd>
-            <p>
-              Adjusts the offsets of the frames in the list such that the
-              offsets are spaced equidistantly whilst maintaining their current
-              order and such that the first frame (when there are multiple
-              frames) has offset 0 and the last frame (if any) has offset 1.
-            </p>
-            <p>
-              For <var>frame</var> at position <var>i</var> in the list where
-              0 &le; <var>i</var> &lt; <code>length</code>, an offset will be
-                assigned equal to <code>i / (length - 1)</code> unless
-                <code>length</code> is 1 in which case it will be given offset
-                1.
-            </p>
-            <p>
-              After applying the changes, this list is returned.
-            </p>
-          </dd>
-        </dl>
-        <div class="annotation">
-          <p>
-            The following changes for making keyframes easier to work with in
-            future have been proposed:
-          </p>
-          <pre class="example sh_javascript">
-// Currently you have to do this
-effect.frames.add({ property: 'left', offset: 0.3, value: '100px' }); 
-
-// It would be nice if you could also do this
-effect.frames.add(0.3, 'left', '100px');
-
-// Also, fetching by offset would be good
-
-// Returns the last frame with offset 0.3 if there is one.
-// If there is none, does the interpolation and returns a new frame? 
-var frame = effect.frames['0.3']; 
-          </pre>
-        </div>
-      </section>
-      <section>
-        <h3>The <code>Keyframe</code> interface</h3>
-        <p>
-          A <a>Keyframe</a> represents a moment within an animation that has
-          a specified value to be applied to the target property or attribute.
-          In between such moments values may be interpolated or filled based on
-          the <a>TimingFunction</a> specified on the <a>TimedItem</a> where the
-          <a>Keyframe</a> is used, or on the previous <a>Keyframe</a>.
-        </p>
-        <div class="issue">
-          <p>
-            Currently a <a>Keyframe</a> can only target a single property which
-            is defined on the <a>KeyframeAnimationEffect</a>.
-            This is different to CSS.
-            Is this something we want to change?
-            It would complicate the API, of course, but is it worth it?
-          </p>
-        </div>
-        <p>
-          <dl title="interface Keyframe" class="idl">
-            <dt>Constructor (KeyframeDictionary dictionary)</dt>
-            <dd>
-              <p>
-                Creates a new <a>Keyframe</a> object using the parameters
-                specified in <var>dictionary</var>.
-              </p>
-              <p>
-                <code><var>dictionary</var>.offset</code> is clamped to the
-                range [0, 1] before setting.
-              </p>
-            </dd>
-            <dt>attribute DOMString value</dt>
-            <dd>
-              The value to assign to the target attribute or property at the
-              given offset.
-            </dd>
-            <dt>attribute double offset</dt>
-            <dd>
-              <p>
-                A value between 0 and 1 inclusive representing the offset
-                within the iteration duration of the animation where this value
-                should appear.
-              </p>
-              <p>
-                If this keyframe belongs to a <a>KeyframeList</a>, changes to
-                this value cause the <a>KeyframeList</a> to be immediately
-                re-sorted using a stable sort such that all children are ordered
-                by their offset but children with identical offsets retain their
-                relative position in the list.
-              </p>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type <code>IndexSizeError</code></dt>
-                <dd>
-                  Raised on setting a value outside the range [0,1].
-                </dd>
-              </dl>
-            </dd>
-            <dt>attribute TimingFunction? timingFunction</dt>
-            <dd>
-              <p>
-                The timing function to apply between this keyframe and the
-                next keyframe in any <a>KeyframeList</a> in which this object
-                appears.
-              </p>
-              <p>
-                May be <code>null</code> in which case linear interpolation will
-                be used.
-              </p>
-            </dd>
-          </dl>
-        </p>
-      </section>
-      <section>
-        <h3>The <code>KeyframeDictionary</code> dictionary</h3>
-        <p>
-          To simplify creation of <a>Keyframe</a> objects
-          a <code>KeyframeDictionary</code> can be used.
-        </p>
-        <p>
-          The members of the dictionary correspond to attributes in the
-          <a>Keyframe</a> interface which provides a more complete description
-          of their meaning and usage.
-        </p>
-        <dl title="dictionary KeyframeDictionary" class="idl">
-          <dt>DOMString value = ""</dt>
-          <dd>
-            The value to assign to the target attribute or property at the given
-            offset.
-          </dd>
-          <dt>double offset = 1</dt>
-          <dd>
-            A value between 0 and 1 (inclusive) representing the offset within
-            the iteration duration of the animation where this value should
-            appear.
-          </dd>
-          <dt>TimingFunction? timingFunction = null</dt>
-          <dd>
-            The timing function to apply between this keyframe and the
-            next keyframe in any <a>KeyframeList</a> in which this object
-            appears.
-          </dd>
-        </dl>
-      </section>
-      <section>
-        <h3>The <code>PathAnimationEffect</code> interface</h3>
-        <dl title="[Constructor] interface PathAnimationEffect
-          : AnimationEffect" class="idl">
-          <dt>attribute SVGPathSegList segments</dt>
-          <dd>
-            The list of segments that make up this path.
-          </dd>
-          <dt>attribute boolean rotate</dt>
-          <dd>
-            True if objects animating along this path should be rotated
-            such that their positive x axis is aligned with the direction of
-            movement along the path.
-          </dd>
-        </dl>
-      </section>
-      <section>
-        <h3>The <code>GroupedAnimationEffect</code> interface</h3>
-        <p>
-          The <code>GroupedAnimationEffect</code> interface represents a
-          set of animation effects that share the same
-          <code>AnimationTemplate</code> parent.
+        <p class="issue">
+          This definition relies on the final value of <a
+          title="timing function">timing functions</a> being 1.
         </p>
         <p class="todo">
-          If the group contains multiple effects that target the same property
-          does order in the group matter? If so, we need to add a means for
-          re-ordering the group other than popping and pushing. For example,
-          <code>insertBefore</code>.
+          This definition relies on the concept of addition being defined for
+          all animation effects.
+          Need to point to where this is defined.
         </p>
-        <dl title="interface GroupedAnimationEffect : AnimationEffect"
-          class="idl">
-          <dt>Constructor (object properties)</dt>
-          <dd>
-            <p class="todo">
-              TBD whilst we decide whether we need this interface or whether we
-              can merge it with <a>KeyframeAnimationEffect</a> somehow.
-            </p>
-          </dd>
-          <dt>readonly attribute unsigned long length</dt>
-          <dd>
-            The number of animation effects in the group.
-          </dd>
-          <dt>void clear()</dt>
-          <dd>
-            Removes all effects from this group.
-          </dd>
-          <dt>getter AnimationEffect? (unsigned long index)</dt>
-          <dd>
-            Returns the effect at <var>index</var> if it exists, or
-            <code>null</code> otherwise.
-          </dd>
-          <dt>AnimationEffect add(AnimationEffect effect)</dt>
-          <dd>
-            <p>
-              Appends <code>effect</code> to the end of the group such that
-              <code>group.indexOf(<var>effect</var>)</code> equals
-              <code>group.length - 1</code>.
-            </p>
-            <p class="todo">
-              I'm assuming that <a>AnimationEffect</a>s can be shared amongst
-              animations and groups.
-              Or does <var>effect</var> need to be removed from any previous
-              <a>AnimationEffect</a>s or <a>Animation</a>s first?
-            </p>
-          </dd>
-          <dt>AnimationEffect? remove(unsigned long index)</dt>
-          <dd>
-            Removes the effect at <code>index</code> and returns it. If
-            <var>index</var> is outside the range [0, <code>length</code>), then
-            <code>null</code> is returned.
-          </dd>
-          <dt>long indexOf(AnimationEffect effect)</dt>
-          <dd>
-            Returns the index of <var>effect</var> within the group.
-            If <var>effect</var> is not a member of the group, returns
-            <code>-1</code>.
-          </dd>
-        </dl>
-      </section>
-      <section>
-        <h3>Calculating animation values</h3>
-        <div class="todo">
-          This section needs more detail on when sampling is done.
-          It also needs to be specified that an <a>Animation</a> with
-          a <code>null</code> <a>AnimationEffect</a> still fires events.
-        </div>
-        <section>
-          <h4>Calculating the animation value from an iteration value</h4>
-          <p>
-            If the <a>current iteration</a> is zero, or the 
-            <var>accumulateOperation</var> is
-            <code>"replace"</code>, then the 
-            <var>animation value</var> is simply the iteration value, as
-            defined below.
-          </p>
-          <p>
-            When the animation time equals the iteration duration for the 
-            first time for an animation, the current 
-            <var>animation value</var> should be retained as the
-            <var>end value</var> for the animation.
-          </p>
-          <p class="todo">
-            Need to revise this definition since we can't assume the time at
-            the end of the first iteration will be visited (we might be
-            playing backwards, or have a <var>iteration start</var> greater
-            than 1).
-          </p>
-          <p>
-            If the <a>current iteration</a> is not zero and the
-            <var>accumulateOperation</var> is
-            <code>"accumulate"</code> then the 
-            <var>animation value</var> is the <var>end value</var> accumulated
-            <a>current iteration</a> times, with the 
-            <var>iteration value</var> accumulated on top.
-          </p>
-          <p>
-            If the <a>current iteration</a> is not zero and the
-            <var>accumulateOperation</var> is
-            <code>"merge"</code> then the
-            <var>animation balue</var> is the <var>end value</var> merged
-            with the <var>iteration value</var>, with an interpolation
-            parameter equal to the current <var>time fraction</var>
-          </p>
-          <p class="todo">
-            Need to review the following algorithms to check they still make
-            sense now that the iteration fraction is not necessarily in the
-            range [0, 1].
-          </p>
-        </section>
         <section>              
           <h4>Calculating the iteration value for a 
             <code>KeyframeAnimationEffect</code></h4>
@@ -5483,6 +4901,650 @@ new SeqGroup(
         </div>
       </section>
       <section>
+        <h3>The <code>AnimationEffect</code> interface</h3>
+        <p>
+          <a title="animation effect">Animation effects</a> are represented by
+          the <code>AnimationEffect</code> interface.
+          <a>AnimationEffect</a> is an abstract interface of which several
+          concrete subinterfaces are provided.
+        </p>
+        <dl title="interface AnimationEffect" class="idl">
+          <dt>attribute CompositeOperation operation</dt>
+          <dd>
+            <p>
+              The operation used to composite this animation with the stack, as 
+              specified by one of the <a>CompositeOperation</a> enumeration
+              values.
+            </p>
+            <p>
+              This value defaults to <code>"replace"</code>
+            </p>
+          </dd>
+          <dt>attribute CompositeOperation accumulateOperation</dt>
+          <dd>
+            <p>
+              The operation used to composite each iteration of this animation
+              with the result of compositing the previous animation, as
+              specified by one of the <a>CompositeOperation</a> constants
+              defined in this interface.
+            </p>
+            <p>
+              This value defaults to <code>"replace"</code>.
+            </p>
+          </dd>
+          <dt>AnimationEffect clone ()</dt>
+          <dd>
+            <p>
+              Creates and returns a new object of the same type as this object's
+              most-derived interface such that it will produce the same output
+              as this object.
+            </p>
+            <p class="todo">
+              We either need a more rigorous definition here or (probably
+              better) a sets of steps on a per-subclass basis.
+            </p>
+          </dd>
+          <dt>static AnimationEffect? createFromProperties ()</dt>
+          <dd>
+            <p>
+              Creates an <a>AnimationEffect</a> representing the passed-in
+              collection of properties.
+            </p>
+            <div class="note">
+              <p>
+                Note that this method requires handling the passed in parameter
+                in a manner not yet supported by Web IDL and hence this method
+                is ECMAScript-specific.
+              </p>
+              <p>
+                Since accessing the properties of an ECMAScript user object can
+                have side effects, the manner in which these properties is
+                accessed is important.
+                In light of this consideration the following procedure has the
+                following properties:
+              </p>
+              <ul>
+                <li>Every property is read only once.</li>
+                <li>Properties are read in a well-defined order.</li>
+                <li>Properties corresponding to unsupported target properties or
+                    attributes are not read.</li>
+              </ul>
+            </div>
+            <p>
+              The interpretation of the passed-in <code>properties</code> object
+              can be described in three parts.
+            </p>
+            <p><strong>Part 1 &ndash; Determine the set of
+               animation properties</strong></p>
+            <ol>
+              <li>Create a list, <var>supported properties</var>, of property
+                  names and attribute names that can be animated by the
+                  implementation.</li>
+              <li>Let <var>animation properties</var> be an empty sequence.</li>
+              <li>Iterate through the properties of <code>properties</code>. For
+                  each <var>property</var> in <code>properties</code>, if
+                  <var>property</var> also exists in <var>supported
+                  properties</var> based on a case-sensitive comparison, append
+                  <var>property</var> to <var>animation properties</var>.
+                  <p class="note">
+                    Whilst the iteration order for properties of an ECMAScript
+                    object is implementation-dependent, the order here is not
+                    significant to the outcome as <var>animation
+                    properties</var> will be sorted before being iterated over.
+                  </p>
+                  <p class="issue">
+                    How do we handle <code>operation</code> and
+                    <code>compositeOperation</code>? We'd like to be able to
+                    list them in the same property bag but that would mean we
+                    could never animate properties of the same name.
+                  </p>
+              </li>
+            </ol>
+            <p><strong>Part 2 &ndash; Create the <a>AnimationEffect</a>
+               objects</strong></p>
+            <p>
+              The <a>AnimationEffect</a> object produced depends on the length
+              of <var>animation properties</var> as follows:
+            </p>
+            <dl class="switch">
+              <dt>If <var>animation properties</var> is of zero length,</dt>
+              <dd>
+                return <code>null</code>.
+                <div class="note">
+                  <p>
+                    This behavior of returning <code>null</code> allows
+                    alternative animation effects to be provided based on the
+                    capabilities of the user agent as follows:
+                  </p>
+                  <pre class="example sh_javascript">
+elem.animate(
+  AnimationEffect.createFromProperties({ transform: 'translate(-100px)' }) ||
+  AnimationEffect.createFromProperties({ top: '-100px' }),
+  3);
+                  </pre>
+                </div>
+              </dd>
+              <dt>If <var>animation properties</var> has only one element,</dt>
+              <dd>
+                <ol>
+                  <li>Let <var>name</var> be the value of the element
+                      in <var>animation properties</var>.</li>
+                  <li>Let <var>value</var> be the value of
+                      <code>properties.<var>name</var></code>.</li>
+                  <li>Return a new <a>KeyframeAnimationEffect</a> object
+                      according to the steps in part 3 below based on
+                      <var>name</var> and <var>value</var>.</li>
+                </ol>
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                <ol>
+                  <li>Let <var>group</var> be a newly constructed
+                      <a>GroupedAnimationEffect</a>.</li>
+                  <li>Sort <var>animation properties</var> lexicographically by
+                      the Unicode codepoints that define each property
+                      name.</li>
+                  <li>For user agents that support both a prefixed and an
+                      unprefixed version of some CSS properties, remove all
+                      prefixed properties from <var>animation properties</var>
+                      where the corresponding unprefixed version is also
+                      present.</li>
+                  <li>Iterate through <var>animation properties</var>. For each
+                      <var>name</var> in <var>animation properties</var>:
+                    <ol>
+                      <li>Let <var>value</var> be the value of
+                          <code>properties.<var>name</var></code>.</li>
+                      <li>Create a new <a>KeyframeAnimationEffect</a>,
+                          <var>effect</var> object according to the steps in
+                          part 3 below based on <var>name</var> and
+                          <var>value</var>.</li>
+                      <li>Append <var>effect</var> to <var>group</var>.
+                    </ol>
+                  </li>
+                  <li>Return <var>group</var>.
+                </ol>
+              </dd>
+            </dl>
+            <p><strong>Part 3 &ndash; Create each
+               <a>KeyframeAnimationEffect</a> object</strong></p>
+            <p>
+              Based on a given <var>name</var> and <var>value</var>, a new
+              <a>KeyframeAnimationEffect</a> is created as follows:
+            </p>
+            <dl class="switch">
+              <dt>If <var>value</var> is not of type <code>(DOMString or
+              sequence&lt;(<a>KeyframeDictionary</a> or
+              DOMString)&gt;)</code>,</dt>
+              <dd>
+                Throw a <code>TypeError</code> as defined by [[!ECMA-262]].
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                Construct a new <a>KeyframeAnimationEffect</a> by calling
+                <code>KeyframeAnimationEffect(<var>name</var>,
+                <var>value</var>)</code>.
+              </dd>
+            </dl>
+            <dl class="parameters">
+              <dt>object properties</dt>
+              <dd>
+                An object whose object properties represent the CSS properties
+                or element attributes to be animated.
+                The values corresponding to these properties are the animation
+                values to be applied as described above.
+              </dd>
+            </dl>
+          </dd>
+        </dl>
+        <div class="annotation">
+          In future, we may expose <code>any sample (double?  timeFraction,
+          double currentIteration, AnimationTarget? target, any
+          underlyingValue)</code> so that the animation effects can be driven
+          apart from the timing model.
+          Also, doing so would allow us to do real native custom animation
+          effects if we decide to go in that direction
+          (see annotation in <a href="#custom-animation-effects"
+          class="sectionRef"></a>).
+        </div>
+      </section>
+      <section>
+        <h3>The <code>CompositeOperation</code> enumeration</h3>
+        <dl title="enum CompositeOperation" class="idl">
+          <dt>replace</dt>
+          <dd>
+            The animation should replace the value it is composited with.
+          </dd>
+          <dt>accumulate</dt>
+          <dd>
+            The animation should add to the value it is composited with.
+            The meaning of addition is dependent on the type of animation.
+          </dd>
+          <dt>merge</dt>
+          <dd>
+            The animation should merge with the value it is composited with.
+            The meaning of merge is dependent on the type of animation.
+            The duration of the merge is the calculated animation duration
+            of the <code>AnimationTemplate</code> containing this
+            <code>AnimationEffect</code>.
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>KeyframeAnimationEffect</code> interface</h3>
+        <dl title="interface KeyframeAnimationEffect : AnimationEffect"
+          class="idl">
+          <dt>Constructor (DOMString property,
+      (DOMString or sequence&lt;(KeyframeDictionary or DOMString)&gt;) frames,
+      optional CompositeOperation operation = "replace",
+      optional CompositeOperation compositeOperation = "replace")</dt>
+          <dd>
+            <p>
+              Creates a new <a>KeyframeAnimationEffect</a> object for the
+              specified property from the given list of keyframes.
+            </p>
+            <p>
+              The list of keyframes may be a sequence of
+              <a>KeyframeDictionary</a> dictionaries, a sequence of
+              <code>DOMString</code>s, a combination of both, or
+              a single <code>DOMString</code>.
+            </p>
+            <p>
+              <code>DOMString</code>s are used to create keyframes with an
+              offset of 1.
+              When the list of keyframes is a sequence consisting entirely of
+              <code>DOMString</code>s the offsets of the newly created
+              <a>Keyframe</a>s are distributed evenly from 0 to 1.
+            </p>
+            <p>
+              The <var>property</var>, <var>operation</var> and
+              <var>compositeOperation</var> arguments are assigned to the
+              attributes of the same names.
+            </p>
+            <p>
+              The <var>frames</var> argument is processed as follows:
+            </p>
+            <ol>
+              <li>Let <var>effect</var> be the
+                  <a>KeyframeAnimationEffect</a> currently under construction.
+              </li>
+              <li>
+                <p>
+                  The processing of <var>frames</var> depends on its type as
+                  follows:
+                </p>
+                <dl class="switch">
+                  <dt>If <var>frames</var> is a <code>DOMString</code>,</dt>
+                  <dd>
+                    <ol>
+                      <li>
+                        Let <var>frame</var> be a new <a>Keyframe</a>
+                        constructed from a <a>KeyframeDictionary</a> whose
+                        <code>value</code> member is set to
+                        <var>frames</var> and whose other members are set
+                        to their default values.
+                      </li>
+                      <li>
+                        Call
+                <code><var>effect</var>.frames.add(<var>frame</var>)</code>.
+                      </li>
+                    </ol>
+                  </dd>
+                  <dt>If <var>frames</var> is a sequence of <code>(DOMString
+                      or <a>KeyframeDictionary</a>)</code>,</dt>
+                  <dd>
+                    <ol>
+                      <li>Set a flag <var>all strings</var> to
+                          <code>true</code>.</li>
+                      <li>
+                        For each <var>item</var> in <var>frames</var>:
+                        <ol>
+                          <li>
+                            <dl class="switch">
+                              <dt>If <var>item</var> is
+                                  a <code>DOMString</code>,</dt>
+                              <dd>
+                                Let <var>frame</var> be a new <a>Keyframe</a>
+                                constructed from a <a>KeyframeDictionary</a>
+                                whose <code>value</code> member is set to
+                                <var>item</var> and whose other members are
+                                set to their default values.
+                              </dd>
+                              <dt>Otherwise (<var>item</var> is
+                                  a <a>KeyframeDictionary</a>),</dt>
+                              <dd>
+                                <ol>
+                                  <li>
+                                    Let <var>frame</var> be a new
+                                    <a>Keyframe</a> constructed by calling
+                                    <code>Keyframe(<var>item</var>)</code>.
+                                  </li>
+                                  <li>
+                                    Set <var>all strings</var> to
+                                    <code>false</code>.
+                                  </li>
+                                </ol>
+                              </dd>
+                            </dl>
+                          </li>
+                          <li>
+                            Call
+                <code><var>effect</var>.frames.add(<var>frame</var>)</code>.
+                          </li>
+                        </ol>
+                      </li>
+                      <li>If flag <var>all strings</var> is
+                          <code>true</code> call
+                        <code><var>effect</var>.frames.distribute()</code>.
+                      </li>
+                    </ol>
+                  </dd>
+                </dl>
+              </li>
+            </ol>
+          </dd>
+          <dt>attribute DOMString property</dt>
+          <dd>
+            The name of the target property or attribute.
+          </dd>
+          <dt>readonly attribute KeyframeList frames</dt>
+          <dd>
+            The series of values that make up this effect sorted by their
+            offset within the iteration duration of the animation.
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>KeyframeList</code> interface</h3>
+        <p>
+          The <a>KeyframeList</a> object is a collection of <a>Keyframe</a>
+          objects sorted by the offset of each <a>Keyframe</a>.
+        </p>
+        <dl title="interface KeyframeList" class="idl">
+          <dt>readonly attribute unsigned long length</dt>
+          <dd>
+            The number of frames in the list.
+          </dd>
+          <dt>void clear ()</dt>
+          <dd>
+            Removes all frames from this list.
+          </dd>
+          <dt>getter Keyframe? (unsigned long index)</dt>
+          <dd>
+            Returns the frame at <code>index</code> if it exists or
+            <code>null</code> otherwise.
+          </dd>
+          <dt>Keyframe add((Keyframe or KeyframeDictionary) frame)</dt>
+          <dd>
+            <p>
+              Adds <var>frame</var> to the list such that the list remains
+              sorted by the offset of the frames.
+            </p>
+            <p>
+              If <var>frame</var> is of type <a>KeyframeDictionary</a> then
+              a <a>Keyframe</a> object is first constructed by calling
+              <code>Keyframe(<var>frame</var>)</code> before adding the
+              newly constructed <a>Keyframe</a> to the list.
+            </p>
+            <p>
+              If there already exists a frame in this list with offset
+              <code><var>frame</var>.offset</code>, the newly added
+              <var>frame</var> will appear in the list <em>after</em> the
+              already existing frames in the list with the same offset.
+            </p>
+            <p>
+              If <var>frame</var> is already part of another <a>KeyframeList</a>
+              it is first removed from that list before being added to this
+              list.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type <code>IndexSizeError</code></dt>
+              <dd>
+                Raised if <var>frame</var> is a <a>KeyframeDictionary</a> whose
+                offset is outside the range [0,1] or missing.
+              </dd>
+            </dl>
+          </dd>
+          <dt>Keyframe? remove(unsigned long index)</dt>
+          <dd>
+            Removes the frame at position <var>index</var> and returns it.
+            If index is outside the range [0, length), then <code>null</code> is
+            returned.
+          </dd>
+          <dt>long indexOf(Keyframe frame)</dt>
+          <dd>
+            Returns the index of <var>frame</var> within the list. If
+            <var>frame</var> is not a member of the list, returns
+            <code>-1</code>.
+          </dd>
+          <dt>KeyframeList distribute()</dt>
+          <dd>
+            <p>
+              Adjusts the offsets of the frames in the list such that the
+              offsets are spaced equidistantly whilst maintaining their current
+              order and such that the first frame (when there are multiple
+              frames) has offset 0 and the last frame (if any) has offset 1.
+            </p>
+            <p>
+              For <var>frame</var> at position <var>i</var> in the list where
+              0 &le; <var>i</var> &lt; <code>length</code>, an offset will be
+                assigned equal to <code>i / (length - 1)</code> unless
+                <code>length</code> is 1 in which case it will be given offset
+                1.
+            </p>
+            <p>
+              After applying the changes, this list is returned.
+            </p>
+          </dd>
+        </dl>
+        <div class="annotation">
+          <p>
+            The following changes for making keyframes easier to work with in
+            future have been proposed:
+          </p>
+          <pre class="example sh_javascript">
+// Currently you have to do this
+effect.frames.add({ property: 'left', offset: 0.3, value: '100px' }); 
+
+// It would be nice if you could also do this
+effect.frames.add(0.3, 'left', '100px');
+
+// Also, fetching by offset would be good
+
+// Returns the last frame with offset 0.3 if there is one.
+// If there is none, does the interpolation and returns a new frame? 
+var frame = effect.frames['0.3']; 
+          </pre>
+        </div>
+      </section>
+      <section>
+        <h3>The <code>Keyframe</code> interface</h3>
+        <p>
+          A <a>Keyframe</a> represents a moment within an animation that has
+          a specified value to be applied to the target property or attribute.
+          In between such moments values may be interpolated or filled based on
+          the <a>TimingFunction</a> specified on the <a>TimedItem</a> where the
+          <a>Keyframe</a> is used, or on the previous <a>Keyframe</a>.
+        </p>
+        <div class="issue">
+          <p>
+            Currently a <a>Keyframe</a> can only target a single property which
+            is defined on the <a>KeyframeAnimationEffect</a>.
+            This is different to CSS.
+            Is this something we want to change?
+            It would complicate the API, of course, but is it worth it?
+          </p>
+        </div>
+        <p>
+          <dl title="interface Keyframe" class="idl">
+            <dt>Constructor (KeyframeDictionary dictionary)</dt>
+            <dd>
+              <p>
+                Creates a new <a>Keyframe</a> object using the parameters
+                specified in <var>dictionary</var>.
+              </p>
+              <p>
+                <code><var>dictionary</var>.offset</code> is clamped to the
+                range [0, 1] before setting.
+              </p>
+            </dd>
+            <dt>attribute DOMString value</dt>
+            <dd>
+              The value to assign to the target attribute or property at the
+              given offset.
+            </dd>
+            <dt>attribute double offset</dt>
+            <dd>
+              <p>
+                A value between 0 and 1 inclusive representing the offset
+                within the iteration duration of the animation where this value
+                should appear.
+              </p>
+              <p>
+                If this keyframe belongs to a <a>KeyframeList</a>, changes to
+                this value cause the <a>KeyframeList</a> to be immediately
+                re-sorted using a stable sort such that all children are ordered
+                by their offset but children with identical offsets retain their
+                relative position in the list.
+              </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type <code>IndexSizeError</code></dt>
+                <dd>
+                  Raised on setting a value outside the range [0,1].
+                </dd>
+              </dl>
+            </dd>
+            <dt>attribute TimingFunction? timingFunction</dt>
+            <dd>
+              <p>
+                The timing function to apply between this keyframe and the
+                next keyframe in any <a>KeyframeList</a> in which this object
+                appears.
+              </p>
+              <p>
+                May be <code>null</code> in which case linear interpolation will
+                be used.
+              </p>
+            </dd>
+          </dl>
+        </p>
+      </section>
+      <section>
+        <h3>The <code>KeyframeDictionary</code> dictionary</h3>
+        <p>
+          To simplify creation of <a>Keyframe</a> objects
+          a <code>KeyframeDictionary</code> can be used.
+        </p>
+        <p>
+          The members of the dictionary correspond to attributes in the
+          <a>Keyframe</a> interface which provides a more complete description
+          of their meaning and usage.
+        </p>
+        <dl title="dictionary KeyframeDictionary" class="idl">
+          <dt>DOMString value = ""</dt>
+          <dd>
+            The value to assign to the target attribute or property at the given
+            offset.
+          </dd>
+          <dt>double offset = 1</dt>
+          <dd>
+            A value between 0 and 1 (inclusive) representing the offset within
+            the iteration duration of the animation where this value should
+            appear.
+          </dd>
+          <dt>TimingFunction? timingFunction = null</dt>
+          <dd>
+            The timing function to apply between this keyframe and the
+            next keyframe in any <a>KeyframeList</a> in which this object
+            appears.
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>PathAnimationEffect</code> interface</h3>
+        <dl title="[Constructor] interface PathAnimationEffect
+          : AnimationEffect" class="idl">
+          <dt>attribute SVGPathSegList segments</dt>
+          <dd>
+            The list of segments that make up this path.
+          </dd>
+          <dt>attribute boolean rotate</dt>
+          <dd>
+            True if objects animating along this path should be rotated
+            such that their positive x axis is aligned with the direction of
+            movement along the path.
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>GroupedAnimationEffect</code> interface</h3>
+        <p>
+          The <code>GroupedAnimationEffect</code> interface represents a
+          set of animation effects that share the same
+          <code>AnimationTemplate</code> parent.
+        </p>
+        <p class="todo">
+          If the group contains multiple effects that target the same property
+          does order in the group matter? If so, we need to add a means for
+          re-ordering the group other than popping and pushing. For example,
+          <code>insertBefore</code>.
+        </p>
+        <dl title="interface GroupedAnimationEffect : AnimationEffect"
+          class="idl">
+          <dt>Constructor (object properties)</dt>
+          <dd>
+            <p class="todo">
+              TBD whilst we decide whether we need this interface or whether we
+              can merge it with <a>KeyframeAnimationEffect</a> somehow.
+            </p>
+          </dd>
+          <dt>readonly attribute unsigned long length</dt>
+          <dd>
+            The number of animation effects in the group.
+          </dd>
+          <dt>void clear()</dt>
+          <dd>
+            Removes all effects from this group.
+          </dd>
+          <dt>getter AnimationEffect? (unsigned long index)</dt>
+          <dd>
+            Returns the effect at <var>index</var> if it exists, or
+            <code>null</code> otherwise.
+          </dd>
+          <dt>AnimationEffect add(AnimationEffect effect)</dt>
+          <dd>
+            <p>
+              Appends <code>effect</code> to the end of the group such that
+              <code>group.indexOf(<var>effect</var>)</code> equals
+              <code>group.length - 1</code>.
+            </p>
+            <p class="todo">
+              I'm assuming that <a>AnimationEffect</a>s can be shared amongst
+              animations and groups.
+              Or does <var>effect</var> need to be removed from any previous
+              <a>AnimationEffect</a>s or <a>Animation</a>s first?
+            </p>
+          </dd>
+          <dt>AnimationEffect? remove(unsigned long index)</dt>
+          <dd>
+            Removes the effect at <code>index</code> and returns it. If
+            <var>index</var> is outside the range [0, <code>length</code>), then
+            <code>null</code> is returned.
+          </dd>
+          <dt>long indexOf(AnimationEffect effect)</dt>
+          <dd>
+            Returns the index of <var>effect</var> within the group.
+            If <var>effect</var> is not a member of the group, returns
+            <code>-1</code>.
+          </dd>
+        </dl>
+      </section>
+      <section>
         <h3>Extensions to the <code>Document</code> interface</h3>
         <p>
           The following extensions are made to the <a
@@ -5591,6 +5653,12 @@ new SeqGroup(
           (although that may cause compatibility issues when SVG animations
           start reporting events to content expecting only CSS animations).
         </p>
+      </div>
+      <div class="todo">
+        Clarify somewhere that timing events are a property of the <em>timing
+        model</em> hence they continue to fire even if there is no animation
+        effect and even if the target property is in a <code>display:
+        none</code> block.
       </div>
       <section>
         <h3>The <code>TimingEvent</code> interface</h3>
