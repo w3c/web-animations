@@ -2036,7 +2036,7 @@
         <p>
           Such <a title="timing function">timing functions</a> can be applied to
           an iteration of a <a>timed item</a> as a whole or to a segment of
-          a keyframe animation.
+          a <a>key frame animation effect</a>.
         </p>
       </section>
       <section>
@@ -2733,87 +2733,137 @@
     </section>
 
     <section>
-      <h2>Key frames animation effects</h2>
-      <p class="todo">
-        Define these things in general terms and how missing keyframes at 0% and
-        100% are handled (perhaps non-normatively if it's normative above).
+      <h2>Key frame animation effects</h2>
+      <p>
+        A <dfn>key frame animation effect</dfn> produces <a title="animation
+        value">animation values</a> for a property by interpolating between
+        a series of property values positioned at fractional offsets in the
+        range [0,1].
+      </p>
+      <p>
+        Each pair of a property value and a corresponding offset is called
+        a <dfn>key frame</dfn>.
+        A <a>key frame</a> may also provide an optional <a>timing function</a>
+        which scales the <a>timing fraction</a> values between the <a>key
+        frame</a> and the next <a>key frame</a> in the list.
+      </p>
+      <p>
+        If, due to a <a>timing function</a> specified on either the <a>timed
+        item</a> from which the <a>time fraction</a> is derived or on an
+        individual <a>key frame</a>, the scaled <a>time fraction</a> lies
+        outside the range [0,1], the specified <a>key frame</a> property values
+        are extrapolated to cover the extended range.
+      </p>
+      <p>
+        The behavior when <a title="key frame">key frames</a> overlap or have
+        unsupported values is defined in the following section, <a
+        href="#the-iteration-value-of-a-key-frame-animation-effect"
+        class="sectionRef"></a>.
       </p>
       <section>              
-        <h4>The iteration value of a key frames animation effect</h4>
+        <h3>The iteration value of a key frame animation effect</h3>
         <p>
-          When an <code>AnimationTemplate</code> contains a pointer to a
-          <code>KeyframeAnimationEffect</code> <var>keyframes</var>, the
-          <var>animation value</var> for that animation at given current time
-          <var>t</var> is calculated according to the following steps:
+          The <a>iteration value</a> of a <a>key frame animation effect</a> for
+          a given <a>time fraction</a> is calculated as follows.
         </p>
         <ol>
+          <li>If the target property of the effect is not <a>animatable</a>
+              abort the procedure since the effect cannot be applied.</li>
+          <li>Let <var>key frames</var> be the list of <a title="key frame">key
+              frames</a> specified on the effect.</li>
+          <li>Let <var>time fraction</var> be the <a>time fraction</a> for which
+              the <a>iteration value</a> is to be calculated.</li>
+          <li>Let <var>base value</var> be the current <a>base value</a>
+              provided by the <a>compositor</a>.
+          <li>Sort <var>key frames</var> using a <a
+              href="http://en.wikipedia.org/wiki/Sorting_algorithm#Stability">stable
+              sort</a> such that the <a>key frame</a> offsets are in ascending
+              order.</li>
+          <li>Remove any <a title="key frame">key frames</a> from <var>key
+              frames</var> whose offset is outside the range [0,1].</li>
+          <li>Remove any <a title="key frame">key frames</a> from <var>key
+              frames</var> whose property value is invalid or unsupported.</li>
+          <li>If any two <a title="key frame">key frames</a> in <var>key
+              frames</var> have the same offset, remove the <a>key frame</a>
+              that appears earlier in <var>key frames</var>.</li>
+          <li>If <var>key frames</var> is an empty list, return <var>base
+              value</var>.</li>
+          <li>If there is no <a>key frame</a> with offset of 0, create a new key
+              frame with an offset 0, a property value set to <var>base
+              value</var>, and no <a>timing function</a> and add it to the
+              beginning of <var>key frames</var>.</li>
+          <li>Similarly, if there is no <a>key frame</a> with offset of 1,
+              create a new key frame with an offset 1, a property value set to
+              <var>base value</var>, and no <a>timing function</a> and append it
+              to the end of <var>key frames</var>.</li>
+          <li>Let <var>start key frame</var> be the last <a>key frame</a> in
+              <var>key frames</var> whose offset is less than or equal to
+              <var>time fraction</var> and less than 1.
+              If there is no such <a>key frame</a> (because, for example,
+              the <a>time fraction</a> is negative), let <var>start key
+              frame</var> be the <a>key frame</a> whose offset is 0.</li>
+          <li>Let <var>end key frame</var> be the next <a>key frame</a> in
+              <var>key frames</var> after <var>start key frame</var>.</li>
+          <li>If interpolation is not defined (see <a
+              href="#linear-interpolation" class="sectionRef"></a>) for the pair
+              of property values specified by <var>start key frame</var> and
+              <var>end key frame</var> then return the property value of
+              <var>start key frame</var> unless <var>time fraction</var> is
+              greater than 1, in which case return the property value of
+              <var>end key frame</var>.</li>
+          <li>Let <var>start offset</var> be the offset of <var>start key
+              frame</var>.</li>
+          <li>Let <var>end offset</var> be the offset of <var>end key
+              frame</var>.</li>
           <li>
-            Convert <var>t</var> to the <var>time fraction</var> 
-            (see <a href="#calculating-the-time-fraction"
-            class="sectionRef"></a>).
+            Let <var>interval distance</var> be the result of evaluating
+            <code>(<var>time fraction</var> - <var>start offset</var>) /
+                  (<var>end offset</var> - <var>start offset</var>)</code>
           </li>
           <li>
-            Generate a <var>sorted frame list</var> by sorting the list of
-            <code>Keyframe</code> objects contained within the
-            <code>KeyframeList</code> object stored in <var>keyframes.frames</var> 
-            by their <var>offset</var>.
-            If there are no frames in the <var>sorted frame list</var>
-            then no animation occurs and the <var>iteration value</var> is
-            just the <var>base value</var> of the property being animated.
+            Calculate the <var>scaled interval distance</var> as follows,
+            <dl class="switch">
+              <dt>If <var>start key frame</var> has a <a>timing
+              function</a>,</dt>
+              <dd>
+                <p>
+                  Let <var>scaled interval distance</var> be the result of
+                  evaluating the <a>timing function</a> associated with
+                  <var>start key frame</var> using <var>interval distance</var>
+                  as the input to the funcion.
+                </p>
+                <p class="issue">
+                  <var>interval distance</var> may be outside the range [0,1]
+                  due to timing functions applied to the <a>timed item</a>.
+                  The only sensible way I can think of for handling this is to
+                  require that timing functions handle inputs outside the range
+                  [0,1].
+                </p>
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                The <var>scaled interval distance</var> is simply the
+                <var>interval distance</var>.
+              </dd>
+            </dl>
           </li>
           <li>
-            Otherwise, find the <var>after frame</var> by iterating through
-            the <var>sorted frame list</var> until the last
-            <code>Keyframe</code> with an <var>offset</var>
-            larger than the <var>time fraction</var> is
-            encountered.
-          </li>
-          <li>
-            If the <var>after frame</var> is the first frame in the
-            <var>sorted frame list</var>, then construct a 
-            <var>before frame</var> with an <var>offset</var> of 0 and a
-            value equal to the <var>base value</var> of the property being
-            animated.
-          </li>
-          <li>
-            If the <var>after frame</var> does not exist (i.e. all frames
-            have an <var>offset</var> less than the <var>time 
-            fraction</var>) then construct an <var>after frame</var> with
-            an <var>offset</var> of 1 and a value equal to the
-            <var>base value</var> of the property being animated, and
-            Set the <var>before frame</var> to the last frame in the 
-            <var>sorted frame list</var>.
-          </li> 
-          <li>
-            Otherwise (the <var>after frame</var> exists and is not the
-            first frame in the <var>sorted frame list</var>) set the 
-            <var>before frame</var> to the frame immediately prior to the
-            <var>after frame</var> in the <var>sorted frame list</var>.
-          </li>
-          <li>
-            The <var>local time function</var> is the
-            <var>timingFunction</var> of the <var>before frame</var>, if 
-            it exists; otherwise the <var>timingFunction</var> of the
-            <code>Animation</code> interface's <var>timing</var> attribute.
-          </li>
-          <li>
-            Find the <var>local time fraction</var> by subtracting
-            the <var>offset</var> of the <var>before frame</var> from
-            the <var>time fraction</var>, then dividing the result
-            by the difference between the <var>offset</var> of the
-            <var>after frame</var> and the <var>offset</var> of the
-            <var>before frame</var>.
-          <li>
-            Calculate the <var>effective time fraction</var> by applying
-            the <var>local time function</var> to the <var>local time
-            fraction</var>.
-          <li>
-            Calculate the <var>animation value</var> by linearly 
-            interpolating the values of the <var>before frame</var> and
-            <var>after frame</var>, using the 
-            <var>effective time fraction</var> as interpolation parameter (see <a href="#linear-interpolation" class="sectionRef"></a>).
+            Return the result of performing linear interpolation as defined in
+            <a href="#linear-interpolation" class="sectionRef"></a> between 
+            the property values defined for <a>start key frame</a> and <a>end
+            key frame</a> using <var>scaled interval distance</a> as the
+            interpolation parameter.
           </li>
         </ol>
+        <p class="issue">
+          I think we want to revisit the handling of overlapping key frames.
+          For example, have B and C overlap but with different property values.
+          Then you could have a smooth transition from A to B but at the moment
+          it reaches B it jumps to C.
+        </p>
+        <p class="todo">
+          Make sure we define clamping at the end of compositing
+        </p>
       </section>
     </section>
 
