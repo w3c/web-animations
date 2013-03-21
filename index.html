@@ -2972,7 +2972,8 @@
           interpolated (like CSS Transitions says).
           Although we may need to point out that
           <a title="additive">addition</a> is defined in: <a
-          href="http://www.w3.org/TR/css3-transforms/#svg-animation">http://www.w3.org/TR/css3-transforms/#svg-animation</a>.
+          href="http://www.w3.org/TR/css3-transforms/#svg-animation">http://www.w3.org/TR/css3-transforms/#svg-animation</a>
+          as post-multiplication.
           </p>
         </section>
         <section>
@@ -3152,103 +3153,77 @@
         </p>
       </section>
       <section>
-        <h3>Resolving Animation Stacks</h3>
+        <h3>Calculating the result of an animation stack</h3>
         <p>
-          In order to resolve an animation stack, an initial animation
-          value is required for each element and property animated by the
-          stack.
-          To calculate a current animation value for elements and properties
-          from an animation stack, an animation value is generated for each
-          animation in the stack 
-          (see <a href="#calculating-animation-values" class="sectionRef"></a>).
-          The cumulative animation result for each element and property is first
-          initialised to the relevant initial animation value.
-          Starting at the bottom of the stack (i.e. earliest start time) and
-          working up, as animation results are encountered for an element
-          and property, these are merged into the cumulative animation result
-          using the animation combinator stored in the 
-          <code>AnimationEffect</code> that generated the result.
-          Once all animation results in the stack are processed, the resulting
-          cumulative animation values are the current animation values for
-          each property of each element that is animated.
+          In order to calculate the final value of an <a>animation stack</a>
+          the <a title="animation value">animation values</a> of each
+          <a>animation effect</a> in the stack are combined in order of priority
+          from lowest to highest priority.
+        </p>
+        <p>
+          Each step in the process of evaluating an <a>animation stack</a> takes
+          a <dfn>base value</dfn> as input.
+          The initial <a>base value</a> is the <a>current value</a> of the
+          target property as defined in <a
+          href="#current-values--animation-values--and-the-override-stylesheet"
+          class="sectionRef"></a>.
+        </p>
+        <p>
+          For each <a>animation effect</a> in the stack, the <a>animation
+          value</a> of the <a>animation effect</a> is combined with the <a>base
+          value</a> and produces a new value.
+          This resulting value becomes the <a>base value</a> for combining the
+          next <a>animation effect</a> in the stack.
+        </p>
+        <p>
+          The final value of an <a>animation stack</a> is simply the value of
+          the updated <a>base value</a> after evaluating the final (highest
+          priority) <a>animation effect</a> in the stack.
         </p>
       </section>
       <section>
-        <h3>Animation combinators</h3>
+        <h3>Animation composition</h3>
         <p>
-          When an animation applies to a target and property that animations
-          earlier in the animation stack have already applied to, the
-          cumulative animation result from the stack is composited with the new
-          animation to produce a new cumulative animation result.
-          The possible combinators are defined by the <a>CompositeOperation</a>
-          enumeration.
+          The specific operation used to combine an <a>animation effect</a>'s
+          <a>animation value</a> with a <a>base value</a> is determined by the
+          <a>animation effect</a>'s <dfn>composition operation</dfn>.
         </p>
-        <section>
-          <h4>The REPLACE combinator</h4>
-          <p>
-            When an animation <code>a</code> is composited over a cumulative
-            animation result <code>c</code> using the REPLACE combinator, the
-            new cumulative animation result is always <code>a</code>.
-          </p>
-        </section>
-        <section>
-          <h4>The ACCUMULATE combinator</h4>
-          <p>
-            When a path animation <code>a</code> is composited over a
-            cumulative animation result <code>c</code> using the ACCUMULATE
-            combinator, the effective transform of <code>a</code> is calculated.
-            This transform is then post-multiplied to the cumulative animation
-            result to generate a new cumulative animation result.
-          </p>
-          <p>
-            When a transform animation <code>a</code> is composited over a
-            cumulative animation result <code>c</code> using the ACCUMULATE
-            combinator, <code>a</code> is post-multiplied to the cumulative
-            animation result to generate a new cumulative animation result.
-          </p>
-          <p>
-            When a simple animation (i.e. an animation which is not a path
-            animation nor a transform animation) <code>a</code> is composited
-            over a cumulative animation result <code>c</code> using the
-            ACCUMULATE combinator, the new cumulative animation result is the
-            sum of <code>a</code> and <code>c</code>, clipped if necessary to
-            the appropriate domain.
-          </p>
-        </section>
-        <section>
-          <h4>The MERGE combinator</h4>
-          <p>
-            All MERGE operators are governed by an interpolation parameter
-            <code>p</code> that is calculated as the ratio of
-            <code>(currentTime - parent.startTime)
-            / parent.animationDuration</code>, where <code>parent</code> is the
-            <code>AnimationTemplate</code> which references the
-            <code>AnimationEffect</code> that is being composited.
-          </p>
-          <p>
-            When a path animation <code>a</code> is composited over a
-            cumulative animation result <code>c</code> using the MERGE
-            combinator, the effective transform of <code>a</code> is
-            calculated.
-            This transform is then interpolated with <code>c</code> using the
-            rules provided in [[!CSS3-2D-TRANSFORMS]] to provide the new
-            cumulative animation result.
-          </p>
-          <p>
-            When a transform animation <code>a</code> is composited over a
-            cumulative animation result <code>c</code> using the MERGE
-            combinator, <code>a</code> is interpolated with <code>c</code>
-            using the rules provide in [[!CSS3-2D-TRANSFORMS]] to provide the 
-            new cumulative animation result.
-          </p>
-          <p>
-            When a simple animation <code>a</code> is composited over a
-            cumulative animation result <code>c</code> using the MERGE
-            combinator, the new cumulative animation result is calculated as
-            the weighted sum of <code>a</code> and <code>c</code>, with weights
-            of <code>(1-p)</code> and <code>p</code> respectively.
-          </p>
-        </section>
+        <p>
+          The possible <a title="composition operation">composition
+          operations</a> and their meanings are as follows:
+        </p>
+        <dl>
+          <dt><dfn title="composition operation replace">replace</dfn></dt>
+          <dd>
+            The result of compositing the <a>animation value</a> with the
+            <a>base value</a> is simply the <a>animation value</a>.
+          </dd>
+          <dt><dfn title="composition operation add">add</dfn></dt>
+          <dd>
+            <p>
+              The <a>animation value</a> is <a title="addition">added</a> to the
+              <a>base value</a>.
+              For property types where <a title="additive">addition</a> is
+              defined such that it is not commutative, the order of the operands
+              is <code><a>base value</a> + <a>animation value</a></code>.
+            </p>
+            <p>
+              If <a title="additive">addition</a> is not defined for the
+              combination of <a>animation value</a> and <a>base value</a>,
+              <a title="composition operation replace">replace</a> behavior is
+              applied.
+            </p>
+          </dd>
+          <dt><dfn title="composition operation merge">merge</dfn></dt>
+          <dd>
+            <p class="issue">
+              How do we define this?
+              I think we wanted to go for a <a
+              href="http://www.w3.org/Graphics/fx/wiki/Web_Animations/Issues/Grouping_of_Animations#Allow_parametric_merge">parametric
+              merge</a> rather than rely on parent timing.
+            </p>
+          </dd>
+        </dl>
       </section>
       <section>
         <h3>Current values, animation values, and the override stylesheet</h3>
@@ -5084,9 +5059,9 @@ new SeqGroup(
           <dt>attribute CompositeOperation composite</dt>
           <dd>
             <p>
-              The operation used to composite this animation with the stack, as 
-              specified by one of the <a>CompositeOperation</a> enumeration
-              values.
+              The <a>composition operation</a> used to composite this animation
+              with the stack, as specified by one of the
+              <a>CompositeOperation</a> enumeration values.
             </p>
             <p>
               This value defaults to <code>"replace"</code>
@@ -5294,23 +5269,35 @@ elem.animate(
       </section>
       <section>
         <h3>The <code>CompositeOperation</code> enumeration</h3>
+        <p>
+          The possible values of an <a>animation effect</a>'s
+          composition behavior are represented by the
+          <a>CompositeOperation</a> enumeration.
+        </p>
         <dl title="enum CompositeOperation" class="idl">
           <dt>replace</dt>
           <dd>
-            The animation should replace the value it is composited with.
+            Corresponds to the <a
+            title="composition operation replace">replace</a>
+            <a>composition operation</a> value such that
+            the <a>animation effect</a> overrides the <a>base value</a> it is
+            combined with.
           </dd>
-          <dt>accumulate</dt>
+          <dt>add</dt>
           <dd>
-            The animation should add to the value it is composited with.
-            The meaning of addition is dependent on the type of animation.
+            Corresponds to the <a
+            title="composition operation add">add</a>
+            <a>composition operation</a> value such that
+            the <a>animation effect</a> is <a title="additive">added</a> to
+            <a>base value</a> it is combined with.
           </dd>
           <dt>merge</dt>
           <dd>
-            The animation should merge with the value it is composited with.
-            The meaning of merge is dependent on the type of animation.
-            The duration of the merge is the calculated animation duration
-            of the <code>AnimationTemplate</code> containing this
-            <code>AnimationEffect</code>.
+            Corresponds to the <a
+            title="composition operation merge">merge</a>
+            <a>composition operation</a> value such that
+            the <a>animation effect</a> is combined with its <a>base value</a>
+            in a time-dependent fashion.
           </dd>
         </dl>
       </section>
