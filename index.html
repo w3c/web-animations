@@ -2606,25 +2606,25 @@
       <h2>Overview of the animation model</h2>
       <p>
         The Web Animations <em>animation model</em> takes the <a
-        title="time fraction">time fractions</a> produced by the <em>timing
-        model</em> for a given <a>animation</a> and applies it as the input to
-        an <a>animation effect</a> defined for the <a>animation</a>.
-        The output of each <em>animation effect</em> is then combined using
-        a global animation stack before being applied to the target properties
-        (see <a href="#combining-animations" class="sectionRef"></a>).
+        title="time fraction">time fractions</a> and <a>current iteration</a>
+        values produced by the <em>timing model</em> for a given
+        <a>animation</a> and applies it as the input to the <a>animation</a>'s
+        <a>animation effect</a>.
       </p>
       <p>
-        In order to support <a>accumulation</a> behavior the animation model
-        also requires the timing model to supply an <a>animation</a>'s
-        <a>current iteration</a> along with its <a>time fraction</a>.
+        The output of each <a>animation effect</a> is then combined with other
+        <a title="animation effect">animation effects</a> using an <a>animation
+        stack</a> before being applied to the target properties (see <a
+        href="#combining-animations" class="sectionRef"></a>).
       </p>
     </section>
 
     <section>
       <h2>Animation effects</h2>
       <p>
-        An <dfn>animation effect</dfn> takes a <a>time fraction</a> and uses it
-        to calculate an <a>animation value</a> for its target property.
+        An <dfn>animation effect</dfn> takes a <a>time fraction</a> and
+        a <a>current iteration</a> value and uses them to calculate an
+        <a>animation value</a> for its <a>target property</a>.
         Each <a>animation</a> may have at most one <a>animation effect</a>
         associated with it.
       </p>
@@ -2634,20 +2634,89 @@
       </p>
       <p>
         Since the result of an <a>animation effect</a> is based on the
-        <a>time fraction</a> it is updated whenever the timing model is <a
-        title="sampling">sampled</a>.
+        <a>time fraction</a> and <a>current iteration</a> value, it is updated
+        whenever the timing model is <a title="sampling">sampled</a>.
         Note that changes to the timing model caused by using the <a
         href="#script-interface">programming interface</a> do not cause the
-        animation model to be updated as described in <a
+        animation model (and hence <a title="animation effect">animation
+        effects</a>) to be updated as described in <a
         href="#interaction-with-script" class="sectionRef"></a>.
       </p>
+      <section>
+        <h3>Target properties</h3>
+        <p>
+          Each <a>animation effect</a> has an associated <dfn>target
+          property</dfn>.
+          Not all properties may be targetted by an <a>animation effect</a>.
+          Properties that may be targetted by an <a>animation effect</a> are 
+          defined as <dfn>animatable</dfn>.
+          The set of <a>animatable</a> properties is is defined in <a
+          href="#animatable-properties" class="sectionRef"></a>.
+        </p>
+        <p>
+          An <a>animation effect</a> whose <a>target property</a> has not
+          <a>animatable</a> will have no effect on the <a>target property</a>
+          although the <a>animation</a> that applies the <a>animation effect</a>
+          will still exhibit the usual behavior for a <a>timed item</a> such as
+          firing <a title="timing event">timing events</a> and occupying space
+          in a <a>sequence timing group</a>.
+        </p>
+      </section>
+      <section>
+        <h3>Target property types</h3>
+        <p>
+          Since the specific operations involved in animating, for example
+          a color as opposed to a position, differ, each <a>animatable</a>
+          property defines one or more <dfn title="property type">property
+          types</dfn> to use when animating.
+        </p>
+        <p>
+          In order to produce a smooth change between property values,
+          a procedure for <dfn>interpolation</dfn> is required.
+          A given <a>property type</a> is <dfn>interpolable</dfn> if there is
+          a procedure defined to interpolate between two values of that type.
+        </p>
+        <p>
+          In order to support <a>accumulation</a> and <a title="composition
+          operation add">additive composition</a>,
+          a procedure for <dfn>addition</dfn> is required.
+          A given <a>property type</a> is <dfn>additive</dfn> if there is
+          a procedure defined to add two values of that type.
+        </p>
+        <p>
+          An initial list of <a title="property type">property types</a> and
+          their procedures for <a>interpolation</a> and <a>addition</a> is given
+          in <a href="#animation-of-property-types" class="sectionRef"></a>.
+        </p>
+      </section>
+      <section>
+        <h3>Simple animation values</h3>
+        <p>
+          The procedure used to calculate an initial output value of an
+          <a>animation effect</a> for a given <a>time fraction</a> is dependent
+          on the specific type of <a>animation effect</a> and is defined
+          subsequently (see <a
+          href="#the-iteration-value-of-a-key-frame-animation-effect"
+          class="sectionRef"></a> and <a
+          href="#the-iteration-value-of-a-path-animation-effect"
+          class="sectionRef"></a>).
+          This value is called the <dfn>iteration value</dfn> and is
+          independent of the <a>current iteration</a> value of the
+          <a>animation</a> applying the <a>animation effect</a>.
+        </p>
+        <p class="issue">
+          The name <em>iteration value</em> sounds like something that is part
+          of the timing model. We need a more suitable name here. <em>simple
+          animation value</em>?
+        </p>
+      </section>
       <section>
         <h3>Accumulating animation values</h3>
         <p>
           <a title="animation effect">Animation effects</a> may be defined such
-          that as the <a>animation</a> with which they are associated is
-          repeated the <a>animation value</a> produced builds on the value
-          produced by previous iterations.
+          that as the <a>animation</a> that is applying them is repeated, the
+          <a>animation value</a> produced builds on the value produced by
+          previous iterations.
           This behavior is called <dfn>accumulation</dfn>.
         </p>
         <p>
@@ -2663,11 +2732,12 @@
           <dd>
             <p>
               The <a>animation value</a> for the <a>animation effect</a> is
-              added to the final <a>animation value</a> of the previous
+              added to the final <a>iteration value</a> of the previous
               iteration.
             </p>
             <p class="issue">
-              Should this be called <code>linear</code>?
+              Should this be called <code>linear</code> or <code>sum</code> (to
+              match SVG)?
               The only other sort of values I can imagine being used here would
               be things like <code>exponential</code> etc.
             </p>
@@ -2687,47 +2757,57 @@
       <section>
         <h3>Calculating the animation value</h3>
         <p>
-          The <a>animation value</a> of an <a>animation effect</a> for a given
-          <a>time fraction</a> and <a>current iteration</a> is produced by first
-          calculating the value independently of any <a>accumulation</a>
-          behavior.
-          This initial value is called the <dfn>iteration value</dfn> and is
-          defined for each concrete type of <a>animation effect</a>.
+          The <a>animation value</a> produced by an <a>animation effect</a>
+          is based on combining the procedure for calculating an <a>iteration
+          value</a> with <a>accumulation</a> behavior.
         </p>
         <p>
-          Having calculated an <a>iteration value</a> for an <a>animation
-          effect</a>, the <dfn>animation value</dfn> is as follows:
+          The <dfn>animation value</dfn> for a given <a>time fraction</a> and
+          <a>current iteration</a> value is calculated as follows:
         </p>
-        <dl class="switch">
-          <dt>If <a>accumulation operation</a> is <a
-            title="accumulation operation none">none</a>,</dt>
-          <dd>
-            Return the <a>iteration value</a>.
-          </dd>
-          <dt>Otherwise,</dt>
-          <dd>
-            <ol>
-              <li>Let <var>last value</var> be the result of evaluating
-                  the <a>iteration value</a> of the <a>animation effect</a>
-                  with a <a>time fraction</a> of 1.</li>
-              <li>Let <var>previous iteration value</var> be the result of
-                  adding <var>last value</var> to itself <a>current
-                  iteration</a> times.
-              <li>Return the result of adding together <var>previous iteration
-                  value</var> and the current <a>iteration value</a> of the
-                  <a>animation value</a> (that is, the <a>iteration value</a>
-                  calculated for the current <a>time fraction</a>).</li>
-            </ol>
-          </dd>
-        </dl>
+        <ol>
+          <li>Let <var>current iteration value</var> be the <a>iteration
+              value</a> calculated using the given <a>time fraction</a>.</li>
+          <li>
+            <p>
+              Return the animation value based on the first matching condition
+              from the following,
+            </p>
+            <dl class="switch">
+              <dt>If <a>accumulation operation</a> is <a
+                title="accumulation operation none">none</a>,
+                or the <a>property type</a> of <var>current iteration
+                value</var> is not <a>additive</a>,</dt>
+              <dd>
+                Return <var>current iteration value</var>.
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                <ol>
+                  <li>Let <var>last value</var> be the result of evaluating
+                      the <a>iteration value</a> of the <a>animation effect</a>
+                      with a <a>time fraction</a> of 1.</li>
+                  <li>Let <var>previous iteration value</var> be the result of
+                      <a title="addition">adding</a> <var>last value</var> to
+                      itself <a>current iteration</a> times.
+                  <li>Return the result of <a title="addition">adding</a>
+                      <var>current iteration value</var> to
+                      <var>previous iteration value</var>.</li>
+                </ol>
+              </dd>
+            </dl>
+          </li>
+        </ol>
         <p class="issue">
           This definition relies on the final value of <a
           title="timing function">timing functions</a> being 1.
         </p>
-        <p class="todo">
-          This definition relies on the concept of addition being defined for
-          all animation effects.
-          Need to point to where this is defined.
+        <p class="issue">
+          Should this be called <em>effect value</em>?
+          <em>animation value</em> is quite generic and is likely to be used
+          elsewhere with a different meaning.
+          <em>effect value</em> emphasises that this is the output of a single
+          <a>animation effect</a> before compositing.
         </p>
       </section>
     </section>
@@ -2928,37 +3008,20 @@
 
     <section>
       <h2>Animatable properties</h2>
-      <p>
-        Properties may be defined as <dfn>animatable</dfn> or not.
-        An <a>animation effect</a> with a target property that is not
-        <a>animatable</a> will produce no effect.
-      </p>
       <div class="todo">
         Refer to where this is defined specifically, e.g. <a
         href="http://www.w3.org/TR/css3-transitions/#animatable-properties">http://www.w3.org/TR/css3-transitions/#animatable-properties</a>.
-      </div>
-      <div class="todo">
-        If it is not defined whether a given property is <a>animatable</a>
-        default to <a>animatable</a>?
-      </div>
-      <div class="todo">
-        Add some text like CSS to say that for a given property you can only
-        animate it if the end points of the interval are interpolable.
       </div>
     </section>
 
     <section>
       <h2>Animation of property types</h2>
-      <div class="todo">
-        Add some introduction to property types.
-        Define the concepts of <dfn>interpolable</dfn> and <dfn>additive</dfn>.
-      </div>
       <section>
         <h3>Linear interpolation</h3>
         <section>
           <h4>Linear interpolation of paths</h4>
-          <p class="todo">Write me. Includes defining what <a
-          title="additive">addition</a> means.</p>
+          <p class="todo">Write me. Includes defining what <a>addition</a>
+          means.</p>
           <p class="issue">I think this should go under <a
           href="#path-animation-effects" class="sectionRef"></a>.
         </section>
@@ -2971,7 +3034,7 @@
           specs that introduce new data types should define how they are
           interpolated (like CSS Transitions says).
           Although we may need to point out that
-          <a title="additive">addition</a> is defined in: <a
+          <a>addition</a> is defined in: <a
           href="http://www.w3.org/TR/css3-transforms/#svg-animation">http://www.w3.org/TR/css3-transforms/#svg-animation</a>
           as post-multiplication.
           </p>
@@ -2982,7 +3045,7 @@
           This will basically duplicate or refer to:
           <a
           href="http://www.w3.org/TR/css3-transitions/#animatable-types">http://www.w3.org/TR/css3-transitions/#animatable-types</a>
-          and add text defining how these types <a title="additive">add</a>.
+          and add text defining how these types <a title="addition">add</a>.
           </p>
         </section>
       </section>
@@ -3203,13 +3266,15 @@
             <p>
               The <a>animation value</a> is <a title="addition">added</a> to the
               <a>base value</a>.
-              For property types where <a title="additive">addition</a> is
-              defined such that it is not commutative, the order of the operands
-              is <code><a>base value</a> + <a>animation value</a></code>.
+              For <a title="property type">property types</a> where
+              <a>addition</a> is defined such that it is not commutative, the
+              order of the operands is <code><a>base value</a> + <a>animation
+              value</a></code>.
             </p>
             <p>
-              If <a title="additive">addition</a> is not defined for the
-              combination of <a>animation value</a> and <a>base value</a>,
+              If <a>animation value</a> and <a>base value</a> are not of the
+              same <a>property type</a>, or if they are of the same <a>property
+              type</a> but that <a>property type</a> is not <a>additive</a>,
               <a title="composition operation replace">replace</a> behavior is
               applied.
             </p>
@@ -5276,7 +5341,7 @@ elem.animate(
             Corresponds to the <a
             title="composition operation add">add</a>
             <a>composition operation</a> value such that
-            the <a>animation effect</a> is <a title="additive">added</a> to
+            the <a>animation effect</a> is <a title="addition">added</a> to
             <a>base value</a> it is combined with.
           </dd>
           <dt>merge</dt>
