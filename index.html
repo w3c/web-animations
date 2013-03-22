@@ -3220,31 +3220,31 @@
         </p>
         <p>
           Each step in the process of evaluating an <a>animation stack</a> takes
-          a <dfn>base value</dfn> as input.
-          The initial <a>base value</a> is the <a>current value</a> of the
+          an <dfn>underlying value</dfn> as input.
+          The initial <a>underlying value</a> is the <a>base value</a> of the
           target property as defined in <a
-          href="#current-values--animation-values--and-the-override-stylesheet"
+          href="#base-values--animation-values--and-the-override-stylesheet"
           class="sectionRef"></a>.
         </p>
         <p>
           For each <a>animation effect</a> in the stack, the <a>animation
-          value</a> of the <a>animation effect</a> is combined with the <a>base
-          value</a> and produces a new value.
-          This resulting value becomes the <a>base value</a> for combining the
-          next <a>animation effect</a> in the stack.
+          value</a> of the <a>animation effect</a> is combined with the
+          <a>underlying value</a> and produces a new value.
+          This resulting value becomes the <a>underlying value</a> for combining
+          the next <a>animation effect</a> in the stack.
         </p>
         <p>
-          The final value of an <a>animation stack</a> is simply the value of
-          the updated <a>base value</a> after evaluating the final (highest
-          priority) <a>animation effect</a> in the stack.
+          The final value of an <a>animation stack</a>, called the
+          <dfn>composited value</dfn>, is simply the result of the final
+          (highest priority) <a>animation effect</a> in the stack.
         </p>
       </section>
       <section>
         <h3>Animation composition</h3>
         <p>
           The specific operation used to combine an <a>animation effect</a>'s
-          <a>animation value</a> with a <a>base value</a> is determined by the
-          <a>animation effect</a>'s <dfn>composition operation</dfn>.
+          <a>animation value</a> with an <a>underlying value</a> is determined
+          by the <a>animation effect</a>'s <dfn>composition operation</dfn>.
         </p>
         <p>
           The possible <a title="composition operation">composition
@@ -3254,23 +3254,24 @@
           <dt><dfn title="composition operation replace">replace</dfn></dt>
           <dd>
             The result of compositing the <a>animation value</a> with the
-            <a>base value</a> is simply the <a>animation value</a>.
+            <a>underlying value</a> is simply the <a>animation value</a>.
           </dd>
           <dt><dfn title="composition operation add">add</dfn></dt>
           <dd>
             <p>
               The <a>animation value</a> is <a title="addition">added</a> to the
-              <a>base value</a>.
+              <a>underlying value</a>.
               For <a title="property type">property types</a> where
               <a>addition</a> is defined such that it is not commutative, the
-              order of the operands is <code><a>base value</a> + <a>animation
-              value</a></code>.
+              order of the operands is <code><a>underlying value</a>
+              + <a>animation value</a></code>.
             </p>
             <p>
-              If <a>animation value</a> and <a>base value</a> are not of the
-              same <a>property type</a>, or if they are of the same <a>property
-              type</a> but that <a>property type</a> is not <a>additive</a>,
-              <a title="composition operation replace">replace</a> behavior is
+              If <a>animation value</a> and <a>underlying value</a> are not of
+              the same <a>property type</a>, or if they are of the same
+              <a>property type</a> but that <a>property type</a> is not
+              <a>additive</a>, <a
+              title="composition operation replace">replace</a> behavior is
               applied.
             </p>
           </dd>
@@ -3286,19 +3287,19 @@
         </dl>
       </section>
       <section>
-        <h3>Current values, animation values, and the override stylesheet</h3>
+        <h3>Base values, animation values, and the override stylesheet</h3>
         <div class="informative">
           <p>
             The application of an <a>animation stack</a> occurs within a wider
-            context of values applied to a target property both before and after
-            the <a>animation stack</a> as illustrated below.
+            context of values applied to a property both before and after the
+            <a>animation stack</a> as illustrated below.
           </p>
           <p class="todo">
             Diagram
           </p>
         </div>
         <p>
-          Applying animation to a target property depends on establishing an
+          Applying animation to a property depends on establishing an
           <a>override stylesheet</a>.
         </p>
         <p>
@@ -3313,24 +3314,24 @@
         <p>
         </p>
         <p>
-          The animated value calculated for a target property is applied using
-          the following process.
+          The <a>composited value</a> calculated for a property is applied
+          using the following process.
         </p>
         <ol>
-          <li>Calculate the <dfn>current value</dfn> of the property as
+          <li>Calculate the <dfn>base value</dfn> of the property as
               the value generated for that property by computing the <a
               href="http://www.w3.org/TR/CSS2/cascade.html#used-value">used
               value</a> [[!CSS21]] for that property in the absence of the
               <a>override stylesheet</a>.</li>
           <li>Establish the <a>animation stack</a> for the property (see <a
               href="#the-animation-stack" class="sectionRef"></a>).</li>
-          <li>Calculate the result of the <a>animation stack</a> passing in the
-              <a>current value</a> of the property as the initial <a>base
-              value</a> (see <a
+          <li>Calculate the <a>composited value</a> of the <a>animation
+              stack</a> passing in the <a>base value</a> of the property as the
+              initial <a>underlying value</a> (see <a
               href="#calculating-the-result-of-an-animation-stack"
               class="sectionRef"></a>).</li>
-          <li>Insert the result of evaluating the <a>animation stack</a>
-              into the <a>override stylesheet</a>.</li>
+          <li>Insert the <a>composited value</a> into the <a>override
+              stylesheet</a>.</li>
         </ol>
       </section>
     </section>
