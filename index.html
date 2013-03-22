@@ -2884,8 +2884,8 @@
               frames</a> specified on the effect.</li>
           <li>Let <var>time fraction</var> be the <a>time fraction</a> for which
               the <a>iteration value</a> is to be calculated.</li>
-          <li>Let <var>base value</var> be the current <a>base value</a>
-              provided by the <a>compositor</a>.
+          <li>Let <var>underlying value</var> be the current <a>underlying
+              value</a> provided by the <a>compositor</a>.
           <li>Sort <var>key frames</var> using a <a
               href="http://en.wikipedia.org/wiki/Sorting_algorithm#Stability">stable
               sort</a> such that the <a>key frame</a> offsets are in ascending
@@ -2894,25 +2894,34 @@
               frames</var> whose offset is outside the range [0,1].</li>
           <li>Remove any <a title="key frame">key frames</a> from <var>key
               frames</var> whose property value is invalid or unsupported.</li>
-          <li>If any two <a title="key frame">key frames</a> in <var>key
-              frames</var> have the same offset, remove the <a>key frame</a>
-              that appears earlier in <var>key frames</var>.</li>
-          <li>If <var>key frames</var> is an empty list, return <var>base
+          <li>If <var>key frames</var> is an empty list, return <var>underlying
               value</var>.</li>
           <li>If there is no <a>key frame</a> with offset of 0, create a new key
-              frame with an offset 0, a property value set to <var>base
+              frame with an offset 0, a property value set to <var>underlying
               value</var>, and no <a>timing function</a> and add it to the
-              beginning of <var>key frames</var>.</li>
+              beginning of <var>key frames</var>.
+              <p class="issue">
+                This behavior is currently under discussion.
+              </p>
+          </li>
           <li>Similarly, if there is no <a>key frame</a> with offset of 1,
               create a new key frame with an offset 1, a property value set to
-              <var>base value</var>, and no <a>timing function</a> and append it
-              to the end of <var>key frames</var>.</li>
+              <var>underlying value</var>, and no <a>timing function</a> and
+              append it to the end of <var>key frames</var>.</li>
+          <li>If <var>time fraction</var> is less zero and there is more than
+              one <a>key frame</a> in <var>key frames</var> with offset 0,
+              return the property value of the first <a>key frame</a> in
+              <var>key frames</var>.</li>
+          <li>If <var>time fraction</var> is greater than or equal to 1 and
+              there is more than one <a>key frame</a> in <var>key frames</var>
+              with offset of 1, return the property value of the last <a>key
+              frame</a> in <var>key frames</var>.</li>
           <li>Let <var>start key frame</var> be the last <a>key frame</a> in
               <var>key frames</var> whose offset is less than or equal to
               <var>time fraction</var> and less than 1.
               If there is no such <a>key frame</a> (because, for example,
               the <a>time fraction</a> is negative), let <var>start key
-              frame</var> be the <a>key frame</a> whose offset is 0.</li>
+              frame</var> be the last <a>key frame</a> whose offset is 0.</li>
           <li>Let <var>end key frame</var> be the next <a>key frame</a> in
               <var>key frames</var> after <var>start key frame</var>.</li>
           <li>If the pair of property values specified by <var>start key
@@ -2920,8 +2929,9 @@
               differ in <a>property type</a> or have the same <a>property
               type</a> but that type is not <a>interpolable</a>,
               then return the property value of <var>start key frame</var>
-              unless <var>time fraction</var> is greater than 1, in which case
-              return the property value of <var>end key frame</var>.</li>
+              unless <var>time fraction</var> is greater than or equal to 1, in
+              which case return the property value of <var>end key
+              frame</var>.</li>
           <li>Let <var>start offset</var> be the offset of <var>start key
               frame</var>.</li>
           <li>Let <var>end offset</var> be the offset of <var>end key
@@ -2960,20 +2970,21 @@
           </li>
           <li>
             Return the result of <a title="interpolation">interpolating</a>
-            between the property values defined for <a>start key frame</a> and
-            <a>end key frame</a> using the procedure defined for their
+            between the property values defined for <var>start key frame</var>
+            and <var>end key frame</var> using the procedure defined for their
             <a>property type</a> with <var>scaled interval distance</a> as the
             interpolation parameter.
           </li>
         </ol>
-        <p class="issue">
-          I think we want to revisit the handling of overlapping key frames.
-          For example, have B and C overlap but with different property values.
-          Then you could have a smooth transition from A to B but at the moment
-          it reaches B it jumps to C.
-        </p>
-        <p class="todo">
-          Make sure we define clamping at the end of compositing
+        <p class="note">
+          Note that this procedure permits overlapping <a title="key frame">key
+          frames</a>.
+          The behavior is that at the point of overlap the output value jumps to
+          the value of last defined <a>key frame</a> at that offset.
+          For overlapping frames at 0 or 1, the output value for <a
+          title="time fraction">time fractions</a> less than 0 or greater than
+          or equal to 1 is the value of the first <a>key frame</a> or the last
+          <a>key frame</a> in <var>key frames</var> respectively.
         </p>
       </section>
     </section>
