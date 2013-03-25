@@ -3117,10 +3117,8 @@
         <h3>The animation stack</h3>
         <p>
           Associated with each property targetted by an <a>animation effect</a>
-          excluding <a title="custom animation effect">custom animation
-          effects</a> is an <dfn>animation stack</dfn> that establishes the
-          relative priority of the <a title="animation effect">animation
-          effects</a>.
+          is an <dfn>animation stack</dfn> that establishes the relative
+          priority of the <a title="animation effect">animation effects</a>.
         </p>
         <p>
           The relative priority of any two <a title="animation effect">animation
@@ -3366,34 +3364,35 @@
     </section>
 
     <section>
-      <h3>Custom animation effects</h3>
+      <h3>Custom effects</h3>
       <div class="informative">
         <p>
-          In some situations the animation effects provided by Web Animations
-          may be insufficient.
-          For example, the animation effects defined here are only able to
-          target certain CSS properties and DOM attributes.
+          In some situations the <a title="animation effect">animation
+          effects</a> provided by Web Animations may be insufficient.
+          For example, the <a title="animation effect">animation effects</a>
+          defined here are only able to target certain CSS properties and DOM
+          attributes.
           They are unable, therefore, to modify the <a
           href="http://www.w3.org/TR/SVG11/struct.html#__svg__SVGSVGElement__currentScale"><code>currentScale</code></a>
           property of an SVG element to smoothly zoom the viewport without
           affecting the document content.
         </p>
         <p>
-          In such cases where the provided animation effects do not provide
-          needed functionality, an animation effect defined by script may be
-          used.
-          Such animation effects receive a time fraction from the timing
-          model and are responsible for producing the animation effect
-          corresponding to the specified time.
+          In such cases where the provided <a title="animation effect">animation
+          effects</a> do not provide needed functionality, an effect defined by
+          script may be used.
+          Such <a title="custom effect">custom effects</a> receive a <a>time
+          fraction</a> from the timing model and are responsible for producing
+          the desired effect corresponding to the specified time.
         </p>
         <p>
-          Using an animation effect defined in script it is possible to
-          animate not only previously un-animatable attributes and properties,
-          but potentially anything that is accessible via script, including
-          even producing audio or creating vibrations.
+          Using an effect defined in script it is possible to animate not only
+          otherwise un-animatable attributes and properties, but potentially
+          anything that is accessible via script, including even producing audio
+          or creating vibrations.
         </p>
         <p>
-          For example, using an animation effect that draws to a <a
+          For example, using a <a>custom effect</a> that draws to a <a
           href="http://www.w3.org/TR/html5/the-canvas-element.html#the-canvas-element"><code>canvas</code></a>
           element it is possible to produce a complex animated effect
           featuring patterns that may be difficult to create using CSS or
@@ -3407,48 +3406,25 @@
           additional programming.
         </p>
       </div> <!-- informative -->
-      <div class="annotation">
-        <p>
-          I think we want two types of custom animation effects.
-          Following is the general-purpose animate-anything kind of effect.
-          The other type, which is not defined here, is the one that can
-          participate in the animation sandwich just like any other.
-        </p>
-        <p>
-          This, second, native-like animation effect, would have the
-          following features:
-        </p>
-        <ul>
-          <li>Shares the same function signature as
-              <code><a>AnimationEffect</a>.sample</code></li>
-          <li>Gets passed the underlying value and passes out the animated
-              value.</li>
-          <li>Has a target attribute and is sorted against other
-              <a>AnimationEffect</a> objects (including platform
-              objects)</li>
-          <li>Can be added as a child of
-              a <a>GroupedAnimationEffect</a>.</li>
-        </ul>
-        <p>
-          That's a bit more difficult since you have to be careful that the
-          custom effect doesn't do anything naughty while you're in the
-          middle of compositing the animation sandwich.
-          I think we should postpone this until Web Animations 2.
-        </p>
-      </div>
+      <p>
+        A <dfn>custom effect</dfn> is an author-defined programming callback
+        that is passed timing information whenever a <a>sample</a> is performed.
+      </p>
       <section>
-        <h4>Execution order of custom animation effects</h4>
+        <h4>Execution order of custom effects</h4>
         <p>
-          Custom animation effects allow authors to define animation effects
-          using script.
-          Such animation effects are not limited to a single CSS property or
-          DOM attribute and therefore the steps for assessing their order of
-          execution differs from regular animation effects.
+          Since <a title="custom effect">custom effects</a>, unlike <a
+          title="animation effect">animation effects</a>, are not limited to
+          a single <a>target property</a> and the steps for assessing their
+          order of execution differs from <a title="animation effect">animation
+          effects</a>.
         </p>
         <p>
-          Custom animation effects are executed after all other
-          <a>AnimationEffect</a> objects have completed and applied their
-          effects to their targets.
+          <a title="custom effect">Custom effects</a> are executed after all
+          <a title="animation effect">animation effects</a> have completed and
+          applied their result to their targets (see <a
+          href="#combining-with-other-styles--the-override-stylesheet"
+          class="sectionRef"></a>).
         </p>
         <p class="issue">
           Need to define this more precisely.
@@ -3458,47 +3434,40 @@
           animation effects and just do it once afterwards?
         </p>
         <p>
-          Within the set of custom animation effects, the order of execution
-          is mostly the same as that for other animation effects and is
-          defined in <a href="#the-global-animation-stack"
-          class="sectionRef"></a>.
-          However, custom animation effects may also override this
-          ordering through the <code>priority</code> attribute, which, if
-          defined, specifies the priority of the effects with lower numbers
-          are executed sooner.
+          Within the set of <a title="custom effect">custom effects</a>, the
+          order of execution is initially the same as that defined for <a
+          title="animation effect">animation effects</a> in <a
+          href="#the-animation-stack" class="sectionRef"></a>.
+          However, <a title="custom effect">custom effects</a> may also override
+          this ordering through a <dfn
+          title="custom effect priority">priority</dfn> property associated with
+          the effect.
+          This <a title="custom effect priority">priority</a> property, if
+          defined, specifies the order in which the callbacks are executed
+          such that the callback of the <a>custom effect</a> with the least
+          priority is executed first.
         </p>
         <p>
-          In deciding which of two <a>CustomAnimationEffect</a> objects,
-          <var>A</var> and <var>B</var>, should be executed the following
+          In deciding which of two <a title="custom effect">custom effects</a>,
+          <var>A</var> and <var>B</var>, should be executed first, the following
           rules are applied.
         </p>
         <ol>
           <li>Sort <var>A</var> and <var>B</var> based on their
-              <code>priority</code> such that lower priorities are sorted
-              first.
-              If either does not have a defined <code>priority</code>,
-              then treat the priority as being positive infinity for the
+              <a title="custom effect priority">priority</a> properties such
+              that lower priorities are sorted first.
+              If either does not have a defined <a
+              title="custom effect priority">priority</a>, then treat the <a
+              title="custom effect priority">priority</a> as being zero for the
               purposes of sorting.</li>
-          <li>If <var>A</var> and <var>B</var> have the same priority,
-              sort according to the <code>startTime</code>s of the
-              <a>TimedItem</a>s with which <var>A</var> and <var>B</var> are
-              associated such that earlier start times are sorted first.
-          <li>If <var>A</var> and <var>B</var> have the same priority and
-              start time, sort by the position of the corresponding
-              <a>Animation</a> objects occur within the animation tree (see
-              issue below).</li>
+          <li>If <var>A</var> and <var>B</var> have the same <a
+              title="custom effect priority">priority</a>,
+              sort <var>A</var> and <var>B</var> using the procedure defined for
+              sorting <a title="animation effect">animation effects</a> in <a
+              href="#the-animation-stack" class="sectionRef"></a>.</li>
         </ol>
         <p>
-          Items sorted earlier, are executed first.
-        </p>
-        <p class="issue">
-          That last point is quite wrong. I don't think we've specified
-          exactly what script order is in <a
-          href="#the-global-animation-stack" class="sectionRef"></a>.
-          But I wonder if it makes more sense to effectively enumerate all the
-          script-based nodes in the animation tree using some well-defined
-          order and use that index.
-          Can that be done efficiently?
+          Items sorted earlier are executed before those sorted later.
         </p>
       </section>
     </section>
@@ -4740,7 +4709,7 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
                 <var>effect</var> as follows,
                 <dl class="switch">
                   <dt>If <var>effect</var> is an <a>AnimationEffect</a>
-                      object or a <a>CustomAnimationEffect</a> object,</dt>
+                      object or a <a>CustomEffect</a> object,</dt>
                   <dd>
                     Assign <code><var>animation</var>.effect</code> to
                     <var>effect</var>.
@@ -4777,9 +4746,9 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
                 attribute of the newly created <a>Animation</a> object.
                 <p>
                   If this parameter is an <a>AnimationEffect</a> object or
-                  <a>CustomAnimationEffect</a> object, it will shared with any
+                  <a>CustomEffect</a> object, it will shared with any
                   other <a>Animation</a> objects referring to the same
-                  <a>AnimationEffect</a> or <a>CustomAnimationEffect</a>
+                  <a>AnimationEffect</a> or <a>CustomEffect</a>
                   object.
                   It will <em>not</em> be copied.
                 </p>
@@ -4820,11 +4789,10 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
               </dd>
             </dl>
           </dd>
-          <dt>attribute (AnimationEffect or CustomAnimationEffect)? effect</dt>
+          <dt>attribute (AnimationEffect or CustomEffect)? effect</dt>
           <dd>
             <p>
-              The animation effect to apply (see <a
-              href="#animation-values" class="sectionRef"></a>).
+              The <a>animation effect</a> or <a>custom effect</a> to apply.
               May be <code>null</code> in which case the animation will produce
               no noticeable effect other than dispatching events (see <a
               href="#timing-events" class="sectionRef"></a>).
@@ -4892,7 +4860,7 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
                       <code><var>source</var>.effect.clone()</code>.
                     </dd>
                     <dt>If <code><var>source</var>.effect</code> is a
-                        <a>CustomAnimationEffect</a> object,</dt>
+                        <a>CustomEffect</a> object,</dt>
                     <dd>
                       If <code><var>source</var>.effect</code> has a method
                       called <code>clone</code> let <var>cloned effect</var> be
@@ -5314,10 +5282,9 @@ elem.animate(
           double currentIteration, AnimationTarget? target, any
           underlyingValue)</code> so that the animation effects can be driven
           apart from the timing model.
-          Also, doing so would allow us to do real native custom animation
-          effects if we decide to go in that direction
-          (see annotation in <a href="#custom-animation-effects"
-          class="sectionRef"></a>).
+          Also, doing so would allow us to do real native custom effects if we
+          decide to go in that direction (see annotation in <a
+          href="#custom-effects" class="sectionRef"></a>).
         </div>
       </section>
       <section>
@@ -5732,68 +5699,79 @@ var frame = effect.frames['0.3'];
         </dl>
       </section>
       <section>
-        <h3>The <code>CustomAnimationEffect</code> callback interface</h3>
+        <h3>The <code>CustomEffect</code> callback interface</h3>
         <p>
-          Custom animation effects can be defined in script using the
-          <a>CustomAnimationEffect</a> interface.
+          <a title="custom effect">Custom effects</a> can be defined in script
+          using the <a>CustomEffect</a> interface.
         </p>
         <p class="issue">
           Should this be a dictionary?
           I'd like to make <code>clone</code> optional.
         </p>
-        <div title="callback interface CustomAnimationEffect" class="idl">
-          <dt>attribute unsigned integer priority</dt>
+        <div title="callback interface CustomEffect" class="idl">
+          <dt>attribute integer priority</dt>
           <dd>
-            The order in which this animation effect will be executed in
-            relation to other custom animation effects such that items with
-            a lower priority are executed earlier as defined in <a
-            href="#execution-order-of-custom-animation-effects"
-            class="sectionRef"></a>.
+            The <a title="custom effect priority">priority</a> property of the
+            effect (see <a
+            href="#execution-order-of-custom-effects" class="sectionRef"></a>).
           </dd>
           <dt>void sample ()</dt>
           <dd>
-            The callback used to produce the animation effect corresponding to
-            the sample time determined by the timing model.
+            The callback used to produce an effect for the given timing
+            information.
             <dl class="parameters">
               <dt>double? timeFraction</dt>
               <dd>
-                The distance within a single iteration of the animation effect
-                of the current sample.
+                The <a>time fraction</a> for which to produce an effect.
                 When this is <code>null</code>, the callback object SHOULD
-                remove the animation effect.
+                remove the effect.
               </dd>
               <dt>double currentIteration</dt>
               <dd>
-                The current iteration index beginning with zero for the first
+                The <a>current iteration</a> beginning with zero for the first
                 iteration.
               </dd>
               <dt>AnimationTarget? target</dt>
               <dd>
                 The element to which the effect should be applied, if any.
                 When this method is called as a result of this object being
-                associated with an <a>Animation</a> object, it will be
-                <code><a>Animation</a>.target</code>
+                associated with an <a>Animation</a> object <var>A</var>,
+                this value will be <code><var>A</var>.target</code>.
+              </dd>
+              <dt>double? previousTimeFraction</dt>
+              <dd>
+                <p>
+                  The value of <var>timeFraction</var> that was passed to this
+                  <a>CustomEffect</a> when <code>sample</code> was previously
+                  called in the context of sampling the same <a>Animation</a>
+                  that generated the current call.
+                </p>
+                <p>
+                  If this <a>CustomEffect</a> has not previously been called
+                  within the context of sampling the same <a>Animation</a> as
+                  with the current call, or if the <a>time fraction</a> was
+                  <code>null</code> on the previous call, this parameter will be
+                  <code>null</code>.
+                </p>
               </dd>
             </dl>
           </dd>
-          <dt>CustomAnimationEffect clone ()</dt>
+          <dt>CustomEffect clone ()</dt>
           <dd>
             Creates an independent copy of this object.
           </dd>
         </div>
         <p class="issue">
-          Do we need to pass in the <a>TimedItem</a> as well?
+          Do we need to pass in the <a>Animation</a> as well?
           If possible I'd prefer not to but it may necessary for some types of
           effect.
           Might be an additional parameter to add later if it proves
           necessary?
         </p>
         <p class="issue">
-          I think we will also need to pass the previous time fraction.
-          Animations will often use this to check if they are paused, playing
-          in reverse etc.
-          They can track this themselves but then you need a separate object
-          everywhere you use it.
+          Should we pass a dictionary instead?
+          The order of arguments is quite arbitrary and it's likely we might add
+          other ones in the future.
         </p>
       </section>
       <section>
@@ -6613,8 +6591,8 @@ elem.animate({ opacity: '0%' }, 1).onend =
           <p>
             Modifications to any part of the API (whether the timing model or
             animation model) are not reflected in the target element and nor is
-            any <a>CustomAnimationEffect</a> called until the next sample has
-            been performed at some time after the current script block completes
+            any <a>CustomEffect</a> called until the next sample has been
+            performed at some time after the current script block completes
             execution.
           </p>
           <div class="informative">
