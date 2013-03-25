@@ -3056,9 +3056,46 @@
       <h2>Combining animations</h2>
       <div class="informative">
         <p>
-          It is possible for multiple <a>in effect</a> <a
-          title="animation">animations</a> to target the same property.
-          When this happens it is necessary to determine both
+          After calculating the <a>animation value</a> for an <a>animation
+          effect</a> it is applied to the <a>animation effect</a>'s <a>target
+          property</a>.
+        </p>
+        <p>
+          Since it is possible for multiple <a>in effect</a> <a
+          title="animation">animations</a> to target the same property it is
+          often necessary to combine the results of several <a title="animation
+          effect">animation effects</a> together.
+          This process is called <em>compositing</em> and is based on
+          establishing an <a>animation stack</a> for each property targetted by
+          an <a>in effect</a> <a>animation effect</a>.
+        </p>
+        <p>
+          After compositing the results of <a title="animation effect">animation
+          effects</a> together, the composited result is combined with other
+          styles applied to the <a>target property</a>.
+        </p>
+        <p>
+          An overview of this arrangement is illustrated below:
+        </p>
+        <div class="figure">
+          <img src="img/animation-cascade.svg" width="450">
+        </div>
+        <p class="caption">
+          Overview of the application of <a title="animation value">animation
+          values</a> to their <a title="target property">target
+          properties</a>.<br>
+          The results of <a title="animation effect">animation effects</a>
+          targetting the same property are composited together using an
+          <a>animation stack</a>.<br>
+          The result of this composition is put in an override stylesheet that
+          is more important than other stylesheets but less than any
+          <code>!important</code> rules.
+        </p>
+        <p>
+          For this first part of this operation&mdash;combining <a
+          title="animation value">animation values</a> that target the same <a
+          title="target property">property</a>&mdash; it is necessary to
+          determine both
           <em>how</em> the <a title="animation effect">animation effects</a>
           associated with the <a title="animation">animations</a> are combined
           with one another,
@@ -3089,7 +3126,7 @@
           The relative priority of any two <a title="animation effect">animation
           effects</a> is, <var>A</var> and <var>B</var>, within an <a>animation
           stack</a> is established by comparing the properties of the
-          <a title="animation">animations</a> applying the <var>A</var> and
+          <a title="animation">animations</a> applying <var>A</var> and
           <var>B</var> as follows:
         </p>
         <ol>
@@ -3223,7 +3260,7 @@
           an <dfn>underlying value</dfn> as input.
           The initial <a>underlying value</a> is the <a>base value</a> of the
           target property as defined in <a
-          href="#base-values--animation-values--and-the-override-stylesheet"
+          href="#combining-with-other-styles--the-override-stylesheet"
           class="sectionRef"></a>.
         </p>
         <p>
@@ -3235,8 +3272,9 @@
         </p>
         <p>
           The final value of an <a>animation stack</a>, called the
-          <dfn>composited value</dfn>, is simply the result of the final
-          (highest priority) <a>animation effect</a> in the stack.
+          <dfn>composited value</dfn>, is simply the result of combining the
+          <a>animation value</a> of the final (highest priority) <a>animation
+          effect</a> in the stack with the <a>underlying value</a>.
         </p>
       </section>
       <section>
@@ -3287,26 +3325,17 @@
         </dl>
       </section>
       <section>
-        <h3>Base values, animation values, and the override stylesheet</h3>
-        <div class="informative">
-          <p>
-            The application of an <a>animation stack</a> occurs within a wider
-            context of values applied to a property both before and after the
-            <a>animation stack</a> as illustrated below.
-          </p>
-          <p class="todo">
-            Diagram
-          </p>
-        </div>
+        <h3>Combining with other styles: the override stylesheet</h3>
         <p>
-          Applying animation to a property depends on establishing an
-          <a>override stylesheet</a>.
+          Applying a <a>composited value</a> to a <a>target property</a> depends
+          on establishing an <a>override stylesheet</a>.
         </p>
         <p>
-          The <dfn>override stylesheet</dfn> contains output animation values
+          The <dfn>override stylesheet</dfn> contains
+          <a title="composited value">composited animation values</a>
           and acts with a higher priority than all other stylesheets.
           However, <code>!important</code> rules from all other stylesheets act
-          with a higher priority than the override stylesheet.
+          with a higher priority than the <a>override stylesheet</a>.
           The <a>override stylesheet</a> is regenerated each time the
           <a>animation model</a> is updated (see <a href="#animation-effects"
           class="sectionRef"></a>).
