@@ -3963,9 +3963,7 @@
               of the <a>intrinsic iteration duration</a>.
             </p>
             <p>
-              This attribute cannot be set.
-              To set the timed item's <a>iteration duration</a> use
-              <code>setTiming</code>.
+              This value may be set using <code>setTiming</code>.
             </p>
           </dd>
           <dt>readonly attribute unrestricted double activeDuration</dt>
@@ -3974,7 +3972,14 @@
               The calculated length, in seconds, of the <a>active interval</a>.
             </p>
             <p>
-              This value may be overridden using <code>setTiming</code>.
+              Unlike the <code>activeDuration</code> member of
+              <a>TimingDictionary</a>, this attribute never returns the string
+              <code>auto</code>.
+              Instead, such values are expanded to the current calculated value
+              of the <a>active duration</a>.
+            </p>
+            <p>
+              This value may be set using <code>setTiming</code>.
             </p>
           </dd>
           <dt>readonly attribute unrestricted double endTime</dt>
@@ -4114,12 +4119,13 @@
           <dt>(unrestricted double or DOMString) iterationDuration = "auto"</dt>
           <dd>
             <p>
-              A real number greater than or equal to zero (including positive
-              infinity) representing the number of times to repeat the
-              timed item, that is, the <a>iteration duration</a>.
+              The <a>iteration duration</a> which is a real number greater than
+              or equal to zero (including positive infinity) representing the
+              time taken to complete a single iteration of the <a>timed
+              item</a>.
             </p>
             <p>
-              The string value <code>auto</code> is used to indicated that the
+              The string value <code>auto</code> is used to indicate that the
               <a>iteration duration</a> reflects the timed item's <a>intrinsic
               iteration duration</a>.
             </p>
@@ -4128,6 +4134,28 @@
               <code>auto</code> (in lowercase) are treated are treated the same
               as <code>auto</code>, that is, the <a>intrinsic iteration
               duration</a> for the purpose of timing model calculations.
+            </p>
+          </dd>
+          <dt>(unrestricted double or DOMString) activeDuration = "auto"</dt>
+          <dd>
+            <p>
+              The <a>active duration</a> which is a real number greater than or
+              equal to zero (including positive infinity) representing the
+              length of the <a>active interval</a> of this <a>timed item</a>.
+            </p>
+            <p>
+              The string value <code>auto</code> is used to indicate that the
+              <a>active duration</a> is calculated using the procedure defined
+              in <a href="#calculating-the-active-duration"
+              class="sectionRef"></a>.
+              Otherwise, if a real number greater than equal to zero is
+              specified, that procedure is ignored and the value provided here
+              is used.
+            </p>
+            <p>
+              Real numbers less than zero and strings other than the value
+              <code>auto</code> (in lowercase) are treated are treated the same
+              as <code>auto</code>.
             </p>
           </dd>
           <dt>double playbackRate = 1.0</dt>
