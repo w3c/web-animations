@@ -3702,7 +3702,7 @@
           </dd>
           <dt>attribute double startTime</dt>
           <dd>
-            The <a>start time</a> of this player.
+            The <a title="player start time">start time</a> of this player.
           </dd>
           <dt>attribute double currentTime</dt>
           <dd>
@@ -3723,13 +3723,47 @@
             Setting this attribute follows the procedure defined in <a
             href="#updating-the-paused-state" class="sectionRef"></a>.
           </dd>
-          <dt>void reverse()</dt>
-          <dd>
-            Sets the <code>playbackRate</code> to the negative complement of its
-            current value by following the procedure defined in <a
-            href="#updating-the-playback-rate" class="sectionRef"></a>.
-          </dd>
         </dl>
+        <div class="feedbackWanted">
+          <p>
+            A reverse method would be very useful here for effects like
+            transitions.
+          </p>
+          <p>
+            The behavior would be:
+          </p>
+          <ol>
+            <li>If <code>currentTime</code> is beyond the <a>end
+                time</a> of the <a>source content</a> seek back to the end of
+                the <a>active interval</a>.
+            <li>Set <code>playbackRate</code> to
+                <code>-playbackRate</code>.</li>
+          </ol>
+          <p>
+            This reflects how transitions work as well as common usage.
+          </p>
+          <p>
+            Some objections:
+          </p>
+          <ul>
+            <li>Calling <code>reverse</code> twice should be a noop.</li>
+            <li><a title="player">Players</a> should be independent of their
+                <a>source content</a>.</li>
+          </ul>
+          <p>
+            Some suggestions:
+          </p>
+          <ul>
+            <li>Call it <code>reverseSource</code> to make the link to the the
+                <a>source content</a> obvious and remove any expectation that
+                calling it twice is a noop.</li>
+            <li>Make <a title="player">players</a> actually stop when they reach
+                the end of their <a>source content</a> much like a video/DVD/CD
+                player.
+                This would eliminate the need for the reverse seek and would
+                make calling twice a noop.</li>
+          </ul>
+        </div>
       </section>
       <section>
         <h3>The <code>TimedItem</code> interface</h3>
