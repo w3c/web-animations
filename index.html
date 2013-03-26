@@ -3763,6 +3763,11 @@
                 This would eliminate the need for the reverse seek and would
                 make calling twice a noop.</li>
           </ul>
+          <p>
+            Your feedback is most welcome at <a
+            href="mailto:public-fx@w3.org">public-fx@w3.org</a>, subject
+            <em>[web-anim] &hellip;</em>.
+          </p>
         </div>
       </section>
       <section>
@@ -3776,7 +3781,7 @@
           <dt>readonly attribute double? localTime</dt>
           <dd>
             <p>
-              The <a>local time</a> of this <a>timed item</a> in seconds.
+              The <a>local time</a> of this <a>timed item</a>.
             </p>
             <p>
               <code>localTime</code> will be <code>null</code> if this <a>timed
@@ -3787,26 +3792,147 @@
           </dd>
           <dt>readonly attribute unsigned long? currentIteration</dt>
           <dd>
-            The current iteration index beginning with zero for the first
-            iteration as described in <a
-              href="#calculating-the-current-iteration" class="sectionRef"></a>.
+            The <a>current iteration</a> index beginning with zero for the first
+            iteration.
           </dd>
           <dt>// Specified timing</dt><dd></dd>
-          <dt>readonly attribute TimingDictionary specified</dt>
+          <dt>TimingDictionary getTiming()</dt>
           <dd>
             <p>
-              The timing parameters for this <a>TimedItem</a>.
+              Returns the timing properties specified for this <a>timed
+              item</a>.
             </p>
-            <div class="note">
+            <div class="feedbackWanted">
               <p>
-                Note that while the <a>TimingDictionary</a> object itself is
-                readonly, its members are writeable. For example:
+                Representing these parameters has been a particularly
+                contentious topic.
+              </p>
+              <p>
+                The current arrangement is somewhat awkward and has the
+                following surprising behaviour.
               </p>
               <pre class='example sh_javascript'>
-anim.specified.startDelay = 3; // OK
-anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
+                // I want to update the iteration duration
+                anim.setTiming( { iterationDuration: 3 } );
+                // But, uh-oh, I just clobbered all other timing information and
+                // reset it to its default values
               </pre>
+              <p>
+                If you really just want to update the <a>iteration duration</a>
+                you have to do the following:
+              </p>
+              <pre class='example sh_javascript'>
+                // Update the iteration duration (the right way)
+                var timing = anim.getTiming();
+                timing.iterationDuration = 3;
+                anim.setTiming(timing);
+              </pre>
+              <p>
+                The primary advantages are:
+              </p>
+              <ul>
+                <li>Minimises API surface area by re-using
+                   <a>TimingDictionary</a>.</li>
+                <li>Makes it obvious that changing the timing can have a big
+                    impact.
+                    For example, setting the <code>playbackRate</code> will
+                    cause things to jump.
+                    If you just want a smooth change to the <em>running</em>
+                    playback rate, you want to update the <a>player playback
+                    rate</a>.</li>
+              </ul>
+              <p>
+                Some alternatives include:
+              </p>
+              <ul>
+                <li>Adding a <code>Timing</code> <em>interface</em> that is
+                    basically identical to <a>TimingDictionary</a>.
+                  <ul>
+                    <li>
+                      <p>
+                        However, in the future it is likely that it will be
+                        possible to set <code>iterationDuration</code> using
+                        a string (<code>auto</code>) as well as a number.
+                      </p>
+                      <p>
+                        On the dictionary version this would probably be a union
+                        <code>(double or DOMString)</code>
+                        but in the interface it might be
+                        <code>iterationDuration</code> and
+                        <code>iterationDurationAsString</code> or perhaps
+                        <code>iterationDuration.sec</code> and
+                        <code>iterationDuration.string</code>.
+                      </p>
+                      <p>
+                        Obviously, in order to do the latter we'd need to set up
+                        that arrangement from v1.
+                      </p>
+                    </li>
+                    <li>
+                      We'll want to do something similar for
+                      <code>timingFunction</code> since in the future we'll add
+                      a typed interface <code>TimingFunction</code> for this.
+                    </li>
+                    <li>
+                      Note that this could be added subsequently alongside
+                      <code>setTiming</code> / <code>getTiming</code>.
+                    </li>
+                    <li>
+                      Such member would probably be called
+                      <code>specified</code> so code would read
+                      <code>anim.specified.iterationDuration</code>..
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <p>
+                    Rework <a>TimingDictionary</a> so every member defaults to
+                    some kind of null value.
+                    When creating a <a>TimedItem</a> the defaults would be set
+                    before assigning the values from the <a>TimingDictionary</a>
+                    and all such null values would be ignored.
+                  </p>
+                  <p>
+                    This removes the surprising result described above but
+                    makes it difficult to clobber all other values if that's
+                    actually what you wanted.
+                  </p>
+                </li>
+                <li>
+                  Just put the specified timing members directly on
+                  <a>TimedItem</a> and rename where they class
+                  (<code>computedIterationDuration</code> and
+                   <code>computedActiveDuration</code>).
+                </li>
+              </ul>
+              <p>
+                Your feedback is most welcome at <a
+                href="mailto:public-fx@w3.org">public-fx@w3.org</a>, subject
+                <em>[web-anim] &hellip;</em>.
+              </p>
+              <p class="issue">
+                If we keep <code>getTiming</code> should we call it
+                <code>getSpecifiedTiming</code>?
+                Likewise <code>setSpecifiedTiming</code>?
+              </p>
             </div>
+          </dd>
+          <dt>TimingDictionary setTiming(TimingDictionary timing)</dt>
+          <dd>
+            <p>
+              Updates the timing properties of this <a>timed item</a> using the
+              supplied properties.
+            </p>
+            <p>
+              Returns the specified timing properties of this <a>timed item</a>.
+              Note that this return value will differ from <var>timing</var> if
+              clamping or normalization has been performed on any of the values
+              or if erroneous values have been ignored (see todo below).
+            </p>
+            <p class="todo">
+              If we decide to stick with this approach we need to describe how
+              error handling is performed for each of the values.
+            </p>
           </dd>
           <dt>// Calculated timing</dt><dd></dd>
           <dt>readonly attribute double startTime</dt>
@@ -3820,7 +3946,8 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
             </p>
             <p>
               The start of the <a>active interval</a> is based on the sum of
-              the <code>startTime</code> and <code>specified.startDelay</code>.
+              the <code>startTime</code> and
+              <code>getTiming().startDelay</code>.
             </p>
           </dd>
           <dt>readonly attribute unrestricted double iterationDuration</dt>
@@ -3829,15 +3956,9 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
               The <a>iteration duration</a> of this <a>timed item</a>.
             </p>
             <p>
-              Unlike <code>specified.iterationDuration</code>,
-              this attribute never returns the string <code>auto</code>.
-              Instead, such values are expanded to the current calculated value
-              of the <a>intrinsic iteration duration</a>.
-            </p>
-            <p>
               This attribute cannot be set.
               To set the timed item's <a>iteration duration</a> use
-              <code>specified.iterationDuration</code>.
+              <code>setTiming</code>.
             </p>
           </dd>
           <dt>readonly attribute unrestricted double activeDuration</dt>
@@ -3846,8 +3967,7 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
               The calculated length, in seconds, of the <a>active interval</a>.
             </p>
             <p>
-              This value may be overridden by setting
-              <code>specified.activeDuration</code>.
+              This value may be overridden using <code>setTiming</code>.
             </p>
           </dd>
           <dt>readonly attribute unrestricted double endTime</dt>
@@ -3861,14 +3981,19 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
               <code><a>start time</a> + <a>start delay</a> + <a>active
                     duration</a></code>
             </p>
-            <p class="note">
-              Note that while the <code>endTime</code> is read-only, it can be
-              set indirectly by setting <code>specified.activeDuration</code>.
-              For example, to set <code>endTime</code> to time <var>t</var> in
-              <a>inherited time</a>,
-              set <code>specified.activeDuration</code> to
-              <code><var>t</var> - startTime - specified.startDelay</code>.
-            </p>
+            <div class="note">
+              <p>
+                Note that while the <code>endTime</code> is read-only, it can be
+                set indirectly as follows:
+              </p>
+              <pre class="example sh_javascript">
+                // Set endTime to 't'
+                var t = 6;
+                var timing = anim.getTiming();
+                timing.activeDuration = t - anim.startTime - timing.startDelay;
+                anim.setTiming(timing);
+              </pre>
+            </div>
           </dd>
           <dt>// Associated player</dt><dd></dd>
           <dt>Player? getPlayer()</dt>
@@ -4615,25 +4740,27 @@ anim.specified = { startDelay: 3 }; // Not OK--'specified' is read-only
                 <p>
                   Set <code><var>cloned timing</var>.timingFunction</code> based
                   on the type of
-                  <code><var>source</var>.specified.timingFunction</code> as
+                  <code><var>source</var>.getTiming().timingFunction</code> as
                   follows:
                 </p>
                 <dl class="switch">
-                  <dt>If <code><var>source</var>.specified.timingFunction</code>
-                  is a <a>TimingFunction</a> object,</dt>
+                  <dt>If
+                  <code><var>source</var>.getTiming().timingFunction</code> is
+                  a <a>TimingFunction</a> object,</dt>
                   <dd>
                     Set <code><var>cloned timing</var>.timingFunction</code> to
                     the result of calling
                     <code><var>source</var>.timingFunction.clone()</code>.
                   </dd>
-                  <dt>If <code><var>source</var>.specified.timingFunction</code>
-                  is a DOMString,</dt>
+                  <dt>If
+                  <code><var>source</var>.getTiming().timingFunction</code> is
+                  a DOMString,</dt>
                   <dd>
                     Set <code><var>cloned timing</var>.timingFunction</code> to
-                    <code><var>source</var>.specified.timingFunction</code>.
+                    <code><var>source</var>.getTiming().timingFunction</code>.
                   </dd>
                   <dt>Otherwise
-                  <code><var>source</var>.specified.timingFunction</code>
+                  <code><var>source</var>.getTiming().timingFunction</code>
                   (<code>null</code>),</dt>
                   <dd>
                     Set <code><var>cloned timing</var>.timingFunction</code> to
