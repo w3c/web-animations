@@ -5042,8 +5042,8 @@ new SeqGroup(
                animation properties</strong></p>
             <ol>
               <li>Create a list, <var>supported properties</var>, of property
-                  names and attribute names that can be animated by the
-                  implementation.</li>
+                  names and attribute names that <a title="animatable">can be
+                  animated</a> by the implementation.</li>
               <li>Let <var>animation properties</var> be an empty sequence.</li>
               <li>Iterate through the properties of <code>properties</code>. For
                   each <var>property</var> in <code>properties</code>, if
@@ -5088,7 +5088,7 @@ elem.animate(
                   </pre>
                 </div>
               </dd>
-              <dt>If <var>animation properties</var> has only one element,</dt>
+              <dt>Othewise,</dt>
               <dd>
                 <ol>
                   <li>Let <var>name</var> be the value of the element
@@ -5100,35 +5100,56 @@ elem.animate(
                       <var>name</var> and <var>value</var>.</li>
                 </ol>
               </dd>
-              <dt>Otherwise,</dt>
-              <dd>
-                <ol>
-                  <li>Let <var>group</var> be a newly constructed
-                      <a>GroupedAnimationEffect</a>.</li>
-                  <li>Sort <var>animation properties</var> lexicographically by
-                      the Unicode codepoints that define each property
-                      name.</li>
-                  <li>For user agents that support both a prefixed and an
-                      unprefixed version of some CSS properties, remove all
-                      prefixed properties from <var>animation properties</var>
-                      where the corresponding unprefixed version is also
-                      present.</li>
-                  <li>Iterate through <var>animation properties</var>. For each
-                      <var>name</var> in <var>animation properties</var>:
-                    <ol>
-                      <li>Let <var>value</var> be the value of
-                          <code>properties.<var>name</var></code>.</li>
-                      <li>Create a new <a>KeyframeAnimationEffect</a>,
-                          <var>effect</var> object according to the steps in
-                          part 3 below based on <var>name</var> and
-                          <var>value</var>.</li>
-                      <li>Append <var>effect</var> to <var>group</var>.
-                    </ol>
-                  </li>
-                  <li>Return <var>group</var>.
-                </ol>
-              </dd>
             </dl>
+            <div class="todo">
+              <p>
+                We need to allow <a title="key frame animation effect">key frame
+                animation effects</a> to have multiple target properties and
+                update the above to handle this.
+              </p>
+              <p>
+                We probably want to include the following steps:
+              </p>
+              <ol>
+                <li>Sort <var>animation properties</var> lexicographically by
+                    the Unicode codepoints that define each property
+                    name.</li>
+                <li>For user agents that support both a prefixed and an
+                    unprefixed version of some CSS properties, remove all
+                    prefixed properties from <var>animation properties</var>
+                    where the corresponding unprefixed version is also
+                    present.</li>
+              </ol>
+              <p>
+                But we might also want to consider if we re-arrange the
+                structure of the passed in object to more closely match CSS?
+              </p>
+              <p>
+                It might be acceptable to support either:
+              </p>
+              <pre class="example sh_javascript">
+var anim = new Animation(elem, { left: '100px' }, 3);
+              </pre>
+              <p>
+                or:
+              </p>
+              <pre class="example sh_javascript">
+var anim = new Animation(elem,
+  [{ offset: 0, left: '100px', right: '200px' }, ... ], 3);
+              </pre>
+              <p>
+                but not:
+              </p>
+              <pre class="example sh_javascript">
+var anim = new Animation(elem,
+  { left: ['100px', ...], right: ['200px', ...] }, 3);
+              </pre>
+              <p>
+                But I don't know how much that buys us and the second case is
+                complicated anyway since it means you can't animate an offset
+                property (maybe you can escape it?).
+              </p>
+            </div>
             <p><strong>Part 3 &ndash; Create each
                <a>KeyframeAnimationEffect</a> object</strong></p>
             <p>
@@ -5165,9 +5186,6 @@ elem.animate(
           double currentIteration, AnimationTarget? target, any
           underlyingValue)</code> so that the animation effects can be driven
           apart from the timing model.
-          Also, doing so would allow us to do real native custom effects if we
-          decide to go in that direction (see annotation in <a
-          href="#custom-effects" class="sectionRef"></a>).
         </div>
       </section>
       <section>
