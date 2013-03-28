@@ -2547,9 +2547,9 @@
       <h2>Animations</h2>
       <p>
         <dfn title="animation">Animations</dfn> are a kind of <a>timed item</a>
-        that apply an <a>animation effect</a> to a target element or
-        pseudo-element such as <code>::before</code> and
-        <code>::first-line</code> [[!SELECT]].
+        that apply an <a>animation effect</a> to an element or pseudo-element
+        such as <code>::before</code> and <code>::first-line</code> [[!SELECT]]
+        referred to as the <dfn>target element</dfn>.
       </p>
       <section>
         <h3>Calculating the time fraction</h3>
@@ -3567,17 +3567,17 @@
           <dt>sequence&lt;Player&gt; getCurrentPlayers()</dt>
           <dd>
             <p>
-              Returns the set of <a>Player</a> objects associated with this
-              <a>timeline</a> that have associated <a>source content</a> which
-              is <a>current</a>.
+              Returns the set of <a title="Player interface">Player</a> objects
+              associated with this <a>timeline</a> that have associated
+              <a>source content</a> which is <a>current</a>.
             </p>
             <p>
               The returned list is sorted in increasing order of the <a
-              title="player start time">start time</a> of the <a>Player</a>
-              objects.
-              If any two <a>Player</a> objects have the same <a title="player
-              start time">start time</a> they are sorted in the order in which
-              the objects were created.
+              title="player start time">start time</a> of the <a title="Player
+              interface">Player</a> objects.
+              If any two <a title="Player interface">Player</a> objects have the
+              same <a title="player start time">start time</a> they are sorted
+              in the order in which the objects were created.
             </p>
             <div class="issue">
               <p>
@@ -3588,9 +3588,9 @@
                 case of fetching the most recently created player (e.g. when you
                 call a utility function that plays an animation but
                 inconsiderately does not return the player) but that doesn't
-                work for <code>Element.getCurrentAnimationPlayers</code> (unless
-                we make creation order global?) and the two methods should
-                probably use consistent ordering.
+                work for <code>Element.getCurrentPlayers</code> (unless we make
+                creation order global?) and the two methods should probably use
+                consistent ordering.
               </p>
             </div>
           </dd>
@@ -4659,7 +4659,7 @@
             <dl class="parameters">
               <dt>AnimationTarget? element</dt>
               <dd>
-                The target element or pseudo-element.
+                The <a>target element</a> or target pseudo-element.
                 This may be <code>null</code> for animations that do not target
                 a specific element.
               </dd>
@@ -5766,8 +5766,8 @@ var frame = effect.frames['0.3'];
           <dt>Animation animate()</dt>
           <dd>
             <p>
-              Creates a new <a>Animation</a> object whose target element is the
-              Element object on which the method is called, and calls
+              Creates a new <a>Animation</a> object whose <a>target element</a>
+              is the Element object on which the method is called, and calls
               the <a
               href="#widl-Timeline-play-Player-TimedItem-source"><code>play</code></a>
               method of the <a>Timeline</a> object of the <a>document
@@ -5810,6 +5810,106 @@ var frame = effect.frames['0.3'];
                 same interpretation as defined for that constructor.
               </dd>
             </dl>
+          </dd>
+          <dt>sequence&lt;Animation&gt; getCurrentAnimations()</dt>
+          <dd>
+            <p>
+              Returns the set of <a>current</a> <a title="Animation
+              interface">Animation</a> objects that have an <a>animation
+              effect</a> whose <a>target</a> is this Element.  Note that this
+              does <em>not</em> include <a>PseudoElement</a>s whose
+              <code>element</code> attribute refers to this Element.
+            </p>
+            <p>
+              The returned list of <a title="Animation interface">Animation</a>
+              objects is sorted by their associated <a>animation effect</a>
+              using the procedure defined for sorting <a title="animation
+              effect">animation effects</a> in <a href="#the-animation-stack"
+              class="sectionRef"></a>.
+            </p>
+            <div class="note">
+              <p>
+                Note that the definition of a <a>current</a> <a>animation</a>
+                does not include those <a title="animation">animations</a> whose
+                <a>local time</a> falls <em>after</em> the <a>active
+                interval</a> but which are still <a>in effect</a> due to
+                a <a>fill mode</a> and hence such <a
+                title="animation">animations</a> are <em>not</em> returned by
+                this method.
+              </p>
+              <p>
+                This is because in order to return such <a
+                title="animation">animations</a>, user agents
+                would be required to maintain all <a
+                title="animation">animations</a> with a forwards
+                <a title="fill mode">fill</a> indefinitely.
+                As a result the resources consumed by an animated document would
+                steadily accumulate over time.
+              </p>
+            </div>
+          </dd>
+          <dt>sequence&lt;Player&gt; getCurrentPlayers()</dt>
+          <dd>
+            <p>
+              Returns the set of <a title="Player interface">Player</a> objects
+              whose <a>source content</a> is <a>current</a> and contains at
+              least one <a>animation</a> whose <a>target element</a> is this
+              Element.
+            </p>
+            <p>
+              If this Element is the <a>target element</a> of two or more <a
+              title="animation">animations</a> which are associated with the
+              same <a>player</a>, the corresponding <a
+              title="Player interface">Player</a> object will still only appear
+              in the returned list once.
+            </p>
+            <p>
+              The returned list is sorted using the same order as defined for
+              the <a
+              href="#widl-Timeline-getCurrentPlayers-sequence-Player">getCurrentPlayers</a>
+              method on the <a title="Timeline interface">Timeline</a>
+              interface.
+            </p>
+            <div class="feedbackWanted">
+              <p>
+                The primary use case for this method is an application that
+                wants to increase the speed of all animations targetting
+                a particular element by a factor of 2 (not sure why and never
+                mind that this will affect all sorts of other elements too).
+              </p>
+              <p>
+                With only <code>getCurrentAnimations</code> a naïve author might
+                write:
+              </p>
+              <pre class="example sh_javascript">
+                elem.getCurrentAnimations().forEach(
+                  function(anim) {
+                    anim.getPlayer().playbackRate *= 2;
+                  }
+                );
+              </pre>
+              <p>
+                However, if <code>elem</code> is the <a>target element</a> for
+                two animations that have the same player, then those animations
+                will be sped up by a factor of 4.
+              </p>
+              <p>
+                Instead the author needs to generate a unique list of players
+                first, hence this method.
+              </p>
+              <p>
+                Is this kind of situation common enough to warrant this method?
+                Or is it likely that when performing this kind of operation
+                you're mostly working with single animations and not timing
+                groups (as otherwise this operation could affect many other
+                elements)?
+              </p>
+              <p>
+                Your feedback is most welcome at <a
+                href="mailto:public-fx@w3.org">public-fx@w3.org</a>, subject
+                <em>[web-anim] &hellip;</em>.
+              </p>
+            </div>
           </dd>
         </dl>
       </section>
@@ -6384,107 +6484,6 @@ elem.animate({ opacity: '0%' }, 1).onend =
           interface defined in [[!DOM4]].
         </div>
       </section>
-    </section>
-
-    <section>
-      <h2>Querying current animations</h2>
-      <p>
-        It is often useful to be able to access the animations currently in play
-        or scheduled to play, that is <a>current</a> animations, including those
-        which may have been defined declaratively rather than by using the API.
-        To that end the following extensions are defined for
-        the <a class="externalDFN"
-        href="http://www.w3.org/TR/dom/#interface-document">Document</a>
-        and <a class="externalDFN"
-        href="http://www.w3.org/TR/dom/#interface-element">Element</a>
-        interfaces defined in [[!DOM4]].
-      </p>
-      <p class="note">
-        Note that animations for which the current time falls <em>after</em> the
-        <a>active interval</a> but which are still <a>in effect</a> due to
-        a <a>fill mode</a> are <em>not</em> returned by this method.
-        This is because in order to return such animations, user agents would be
-        required to maintain all animations with a forwards fill indefinitely.
-        As a result the resources consumed by an animated document would
-        steadily accumulate over time.
-      </p>
-      <dl class="idl" title="partial interface Document">
-        <dt>sequence&lt;Animation&gt; getCurrentAnimations()</dt>
-        <dd>
-          <p>
-            Returns all <a>Animation</a> objects that meet <em>both</em> of the
-            following conditions:
-          </p>
-          <ol>
-            <li>
-              has a <code>target</code> attribute that is an Element whose
-              <code>ownerDocument</code> is the Document on which this method
-              was called, <em>or</em> has a <code>target</code> attribute that
-              is a <a>PseudoElement</a> whose <code>element.ownerDocument</code>
-              is the Document on which this method was called, and
-            </li>
-            <li>
-              is <a>current</a>.
-            </li>
-          </ol>
-          <p>
-            The returned sequence is a snapshot (i.e. not live) representing the
-            state of animations that corresponds at the time when the method was
-            called.
-          </p>
-          <div class="issue">
-            <p>
-              There are at least three ways to define which elements this
-              covers in terms of their association with the Document object on
-              which the method is called, <var>document</var>:
-            </p>
-            <ol>
-              <li>All <a>Animation</a>s created using
-              <a><var>document</var>.createAnimation</a>&mdash;means even
-              Animations that don't target an element (e.g. they do some audio,
-              or target a scrollbar) get included. Not sure if this is good or
-              bad.</li>
-              <li>All <a>Animation</a>s which, if you trace their chain of time
-              sources you eventually arrive at
-              <code><var>document</var>.timeline</code>&mdash;means if you
-              associate an Animation with a custom time source like a scrollbar
-              (in a future version) it wouldn't be included. Again, not sure if
-              this is good or bad.</li>
-              <li>All <a>Animation</a>s whose <code>target</code> or
-              <code>target.element</code> (for <a>PseudoElement</a>s) has an
-              <code>ownerDocument</code> which is
-              <var>document</var>&mdash;means only stuff which is affecting this
-              document's DOM in the usual way is included (but including, if
-              it's even possible, animations from another document).</li>
-            </ol>
-            <p>
-              I suspect option 2 is the best approach but I've specified 3 for
-              now simply because it was easiest.
-            </p>
-            <p>
-              I'll probably specify 2 once we've cleared up some of the issues
-              surrounding time sources.
-            </p>
-          </div>
-        </dd>
-      </dl>
-      <dl class="idl" title="partial interface Element">
-        <dt>sequence&lt;Animation&gt; getCurrentAnimations()</dt>
-        <dd>
-          <p>
-            Returns all <a>Animation</a> objects whose <code>target</code>
-            attribute is the Element on which this method was called and which
-            are <a>current</a>.
-            Note that this does <em>not</em> include <a>PseudoElement</a>s whose
-            <code>element</code> attribute refers to this Element.
-          </p>
-          <p>
-            The returned sequence is a snapshot (i.e. not live) representing the
-            state of animations that corresponds at the time when the method was
-            called.
-          </p>
-        </dd>
-      </dl>
     </section>
 
     <section>
