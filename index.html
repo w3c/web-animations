@@ -5918,8 +5918,19 @@ var frame = effect.frames['0.3'];
     <section>
       <h2>Timing events</h2>
       <p>
-        As timed items play they report changes to their status through
-        <a>TimingEvent</a>s.
+        As <a title="timed item">timed items</a> play they report changes to
+        their status through <dfn>timing events</dfn>.
+      </p>
+      <p>
+        <a>Timing events</a> are a property of the Web Animations timing model.
+        As a result they are dispatched even for <a
+        title="animation">animations</a> that do not have an associated
+        <a>animation effect</a>, for <a title="animation">animations</a> whose
+        <a>target element</a> is not rendered because it or a parent element has
+        <span class="property">'display'</a> property of <a
+        class="prop-value">'none'</a>, and for <a title="timed item">timed
+        items</a> that perform no animation such as <a title="timing
+        group">timing groups</a>.
       </p>
       <div class="annotation">
         <p><strong>Relationship to CSS and SVG events</strong></p>
@@ -5928,38 +5939,17 @@ var frame = effect.frames['0.3'];
           <code>TransitionEvent</code>s and SVG defines <code>TimeEvent</code>s.
           The proposal here is to dispatch <a>TimingEvent</a>s in parallel to
           these events.
-          This has the following properties:
-        </p>
-        <ul>
-          <li>It is possible to register for <em>just</em> CSS animation events,
-          or <em>just</em> CSS transition events, or <em>just</em> SVG time
-          events, or <em>all</em> animation-related events
-          (by registering for the timing events defined here).</li>
-          <li>Backwards compatibility&mdash;existing content continues to work
-          as is.</li>
-        </ul>
-        <p>
-          An alternative is to make CSS and SVG events subclass
-          <a>TimingEvent</a> and just fire the one event.
-          Two issues arrive with this.
-          Firstly, the event type would change on the subclasses so it wouldn't
-          be possible to catch all "start" events, for example.
-          Secondly, the propagation path for SVG events is different since they
-          are fired at the animation template element rather than the animation
-          target element.
         </p>
         <p>
-          Nevertheless, there may be alternative approaches here such as
-          augmenting CSS Animation events only and firing them from the API
-          (although that may cause compatibility issues when SVG animations
-          start reporting events to content expecting only CSS animations).
+          A key difference is that <a>TimingEvent</a>s are dispatched at the
+          <a>TimedItem</a>s and not content.
+          This model leaves firing of events at content up to the declarative
+          mapping onto the model (e.g. CSS or SVG).
+          This approach makes the Web Animations model more self-contained
+          whilst permitting different mappings for different markup.
+          For example, CSS fires events at the target element whilst SVG fires
+          events at the element that generated the animation.
         </p>
-      </div>
-      <div class="todo">
-        Clarify somewhere that timing events are a property of the <em>timing
-        model</em> hence they continue to fire even if there is no animation
-        effect and even if the target property is in a <code>display:
-        none</code> block.
       </div>
       <section>
         <h3>The <code>TimingEvent</code> interface</h3>
