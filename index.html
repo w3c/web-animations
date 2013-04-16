@@ -3867,58 +3867,30 @@
         <h3>Event parameters</h3>
         <p>
           <a title="timing event">Timing events</a> have an associated <a>event
-          local time</a>, <a>event timeline time</a>, and <a>event iteration
-          index</a>.
+          local time</a>, <a>event timeline time</a>, <a>event iteration
+          index</a>, and <a>seeked dispatch flag</a>.
         </p>
         <p>
-          The <dfn>event local time</dfn> is the <a>local time</a> of the
-          <a>timed item</a> that generated event, calculated using the
-          <a>uneased inherited time</a> at the moment the event is scheduled to
-          occur.
+          The <dfn>event local time</dfn> is the <em>uneased local time</em> of
+          the <a>timed item</a> that generated event at the moment the event is
+          scheduled to occur.
         </p>
         <p>
           The <dfn>event timeline time</dfn> is the result of converting the
           <a>event local time</a> into the time space of the <a>timeline</a>
-          that sampled the <a>timed item</a> by using the following procedure.
+          that sampled the <a>timed item</a>.
+          If is calculated using the procedures defined in <a
+          href="#inverse-timing-calculations" class="sectionRef"></a>.
         </p>
-        <ol>
-          <li>Let <var>ancestor time</var> be <a>event local time</a>.
-          <li>Repeat while there is a <a>parent timing group</a>.
-            <ol>
-              <li>Let <var>ancestor time</var> be the result of calculating the
-                  <a>uneased parent local time</a> for <var>ancestor
-                  time</var> using the <a>event iteration index</a>.</li>
-              <li>Clamp the <var>ancestor time</var> such that it falls within
-                  the time boundaries of the iteration that generated the
-                  event.</li>
-              </li>
-            </ol>
-          </li>
-         <li>
-          When there is no longer a <a>parent timing group</a>, use the timing
-          properties <a>player</a> associated with the <a>timed item</a>
-          to calculate the <a>event timeline time</a> as follows,
-          <dl class="switch">
-            <dt>
-              If the <a title="player playback rate">playback rate</a> of the
-              <a>player</a> is zero,
-            </dt>
-            <dd>
-              If <var>ancestor time</var> is zero, return zero, otherwise,
-              return positive infinity.
-            </dd>
-            <dt>Otherwise,</dt>
-            <dd>
-              Return <code>(<var>ancestor time</var> + <a>time drift</a>) / <a
-              title="player playback rate">playback rate</a></code>.
-            </dd>
-          </dl>
-         </li>
-        </ol>
         <p>
           The <dfn>event iteration index</dfn> is the value of the <a>timed
           item</a>'s <a>current iteration</a> and moment the event is scheduled
           to occur.
+        </p>
+        <p>
+          The <dfn>seeked dispatch flag</dfn> is a boolean value set to
+          <code>true</code> if this event was generated as a result of applying
+          <a>seeked event dispatch</a>.
         </p>
       </section>
       <section>
@@ -6944,6 +6916,10 @@ var frame = effect.frames['0.3'];
           <dt>attribute unsigned long? iterationIndex</dt>
           <dd>
             The <a>event iteration index</a>.
+          </dd>
+          <dt>attribute boolean? seeked</dt>
+          <dd>
+            The <a>seeked dispatch flag</a>.
           </dd>
         </dl>
         <dl title="dictionary TimingEventInit" class="idl">
