@@ -861,7 +861,7 @@
             </li>
           </ol>
           <p>
-            The animation events dispatched when a seek is performed are
+            The animation events queued when a seek is performed are
             described in <a href="#event-dispatch-and-seeking"
             class="sectionRef"></a>.
           </p>
@@ -3520,8 +3520,8 @@
           these events.
         </p>
         <p>
-          A key difference is that <a>TimingEvent</a>s are dispatched at the
-          <a>TimedItem</a>s and not content.
+          A key difference is that the target of a <a>TimingEvent</a> is a
+          <a>TimedItem</a> and not content.
           This model leaves firing of events at content up to the declarative
           mapping onto the model (e.g. CSS or SVG).
           This approach makes the Web Animations model more self-contained
@@ -4008,22 +4008,28 @@
         </p>
         <p>
           As such, except for the specific circumstances mentioned in following
-          sections, the events that should be dispatched when sampling
-          a timeline includes all events scheduled to occur in the interval
-          between the previous sample time and the current sample time.
+          sections, the events that should be queued when <a>sampling</a>
+          a <a>timeline</a> includes all events scheduled to occur in the
+          interval since the previous sample time up to and including the
+          current timeline time.
         </p>
-        <p>
-          With regards to the endpoints of this interval events that
-          a cotemporal with the beginning of the interval are <em>not</em>
-          included whilst those cotemporal with the end of the interval
-          <em>are</em> included.
-          For the first sample, the previous sample time is treated as negative
-          infinity.
+        <p class="note">
+          Note that when a <a>player</a> is first <a
+          title="sampling">sampled</a>, it will employ <a>seeked event
+          dispatch</a> as described in <a
+          href="#event-dispatch-and-structural-changes" class="sectionRef"></a>
+          after which point the previous sample time for that <a>player</a>
+          will be resolved.
+          As a result, there is never an occasion where the previous sample time
+          is used and yet is undefined.
         </p>
         <p>
           For the latter case&mdash;when a <a>player</a> is <a
           title="seeking">seeked</a>&mdash;the behavior is defined in <a
           href="#event-dispatch-and-seeking" class="sectionRef"></a>.
+        </p>
+        <p class="todo">
+          Make sure we update the previous sample time for a seek/etc.
         </p>
         <section>
           <h4>Seeked event dispatch</h4>
