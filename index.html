@@ -3541,20 +3541,22 @@
             <ul>
               <li>Bubbles: yes</li>
               <li>Cancelable: no</li>
-              <li>Context Info: localTime, documentTime, iterationIndex</li>
+              <li>Context Info: localTime, documentTime, iterationIndex,
+                                seeked</li>
             </ul>
           </dd>
           <dt><dfn>timingiteration</dfn></dl>
           <dd>
             <p>
               Occurs at the moment when a <a href="#repeating">repeating</a>
-              <a>timed item</a>'s <a>current iteration</a> change value
+              <a>timed item</a>'s <a>current iteration</a> changes value
               excluding changes to and from <code>null</code>.
             </p>
             <ul>
               <li>Bubbles: yes</li>
               <li>Cancelable: no</li>
-              <li>Context Info: localTime, documentTime, iterationIndex</li>
+              <li>Context Info: localTime, documentTime, iterationIndex,
+                                seeked</li>
             </ul>
           </dd>
           <dt><dfn>timingend</dfn></dl>
@@ -3566,7 +3568,8 @@
             <ul>
               <li>Bubbles: yes</li>
               <li>Cancelable: no</li>
-              <li>Context Info: localTime, documentTime, iterationIndex</li>
+              <li>Context Info: localTime, documentTime, iterationIndex,
+                                seeked</li>
             </ul>
           </dd>
           <dt><dfn>timingcancel</dfn></dl>
@@ -3610,13 +3613,6 @@
                 timing with script you often need to do some bookkeeping on
                 a seek.
               </p>
-              <p>
-                It also acts as a hint that intermediate events may have been
-                dropped due to <a>skipped event dispatch</a> but we should
-                probably address via either a <em>timingskipped</em> event or,
-                better still, an extra parameter on timing events indicating
-                this.
-              </p>
             </li>
             <li><em>timingdirectionchange</em> &mdash;
               fired whenever the effective direction of the item changes (due to
@@ -3640,7 +3636,7 @@
                 I think this sort of event and this sort of use case would fit
                 the MutationObserver pattern well.
                 We could introduce a whole class of mutation records targetted
-                at debugging (e.g. <em>timewindowchange</em>)
+                at debugging (e.g. <em>timereschedule</em>)
               </p>
           </ul>
           <p>
@@ -3718,75 +3714,86 @@
           </p>
         </div>
         <p>
-          The <dfn>uneased inherited time</dfn> of a <a>timed item</a> is
-          equivalent to calculating its <a>inherited time</a> with the following
-          exceptions:
+          The <dfn>uneased timing</dfn> of a <a>timed item</a> refers to
+          performing any of the calculations defined for the <a>timed item</a>
+          with the following exceptions:
         </p>
         <ul>
-          <li><a title="timing function">Timing functions</a> on ancestor <a
-              title="timing group">timing groups</a> are ignored.</li>
-          <li>The <a title="fill mode">fill mode</a> of all ancestor <a
-              title="timing group">timing groups</a> is treated as <span
-              class="prop-value">none</a>.</li>
+          <li><a title="timing function">Timing functions</a> on the <a>timed
+              item</a> and all ancestor <a title="timing group">timing
+              groups</a> are ignored.</li>
+          <li>The <a title="fill mode">fill modes</a> of the <a>timed item</a>
+              and all ancestor <a title="timing group">timing groups</a> are
+              treated as <span class="prop-value">none</a>.</li>
         </ul>
         <p>
-          Since <em>uneased time</em> is invertible, if a given <a>timed
-          item</a> bases its timing calculations on the <a>uneased inherited
-          time</a> it is possible to convert the <a>local time</a> of the
-          <a>timed item</a> to the <a>local time</a> of its parent <a>timing
-          group</a>.
+          For example, the <em>uneased inherited time</em> of a <a>timed
+          item</a> is calculated using the regular definition of <a>inherited
+          time</a> after applying the two modifications to the timing of the
+          item and its ancestors noted above.
         </p>
         <p>
-          The first step is to calculate the <a>iteration time</a> of the parent
-          <a>timing group</a>, <var>parent</var>, of a <a>timed item</a>,
-          <var>item</var>, ignoring any <a title="timing function">timing
-          functions</a>, that is, the <dfn>uneased parent iteration time</dfn>,
-          which can be calculated as follows.
+          Normally the time value used as input to a child <a>timed item</a>
+          of a <a>timing group</a> is the group's <a>transformed time</a>.
+          However, since <a>uneased timing</a> does not apply <a
+          title="timing function">timing functions</a>, we refer to <dfn>uneased
+          child time</dfn> which is equivalent to both <em>uneased transformed
+          time</em> and <em>uneased directed time</em>.
+        </p>
+      </section>
+      <section>
+        <h3>Inverse timing calculations</h3>
+        <p>
+          For times calculated using <a>uneased timing</a> it is possible to
+          perform the reverse operation to, for example, convert times from
+          a <a>child timed item</a> to that of its its <a>parent timing
+          group</a> or <a>timeline</a>.
+        </p>
+        <p>
+          Calculating the <dfn><em>uneased local time</em> from <a>uneased child
+          time</a></dfn> of a given <a>timed item</a> requires recording the
+          iteration index that corresponds to the <a>uneased child time</a> and
+          is calculated as follows.
         </p>
         <ol>
-          <li>Calculate the <var>current direction</var> of <var>parent</var>
+          <li>Let <var>item</var> be the <a>timed item</a> for which the
+              <em>uneased local time</em> is to be calculated.</li>
+          <li>Let <var>child time</var> be the <a>uneased child time</a> to be
+              converted.</li>
+          <li>Let <var>iteration index</var> be the value of <a>current
+              iteration</a> corresponding to <var>child time</var>.</li>
+          <li>Calculate the <var>current direction</var> of <var>item</var>
               using the procedure defined in <a
-              href="#calculating-the-directed-time" class="sectionRef"></a>.</li>
-          <li>Let <var>inherited time</var> be <a>local time</a> of
-              <var>item</var> plus <a title="timed item start time">start
-              time</a> of <var>item</var>.</li>
-          <li>If the <var>current direction</var> is <em>forwards</em>, return
-              <var>inherited time</var>, otherwise return
-              <code><a>iteration duration</a> of <var>parent</var>
-              - <var>inherited time</var></code>.</li>
-        </ol>
-        <p>
-          Subsequently,
-          the <dfn>uneased parent local time</dfn> can be calculated given the
-          following parameters:
-        </p>
-        <ul>
-          <li><var>parent</var> &mdash; the <a>timed item</a> for which the
-              local time is calculated,</li>
-          <li><var>iteration time</var> &mdash; the <a>uneased parent iteration
-              time</a> calculated for <var>parent</var> from a <a>child timed
-              item</a>, and</li>
-          <li><var>iteration index</var> &mdash; the iteration of
-              <var>parent</var> in which the child is operating.</li>
-        </ul>
-        <p>
-          The procedure for calculating the <a>uneased parent local time</a>
-          follows.
-          Note that all timing properties refer to properties of
-          <var>parent</var> and not the <a>child timed item</a>.
-        </p>
-        <ol>
+              href="#calculating-the-directed-time"
+              class="sectionRef"></a> substituting <var>iteration index</var>
+              for the <em>current iteration</em>.</li>
           <li>
             <p>
-              Let the <var>scaled active time</var> be the result corresponding
-              to the first matching condition from below.
+              Let the <var>uneased iteration time</var> be the result
+              corresponding to the first matching condition from below.
+            </p>
+            <dl class="switch">
+              <dt>If the <var>current direction</a> is <em>forwards</em>,</dt>
+              <dd>
+                <var>child time</var>
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                <code><a>iteration duration</a> - <var>child time</var></code>
+              </dd>
+            </dl>
+          </li>
+          <li>
+            <p>
+              Let the <var>uneased scaled active time</var> be the result
+              corresponding to the first matching condition from below.
             </p>
             <dl class="switch">
               <dt>If <a>iteration duration</a> is zero,</dt>
               <dd>
                 zero
               </dd>
-              <dt>If <var>iteration time</var> equals <a>iteration
+              <dt>If <var>uneased iteration time</var> equals <a>iteration
                   duration</a>,</dt>
               <dd>
                 <code><a>repeated duration</a> * <a>start offset</a></code>
@@ -3794,13 +3801,13 @@
               <dt>Otherwise,</dt>
               <dd>
                 <code><var>iteration index</var> * <a>iteration duration</a>
-                + <var>iteration time</var></code>
+                + <var>uneased iteration time</var></code>
               </dd>
             </dl>
           </li>
           <li>
             <p>
-              Let the <var>active time</var> be the result corresponding
+              Let the <var>uneased active time</var> be the result corresponding
               to the first matching condition from below.
             </p>
             <dl class="switch">
@@ -3813,18 +3820,48 @@
               <dt>If the <a title="timed item playback rate">playback rate</a>
                   is positive,</dt>
               <dd>
-                <code>(<var>scaled active time</var> - <a>start offset</a>)
-                / <a title="timed item playback rate">playback rate</a></code>
+                <code>(<var>uneased scaled active time</var> - <a>start
+                offset</a>) / <a title="timed item playback rate">playback
+                rate</a></code>
               </dd>
               <dt>Otherwise,
               <dd>
-                <code>(<var>scaled active time</var> - <a>start offset</a>)
-                / <a title="timed item playback rate">playback rate</a>
-                + <a>active duration</a></code>
+                <code>(<var>uneased scaled active time</var> - <a>start
+                offset</a>) / <a title="timed item playback rate">playback
+                rate</a> + <a>active duration</a></code>
               </dd>
           </li>
-          <li>Return <code><var>active time</var> + <a>start delay</a></code>.
+          <li>Return <code><var>uneased active time</var> + <a>start
+              delay</a></code>.
+          </li>
         </ol>
+        <p>
+          Note that the above procedure is only defined when the <a>uneased
+          child time</a> is defined, that is, not <code>null</code>.
+        </p>
+        <p>
+          The <dfn><em>uneased inherited time</em> from <em>uneased local
+          time</em></dfn> is simply the sum of the <em>uneased local time</em>
+          and the <a>timed item</a>'s <a title="timed item">start time</a>.
+        </p>
+        <p>
+          The <dfn><em><a>timeline</a> time</em> from the <a>current time</a> of
+          a <a>player</a></dfn> is calculated as follows.
+        </p>
+        <blockquote>
+          <code><var>timeline time</var> =
+            (<a>current time</a> + <a>time drift</a>) /
+            <a title="player playback rate">playback rate</a> +
+            <a title="player start time">start time</a></code>
+        </blockquote>
+        <p>
+          Provided that the <a>current iteration</a> values used when
+          calculating the <em>uneased local time</em> are recorded, it is
+          possible, by applying the above definitions in succession, to
+          calculate the <a>time value</a> of a <a>timeline</a> corresponding to
+          the <em>uneased local time</em> of a <a>timed item</a> associated with
+          that <a>timeline</a>.
+        </p>
       </section>
       <section>
         <h3>Event parameters</h3>
