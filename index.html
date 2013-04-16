@@ -4033,16 +4033,18 @@
         </p>
         <section>
           <h4>Seeked event dispatch</h4>
-          <p>
-            Under some circumstances the usual behavior of dispatching all
-            events scheduled between two times is not appropriate either because
-            it would produce such a large number of events that performance may
-            be adversely affected,
-            or because it would produce counter-intuitive results in the
-            circumstances.
-            In such situations, an alternative form of event dispatch called
-            <a>seeked event dispatch</a> is used.
-          </p>
+          <div class="informative">
+            <p>
+              Under some circumstances the usual behavior of dispatching all
+              events scheduled between two times is not appropriate either
+              because it would produce such a large number of events that
+              performance may be adversely affected,
+              or because it would produce counter-intuitive results in the
+              circumstances.
+              In such situations, an alternative form of event dispatch called
+              <a>seeked event dispatch</a> is used.
+            </p>
+          </div>
           <p>
             <dfn>Seeked event dispatch</dfn> is a mode of event dispatch that
             produces at most one <a>timing event</a> per <a>timed item</a> by
@@ -4050,86 +4052,84 @@
             some <var>initial moment</var> and at some <var>final moment</var>.
           </p>
           <p>
-            The procedure for <a>seeked event dispatch</a> takes as its input:
-          </p>
-          <ul>
-            <li><var>item</var> &ndash; a <a>timed item</a>,</li>
-            <li><var>initial active state</var> &ndash; a parameter which
-                describes if <var>item</var> was <a>active</a> at the
-                <var>initial moment</var>, and</li>
-            <li><var>final timeline time</var> &ndash; the <a>time value</a> of
-                the <a>timeline</a> that <var>item</var> is <a title="associated
-                with a timeline">associated with</a> at the <var>final
-                moment</var>.</li>
-          </ul>
-          <p>
-            If, at <var>final moment</var>, <var>item</var> is not associated
-            with a <a>timeline</a> via a <a>player</var>, then <var>final
-            timeline time</a> is <code>null</code>.
+            To facilitate this, each <a>timed item</a> has an associated
+            <dfn>previous active state</dfn> property that initially has the
+            value <em>inactive</em>.
           </p>
           <p>
-            Based on these parameters, the events queued using <a>seeked event
-            dispatch</a> is as follows:
+            For a given <a>timed item</a> the events queued as a result of
+            performing <a>seeked event dispatch</a> at <em>uneased local
+            time</em> <var>t</var> is as follows:
           </p>
-          <dl class="switch">
-            <dt>If <var>final timeline time</var> is <code>null</code>,</dt>
-            <dd>
-              If <var>initial active state</var> is <em>active</em>, queue
-              a new <a>timingcancel</a> event with
-              <a>event local time</a>, <a>event timeline time</a>,
-              and <a>event iteration index</a> set to <code>null</code>.
-            </dd>
-            <dt>Otherwise,</dt>
-            <dd>
-              <ol>
-                <li>Calculate <var>final inherited time</var> as the <a>uneased
-                    inherited time</a> based on <var>final timeline
-                    time</var>.</li>
-                <li>Let <var>final local time</var> be the result of
-                    calculating the <a>local time</a> for from <var>final
-                    inherited time</var>.</li>
-                <li>Let <var>final active state</var> be the result of
-                    determining if <var>item</var> is <a>active</a> when
-                    substituting in <var>final local time</var> as <a>item</a>'s
-                    <a>local time</a>.</li>
-                <dl class="switch">
-                  <dt>If <var>initial active state</var> is <em>active</em> and
-                      <var>final active state</var> is not <em>active</em>,</dt>
-                  <dd>
-                    Queue a new <a>timingend</a> event with parameters:
-                    <ul>
-                      <li><a>event local time</a>: <span
-                        class="todo">TBD</span></li>
-                      <li><a>event timeline time</a>: <var>final timeline
-                          time</var></li>
-                      <li><a>event iteration index</a>: <span
-                        class="todo">TBD</span></li>
-                    </ul>
-                  </dd>
-                  <dt>If <var>initial active state</var> is not <em>active</em>
-                      and <var>final active state</var> is <em>active</em>,</dt>
-                  <dd>
-                    Queue a new <a>timingstart</a> event with parameters:
-                    <ul>
-                      <li><a>event local time</a>: <var>final local
-                          time</var></li>
-                      <li><a>event timeline time</a>: <var>final timeline
-                          time</var></li>
-                      <li><a>event iteration index</a>: the <a>current
-                          iteration</a> of <var>item</var> calculated using
-                          <var>final local time</var></li>
-                    </ul>
-                  </dd>
-                </dl>
-              </ol>
-            </dd>
-          </dl>
+          <ol>
+            <li>Let <var>timeline time</var> be the <a>time value</a> of the
+                <a>timeline</a> with which the <a>timed item</a> is
+                associated.
+                The procedures for calculating the timeline time from a <a>timed
+                item</a>'s <em>uneased local time</em> or the <a>current
+                time</a> of a <a>player</a> are defined in <a
+                href="#inverse-timing-calculations" class="sectionRef"></a>.
+                </li>
+            <li>Let <var>iteration index</var> be the result of calculating the
+                <a>current iteration</a> at <var>t</var>.</li>
+            <li>Let <var>timeline time</var> be the <a>time value</a> of the
+                <a>timeline</a> with which the <a>timed item</a> is
+                associated.
+                The procedures for calculating the timeline time from a <a>timed
+                item</a>'s <em>uneased local time</em> or the <a>current
+                time</a> of a <a>player</a> are defined in <a
+                href="#inverse-timing-calculations" class="sectionRef"></a>.
+                </li>
+            <li>Let <var>current active state</var> be <em>active</em> if the
+                timed item is <a>active</a> at <var>t</var>, and
+                <em>inactive</em> otherwise.</li>
+            <li>The events to be queued depend on comparign the <var>current
+                active state</a> and the <a>timed item</a>'s <a>previous active
+                state</a> as follows.
+            <dl class="switch">
+              <dt>If the <a>timed item</a>'s <a>previous active state</a> is
+                <em>active</em> and <var>current active state</var> is
+                <em>inactive</em>,</dt>
+              <dd>
+                Queue a new <a>timingend</a> event with parameters:
+                <ul>
+                  <li><a>event local time</a>: <var>t</var></li>
+                  <li><a>event timeline time</a>: <var>timeline time</var></li>
+                  <li><a>event iteration index</a>: <var>iteration index</var>
+                </ul>
+              </dd>
+              <dt>If the <a>timed item</a>'s <a>previous active state</a> is
+                <em>inactive</em> and <var>current active state</var> is
+                <em>active</em>,</dt>
+              <dd>
+                Queue a new <a>timingstart</a> event with parameters:
+                <ul>
+                  <li><a>event local time</a>: <var>t</var></li>
+                  <li><a>event timeline time</a>: <var>timeline time</var></li>
+                  <li><a>event iteration index</a>: <var>iteration index</var>
+                </ul>
+              </dd>
+            </dl>
+            </li>
+            <li>
+              Let the <a>timed item</a>'s <a>previous active state</a> be
+              <var>current active state</var>.
+            </li>
+          </ol>
           <p>
             For <a title="timing group">timing groups</a>, this procedure is
             applied recursively to all <a title="child timed item">child timed
             items</a>.
             The resulting events are sorted using the sequence defined in <a
             href="#sequence-of-events" class="sectionRef"></a>.
+          </p>
+          <p>
+            Note that <a>seeked event dispatch</a> is only defined for <a>timed
+            items</a> associated with a <a>player</a>.
+            <a>Timed items</a> not associated with a <a>player</a> dispatch
+            <a>timingcancel</a> events as defined in <a
+            href="#event-dispatch-and-structural-changes"
+            class="sectionRef"></a>.
           </p>
         </section>
         <section>
