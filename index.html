@@ -4346,12 +4346,42 @@
         </section>
         <section>
           <h4>Event dispatch and extended delays</h4>
-          <div class="todo">
-            Basically, if you accumulate more than 50 events, UAs may employ
-            seeked event dispatch.
-            Suggest we really need a flag on the event to indicate this
-            happenned.
+          <div class="informative">
+            <p>
+              In some circumstances, when <a>events are queued</a> during
+              a <a>sample</a>, the number of events generated may be excessive.
+              This can happen, for example, if the user agent dramatically
+              reduces the sample rate for a background application to conserve
+              battery, or if the device is activated after being in a sleep
+              state for an extended period of time.
+            </p>
+            <p>
+              In such situations, requiring the user agent to dispatch all
+              <a>timing events</a> scheduled in the interim period would result
+              in a significant drop in performance and in extreme circumstances
+              may render the user agent temporarily unusable whilst it catches
+              up on event processing.
+            </p>
+            <p>
+              In order to ensure a good user experience even in such
+              circumstances a user agent may switch to <a>seeked event
+              dispatch</a> to alleviate the burden of dispatching excessive
+              events.
+            </p>
           </div>
+          <p>
+            If, whilst <a>sampling</a> a <a>timeline</a>, more than 30 <a>events
+            are queued</a>, the user agent MAY employ <a>seeked event
+            dispatch</a> for all <a>timed items</a> <a
+            title="associated with a timeline">associated</a> with the
+            <a>timeline</a>.
+          </p>
+          <p class="issue">
+            30 is somewhat arbitrary.
+            Need feedback both from implementations (on the most constrained
+            device, when does this start being burdensome?) and authoring (what
+            is the minimum guarantee necessary to cover most regular content?)
+          </p>
           <div class="annotation">
             The SVG bindings may add additional requirements here so that when
             a protracted delay may make resolving syncbase dependencies in the
