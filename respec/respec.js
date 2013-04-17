@@ -1464,21 +1464,32 @@ berjon.respec.prototype = {
             var title = this._getDfnTitle(dfn);
             dfnMap[title.toLowerCase()] = sn.makeID(dfn, "dfn", title);
         }
-        
+
+        // Very primitive de-pluralizing... only works for a trailing 's', no
+        // 'es' or other languages.
+        var mightBePlural = function(str) {
+          return str.lastIndexOf("s") == str.length - 1;
+        }
+        var depluralize = function(str) {
+          return str.substr(0, str.lastIndexOf("s"));
+        }
+        var getMatch = function(str) {
+          var ref = dfnMap[str];
+          if (ref)
+            return ref;
+          if (mightBePlural(str) && (ref = dfnMap[depluralize(str)]))
+            return ref;
+          return null;
+        }
         var ants = document.querySelectorAll("a:not([href])");
         for (var i = 0; i < ants.length; i++) {
             var ant = ants[i];
-            // if (ant.getAttribute("class") == "externalDFN") continue;
             if (sn.hasClass(ant, "externalDFN")) continue;
             var title = this._getDfnTitle(ant).toLowerCase();
-            if (dfnMap[title] && !(dfnMap[title] instanceof Function)) {
-                ant.setAttribute("href", "#" + dfnMap[title]);
-                // ant.setAttribute("class", "internalDFN");
+            var ref = getMatch(title);
+            if (ref) {
+                ant.setAttribute("href", "#" + ref);
                 sn.addClass(ant, "internalDFN");
-            }
-            else {
-                // we want to use these for other links too
-                // error("No definition for title: " + title);
             }
         }
     },
