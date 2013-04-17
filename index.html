@@ -4045,6 +4045,12 @@
         <p class="todo">
           Make sure we update the previous sample time for a seek/etc.
         </p>
+        <p class="note">
+          Note that <a href="#a-general-algorithm-for-event-dispatch"
+          class="sectionRef"></a> provides a non-normative algorithm that
+          incorporates the behavior defined in this section as well as <a
+          href="#sequence-of-events" class="sectionRef"></a>.
+        </p>
         <section>
           <h4>Seeked event dispatch</h4>
           <div class="informative">
@@ -4345,301 +4351,6 @@
             interim period difficult to achieve without adversely impacting
             performance, a seek is performed.
           </div>
-        </section>
-        <section class="informative">
-          <h4>A general algorithm for event dispatch</h4>
-          <p class="todo">
-            TBD
-          </p>
-          <!--
-          <p>
-            For two times <var>A</var> and <var>B</var> expressed in the
-            <a>uneased inherited time</a> of a <a>timed item</a> <var>item</var>
-            we can determine the set of <a title="timing event">timing events</a>
-            that are scheduled to occur.
-          </p>
-          <p>
-            First, we define the nature of the interval end points with regards to
-            events that occur on the interval boundaries as follows:
-          </p>
-          <dl>
-            <dt><dfn>open start</dfn></dt>
-            <dd>
-              <a>timingstart</a> and <a>timingiteration</a> <a
-              title="timing event">timing events</a> that coincide with the start
-              of the interval are dispatched, <a>timingend</a> events are skipped.
-            </dd>
-            <dt><dfn>closed start</dfn></dt>
-            <dd>
-              All <a title="timing event">timing events</a> that coincide with the
-              start of the interval are skipped.
-            </dd>
-            <dt><dfn>open end</dfn></dt>
-            <dd>
-              All <a title="timing event">timing events</a> that coincide with the
-              end of the interval are dispatched.
-            </dd>
-            <dt><dfn>closed end</dfn></dt>
-            <dd>
-              All <a title="timing event">timing events</a> that coincide with the
-              start of the interval are skipped.
-              <a>timingend</a> <a title="timing event">timing events</a> that
-              coincide with the end of the interval are dispatched, all other <a
-              title="timing event">timing events</a> are skipped.
-            </dd>
-          </dl>
-          <p>
-            Given two times <var>A</var> and <var>B</var> and the nature of the
-            interval (e.g. <a>closed start</a>-<a>open end</a>),
-            we can define that an
-            <var>event time</var> of <var>event type</var> is <dfn>included in
-            AB</dfn> using if and only if one of the following conditions is true:
-          </p>
-          <ul>
-            <li><code>min(<var>A</var>, <var>B</var>)</code> &lt;
-                <var>event time</var> &lt;
-                <code>max(<var>A</var>, <var>B</var>)</code>.</li>
-            <li>
-              <p>
-                <var>event time</var> = <var>A</var> &ne; <var>B</var> and
-                there is a mark (●) in the following table in the cell
-                corresponding to the nature of the interval and <var>event
-                type</var>:
-              </p>
-              <table class="simple">
-                <thead>
-                  <tr>
-                    <th><var>event type</var></th>
-                    <th><a>timingstart</a></th>
-                    <th><a>timingiteration</a></th>
-                    <th><a>timingend</a></th>
-                  </tr>
-                </thead>
-                <tr>
-                  <td><a>open start</a></td>
-                  <td>●</td>
-                  <td>●</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td><a>closed start</a></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </table>
-            </li>
-            <li>
-              <p>
-                <var>event time</var> = <var>B</var> &ne; <var>A</var> and
-                there is a mark (●) in the following table in the cell
-                corresponding to the nature of the interval and <var>event
-                type</var>:
-              </p>
-              <table class="simple">
-                <thead>
-                  <tr>
-                    <th><var>event type</var></th>
-                    <th><a>timingstart</a></th>
-                    <th><a>timingiteration</a></th>
-                    <th><a>timingend</a></th>
-                  </tr>
-                </thead>
-                <tr>
-                  <td><a>open end</a></td>
-                  <td>●</td>
-                  <td>●</td>
-                  <td>●</td>
-                </tr>
-                <tr>
-                  <td><a>closed end</a></td>
-                  <td></td>
-                  <td></td>
-                  <td>●</td>
-                </tr>
-              </table>
-            </li>
-            <li><var>event time</var> = <var>A</var> = <var>B</var> and
-                interval AB has an <a>open start</a>.</li>
-          </ul>
-          <p>
-            Using this definition the set of <a title="timing event">timing
-            events</a> scheduled to occur for a given <a>timed item</a>,
-            <var>item</var>, between two times <var>A</var> and <var>B</var>
-            expressed in the <a>uneased inherited time</a> of <var>item</var>
-            can be determined as follows.
-          </p>
-          <ol>
-            <li>Let <var>events</var> be an empty sequence of triples
-                of the format <em>(type, local time, parent time)</em>.</li>
-            <li>Let <var>direction</var> be <em>forwards</em> if A &lt; B.</li>
-            <li>Let <var>LHS</var> be <a title="timed item start time">start
-                time</a> + <a>start delay</a>.</li>
-            <li>If <var>LHS</var> is <a>included in AB</a>,
-                <ol>
-                  <li>Create a new triple with
-                      <em>local time</em> set to <var>item</var>'s <a
-                      title="timed item start time">start delay</a> and
-                      <em>parent time</em> set to <var>LHS</var>.</li>
-                  <li>Set the <em>type</em>  follows,
-                    <dl class="switch">
-                      <dt>If <var>direction</var> is <em>forwards</em>,</dt>
-                      <dd>Set the type to <a>timingstart</a>.</dd>
-                      <dt>Otherwise,</dt>
-                      <dd>Set the type to <a>timingend</a>.</dd>
-                    </dl>
-                  </li>
-                  <li>Append the triple to <var>events</var>.</li>
-                </ol>
-            </li>
-            <li>Let <var>RHS</var> be <a title="timed item start time">start
-                time</a> + <a>start delay</a> + <a>active duration</a>.</li>
-            <li>Calculate the iteration endpoints as
-            <li>If <var>RHS</var> is <a>in interval AB</a>,
-                <ol>
-                  <li>Create a new triple with
-                      <em>local time</em> set to
-                      <code><a title="timed item start time">start delay</a>
-                            + <a>active duration</a></code>
-                      and <em>parent time</em> set to <var>RHS</var>.</li>
-                  <li>Set the <em>type</em>  follows,
-                    <dl class="switch">
-                      <dt>If <var>direction</var> is <em>forwards</em>,</dt>
-                      <dd>Set the type to <a>timingend</a>.</dd>
-                      <dt>Otherwise,</dt>
-                      <dd>Set the type to <a>timingstart</a>.</dd>
-                    </dl>
-                  </li>
-                  <li>Append the triple to <var>events</var>.</li>
-                </ol>
-            </li>
-          </ol>
-          <p>
-            When <var>A</var> is equal to <var>B</var> the set of events is empty.
-          </p>
-          <ol>
-            <li>Associate with every <a>timed item</a> a <var>previous sample
-                time</var> initialized to <code>null</code>.</li>
-            <li>Let <var>current sample time</var> be the current <a>time
-                value</a> for the <a>timeline</a> being sampled.</li>
-            <li>Calculate the <a>next event time</a>.
-            <li>If the next event time <= current sample time
-               Dispatch events for 
-            <li>While <var>next event time</var> is less than or
-            <li>For each <a>player</li>
-
-          </ol>
-
-          <ul>
-            <li>
-              Let <var>previous sample</var> be the moment when the timing model
-              was last sampled, recorded in document time.
-              If there was no previous sample, then let <var>previous sample</var>
-              be -1.
-            </li>
-            <li>
-              Let <var>current sample</var> be the current document time.
-            </li>
-            <li>
-              Let <var>progress interval</var> be the interval (<var>previous
-              sample</var>, <var>current sample</var>].
-            </li>
-          </ul>
-          <p>
-            The events to be dispatched are therefore those whose document time
-            lies within <var>progress interval</var>.
-          </p>
-          <div class="todo">
-            <p>
-              I think we will need to make sample times per-timed item.
-              Then, if we have a timed item that has a previous sample, but can't
-              get the current time (because it has no timeline), then we fire
-              a timingcancel event.
-            </p>
-            <p>
-              That way, you can switch players and their source content around and
-              you'll only get a cancel event if on the next sample the timed item
-              is not connected to a player.
-            </p>
-            <p>
-              The time for the cancel event would be the time of the previous
-              sample.
-            </p>
-          </div>
-          <div class="issue">
-            <p>
-              This description fails to account for newly-added animations,
-              removed animations, and other tree surgery.
-              For example, if I have a sample at t=3s, I add an animation whose
-              animation interval starts at t=2s, and then conduct another sample
-              at t=4s, the <em>timingstart</em> event should fire even though the
-              event's document time lies outside the progress interval.
-            </p>
-            <p>
-              We could possibly fix this by making the previous sample times and
-              current sample times per-<a>TimedItem</a> but that won't work for
-              repeating groups.
-              Needs work.
-            </p>
-          </div>
-          <div class="issue">
-            <p>
-              This last part here requires calculating document times (both for
-              testing against the progress interval and also for filling in the
-              <code>documentTime</code> attribute of the event) and that's hard to
-              calculate since our current model allows non-invertible timing
-              functions on groups.
-              That means you can't easily just traverse the descendants (by child
-              and iteration) and generate a list of interval and iteration
-              boundaries then filter out the ones that don't fit in the interval
-              because you can't easily convert from local time to document time.
-            </p>
-            <p>
-              You can, of course, convert from document time to local time
-              and while that's probably enough to tell if there was an interval or
-              iteration edge or not, it's not enough to determine the exact time
-              at which it occurred (to fill in the event parameters).
-            </p>
-            <p>
-              A complex example is where you have an group whose iteration time
-              goes from 0 to 1.5 to 0.7 back to 1.
-              Suppose you have a child animation that finishes its animation
-              interval at 80% of the way through the parent's iteration interval.
-              It would then finish, do nothing, then start reversing part-way,
-              then finish again.
-              In that case I think you expect to get: start, finish, start,
-              finish.
-            </p>
-            <p>
-              It's probably not impossible, so long as we allow for the fact that
-              the inverse may have several (even equal) roots but it sounds tricky
-              and possibly expensive to calculate on each iteration.
-            </p>
-            <p>
-              I think we might need to re-consider allowing non-invertible timing
-              functions on groups.
-              Alternatively we could say that the children of a group with
-              a non-interval timing function don't generate events.
-              Or, alternatively again, that they occur on the non-transformed
-              times.
-            </p>
-            <p>
-              This final options of making event times untransformed times is not
-              such a bad option, especially if we split time transformations into
-              a separate step and perhaps even a separate interface.
-              It's similar to some vector graphics editing programs that provide
-              bitmap filter effects&mdash;often the bounding box of the filtered
-              shape reflects the dimensions of the vector shape and not that of
-              the bitmapped result.
-            </p>
-            <p>
-              Also, in the case of an animation that bounces back and forth before
-              resting at its final value, it's probably more useful to get just
-              one end event when it finally rests than lots of little end/start
-              events each time it crosses the 1.0 iteration time boundary.
-            </p>
-          </div>
-          -->
         </section>
       </section>
     </section>
@@ -7394,6 +7105,13 @@ var frame = effect.frames['0.3'];
 
     <section class='appendix' id="webidl-ref">
       <h2>Interface summary</h2>
+    </section>
+
+    <section class="appendix informative">
+      <h2>A general algorithm for event dispatch</h2>
+      <p class="todo">
+        TBD
+      </p>
     </section>
 
     <section class='appendix'>
