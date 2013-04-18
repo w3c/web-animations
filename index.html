@@ -4053,9 +4053,9 @@
           Make sure we update the previous sample time for a seek/etc.
         </p>
         <p class="note">
-          Note that <a href="#a-general-algorithm-for-event-dispatch"
-          class="sectionRef"></a> provides a non-normative algorithm that
-          incorporates the behavior defined in this section as well as <a
+          Note that <a href="#algorithms-for-event-dispatch"
+          class="sectionRef"></a> provides non-normative algorithms that
+          incorporate the behavior defined in this section as well as <a
           href="#sequence-of-events" class="sectionRef"></a>.
         </p>
         <section>
@@ -7168,10 +7168,151 @@ var frame = effect.frames['0.3'];
     </section>
 
     <section class="appendix informative">
-      <h2>A general algorithm for event dispatch</h2>
-      <p class="todo">
-        TBD
+      <h2>Algorithms for event dispatch</h2>
+      <p>
+        The following algorithms demonstrate a possible approach to handling
+        event queuing that incorporates the various requirements outlined in <a
+        href="#timing-events" class="sectionRef"></a>.
       </p>
+      <section>
+        <h3>Interval boundaries and time marks</h3>
+        <p>
+          With regards to event dispatch, interval boundary conditions are
+          particularly important.
+          For example, if we were to conduct a <a>sample</a> at time 3s and then
+          another sample at 5s, on that second sample we should dispatch all
+          events between the two times.
+          If a <a>timed item</a> were to start at time 5s, then we
+          should dispatch the corresponding <a>timingstart</a> event since that
+          time has arrived.
+          However, since we will have already dispatched all events at time 3s
+          during the previous sample, we should <em>not</em> dispatch any events
+          coinciding with time 3s.
+        </p>
+        <p>
+          In other situations, however, such as when getting the events
+          scheduled by <a>child timed items</a> within a given iteration, we
+          should include <a>timingstart</a> events that coincide with the start
+          of the iteration but not <a>timingend</a> events since, under Web
+          Animations endpoint-exclusive timing model, those <a>timingend</a>
+          events happened fractionally before the iteration started.
+          To accommodate these different endpoint behaviors we introduce the
+          concept of <a>time marks</a>.
+        </p>
+        <p>
+          A <dfn>time mark</dfn> is a triple consisting of:
+        </p>
+        <ul>
+          <li>a <span class="property">time value</span>,
+          <li>a <span class="property">position</span>: minus, zero, or plus,
+              and
+          <li>a Boolean flag indicating if the mark represents the endpoint of
+              an interval or not (regardless of which &lsquo;end&rsquo; of the
+              interval the mark represents)
+        </ul>
+        <p>
+          We can use subscript notation to indicate these properties.
+          For example, <var class="timeMark">t<sub>minus|end</sub></var>.
+          If the time mark does not represent an interval endpoint, the
+          &lsquo;|end&rsquo; part of the subscript text is dropped, as in
+          <var class="timeMark">t<sub>minus</sub></var>.
+        </p>
+        <p>
+          For a given <a>time mark</a>, |<var class="timeMark">t</var>|
+          indicates just the <span class="property">time value</span> ignoring
+          the other properties, and <var class="timeMark">t<sub>pos</sub></var>
+          indicates just the <span class="property">position</span>.
+        </p>
+        <p>
+          The <span class="position">minus</span> position represents a value
+          an infinitely small amount less than the <span class="property">time
+          value</span> whilst the <span class="position">plus</span> position
+          represents a value infinitely small amount greater.
+          zero represents the moment at the time value.
+        </p>
+        <p>
+          The meaning of these <span class="property">position</span> values is
+          not affected by the direction in which playback proceeds.
+          We can compare <span class="property">positions</span> and <span
+          class="property">time values</span> as follows:
+        </p>
+        <p>
+          For two <a>time marks</a> <var class="timeMark">a</var> and <var
+            class="timeMark">b</var>, <var class="timeMark">a</var> is less than
+          <var class="timeMark">b</var> if one of the following conditions is
+          true:
+        </p>
+        <ul>
+          <li>|<var class="timeMark">a</var>| &lt;
+              |<var class="timeMark">b</var>|, or
+          <li>|<var class="timeMark">a</var>| =
+              |<var class="timeMark">b</var>| and
+              <var class="timeMark">a<sub>pos</sub></var> =
+              <span class="position">before</span> and
+              <var class="timeMark">b<sub>pos</sub></var> &ne;
+              <span class="position">before</span>, or
+          <li>|<var class="timeMark">a</var>| =
+              |<var class="timeMark">b</var>| and
+              <var class="timeMark">a<sub>pos</sub></var>=
+              <span class="position">zero</span> and
+              <var class="timeMark">b<sub>pos</sub></var>=
+              <span class="position">after</span>
+        </ul>
+        <p>
+          For two <a>time marks</a> <var class="timeMark">a</var> and <var
+            class="timeMark">b</var>, <var class="timeMark">a</var> equals 
+          <var class="timeMark">b</var> if
+          |<var class="timeMark">a</var>| equals |<var class="timeMark">b</var>|
+          and
+          <var class="timeMark">a<sub>pos</sub></var> equals
+          <var class="timeMark">b<sub>pos</sub></var>.
+        </p>
+        <p>
+          Operations such as greater-than and less-than-or-equal can be
+          extrapolated from these definitions.
+        </p>
+        <p>
+          Since these operations only apply to the <span
+          class="property">position</span> and <span class="property">time
+          value</span> of the <a>time mark</a>, we define
+          the <code><a title="first(a,b)">first</a>()</code> and
+          <code><a title="last(a,b)">last</a>()</code> operations which are
+          for most purposes equivalent to <code>min()</code> and
+          <code>max()</code> but in the case where the two arguments are equal,
+          it preserves their order.
+          Their definitions are as follows.
+        </p>
+        <ul>
+          <li><dfn title="first(a,b)">first</dfn>(<var
+              class="timeMark">a</var>,<var class="timeMark">b</var>) =
+              <var class="timeMark">a</var> if <var class="timeMark">a</var>
+              &le; <var class="timeMark">b</var> and
+              <var class="timeMark">b</var> otherwise.
+          <li><dfn title="last(a,b)">last</dfn>(<var
+              class="timeMark">a</var>,<var class="timeMark">b</var>) =
+              <var class="timeMark">a</var> if <var class="timeMark">a</var>
+              &gt; <var class="timeMark">b</var> and
+              <var class="timeMark">b</var> otherwise.
+        </ul>
+        <p>
+          Given an interval delimited by two <a>time marks</a> <var
+          class="timeMark">a</var> and <var class="timeMark">b</var>,
+          a time <var>t</var> is <dfn>in the interval <var>ab</var></dfn> if the
+          following relationship holds:
+          <a title="first(a,b)">first<a>(<var class="timeMark">a</var>,
+                                         <var class="timeMark">b</var>)
+          &le; <var>t</var>
+          &le; <a title="last(a,b)">last<a>(<var class="timeMark">a</var>,
+                                            <var class="timeMark">b</var>).
+        </p>
+        <p>
+          A <a>time mark</a> can be added to a <a>time value</a> by simply
+          adding the time value components and keeping the <span
+          class="property">position</span> and interval
+          endpoint state of the <a>time mark</a>.
+          Addition of two <a>time marks</a> is not defined.
+        </p>
+      </section>
     </section>
 
     <section class='appendix'>
