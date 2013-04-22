@@ -7236,7 +7236,8 @@ var frame = effect.frames['0.3'];
           an infinitely small amount less than the <span class="property">time
           value</span> whilst the <span class="position">plus</span> position
           represents a value infinitely small amount greater.
-          zero represents the moment at the time value.
+          <span class="position">zero</span> represents the moment at the time
+          value.
         </p>
         <p>
           The meaning of these <span class="property">position</span> values is
@@ -7424,9 +7425,282 @@ var frame = effect.frames['0.3'];
           expressed in <a title="uneased timing">uneased inherited time</a>, can
           be determined as follows:
         </p>
-        <p class="todo">
-          TBD
-        </p>
+        <ol>
+          <li>Let <var>events</var> be an empty sequence of <a>timing
+              events</a>.
+          <li>Let <var class="timeMark">range a</var> be the <a>time mark</a>
+              resulting from calculating <var class="timeMark">a</var> + <a
+              title="timed item start time">start time</a>.
+          <li>Let <var class="timeMark">range b</var> be the <a>time mark</a>
+              resulting from calculating <var class="timeMark">b</var> + <a
+              title="timed item start time">start time</a>.
+          <li>Define a <a>time mark</a> <var class="timeMark">t</var> as being
+              <dfn>in range</dfn> if it is <a title="in the interval ab">in the
+              interval</a> (<var class="timeMark">range a</var>,
+              <var class="timeMark">range b</var>).
+          <li>Let <var class="timeMark">range lhs</var> be <a
+              title="first(a,b)">first</a>(<var class="timeMark">range a</var>,
+              <var class="timeMark">range b</var>).
+          <li>Let <var class="timeMark">range rhs</var> be <a
+              title="last(a,b)">last</a>(<var class="timeMark">range a</var>,
+              <var class="timeMark">range b</var>).
+          <li>Let <var class="timeMark">active start</var> be <var
+              class="timeMark">start delay<sub>zero|end</sub></var>.
+          <li>Let <var class="timeMark">active end</var> be <span
+              class="timeMark">(<a>start delay</a> + <a>active
+              duration</a>)<sub>minus|end</sub></span>.
+          <li>If |<var class="timeMark">active start</var>| = |<var
+              class="timeMark">active end</var>| then set the <span
+              class="property">position</span> of <var
+              class="timeMark">active end</var> to <span
+              class="position">zero</span>.
+          <li>If either of the following conditions is true:
+            <ul><li><var class="timeMark">active end</var> &lt;
+                <var class="timeMark">range lhs</var>; or
+                <li><var class="timeMark">active start</var> &gt;
+                <var class="timeMark">range rhs</var>
+            </ul>
+            return <var>events</var>.
+          <li>If |<var class="timeMark">active start</var>| =
+              |<var class="timeMark">active end</var>| and the <a>timed
+              item</a>’s <a>iteration count</a> is infinity, let
+              <var>effective iteration count</var> be 1, otherwise let it be
+              the <a>timed item</a>’s <a>iteration count</a>.
+          <li>Let <var>iteration times</var> be a sequence of <a>time
+              values</a> populated with the results of calculating |<var
+              class="timeMark">active start</var>| + <var>i</var> * <a>iteration
+              duration</a> for each integer <var>i</var> in the range 0 &lt;
+              <var>i</var> &lt; <var>effective iteration count</var>.
+          <li>Remove all <a>time values</a> from <var>iteration times</var>
+              where <var class="timeMark">time value<sub>zero</sub></var> is not
+              <a>in range</a>.
+          <li>Let <var>subintervals</var> be an empty sequence of <a>time
+              marks</a>.
+          <li>If <var class="timeMark">active start</var> is <a>in range</a>,
+              append it to <var>subintervals</var>, otherwise append <var
+              class="timeMark">range lhs</var>.
+          <li>For each <a>time value</a> <var>t</var> in <var>iteration
+              times</var>, add the following two <a>time marks</a> to
+              <var>subintervals</var>, in order,
+              <var class="timeMark">t<sub>minus|end</sub></var>,
+              <var class="timeMark">t<sub>zero|end</sub></var>
+              unless the <a>iteration duration</a>
+              is zero, in which case add
+              <var class="timeMark">t<sub>zero|end</sub></var>,
+              <var class="timeMark">t<sub>zero|end</sub></var> instead.
+          <li>If <var class="timeMark">active end</var> is <a>in range</a>,
+              append it to <var>subintervals</var>, otherwise append <var
+              class="timeMark">range rhs</var>.
+          <li>If the first pair of <a>time marks</a> in <var>subintervals</var>
+              are not in order, that is, if <var
+              class="timeMark">subintervals[0]</var> &gt; <var
+              class="timeMark">subintervals[1]</var>, remove those two <a>time
+              marks</a> from <var>subintervals</var>.
+              <p class="note">
+                This will happen if a non-zero-duration iteration ends at |<var
+                class="timeMark">range lhs</var>| and the <span
+                class="property">position</span> of <var class="timeMark">range
+                lhs</var> is not <span class="position">minus</span>.
+              </p>
+          <li>If <var class="timeMark">range a</var> &lt; <var
+              class="timeMark">range b</var>, let <var>direction</var> be
+              <span class="prop-value">'forwards'</span>, otherwise let
+              <var>direction</var> be <span
+              class="prop-value">'backwards'</span>.
+          <li>If <var>direction</var> is <span
+              class="prop-value">backwards</span>, reverse the elements of
+              <var>subintervals</var>.
+          <li>Let <var class="timeMark">directed active start</var> be <var
+              class="timeMark">active start</var> if <var>direction</var> is
+              <span class="prop-value">'forwards'</span> and <var
+              class="timeMark">active end</var> otherwise.
+          <li>Likewise, let <var class="timeMark">directed active end</var> be
+              <var class="timeMark">active end</var> if <var>direction</var> is
+              <span class="prop-value">'forwards'</span> and <var
+              class="timeMark">active start</var> otherwise.
+          <li>Define the <dfn>iteration index at local <a>time mark</a>
+              <var class="timeMark">t</var></dfn> as follows:
+            <ol>
+              <li>Let <var>iteration index</var> be the result of calculating
+                  the <a>current iteration</a> at |<var
+                  class="timeMark">t</var>|.
+              <li>If <var class="timeMark">t<sub>pos</sub></var> is <span
+                  class="position">minus</span> and (<var>iteration index</var>
+                  – <var class="timeMark">active start</var>) % <a>iteration
+                  duration</a> = 0,
+                  let <var>iteration index</var> be max(0, <var>iteration
+                  index</var> - 1).
+              <li>The result is <var>iteration index</var>.
+            </ol>
+          <li>Define the <dfn>timeline time at local <a>time mark</a>
+            <var>t</var></dfn> as follows:
+            <ol>
+              <li>Let the <var>uneased local root time</var> be the result of
+                  repeatedly applying the procedures for calculating the
+                  <a>uneased inherited time from uneased local time</a> and
+                  <a>uneased local time from uneased child time</a>
+                  defined in
+                  <a href="#inverse-timing-calculations" class="sectionRef"></a>
+                  for each ancestor of this <a>timed item</a> in turn up to the
+                  <a>root timed item</a> using |<var>t</var>| as the initial
+                  <var>uneased local time</var>.
+              <li>Let the <var>uneased local player time</var> be the result of
+                  calculating the
+                  <a>uneased inherited time from uneased local time</a> for
+                  the <var>uneased local root time</var> using the <var>uneased
+                  local root time</a> as the <var>uneased local time</var>.
+              <li>Let the <var>timeline time</var> be the result of calculating
+                  the <a>timeline time from the current time of a player</a> for
+                  the <a>player</a> with which this <a>timed item</a> is <a
+                  title="associated with a player">associated</a> using the
+                  <var>uneased local player time</var> as the <var>current
+                  time</var>.
+              <li>If the <var>timeline time</var> is undefined, let
+                  <var>timeline time</var> use the current
+                  <a>time value</a> of the <a>timeline</a> with which this
+                  <a>timed item</a> is <a title="associated with
+                  a timeline">associated</a>.
+              <li>The result is <var>timeline time</var>.
+            </ol>
+          <li>If <var class="timeMark">directed active start</var> is <a>in
+              range</a>, append to <var>events</var> a <a>timing event</a>
+              with the following parameters:
+            <ul>
+              <li>type: <a>timingstart</a>
+              <li>event target: this <a>timed item</a>
+              <li><a>event local time</a>:
+                  |<var class="timeMark">directed active start</var>|
+              <li><a>event timeline time</a>:
+                  <a title="timeline time at local time mark t">timeline
+                  time for <var class="timeMark">directed active
+                  start</var></a>.
+              <li><a>event iteration index</a>:
+                  <a title="iteration index at local time mark t">iteration
+                  index at <var class="timeMark">directed active
+                  start</var></a>
+              <li><a>seeked dispatch flag</a>: false
+            </ul>
+            Alternatively, if <var class="timeMark">range a</var> is an
+            interval endpoint, append a <a>timing event</a> to
+            <var>events</var> as above but substituting <var
+            class="timeMark">range a</var> in place of <var
+            class="timeMark">directed active start</var>.
+          <li>Let <var>subinterval iteration index</var> be the <a
+            title="iteration index at local time mark t">iteration index
+            at the first <a>time mark</a> in <var>subintervals</var></a>.
+          <li>Let <var>first iteration</var> be <code>true</code>
+          <li>Iterate over each pair of <a>time marks</a> in
+              <var>subintervals</var> in order such that each <a>time mark</a>
+              is used only once.
+              For each pair of <a>time marks</a>,
+              (<var class="timeMark">subinterval start</var>,
+              <var class="timeMark">subinterval end</var>)
+              perform the following steps:
+            <ol>
+              <li>Let <var>subinterval iteration index</var> be the <a
+                title="iteration index at local time mark t">iteration index
+                at <var class="timeMark">subinterval start</var></a>.
+              <li>If <em>either</em> of the following conditions is true,
+                <ul>
+                  <li><var>first iteration</var> is <code>false</code>, or
+                  <li><var class="timeMark">subinterval start</var> =
+                      <var class="timeMark">range a</var> &ne;
+                      <var class="timeMark">subinterval end</var>
+                </ul>
+                append a new <a>timing event</a> to <var>events</var> with the
+                following paramters:
+                <ul>
+                  <li>type: <a>timingiteration</a>
+                  <li>event target: this <a>timed item</a>
+                  <li><a>event local time</a>:
+                      |<var class="timeMark">subinterval start</var>|
+                  <li><a>event timeline time</a>:
+                      <a title="timeline time at local time mark t">timeline
+                      time for <var class="timeMark">subinterval
+                      start</var></a>.
+                  <li><a>event iteration index</a>:
+                      <var>subinterval iteration index</var>
+                  <li><a>seeked dispatch flag</a>: false
+                </ul>
+              <li>Let <var class="timeMark">child start</var> be a <a>time
+                mark</a> whose <span class="property">time value</span> is the
+                result of calculating the <a>directed time</a> corresponding
+                to |<var class="timeMark">subinterval start</var>| but using
+                <var>subinterval iteration index</var> as the <var>current
+                iteration value</var> and assuming a <a>fill mode</a> of
+                <span class="prop-value">'none'</span> and whose <span
+                class="property">position</span> is the same as that of <var
+                class="timeMark">subinterval start</var>.
+              <li>Likewise, let <var class="timeMark">child end</var> be the
+                result of performing the same operation but for <var
+                class="timeMark">subinterval end</var>.
+              <li>Let <var>child direction</var> be
+                <span class="prop-value">'forwards'</span> if
+                |<var class="timeMark">child start</var>| &lt;
+                |<var class="timeMark">child end</var>|,
+                <span class="prop-value">'backwards'</span> if
+                |<var class="timeMark">child start</var>| &gt;
+                |<var class="timeMark">child end</var>|,
+                and <code>null</code> if
+                |<var class="timeMark">child start</var>| =
+                |<var class="timeMark">child end</var>|.
+              <li>If <var>child direction</var> is not <code>null</code> and is
+                not equal to <var>direction</var>, invert the <span
+                class="property">position</span> of <var
+                class="timeMark">child start</var> and <var
+                class="timeMark">child end</var> each such that <span
+                class="position">plus</span> becomes <span
+                class="position">minus</span>, and vice versa, and <span
+                class="position">zero</span> remains
+                unchanged.
+              <li>Let <var>child events</var> be an empty sequence of
+                <a>timing events</a>.
+              <li>Iterate over each <a>child timed item</a> in order and for
+                each child get the <a
+                title="partially ordered set of events for a timed item scheduled between time marks a and b">partially
+                ordered set of events scheduled between <var
+                class="timeMark">child start</var> and <var
+                class="timeMark">child end</var></a> and append to <var>child
+                events</var>.
+              <li>Append <var>child events</var> to <var>events</var>.
+              <li>If <var>direction</var> is <span
+                  class="prop-value">'forwards'</span>, increment
+                  <var>subinterval iteration index</var>, otherwise decrement
+                  it.
+                  <p class="note">
+                    This manual handling of the <var>subinterval iteration
+                      index</var> (as opposed to simply recalculating the
+                    <a title="iteration index at local time mark t">iteration
+                    index for each <var>subinterval start</var></a> is
+                    necessary for handling zero-length intervals.
+                  </p>
+              <li>Let <var>first iteration</var> be <code>false</code>.
+            </ol>
+          <li>If <var class="timeMark">directed active end</var> is <a>in
+              range</a>, append to <var>events</var> a <a>timing event</a>
+              with the following parameters:
+            <ul>
+              <li>type: <a>timingend</a>
+              <li>event target: this <a>timed item</a>
+              <li><a>event local time</a>:
+                  |<var class="timeMark">directed active end</var>|
+              <li><a>event timeline time</a>:
+                  <a title="timeline time at local time mark t">timeline
+                  time for <var class="timeMark">directed active
+                  end</var></a>.
+              <li><a>event iteration index</a>:
+                  <a title="iteration index at local time mark t">iteration
+                  index at <var class="timeMark">directed active
+                  end</var></a>
+              <li><a>seeked dispatch flag</a>: false
+            </ul>
+            Alternatively, if <var class="timeMark">range b</var> is an
+            interval endpoint, append a <a>timing event</a> to
+            <var>events</var> as above but substituting <var
+            class="timeMark">range b</var> in place of <var
+            class="timeMark">directed active end</var>.
+          <li>Return <var>events</var>.
+        </ol>
       </section>
       <section>
         <h3>Events for a timed item during seeked event dispatch</h3>
