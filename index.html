@@ -3854,6 +3854,14 @@
             <a title="player start time">start time</a></code>
         </blockquote>
         <p>
+          If the <a title="player playback rate">player's playback rate</a> is
+          zero, the <var>timeline time</var> is undefined.
+          The handling of an undefined value depends on the context in which it
+          is used.
+          Typically, a current <a>time value</a> for the <a>timeline</a> is
+          available and this is used in place of the undefined value.
+        </p>
+        <p>
           Provided that the <a>current iteration</a> values used when
           calculating the <em>uneased local time</em> are recorded, it is
           possible, by applying the above definitions in succession, to
@@ -7340,7 +7348,7 @@ var frame = effect.frames['0.3'];
             <var>t</var> and append then to <var>events</var>.
           <li>Perform a stable sort on <var>events</var> by <a>event timeline
               time</a> such that earlier times sort first.</li>
-          <li>Add the <a>events</a> to the event queue in their current
+          <li>Add <var>events</var> to the event queue in their current
               order.</li>
         </ol>
       </section>
@@ -7349,6 +7357,84 @@ var frame = effect.frames['0.3'];
         <p>
           The <dfn>partially ordered set of events for a <a>player</a> at
           timeline time <var>t</var></dfn>, can be determined as follows:
+        </p>
+        <ol>
+          <li>Let <var>previous sample mark</var> be a <a>time mark</a>
+              associated with the <a>player</a> that is initialized to <span
+              class="timeMark">0<sub>zero|end</sub></span> when the
+              <a>player</a> is first created.
+          <li>Let <var>sample time</var> be the result of calculating the
+              <a>player</a>’s <a>current time</a> at timeline time <var>t</var>.
+          <li>Let <var>sample mark</var> be <var class="timeMark">sample
+              time<sub>plus</sub></var>.
+          <li>Let <var>events</var> be an empty sequence of <a>timing
+              events</a>.
+          <li>
+            The events queued depends on whether or not the <a>time adjusted
+            flag</a> is set as follows,
+            <dl class="switch">
+              <dt>If the <a>time adjusted flag</a> of the
+                  <a>player</a> is set,</dt>
+              <dd>
+                <ol>
+                  <li>If this <a>player</a> has associated <a>source
+                      content</a>, then get the <a
+                      title="partially ordered set of events for a timed item seeked to time t">partially
+                      ordered set of events scheduled for seek time <var>sample
+                      time</var></a> and append them to <var>events</var>.
+                  <li>Clear the <a>time adjusted flag</a>.
+                </ol>
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                <ol>
+                  <li>If this <a>player has associated <a>source content</a>,
+                    then get the <a
+                    title="partially ordered set of events for a timed item scheduled between time marks a and b">partially
+                    ordered set of events scheduled between <var>previous sample
+                    mark</var> and <var>sample mark</var></a> and append them to
+                    <var>events</var>.
+                </ol>
+              </dd>
+            </dl>
+            <div class="note">
+              <p>
+                Note that this approach should correctly handle consecutive
+                samples with the same time value.
+              </p>
+              <p>
+                In such a case, both <var>previous sample mark</var> and
+                <var>sample mark</var> will have a <span
+                class="property">position</span> of <span
+                class="position">plus</span>.
+                Since no <a>timing events</a> are scheduled to be
+                dispatched at the <span class="position">plus</span> position
+                there should be no duplicate events.
+              </p>
+            </div>
+          <li>Set <var>previous sample mark</var> to <var>sample mark</var>.
+          <li>Return <var>events</var>.
+        </ol>
+      </section>
+      <section>
+        <h3>Events for a timed item during regular sampling</h3>
+        <p>
+          The <dfn>partially ordered set of events for a <a>timed item</a>
+          scheduled between time marks <var>a</var> and <var>b</var></dfn>,
+          expressed in <a title="uneased timing">uneased inherited time</a>, can
+          be determined as follows:
+        </p>
+        <p class="todo">
+          TBD
+        </p>
+      </section>
+      <section>
+        <h3>Events for a timed item during seeked event dispatch</h3>
+        <p>
+          The <dfn>partially ordered set of events for a <a>timed item</a>
+          seeked to time <var>t</var></dfn>, expressed in <a
+          title="uneased timing">uneased inherited time</a>,
+          can be determined as follows:
         </p>
         <p class="todo">
           TBD
