@@ -7532,8 +7532,8 @@ var frame = effect.frames['0.3'];
                   index</var> - 1).
               <li>The result is <var>iteration index</var>.
             </ol>
-          <li>Define the <dfn>timeline time at local <a>time mark</a>
-            <var>t</var></dfn> as follows:
+          <li>Define the <dfn>timeline time at local time <var>t</var></dfn> as
+              follows:
             <ol>
               <li>Let the <var>uneased local root time</var> be the result of
                   repeatedly applying the procedures for calculating the
@@ -7542,7 +7542,7 @@ var frame = effect.frames['0.3'];
                   defined in
                   <a href="#inverse-timing-calculations" class="sectionRef"></a>
                   for each ancestor of this <a>timed item</a> in turn up to the
-                  <a>root timed item</a> using |<var>t</var>| as the initial
+                  <a>root timed item</a> using <var>t</var> as the initial
                   <var>uneased local time</var>.
               <li>Let the <var>uneased local player time</var> be the result of
                   calculating the
@@ -7571,9 +7571,9 @@ var frame = effect.frames['0.3'];
               <li><a>event local time</a>:
                   |<var class="timeMark">directed active start</var>|
               <li><a>event timeline time</a>:
-                  <a title="timeline time at local time mark t">timeline
-                  time for <var class="timeMark">directed active
-                  start</var></a>.
+                  <a title="timeline time at local time t">timeline
+                  time for |<var class="timeMark">directed active
+                  start</var>|</a>.
               <li><a>event iteration index</a>:
                   <a title="iteration index at local time mark t">iteration
                   index at <var class="timeMark">directed active
@@ -7615,9 +7615,9 @@ var frame = effect.frames['0.3'];
                   <li><a>event local time</a>:
                       |<var class="timeMark">subinterval start</var>|
                   <li><a>event timeline time</a>:
-                      <a title="timeline time at local time mark t">timeline
-                      time for <var class="timeMark">subinterval
-                      start</var></a>.
+                      <a title="timeline time at local time t">timeline
+                      time for |<var class="timeMark">subinterval
+                      start</var>|</a>.
                   <li><a>event iteration index</a>:
                       <var>subinterval iteration index</var>
                   <li><a>seeked dispatch flag</a>: false
@@ -7685,9 +7685,9 @@ var frame = effect.frames['0.3'];
               <li><a>event local time</a>:
                   |<var class="timeMark">directed active end</var>|
               <li><a>event timeline time</a>:
-                  <a title="timeline time at local time mark t">timeline
-                  time for <var class="timeMark">directed active
-                  end</var></a>.
+                  <a title="timeline time at local time t">timeline
+                  time for |<var class="timeMark">directed active
+                  end</var>|</a>.
               <li><a>event iteration index</a>:
                   <a title="iteration index at local time mark t">iteration
                   index at <var class="timeMark">directed active
@@ -7710,9 +7710,56 @@ var frame = effect.frames['0.3'];
           title="uneased timing">uneased inherited time</a>,
           can be determined as follows:
         </p>
-        <p class="todo">
-          TBD
-        </p>
+        <ol>
+          <li>Let <var>events</var> be an empty sequence of <a>timing
+              events</a>.
+          <li>Let <var>local t</var> be <var>t</var> + <a>start time</a>.
+          <li>Let <var>child time</var> be a <var>time value</var> that is the
+              result of calculating the <a>directed time</a> corresponding to
+              <var>local t</var> assuming a <a>fill mode</a> of <span
+              class="prop-value">'none'</span>.
+          <li>Iterate over each <a>child timed item</a> in order and for each
+              child get the <a
+              title="partially ordered set of events for a timed item seeked to time t">partially
+              ordered set of events for seek time <var>child time</var></a>
+              and append to <var>events</var>.
+          <li>Let <var>current active state</var> be the result of evaluating if
+              this <a>timed item</a> is <a>active</a> at time <var>local
+              t</var>.
+          <li>If this <a>timed item</a> has a <a>previous active state</a> of
+              <em>inactive</em>, and a <var>current active state</var> of
+              <em>active</em>, add to the beginning of <var>events</var> a new
+              <a>timing event</a> with the following parameters:
+              <ul>
+                <li>type: <a>timingstart</a>
+                <li>event target: this <a>timed item</a>
+                <li><a>event local time</a>: <var>local t</var>
+                <li><a>event timeline time</a>:
+                    <a title="timeline time at local time t">timeline
+                    time for <var>local t</var></a>.
+                <li><a>event iteration index</a>:
+                    the result of calculating the <a>current iteration</a> at 
+                    at <var>local t</var></a>
+                <li><a>seeked dispatch flag</a>: true
+              </ul>
+          <li>If this <a>timed item</a> has a <a>previous active state</a>
+              of <em>active</em>, and a <var>current active state</var> of
+              <em>inactive</em>, append to the end of <var>events</var> a new
+              <a>timing event</a> with the following parameters:
+              <ul>
+                <li>type: <a>timingend</a>
+                <li>event target: this <a>timed item</a>
+                <li><a>event local time</a>: <var>local t</var>
+                <li><a>event timeline time</a>:
+                    <a title="timeline time at local time t">timeline
+                    time for <var>local t</var></a>.
+                <li><a>event iteration index</a>:
+                    the result of calculating the <a>current iteration</a> at 
+                    at <var>local t</var></a>
+                <li><a>seeked dispatch flag</a>: true
+              </ul>
+          <li>Return <var>events</var>.
+        </ol>
       </section>
     </section>
 
