@@ -7182,6 +7182,26 @@ var frame = effect.frames['0.3'];
         event queuing that incorporates the various requirements outlined in <a
         href="#timing-events" class="sectionRef"></a>.
       </p>
+      <p>
+        Some of the features of the following approach are:
+      </p>
+      <ul>
+        <li>Sorts only once per timeline.
+        <li>Handles cotemporal samples without dispatching duplicate events.
+        <li>Handles zero-length intervals.
+        <li>Stores sample state only at the <a>player</a> level.
+            (The <a>previous active state</a> is still per-<a>timed item</a>
+            however.)
+            This makes it possible for an implementation to optimize
+            the case when there are no registered event listeners on part of the
+            timing hierarchy.
+            In such a case the whole procedure for determining and dispatching
+            events can be skipped for that part of the hierarchy.
+            Should event listeners be attached at a later point, the
+            state stored at the player can be used to ensure the previously
+            ignored timed items begin providing events as if they had always had
+            event listeners.
+      </ul>
       <section>
         <h3>Interval boundaries and time marks</h3>
         <p>
