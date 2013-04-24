@@ -2844,45 +2844,64 @@
       <h2>Key frame animation effects</h2>
       <p>
         A <dfn>key frame animation effect</dfn> is an <a>animation effect</a>
-        that produces <a>animation values</a> for a property by interpolating
-        between a series of property values positioned at fractional offsets in
-        the range [0,1].
+        that produces <a>animation values</a> for its <a>target properties</a>
+        by interpolating between a series of property values positioned at
+        fractional offsets in the range [0,1].
       </p>
       <p>
-        Each pair of a property value and a corresponding offset is called
+        Each set of a property values indexed by a positional offset is called
         a <dfn>key frame</dfn>.
-        A <a>key frame</a> may also provide an optional <a>timing function</a>
-        which scales the <a>timing fraction</a> values between the <a>key
-        frame</a> and the next <a>key frame</a> in the list.
+      </p>
+      <p class="issue">
+        Unlike CSS, the current proposal is that it is <em>not</em> possible to
+        associate a <a>timing function</a> directly with a <a>key frame</a>.
+        Rather, this would be achieved by setting a chain of <a>timing
+        functions</a> on the <a>timed item</a> (proposal for this is still in
+        the works).
       </p>
       <p>
-        If, due to a <a>timing function</a> specified on either the <a>timed
-        item</a> from which the <a>time fraction</a> is derived or on an
-        individual <a>key frame</a>, the scaled <a>time fraction</a> lies
-        outside the range [0,1], the specified <a>key frame</a> property values
-        are extrapolated to cover the extended range.
+        If, due to a <a>timing function</a> specified on the <a>timed
+        item</a> from which the <a>time fraction</a> is derived, the <a>time
+        fraction</a> lies outside the range [0,1], the specified <a>key
+        frame</a> property values are extrapolated to cover the extended range.
       </p>
       <p>
         The behavior when <a>key frames</a> overlap or have unsupported values
         is defined in the following section, <a
-        href="#the-iteration-value-of-a-key-frame-animation-effect"
+        href="#the-simple-animation-value-of-a-key-frame-animation-effect"
         class="sectionRef"></a>.
+      </p>
+      <p>
+        Each <a>key frame animation effect</a> has an associated <a>composition
+        operation</a> the specifies how it is combined with other effects in the
+        <a>animation stack</a>.
+      </p>
+      <p>
+        Furthermore, each property value specified in a <a>key frame</a> may
+        also have associated with it an optional <a>composition operation</a>.
+        If no <a>composition operation</a> is specified for a property value,
+        the <a>composition operation</a> specified for the <a>key frame
+        animation effect</a> is used.
       </p>
       <section>              
         <h3>The simple animation value of a key frame animation effect</h3>
         <p>
-          The <a>iteration value</a> of a <a>key frame animation effect</a> for
-          a given <a>time fraction</a> is calculated as follows.
+          The <a>simple animation value</a> of a single property referenced by
+          a <a>key frame animation effect</a> as one of its <a>target
+          properties</a>, for a given <a>time fraction</a> and <a>underlying
+          value</a> is calculated as follows.
         </p>
         <ol>
-          <li>If the target property of the effect is not <a>animatable</a>
-              abort the procedure since the effect cannot be applied.</li>
-          <li>Let <var>key frames</var> be the list of <a>key frames</a>
-              specified on the effect.</li>
+          <li>Let <var>target property</var> be the property for which the
+              <a>simple animation value</a> is to be calculated.
+          <li>If <var>target property</var> is not <a>animatable</a> abort the
+              procedure since the effect cannot be applied.</li>
+          <li>Let <var>key frames</var> be a copy of the list of <a>key
+              frames</a> specified on the effect.</li>
           <li>Let <var>time fraction</var> be the <a>time fraction</a> for which
               the <a>iteration value</a> is to be calculated.</li>
           <li>Let <var>underlying value</var> be the current <a>underlying
-              value</a> provided by the <a>compositor</a>.
+              value</a>.
           <li>Sort <var>key frames</var> using a <a
               href="http://en.wikipedia.org/wiki/Sorting_algorithm#Stability">stable
               sort</a> such that the <a>key frame</a> offsets are in ascending
@@ -2891,29 +2910,56 @@
               frames</a> from <var>key
               frames</var> whose offset is outside the range [0,1].</li>
           <li>Remove any <a>key frames</a> from <var>key
-              frames</var> whose property value is invalid or unsupported.</li>
+              frames</var> that do not contain a property value for <var>target
+              property</var>.</li>
+          <li>Remove any <a>key frames</a> from <var>key
+              frames</var> whose property value for <var>target property</var>
+              is invalid or unsupported.</li>
           <li>If <var>key frames</var> is an empty list, return <var>underlying
               value</var>.</li>
-          <li>If there is no <a>key frame</a> with offset of 0, create a new key
-              frame with an offset 0, a property value set to <var>underlying
-              value</var>, and no <a>timing function</a> and add it to the
-              beginning of <var>key frames</var>.
-              <p class="issue">
-                This behavior is currently under discussion.
-              </p>
-          </li>
+          <li>If there is no <a>key frame</a> with offset of 0, create a new
+              <a>key frame</a> with an offset 0, a property value for
+              <var>target property</var> set to <var>underlying value</var>,
+              and a <a>composition operation</a> of <a
+              title="composition operation replace">replace</a>,
+              and add it to the beginning of <var>key frames</var>.</li>
           <li>Similarly, if there is no <a>key frame</a> with offset of 1,
-              create a new key frame with an offset 1, a property value set to
-              <var>underlying value</var>, and no <a>timing function</a> and
-              append it to the end of <var>key frames</var>.</li>
-          <li>If <var>time fraction</var> is less zero and there is more than
-              one <a>key frame</a> in <var>key frames</var> with offset 0,
-              return the property value of the first <a>key frame</a> in
-              <var>key frames</var>.</li>
-          <li>If <var>time fraction</var> is greater than or equal to 1 and
-              there is more than one <a>key frame</a> in <var>key frames</var>
-              with offset of 1, return the property value of the last <a>key
-              frame</a> in <var>key frames</var>.</li>
+              create a new <a>key frame</a> with an offset 1, a property value
+              for <var>target property</var> set to <var>underlying value</var>,
+              and a <a>composition operation</a> of <a
+              title="composition operation replace">replace</a>,
+              and append it to the end of <var>key frames</var>.</li>
+          <li>If the <a>property type</a> of <var>target property</var> is
+              <a>additive</a>, iterate over each <var>key frame</var> in
+              <var>key frames</var> and for each <var>key frame</var>, if:
+              <ul>
+                <li><var>key frame</var> has a <a>composition operation</a> of
+                    <a title="composition operation add">add</a>, or
+                <li><var>key frame</a> has no <a>composition operation</a>
+                    and the <a>composition operation</a> of this <a>key frames
+                    animation effect</a> is <a
+                    title="composition operation add">add</a>
+              </ul>
+              perform the following steps:
+              <ol>
+                <li>Let <var>value to add</var> be the property value of
+                    <var>target property</var> specified on <var>key
+                    frame</var>.
+                <li>If the <a>property type</a> of <var>underlying value</var>
+                    and <var>value to add</var> is the same and is
+                    <a>additive</a>, set the property value of <var>target
+                    property</var> for <var>key frame</var> to
+                    <code><var>underlying value</var> + <var>value to
+                    add</var></code>.
+              </ol>
+          <li>If <var>time fraction</var> &lt; 0 and there is more
+              than one <a>key frame</a> in <var>key frames</var> with offset of
+              0, return the property value for <var>target property</var> of the
+              first <a>key frame</a> in <var>key frames</var>.</li>
+          <li>If <var>time fraction</var> &ge; 1 and there is more than one
+              <a>key frame</a> in <var>key frames</var> with offset of 1, return
+              the property value for <var>target property</var> of the last
+              <a>key frame</a> in <var>key frames</var>.</li>
           <li>Let <var>start key frame</var> be the last <a>key frame</a> in
               <var>key frames</var> whose offset is less than or equal to
               <var>time fraction</var> and less than 1.
@@ -2940,37 +2986,10 @@
                   (<var>end offset</var> - <var>start offset</var>)</code>
           </li>
           <li>
-            Calculate the <var>scaled interval distance</var> as follows,
-            <dl class="switch">
-              <dt>If <var>start key frame</var> has a <a>timing
-              function</a>,</dt>
-              <dd>
-                <p>
-                  Let <var>scaled interval distance</var> be the result of
-                  evaluating the <a>timing function</a> associated with
-                  <var>start key frame</var> using <var>interval distance</var>
-                  as the input to the funcion.
-                </p>
-                <p class="issue">
-                  <var>interval distance</var> may be outside the range [0,1]
-                  due to timing functions applied to the <a>timed item</a>.
-                  The only sensible way I can think of for handling this is to
-                  require that timing functions handle inputs outside the range
-                  [0,1].
-                </p>
-              </dd>
-              <dt>Otherwise,</dt>
-              <dd>
-                The <var>scaled interval distance</var> is simply the
-                <var>interval distance</var>.
-              </dd>
-            </dl>
-          </li>
-          <li>
             Return the result of <a title="interpolation">interpolating</a>
             between the property values defined for <var>start key frame</var>
             and <var>end key frame</var> using the procedure defined for their
-            <a>property type</a> with <var>scaled interval distance</a> as the
+            <a>property type</a> with <var>interval distance</a> as the
             interpolation parameter.
           </li>
         </ol>
