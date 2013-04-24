@@ -2841,234 +2841,6 @@
     </section>
 
     <section>
-      <h2>Key frame animation effects</h2>
-      <p>
-        A <dfn>key frame animation effect</dfn> is an <a>animation effect</a>
-        that produces <a>animation values</a> for its <a>target properties</a>
-        by interpolating between a series of property values positioned at
-        fractional offsets in the range [0,1].
-      </p>
-      <p>
-        Each set of a property values indexed by a positional offset is called
-        a <dfn>key frame</dfn>.
-      </p>
-      <p class="issue">
-        Unlike CSS, the current proposal is that it is <em>not</em> possible to
-        associate a <a>timing function</a> directly with a <a>key frame</a>.
-        Rather, this would be achieved by setting a chain of <a>timing
-        functions</a> on the <a>timed item</a> (proposal for this is still in
-        the works).
-      </p>
-      <p>
-        If, due to a <a>timing function</a> specified on the <a>timed
-        item</a> from which the <a>time fraction</a> is derived, the <a>time
-        fraction</a> lies outside the range [0,1], the specified <a>key
-        frame</a> property values are extrapolated to cover the extended range.
-      </p>
-      <p>
-        The behavior when <a>key frames</a> overlap or have unsupported values
-        is defined in the following section, <a
-        href="#the-simple-animation-value-of-a-key-frame-animation-effect"
-        class="sectionRef"></a>.
-      </p>
-      <p>
-        Each <a>key frame animation effect</a> has an associated <a>composition
-        operation</a> the specifies how it is combined with other effects in the
-        <a>animation stack</a>.
-      </p>
-      <p>
-        Furthermore, each property value specified in a <a>key frame</a> may
-        also have associated with it an optional <a>composition operation</a>.
-        If no <a>composition operation</a> is specified for a property value,
-        the <a>composition operation</a> specified for the <a>key frame
-        animation effect</a> is used.
-      </p>
-      <section>              
-        <h3>The simple animation value of a key frame animation effect</h3>
-        <p>
-          The <a>simple animation value</a> of a single property referenced by
-          a <a>key frame animation effect</a> as one of its <a>target
-          properties</a>, for a given <a>time fraction</a> and <a>underlying
-          value</a> is calculated as follows.
-        </p>
-        <ol>
-          <li>Let <var>target property</var> be the property for which the
-              <a>simple animation value</a> is to be calculated.
-          <li>If <var>target property</var> is not <a>animatable</a> abort the
-              procedure since the effect cannot be applied.</li>
-          <li>Let <var>key frames</var> be a copy of the list of <a>key
-              frames</a> specified on the effect.</li>
-          <li>Let <var>time fraction</var> be the <a>time fraction</a> for which
-              the <a>iteration value</a> is to be calculated.</li>
-          <li>Let <var>underlying value</var> be the current <a>underlying
-              value</a>.
-          <li>Sort <var>key frames</var> using a <a
-              href="http://en.wikipedia.org/wiki/Sorting_algorithm#Stability">stable
-              sort</a> such that the <a>key frame</a> offsets are in ascending
-              order.</li>
-          <li>Remove any <a>key
-              frames</a> from <var>key
-              frames</var> whose offset is outside the range [0,1].</li>
-          <li>Remove any <a>key frames</a> from <var>key
-              frames</var> that do not contain a property value for <var>target
-              property</var>.</li>
-          <li>Remove any <a>key frames</a> from <var>key
-              frames</var> whose property value for <var>target property</var>
-              is invalid or unsupported.</li>
-          <li>If <var>key frames</var> is an empty list, return <var>underlying
-              value</var>.</li>
-          <li>If there is no <a>key frame</a> with offset of 0, create a new
-              <a>key frame</a> with an offset 0, a property value for
-              <var>target property</var> set to <var>underlying value</var>,
-              and a <a>composition operation</a> of <a
-              title="composition operation replace">replace</a>,
-              and add it to the beginning of <var>key frames</var>.</li>
-          <li>Similarly, if there is no <a>key frame</a> with offset of 1,
-              create a new <a>key frame</a> with an offset 1, a property value
-              for <var>target property</var> set to <var>underlying value</var>,
-              and a <a>composition operation</a> of <a
-              title="composition operation replace">replace</a>,
-              and append it to the end of <var>key frames</var>.</li>
-          <li>Iterate over each <var>key frame</var> in <var>key frames</var>
-              and for each <var>key frame</var>, if:
-              <ul>
-                <li><var>key frame</var> has a <a>composition operation</a> of
-                    <a title="composition operation add">add</a>, or
-                <li><var>key frame</a> has no <a>composition operation</a>
-                    and the <a>composition operation</a> of this <a>key frames
-                    animation effect</a> is <a
-                    title="composition operation add">add</a>
-              </ul>
-              perform the following steps:
-              <ol>
-                <li>Let <var>value to add</var> be the property value of
-                    <var>target property</var> specified on <var>key
-                    frame</var>.
-                <li>If the <a>property type</a> of <var>underlying value</var>
-                    and <var>value to add</var> is the same and is
-                    <a>additive</a>, set the property value of <var>target
-                    property</var> for <var>key frame</var> to
-                    <code><var>underlying value</var> + <var>value to
-                    add</var></code>.
-              </ol>
-          <li>If <var>time fraction</var> &lt; 0 and there is more
-              than one <a>key frame</a> in <var>key frames</var> with offset of
-              0, return the property value for <var>target property</var> of the
-              first <a>key frame</a> in <var>key frames</var>.</li>
-          <li>If <var>time fraction</var> &ge; 1 and there is more than one
-              <a>key frame</a> in <var>key frames</var> with offset of 1, return
-              the property value for <var>target property</var> of the last
-              <a>key frame</a> in <var>key frames</var>.</li>
-          <li>Let <var>start key frame</var> be the last <a>key frame</a> in
-              <var>key frames</var> whose offset is less than or equal to
-              <var>time fraction</var> and less than 1.
-              If there is no such <a>key frame</a> (because, for example,
-              the <a>time fraction</a> is negative), let <var>start key
-              frame</var> be the last <a>key frame</a> whose offset is 0.</li>
-          <li>Let <var>end key frame</var> be the next <a>key frame</a> in
-              <var>key frames</var> after <var>start key frame</var>.</li>
-          <li>If the pair of property values specified by <var>start key
-              frame</var> and <var>end key frame</var>
-              differ in <a>property type</a> or have the same <a>property
-              type</a> but that type is not <a>interpolable</a>,
-              then return the property value of <var>start key frame</var>
-              unless <var>time fraction</var> is greater than or equal to 1, in
-              which case return the property value of <var>end key
-              frame</var>.</li>
-          <li>Let <var>start offset</var> be the offset of <var>start key
-              frame</var>.</li>
-          <li>Let <var>end offset</var> be the offset of <var>end key
-              frame</var>.</li>
-          <li>
-            Let <var>interval distance</var> be the result of evaluating
-            <code>(<var>time fraction</var> - <var>start offset</var>) /
-                  (<var>end offset</var> - <var>start offset</var>)</code>
-          </li>
-          <li>
-            Return the result of <a title="interpolation">interpolating</a>
-            between the property values defined for <var>start key frame</var>
-            and <var>end key frame</var> using the procedure defined for their
-            <a>property type</a> with <var>interval distance</a> as the
-            interpolation parameter.
-          </li>
-        </ol>
-        <p class="note">
-          Note that this procedure permits overlapping <a>key
-          frames</a>.
-          The behavior is that at the point of overlap the output value jumps to
-          the value of last defined <a>key frame</a> at that offset.
-          For overlapping frames at 0 or 1, the output value for <a
-          title="time fraction">time fractions</a> less than 0 or greater than
-          or equal to 1 is the value of the first <a>key frame</a> or the last
-          <a>key frame</a> in <var>key frames</var> respectively.
-        </p>
-      </section>
-    </section>
-
-    <section>
-      <h2>Path animation effects</h2>
-      <p>
-        A <dfn>path animation effect</dfn> is an <a>animation effect</a> that
-        produces transform <a>animation values</a>
-        such that a <a>target element</a> follows a specified geometric curve.
-      </p>
-      <div class="todo">
-        <p>
-          This whole section needs to be written.
-          There are several parameters:
-        </p>
-        <ul>
-          <li>The geometric curve</li>
-          <li>The rotation parameter (can be none|auto|reverse)</li>
-          <li>Parameters for controlling timing (cf. SVG's
-              keyPoints/keyTimes)</li>
-        </ul>
-        <p>
-          Not sure what we do about paced timing.
-        </p>
-        <p>
-          Need to describe how <a
-          href="http://www.w3.org/TR/css3-transforms/#transform-origin">transform-origin</a>
-          is applied.
-        </p>
-      </div>
-      <section>
-        <h4>The simple animation value of a path animation effect</h4>
-        <div class="todo">
-        <p>
-          When  <var>rotate</var> is set to false, the <var>animation
-          value</var> at <a>time fraction</a> <var>t</var> is the transform
-          defined by a translation equal to the location on the path at
-          <var>t</var>.
-        </p>
-        <p>
-          When <var>rotate</var> is set to true, the
-          <var>animation value</var> is the transform defined by the above
-          translation followed by a rotation defined by the following
-          process:
-        </p>
-        <ol>
-          <li>
-            Calculate the <var>normal</var> to the path at <var>t</var> (see <a href="#calculating-the-normal-to-a-path" class="sectionRef"></a>).
-          </li>
-          <li>
-            Determine the <var>normal rotation</var>, which is given by 
-            <code>atan2(normal.y, normal.x)</code>.
-          </li>
-          <li>
-            The <var>rotation</var> is the transform that rotates by
-            the <var>normal rotation</var>.
-          </li>
-        </ol>
-        </div>
-      </section>
-      <section>
-        <h3>Calculating the normal to a path</h3>
-        <p class="todo">Write me</p>
-      </section>
-    </section>
-
-    <section>
       <h2>Combining animations</h2>
       <div class="informative">
         <p>
@@ -3376,6 +3148,234 @@
           <li>Insert the <a>composited value</a> into the <a>override
               stylesheet</a>.</li>
         </ol>
+      </section>
+    </section>
+
+    <section>
+      <h2>Key frame animation effects</h2>
+      <p>
+        A <dfn>key frame animation effect</dfn> is an <a>animation effect</a>
+        that produces <a>animation values</a> for its <a>target properties</a>
+        by interpolating between a series of property values positioned at
+        fractional offsets in the range [0,1].
+      </p>
+      <p>
+        Each set of a property values indexed by a positional offset is called
+        a <dfn>key frame</dfn>.
+      </p>
+      <p class="issue">
+        Unlike CSS, the current proposal is that it is <em>not</em> possible to
+        associate a <a>timing function</a> directly with a <a>key frame</a>.
+        Rather, this would be achieved by setting a chain of <a>timing
+        functions</a> on the <a>timed item</a> (proposal for this is still in
+        the works).
+      </p>
+      <p>
+        If, due to a <a>timing function</a> specified on the <a>timed
+        item</a> from which the <a>time fraction</a> is derived, the <a>time
+        fraction</a> lies outside the range [0,1], the specified <a>key
+        frame</a> property values are extrapolated to cover the extended range.
+      </p>
+      <p>
+        The behavior when <a>key frames</a> overlap or have unsupported values
+        is defined in the following section, <a
+        href="#the-simple-animation-value-of-a-key-frame-animation-effect"
+        class="sectionRef"></a>.
+      </p>
+      <p>
+        Each <a>key frame animation effect</a> has an associated <a>composition
+        operation</a> the specifies how it is combined with other effects in the
+        <a>animation stack</a>.
+      </p>
+      <p>
+        Furthermore, each property value specified in a <a>key frame</a> may
+        also have associated with it an optional <a>composition operation</a>.
+        If no <a>composition operation</a> is specified for a property value,
+        the <a>composition operation</a> specified for the <a>key frame
+        animation effect</a> is used.
+      </p>
+      <section>              
+        <h3>The simple animation value of a key frame animation effect</h3>
+        <p>
+          The <a>simple animation value</a> of a single property referenced by
+          a <a>key frame animation effect</a> as one of its <a>target
+          properties</a>, for a given <a>time fraction</a> and <a>underlying
+          value</a> is calculated as follows.
+        </p>
+        <ol>
+          <li>Let <var>target property</var> be the property for which the
+              <a>simple animation value</a> is to be calculated.
+          <li>If <var>target property</var> is not <a>animatable</a> abort the
+              procedure since the effect cannot be applied.</li>
+          <li>Let <var>key frames</var> be a copy of the list of <a>key
+              frames</a> specified on the effect.</li>
+          <li>Let <var>time fraction</var> be the <a>time fraction</a> for which
+              the <a>iteration value</a> is to be calculated.</li>
+          <li>Let <var>underlying value</var> be the current <a>underlying
+              value</a>.
+          <li>Sort <var>key frames</var> using a <a
+              href="http://en.wikipedia.org/wiki/Sorting_algorithm#Stability">stable
+              sort</a> such that the <a>key frame</a> offsets are in ascending
+              order.</li>
+          <li>Remove any <a>key
+              frames</a> from <var>key
+              frames</var> whose offset is outside the range [0,1].</li>
+          <li>Remove any <a>key frames</a> from <var>key
+              frames</var> that do not contain a property value for <var>target
+              property</var>.</li>
+          <li>Remove any <a>key frames</a> from <var>key
+              frames</var> whose property value for <var>target property</var>
+              is invalid or unsupported.</li>
+          <li>If <var>key frames</var> is an empty list, return <var>underlying
+              value</var>.</li>
+          <li>If there is no <a>key frame</a> with offset of 0, create a new
+              <a>key frame</a> with an offset 0, a property value for
+              <var>target property</var> set to <var>underlying value</var>,
+              and a <a>composition operation</a> of <a
+              title="composition operation replace">replace</a>,
+              and add it to the beginning of <var>key frames</var>.</li>
+          <li>Similarly, if there is no <a>key frame</a> with offset of 1,
+              create a new <a>key frame</a> with an offset 1, a property value
+              for <var>target property</var> set to <var>underlying value</var>,
+              and a <a>composition operation</a> of <a
+              title="composition operation replace">replace</a>,
+              and append it to the end of <var>key frames</var>.</li>
+          <li>Iterate over each <var>key frame</var> in <var>key frames</var>
+              and for each <var>key frame</var>, if:
+              <ul>
+                <li><var>key frame</var> has a <a>composition operation</a> of
+                    <a title="composition operation add">add</a>, or
+                <li><var>key frame</a> has no <a>composition operation</a>
+                    and the <a>composition operation</a> of this <a>key frames
+                    animation effect</a> is <a
+                    title="composition operation add">add</a>
+              </ul>
+              perform the following steps:
+              <ol>
+                <li>Let <var>value to add</var> be the property value of
+                    <var>target property</var> specified on <var>key
+                    frame</var>.
+                <li>If the <a>property type</a> of <var>underlying value</var>
+                    and <var>value to add</var> is the same and is
+                    <a>additive</a>, set the property value of <var>target
+                    property</var> for <var>key frame</var> to
+                    <code><var>underlying value</var> + <var>value to
+                    add</var></code>.
+              </ol>
+          <li>If <var>time fraction</var> &lt; 0 and there is more
+              than one <a>key frame</a> in <var>key frames</var> with offset of
+              0, return the property value for <var>target property</var> of the
+              first <a>key frame</a> in <var>key frames</var>.</li>
+          <li>If <var>time fraction</var> &ge; 1 and there is more than one
+              <a>key frame</a> in <var>key frames</var> with offset of 1, return
+              the property value for <var>target property</var> of the last
+              <a>key frame</a> in <var>key frames</var>.</li>
+          <li>Let <var>start key frame</var> be the last <a>key frame</a> in
+              <var>key frames</var> whose offset is less than or equal to
+              <var>time fraction</var> and less than 1.
+              If there is no such <a>key frame</a> (because, for example,
+              the <a>time fraction</a> is negative), let <var>start key
+              frame</var> be the last <a>key frame</a> whose offset is 0.</li>
+          <li>Let <var>end key frame</var> be the next <a>key frame</a> in
+              <var>key frames</var> after <var>start key frame</var>.</li>
+          <li>If the pair of property values specified by <var>start key
+              frame</var> and <var>end key frame</var>
+              differ in <a>property type</a> or have the same <a>property
+              type</a> but that type is not <a>interpolable</a>,
+              then return the property value of <var>start key frame</var>
+              unless <var>time fraction</var> is greater than or equal to 1, in
+              which case return the property value of <var>end key
+              frame</var>.</li>
+          <li>Let <var>start offset</var> be the offset of <var>start key
+              frame</var>.</li>
+          <li>Let <var>end offset</var> be the offset of <var>end key
+              frame</var>.</li>
+          <li>
+            Let <var>interval distance</var> be the result of evaluating
+            <code>(<var>time fraction</var> - <var>start offset</var>) /
+                  (<var>end offset</var> - <var>start offset</var>)</code>
+          </li>
+          <li>
+            Return the result of <a title="interpolation">interpolating</a>
+            between the property values defined for <var>start key frame</var>
+            and <var>end key frame</var> using the procedure defined for their
+            <a>property type</a> with <var>interval distance</a> as the
+            interpolation parameter.
+          </li>
+        </ol>
+        <p class="note">
+          Note that this procedure permits overlapping <a>key
+          frames</a>.
+          The behavior is that at the point of overlap the output value jumps to
+          the value of last defined <a>key frame</a> at that offset.
+          For overlapping frames at 0 or 1, the output value for <a
+          title="time fraction">time fractions</a> less than 0 or greater than
+          or equal to 1 is the value of the first <a>key frame</a> or the last
+          <a>key frame</a> in <var>key frames</var> respectively.
+        </p>
+      </section>
+    </section>
+
+    <section>
+      <h2>Path animation effects</h2>
+      <p>
+        A <dfn>path animation effect</dfn> is an <a>animation effect</a> that
+        produces transform <a>animation values</a>
+        such that a <a>target element</a> follows a specified geometric curve.
+      </p>
+      <div class="todo">
+        <p>
+          This whole section needs to be written.
+          There are several parameters:
+        </p>
+        <ul>
+          <li>The geometric curve</li>
+          <li>The rotation parameter (can be none|auto|reverse)</li>
+          <li>Parameters for controlling timing (cf. SVG's
+              keyPoints/keyTimes)</li>
+        </ul>
+        <p>
+          Not sure what we do about paced timing.
+        </p>
+        <p>
+          Need to describe how <a
+          href="http://www.w3.org/TR/css3-transforms/#transform-origin">transform-origin</a>
+          is applied.
+        </p>
+      </div>
+      <section>
+        <h4>The simple animation value of a path animation effect</h4>
+        <div class="todo">
+        <p>
+          When  <var>rotate</var> is set to false, the <var>animation
+          value</var> at <a>time fraction</a> <var>t</var> is the transform
+          defined by a translation equal to the location on the path at
+          <var>t</var>.
+        </p>
+        <p>
+          When <var>rotate</var> is set to true, the
+          <var>animation value</var> is the transform defined by the above
+          translation followed by a rotation defined by the following
+          process:
+        </p>
+        <ol>
+          <li>
+            Calculate the <var>normal</var> to the path at <var>t</var> (see <a href="#calculating-the-normal-to-a-path" class="sectionRef"></a>).
+          </li>
+          <li>
+            Determine the <var>normal rotation</var>, which is given by 
+            <code>atan2(normal.y, normal.x)</code>.
+          </li>
+          <li>
+            The <var>rotation</var> is the transform that rotates by
+            the <var>normal rotation</var>.
+          </li>
+        </ol>
+        </div>
+      </section>
+      <section>
+        <h3>Calculating the normal to a path</h3>
+        <p class="todo">Write me</p>
       </section>
     </section>
 
