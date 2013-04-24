@@ -2813,9 +2813,9 @@
       <h2>Combining animations</h2>
       <div class="informative">
         <p>
-          After calculating the <a>animation value</a> for an <a>animation
-          effect</a> it is applied to the <a>animation effect</a>'s <a>target
-          property</a>.
+          After calculating the <a>animation values</a> for an <a>animation
+          effect</a> they are applied to the <a>animation effect</a>'s <a>target
+          properties</a>.
         </p>
         <p>
           Since it is possible for multiple <a>in effect</a> <a
@@ -2829,7 +2829,8 @@
         <p>
           After compositing the results of <a>animation
           effects</a> together, the composited result is combined with other
-          styles applied to the <a>target property</a>.
+          styles applied to the <a title="target properties">target
+          property</a>.
         </p>
         <p>
           An overview of this arrangement is illustrated below:
@@ -2838,14 +2839,12 @@
           <img src="img/animation-cascade.svg" width="450">
         </div>
         <p class="caption">
-          Overview of the application of <a>animation
-          values</a> to their <a>target
-          properties</a>.<br>
-          The results of <a>animation effects</a>
-          targetting the same property are composited together using an
-          <a>animation stack</a>.<br>
-          The result of this composition is put in an override stylesheet that
-          is more important than other stylesheets but less than any
+          Overview of the application of <a>animation values</a> to their
+          <a>target properties</a>.<br>
+          The results of <a>animation effects</a> targetting the same property
+          are composited together using an <a>animation stack</a>.<br>
+          The result of this composition is written to an override stylesheet
+          that is more important than other stylesheets but less than any
           <code>!important</code> rules.
         </p>
         <p>
@@ -2860,12 +2859,12 @@
           their relative <em>priority</em>.
         </p>
         <p>
-          The matter of <em>how</em> <a>animation
-          effects</a> are combined is governed by the <a>composition
-          operation</a> associated with the <a>animation effect</a>.
+          The matter of <em>how</em> <a>animation values</a> are combined is
+          governed by any <a>composition operations</a> associated with
+          the corresponding <a>animation effects</a>.
         </p>
         <p>
-          The relative <em>priority</em> of <a>animation effects</a> is
+          The relative <em>priority</em> of <a>animation values</a> is
           determined by an <a>animation stack</a> established for each animated
           property.
         </p>
@@ -2879,28 +2878,38 @@
         </p>
         <p>
           The relative priority of any two <a>animation
-          effects</a> is, <var>A</var> and <var>B</var>, within an <a>animation
+          effects</a>, <var>A</var> and <var>B</var>, within an <a>animation
           stack</a> is established by comparing the properties of the
-          <a>animations</a> applying <var>A</var> and
-          <var>B</var> as follows:
+          <a>animations</a> applying <var>A</var> and <var>B</var> as follows:
         </p>
         <ol>
-          <li>Let the <dfn>associated player</dfn> of an <a>animation effect</a>
-              be the <a>player</a> associated with the <a>animation</a> that is
-              applying the <a>animation effect</a> to the property with which
-              this <a>animation stack</a> is associated.</li>
-          <li>Let the <dfn>associated timeline</dfn> of an <a>animation
-              effect</a> be the <a>timeline</a> with which the <a>associated
-              player</a> is associated.</li>
-          <li>Let the <dfn>effect start time</dfn> be the <a
-              title="player start time">start time</a> of the <a>associated
-              player</a> minus the <a>zero time</a> of the <a>associated
-              timeline</a>.</li>
-          <li>Sort <var>A</var> and <var>B</var> by <a>effect start time</a> so
-              that the earlier time sorts first.</li>
+          <li>Let the <var>associated player</var> of an <a>animation effect</a>
+              be the <a>player</a> <a
+              title="associated with a player">associated</a> with the
+              <a>animation</a> that is applying the <a>animation effect</a> to
+              the property with which this <a>animation stack</a> is
+              associated.</li>
+          <li>Let the <var>associated timeline</var> of an <a>animation
+              effect</a> be the <a>timeline</a> with which the <var>associated
+              player</var> is associated.</li>
+          <li>Let the <var>effect start time</var> be the <a
+              title="player start time">start time</a> of the <var>associated
+              player</var> minus the <a>zero time</a> of the <var>associated
+              timeline</var>.
+              <p class="annotation">
+                These three steps are basically calculating the start time in
+                global time space.
+                However, this value is never exposed but is simply used for
+                sorting.
+                Hence we preserve the behavior that absolute global times are
+                never exposed and are allowed to be implementation-dependent.
+              </p>
+              </li>
+          <li>Sort <var>A</var> and <var>B</var> by <var>effect start time</var>
+              so that the earlier time sorts first.</li>
           <li>If the order of <var>A</var> and <var>B</var> is not resolved
-              (because they have the same <a>effect start time</a>) sort by the
-              type of source that generated the <a
+              (because they have the same <var>effect start time</var>) sort by
+              the type of source that generated the <a
               title="animation">animations</a> applying <var>A</var> and
               <var>B</var> such that animations generated by CSS sort before
               animation generated by document markup (e.g. SVG animations) which
@@ -2987,6 +2996,12 @@
                   player</a>, sort by a preorder depth-first traversal of the
                   <a>source content</a> of the <a>associated player</a>.
                 </p>
+                <p class="issue">
+                  This last part is pretty arbitrary.
+                  The primary concern is just that it not be left undefined.
+                  Perhaps we should use player creation order since we use that
+                  elsewhere (e.g. <a href="#event-dispatch">event dispatch</a>)?
+                </p>
               </dd>
             </dl>
           </li>
@@ -3005,7 +3020,7 @@
       <section>
         <h3>Calculating the result of an animation stack</h3>
         <p>
-          In order to calculate the final value of an <a>animation stack</a>
+          In order to calculate the final value of an <a>animation stack</a>,
           the <a>animation values</a> of each
           <a>animation effect</a> in the stack are combined in order of priority
           from lowest to highest priority.
@@ -3019,9 +3034,9 @@
           class="sectionRef"></a>.
         </p>
         <p>
-          For each <a>animation effect</a> in the stack, the <a>animation
-          value</a> of the <a>animation effect</a> is combined with the
-          <a>underlying value</a> and produces a new value.
+          For each <a>animation effect</a> in the stack, the appropriate
+          <a>animation value</a> from the <a>animation effect</a> is combined
+          with the <a>underlying value</a> to produce a new value.
           This resulting value becomes the <a>underlying value</a> for combining
           the next <a>animation effect</a> in the stack.
         </p>
@@ -3029,19 +3044,21 @@
           The final value of an <a>animation stack</a>, called the
           <dfn>composited value</dfn>, is simply the result of combining the
           <a>animation value</a> of the final (highest priority) <a>animation
-          effect</a> in the stack with the <a>underlying value</a>.
+          effect</a> in the stack with the <a>underlying value</a> at that
+          point.
         </p>
       </section>
       <section>
         <h3>Animation composition</h3>
         <p>
-          The specific operation used to combine an <a>animation effect</a>'s
-          <a>animation value</a> with an <a>underlying value</a> is determined
-          by the <a>animation effect</a>'s <dfn>composition operation</dfn>.
+          The specific operation used to combine an <a>animation value</a> with
+          an <a>underlying value</a> is determined by the <a>animation
+          effect</a> that produced the <a>animation value</a> and is called the
+          <dfn>composition operation</dfn>.
         </p>
         <p>
-          The possible <a>composition
-          operations</a> and their meanings are as follows:
+          This specification defines two common <a>composition operations</a> as
+          follows:
         </p>
         <dl>
           <dt><dfn title="composition operation replace">replace</dfn></dt>
@@ -3068,22 +3085,13 @@
               applied.
             </p>
           </dd>
-          <dt><dfn title="composition operation merge">merge</dfn></dt>
-          <dd>
-            <p class="issue">
-              How do we define this?
-              I think we wanted to go for a <a
-              href="http://www.w3.org/Graphics/fx/wiki/Web_Animations/Issues/Grouping_of_Animations#Allow_parametric_merge">parametric
-              merge</a> rather than rely on parent timing.
-            </p>
-          </dd>
         </dl>
       </section>
       <section>
         <h3>Combining with other styles: the override stylesheet</h3>
         <p>
-          Applying a <a>composited value</a> to a <a>target property</a> depends
-          on establishing an <a>override stylesheet</a>.
+          Applying a <a>composited value</a> to a property depends on
+          establishing an <a>override stylesheet</a>.
         </p>
         <p>
           The <dfn>override stylesheet</dfn> contains
