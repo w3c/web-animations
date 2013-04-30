@@ -3134,11 +3134,19 @@
         A <dfn>key frame animation effect</dfn> is an <a>animation effect</a>
         that produces <a>animation values</a> for its <a>target properties</a>
         by interpolating between a series of property values positioned at
-        fractional offsets in the range [0,1].
+        fractional offsets.
       </p>
       <p>
-        Each set of a property values indexed by a positional offset is called
-        a <dfn>key frame</dfn>.
+        Each set of property values indexed by a positional offset is called
+        a <dfn>keyframe</dfn>.
+      </p>
+      <p>
+        The <dfn>positional offset of a keyframe</dfn> is a value in the range
+        [0,1].
+        The list of <a>keyframes</a> for a <a>keyframe animation effect</a> is
+        sorted in ascending order by the <a
+        title="positional offset of a keyframe">positional offset of each
+        keyframe</a>.
       </p>
       <p class="issue">
         Unlike CSS, the current proposal is that it is <em>not</em> possible to
@@ -3154,15 +3162,15 @@
         frame</a> property values are extrapolated to cover the extended range.
       </p>
       <p>
-        The behavior when <a>key frames</a> overlap or have unsupported values
-        is defined in the following section, <a
+        The behavior when <a>keyframes</a> overlap or have unsupported values
+        is defined in <a
         href="#the-simple-animation-value-of-a-key-frame-animation-effect"
         class="sectionRef"></a>.
       </p>
       <p>
         Each <a>key frame animation effect</a> has an associated <a>composition
-        operation</a> the specifies how it is combined with other effects in the
-        <a>animation stack</a>.
+        operation</a> that specifies how it is combined with other <a>animation
+        effects</a> in the <a>animation stack</a>.
       </p>
       <p>
         Furthermore, each property value specified in a <a>key frame</a> may
@@ -3172,10 +3180,10 @@
         animation effect</a> is used.
       </p>
       <section>              
-        <h3>The simple animation value of a key frame animation effect</h3>
+        <h3>The simple animation value of a keyframe animation effect</h3>
         <p>
           The <a>simple animation value</a> of a single property referenced by
-          a <a>key frame animation effect</a> as one of its <a>target
+          a <a>keyframe animation effect</a> as one of its <a>target
           properties</a>, for a given <a>time fraction</a> and <a>underlying
           value</a> is calculated as follows.
         </p>
@@ -3184,45 +3192,49 @@
               <a>simple animation value</a> is to be calculated.
           <li>If <var>target property</var> is not <a>animatable</a> abort the
               procedure since the effect cannot be applied.</li>
-          <li>Let <var>key frames</var> be a copy of the list of <a>key
-              frames</a> specified on the effect.</li>
           <li>Let <var>time fraction</var> be the <a>time fraction</a> for which
-              the <a>iteration value</a> is to be calculated.</li>
+              the <a>simple animation value</a> is to be calculated.</li>
           <li>Let <var>underlying value</var> be the current <a>underlying
               value</a>.
-          <li>Sort <var>key frames</var> using a <a
-              href="http://en.wikipedia.org/wiki/Sorting_algorithm#Stability">stable
-              sort</a> such that the <a>key frame</a> offsets are in ascending
-              order.</li>
-          <li>Remove any <a>key
-              frames</a> from <var>key
-              frames</var> whose offset is outside the range [0,1].</li>
-          <li>Remove any <a>key frames</a> from <var>key
-              frames</var> that do not contain a property value for <var>target
-              property</var>.</li>
-          <li>Remove any <a>key frames</a> from <var>key
-              frames</var> whose property value for <var>target property</var>
-              is invalid or unsupported.</li>
-          <li>If <var>key frames</var> is an empty list, return <var>underlying
-              value</var>.</li>
-          <li>If there is no <a>key frame</a> with offset of 0, create a new
-              <a>key frame</a> with an offset 0, a property value for
-              <var>target property</var> set to <var>underlying value</var>,
-              and a <a>composition operation</a> of <a
-              title="composition operation replace">replace</a>,
-              and add it to the beginning of <var>key frames</var>.</li>
-          <li>Similarly, if there is no <a>key frame</a> with offset of 1,
-              create a new <a>key frame</a> with an offset 1, a property value
-              for <var>target property</var> set to <var>underlying value</var>,
-              and a <a>composition operation</a> of <a
-              title="composition operation replace">replace</a>,
-              and append it to the end of <var>key frames</var>.</li>
-          <li>Iterate over each <var>key frame</var> in <var>key frames</var>
-              and for each <var>key frame</var>, if:
+          <li>Define the <dfn>neutral value for composition</dfn> as a value
+              which, when combined with an <a>underlying value</a> using the <a
+              title="composition operation add">add</a> <a>composition
+              operation</a>, produces the <a>underlying value</a>.
+              <p class="note">
+                Note that this definition does not require determining
+                a suitable zero value for each possible <a>property type</a>.
+                This behavior could be realized, for example, by use of
+                a sentinel value.
+              </p>
+          <li>Let <var>property-specific keyframes</var> be a copy of the list
+              of <a>keyframes</a> specified on the effect.</li>
+          <li>Remove any <a>keyframes</a> from <var>property-specific
+              keyframes</var> that do not have a property value for
+              <var>target property</var>.
+          <li>If <var>property-specific keyframes</var> is empty, return
+              <var>underlying value</var>.
+          <li>If there is no <a>keyframe</a> with a <a
+              title="positional offset of a keyframe">positional offset</a> of
+              0, create a new <a>keyframe</a> with a positional offset of 0,
+              a property value set to the <a>neutral value for composition</a>,
+              and a <a>composition operation</a> of <a title="composition
+              operation add">add</a>, and add it to the beginning of
+              <var>property-specific keyframes</var>.
+          <li>Similarly, if there is no <a>keyframe</a> with a <a
+              title="positional offset of a keyframe">positional offset</a> of
+              1, create a new <a>keyframe</a> with a positional offset of 1,
+              a property value set to the <a>neutral value for composition</a>,
+              and a <a>composition operation</a> of <a title="composition
+              operation add">add</a>, and append it to the end of
+              <var>property-specific keyframes</var>.
+          <li>Iterate over each <var>keyframe</var> in <var>property-specific
+              key frames</var> and for each <var>keyframe</var>, if:
               <ul>
-                <li><var>key frame</var> has a <a>composition operation</a> of
-                    <a title="composition operation add">add</a>, or
-                <li><var>key frame</a> has no <a>composition operation</a>
+                <li>the property value specified for <var>target property</var>
+                    on <var>key frame</var> has a <a>composition operation</a>
+                    of <a title="composition operation add">add</a>, or
+                <li>the property value specified for <var>target property</var>
+                    on <var>key frame</var> has no <a>composition operation</a>
                     and the <a>composition operation</a> of this <a>key frames
                     animation effect</a> is <a
                     title="composition operation add">add</a>
@@ -3240,21 +3252,24 @@
                     add</var></code>.
               </ol>
           <li>If <var>time fraction</var> &lt; 0 and there is more
-              than one <a>key frame</a> in <var>key frames</var> with offset of
-              0, return the property value for <var>target property</var> of the
-              first <a>key frame</a> in <var>key frames</var>.</li>
+              than one <a>key frame</a> in <var>property-specific
+              keyframes</var> with a positional offset of 0, return the property
+              value for <var>target property</var> of the first <a>key frame</a>
+              in <var>property-specific key frames</var>.</li>
           <li>If <var>time fraction</var> &ge; 1 and there is more than one
-              <a>key frame</a> in <var>key frames</var> with offset of 1, return
-              the property value for <var>target property</var> of the last
-              <a>key frame</a> in <var>key frames</var>.</li>
+              <a>key frame</a> in <var>property-specific keyframes</var> with
+              a positional offset of 1, return the property value for
+              <var>target property</var> of the last <a>key frame</a> in
+              <var>property-specific keyframes</var>.</li>
           <li>Let <var>start key frame</var> be the last <a>key frame</a> in
-              <var>key frames</var> whose offset is less than or equal to
-              <var>time fraction</var> and less than 1.
-              If there is no such <a>key frame</a> (because, for example,
-              the <a>time fraction</a> is negative), let <var>start key
-              frame</var> be the last <a>key frame</a> whose offset is 0.</li>
+              <var>property-specific keyframes</var> whose positional offset is
+              less than or equal to <var>time fraction</var> and less than 1.
+              If there is no such <a>key frame</a> (because, for example, the
+              <a>time fraction</a> is negative), let <var>start key frame</var>
+              be the last <a>key frame</a> whose positional offset is 0.</li>
           <li>Let <var>end key frame</var> be the next <a>key frame</a> in
-              <var>key frames</var> after <var>start key frame</var>.</li>
+              <var>property-specific keyframes</var> after <var>start key
+              frame</var>.</li>
           <li>If the pair of property values specified by <var>start key
               frame</var> and <var>end key frame</var>
               differ in <a>property type</a> or have the same <a>property
@@ -3263,8 +3278,8 @@
               unless <var>time fraction</var> is greater than or equal to 1, in
               which case return the property value of <var>end key
               frame</var>.</li>
-          <li>Let <var>start offset</var> be the offset of <var>start key
-              frame</var>.</li>
+          <li>Let <var>start offset</var> be the positional offset of <var>start
+              key frame</var>.</li>
           <li>Let <var>end offset</var> be the offset of <var>end key
               frame</var>.</li>
           <li>
@@ -3280,6 +3295,26 @@
             interpolation parameter.
           </li>
         </ol>
+        <div class="note">
+          <p>Note that this procedure assumes the following about the list of
+             <a>keyframes</a> specified on the effect:</p>
+          <ul>
+            <li>Each <a>keyframe</a> has a specified <a
+                title="positional offset of a keyframe">positional offset</a> in
+                the range [0,1].
+            <li>The list of <a>keyframes</a> is sorted in ascending order by
+                <a title="positional offset of a keyframe">positional
+                offset</a>.
+            <li>Each specified property value is a valid and supported value.
+            <li>For a given property, there is a most one specified property
+                value on each keyframe.
+          </ul>
+          <p>
+            It is the responsibility of the user of the model (for example,
+            a declarative markup or programming interface) to ensure these
+            conditions are met.
+          </p>
+        </div>
         <p class="note">
           Note that this procedure permits overlapping <a>key
           frames</a>.
@@ -3290,6 +3325,104 @@
           or equal to 1 is the value of the first <a>key frame</a> or the last
           <a>key frame</a> in <var>key frames</var> respectively.
         </p>
+      </section>
+      <section>              
+        <h3>Procedure for evenly distributing keyframes</h3>
+        <p>
+          Whilst the Web Animations model assumes a sorted list of
+          <a>keyframes</a> with specified <a
+          title="positional offset of a keyframe">positional offsets</a> in the
+          range [0,1] many users of the model require a facility for
+          automatically distributing keyframes when positional offsets are not
+          provided.
+          A procedure for evenly distributing keyframes with unspecified
+          positional offsets is provided below.
+        </p>
+        <p>
+          Given a list of <a>keyframes</a> whose <a
+          title="positional offset of a keyframe">positional offets</a> are
+          either a real number in the range [0,1] or unspecified,
+          we define such as list as <dfn>loosely sorted by offset</dfn> if, for
+          each <a>keyframe</a> in the list that has a specified offset, the
+          offset is greater than or equal to the offset of the previous
+          <a>keyframe</a> in the list with a specified offset, if any.
+        </p>
+        <p>
+          Given a list of <a>keyframes</a>, <var>initial keyframe list</var>,
+          that is <a>loosely sorted by offset</a> we can evenly distribute the
+          <a>keyframes</a> with unspecified <a
+          title="positional offset of a keyframe">positional offsets</a> between
+          those frames with specified offsets using the following procedure:
+        </p>
+        <ol>
+          <li>Let <var>distributed keyframes</var> be a copy of <var>initial
+              keyframe list</var>.
+          <li>If there is no <a>keyframe</a> in <var>distributed keyframes</var>
+              with a <a title="positional offset of a keyframe">positional
+              offset</a> of 0, then,
+            <dl class="switch">
+              <dt>If there is more than one <a>keyframe</a> in <var>distributed
+                  keyframes</var> and the first <a>keyframe</a> does not have
+                  a specified positional offset,</dt>
+              <dd>
+                Set the positional offset of the first <a>keyframe</a> in
+                <var>distributed keyframes</var> to 0.
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                Temporarily add an empty <a>keyframe</a> to the
+                start of <var>distributed keyframes</a> with a positional
+                offset of 0.
+              </dd>
+            </dl>
+          <li>Likewise, if there is no <a>keyframe</a> in <var>distributed
+              keyframes</var> with a <a
+              title="positional offset of a keyframe">positional offset</a> of
+              1, then,
+            <dl class="switch">
+              <dt>If <var>distributed keyframes</var> is not empty and the last
+                  <a>keyframe</a> does not have a specified positional
+                  offset,</dt>
+              <dd>
+                Set the positional offset of the last <a>keyframe</a> in
+                <var>distributed keyframes</var> to 1.
+              </dd>
+              <dt>Otherwise,</dt>
+              <dd>
+                Temporarily append an empty <a>keyframe</a> to the end of
+                <var>distributed keyframes</a> with a positional offset of 1.
+              </dd>
+            </dl>
+          <li>Set the offset of all <a>keyframes</a> in <var>distributed
+              keyframes</var> without a specified <a
+              title="positional offset of a keyframe">positional offset</a> as
+              so that for a <a>keyframe</a>, <var>k</var>, without a specified
+              offset, if:
+              <ul>
+                <li><var>a</var> is the positional offset of the last
+                    <a>keyframe</a> with a specified offset appearing in
+                    <var>distributed keyframes</var> before <var>k</var>,
+                <li><var>b</var> is the positional offset of the first
+                    <a>keyframe</a> with a specified offset appearing in
+                    <var>pre-processed keyframes</var> after <var>k</var>,
+                <li><var>n</var> is the number of <a>keyframes</a> between
+                    <var>a</var> and <var>b</var>, and
+                <li><var>i</var> is the index of <var>k</var> among the
+                    <a>keyframes</a> between <var>a</var> and <var>b</var>
+                    such that the first <a>keyframe</a> has index 1 and the last
+                    <a>keyframe</a> has index <var>n</var>;
+              </ul>
+              <p>
+                then the offset of <var>k</var> is
+                <code><var>a</var> + (<var>b</var> - <var>a</var>)
+                * <var>i</var>
+                / (<var>n</var> + 1)</code>
+              </p>
+          <li>If any temporary keyframes were added to <var>distributed
+              keyframes</var> in steps 1 or 2, remove them from <var>distributed
+              keyframes</var>.
+          <li>Return <var>distributed keyframes</var>.
+        </ol>
       </section>
     </section>
 
@@ -6005,20 +6138,6 @@ new SeqGroup(
               effect</a> as specified by one of the <a>AccumulateOperation</a>
               constants.
             </p>
-            <p>
-              This value defaults to <code>"replace"</code>.
-            </p>
-          </dd>
-          <dt>attribute CompositeOperation composite</dt>
-          <dd>
-            <p>
-              The <a>composition operation</a> used to composite this animation
-              with the stack, as specified by one of the
-              <a>CompositeOperation</a> enumeration values.
-            </p>
-            <p>
-              This value defaults to <code>"replace"</code>
-            </p>
           </dd>
           <dt>AnimationEffect clone ()</dt>
           <dd>
@@ -6273,355 +6392,409 @@ var anim = new Animation(elem,
       </section>
       <section>
         <h3>The <code>KeyframeAnimationEffect</code> interface</h3>
-        <p class="todo">
-          This whole section is soon to be re-written.
-        </p>
         <p>
           <a>Key frame animation effects</a>
           are represented by the <a>KeyframeAnimationEffect</a> interface.
         </p>
         <dl title="interface KeyframeAnimationEffect : AnimationEffect"
           class="idl">
-          <dt>Constructor (DOMString property,
-      (DOMString or sequence&lt;(KeyframeDictionary or DOMString)&gt;) frames,
-      optional AccumulateOperation accumulate = "none",
-      optional CompositeOperation composite = "replace")</dt>
+          <dt>Constructor ()</dt>
           <dd>
             <p>
               Creates a new <a>KeyframeAnimationEffect</a> object for the
-              specified property from the given list of keyframes.
+              given set of keyframes.
             </p>
-            <p>
-              The list of keyframes may be a sequence of
-              <a>KeyframeDictionary</a> dictionaries, a sequence of
-              <code>DOMString</code>s, a combination of both, or
-              a single <code>DOMString</code>.
-            </p>
-            <p>
-              <code>DOMString</code>s are used to create keyframes with an
-              offset of 1.
-              When the list of keyframes is a sequence consisting entirely of
-              <code>DOMString</code>s the offsets of the newly created
-              <a>Keyframe</a>s are distributed evenly from 0 to 1.
-            </p>
-            <p>
-              The <var>property</var>, <var>accumulate</var> and
-              <var>composite</var> arguments are assigned to the
-              attributes of the same names.
-            </p>
-            <p>
-              The <var>frames</var> argument is processed as follows:
-            </p>
-            <ol>
-              <li>Let <var>effect</var> be the
-                  <a>KeyframeAnimationEffect</a> currently under construction.
-              </li>
-              <li>
-                <p>
-                  The processing of <var>frames</var> depends on its type as
-                  follows:
-                </p>
-                <dl class="switch">
-                  <dt>If <var>frames</var> is a <code>DOMString</code>,</dt>
-                  <dd>
-                    <ol>
-                      <li>
-                        Let <var>frame</var> be a new <a>Keyframe</a>
-                        constructed from a <a>KeyframeDictionary</a> whose
-                        <code>value</code> member is set to
-                        <var>frames</var> and whose other members are set
-                        to their default values.
-                      </li>
-                      <li>
-                        Call
-                <code><var>effect</var>.frames.add(<var>frame</var>)</code>.
-                      </li>
-                    </ol>
-                  </dd>
-                  <dt>If <var>frames</var> is a sequence of <code>(DOMString
-                      or <a>KeyframeDictionary</a>)</code>,</dt>
-                  <dd>
-                    <ol>
-                      <li>Set a flag <var>all strings</var> to
-                          <code>true</code>.</li>
-                      <li>
-                        For each <var>item</var> in <var>frames</var>:
-                        <ol>
-                          <li>
-                            <dl class="switch">
-                              <dt>If <var>item</var> is
-                                  a <code>DOMString</code>,</dt>
-                              <dd>
-                                Let <var>frame</var> be a new <a>Keyframe</a>
-                                constructed from a <a>KeyframeDictionary</a>
-                                whose <code>value</code> member is set to
-                                <var>item</var> and whose other members are
-                                set to their default values.
-                              </dd>
-                              <dt>Otherwise (<var>item</var> is
-                                  a <a>KeyframeDictionary</a>),</dt>
-                              <dd>
-                                <ol>
-                                  <li>
-                                    Let <var>frame</var> be a new
-                                    <a>Keyframe</a> constructed by calling
-                                    <code>Keyframe(<var>item</var>)</code>.
-                                  </li>
-                                  <li>
-                                    Set <var>all strings</var> to
-                                    <code>false</code>.
-                                  </li>
-                                </ol>
-                              </dd>
-                            </dl>
-                          </li>
-                          <li>
-                            Call
-                <code><var>effect</var>.frames.add(<var>frame</var>)</code>.
-                          </li>
-                        </ol>
-                      </li>
-                      <li>If flag <var>all strings</var> is
-                          <code>true</code> call
-                        <code><var>effect</var>.frames.distribute()</code>.
-                      </li>
-                    </ol>
-                  </dd>
-                </dl>
-              </li>
-            </ol>
-          </dd>
-          <dt>attribute DOMString property</dt>
-          <dd>
-            The name of the target property or attribute.
-          </dd>
-          <dt>readonly attribute KeyframeList frames</dt>
-          <dd>
-            The series of values that make up this effect sorted by their
-            offset within the iteration duration of the animation.
-          </dd>
-        </dl>
-      </section>
-      <section>
-        <h3>The <code>KeyframeList</code> interface</h3>
-        <p>
-          The <a>KeyframeList</a> object is a collection of <a>Keyframe</a>
-          objects sorted by the offset of each <a>Keyframe</a>.
-        </p>
-        <dl title="interface KeyframeList" class="idl">
-          <dt>readonly attribute unsigned long length</dt>
-          <dd>
-            The number of frames in the list.
-          </dd>
-          <dt>void clear ()</dt>
-          <dd>
-            Removes all frames from this list.
-          </dd>
-          <dt>getter Keyframe? (unsigned long index)</dt>
-          <dd>
-            Returns the frame at <code>index</code> if it exists or
-            <code>null</code> otherwise.
-          </dd>
-          <dt>Keyframe add((Keyframe or KeyframeDictionary) frame)</dt>
-          <dd>
-            <p>
-              Adds <var>frame</var> to the list such that the list remains
-              sorted by the offset of the frames.
-            </p>
-            <p>
-              If <var>frame</var> is of type <a>KeyframeDictionary</a> then
-              a <a>Keyframe</a> object is first constructed by calling
-              <code>Keyframe(<var>frame</var>)</code> before adding the
-              newly constructed <a>Keyframe</a> to the list.
-            </p>
-            <p>
-              If there already exists a frame in this list with offset
-              <code><var>frame</var>.offset</code>, the newly added
-              <var>frame</var> will appear in the list <em>after</em> the
-              already existing frames in the list with the same offset.
-            </p>
-            <p>
-              If <var>frame</var> is already part of another <a>KeyframeList</a>
-              it is first removed from that list before being added to this
-              list.
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>IndexSizeError</code></dt>
+            <dl class="parameters">
+              <dt>KeyframeParameters frames</dt>
               <dd>
-                Raised if <var>frame</var> is a <a>KeyframeDictionary</a> whose
-                offset is outside the range [0,1] or missing.
+                The set of <a>keyframes</a> used for calculating animation
+                values for this <a>animation effect</a>.
+                The constraints on this parameter and its processing are
+                indentical as with <code>setFrames</code>.
+              </dd>
+              <dt>optional CompositeOperation composite = "replace"</dt>
+              <dd>
+                The <a>composition operation</a> used to composite this
+                animation with the <a>animation stack</a>, as specified by one
+                of the <a>CompositeOperation</a> enumeration values.
+                This is used for all property values that do not specify
+                a <a>composition operation</a>.
+              </dd>
+              <dt>optional AccumulateOperation accumulate = "none"</dt>
+              <dd>
+                The <a>accumulation operation</a> used to define the way
+                animation values build from iteration to iteration.
               </dd>
             </dl>
           </dd>
-          <dt>Keyframe? remove(unsigned long index)</dt>
-          <dd>
-            Removes the frame at position <var>index</var> and returns it.
-            If index is outside the range [0, length), then <code>null</code> is
-            returned.
-          </dd>
-          <dt>long indexOf(Keyframe frame)</dt>
-          <dd>
-            Returns the index of <var>frame</var> within the list. If
-            <var>frame</var> is not a member of the list, returns
-            <code>-1</code>.
-          </dd>
-          <dt>KeyframeList distribute()</dt>
+          <dt>attribute CompositeOperation composite</dt>
           <dd>
             <p>
-              Adjusts the offsets of the frames in the list such that the
-              offsets are spaced equidistantly whilst maintaining their current
-              order and such that the first frame (when there are multiple
-              frames) has offset 0 and the last frame (if any) has offset 1.
+              The <a>composition operation</a> used to composite this animation
+              with the <a>animation stack</a>, as specified by one of the
+              <a>CompositeOperation</a> enumeration values.
             </p>
             <p>
-              For <var>frame</var> at position <var>i</var> in the list where
-              0 &le; <var>i</var> &lt; <code>length</code>, an offset will be
-                assigned equal to <code>i / (length - 1)</code> unless
-                <code>length</code> is 1 in which case it will be given offset
-                1.
-            </p>
-            <p>
-              After applying the changes, this list is returned.
+              This is used for all property values that do not specify
+              a <a>composition operation</a>.
             </p>
           </dd>
-        </dl>
-        <div class="annotation">
-          <p>
-            The following changes for making keyframes easier to work with in
-            future have been proposed:
-          </p>
-          <pre class="example sh_javascript">
-// Currently you have to do this
-effect.frames.add({ property: 'left', offset: 0.3, value: '100px' }); 
-
-// It would be nice if you could also do this
-effect.frames.add(0.3, 'left', '100px');
-
-// Also, fetching by offset would be good
-
-// Returns the last frame with offset 0.3 if there is one.
-// If there is none, does the interpolation and returns a new frame? 
-var frame = effect.frames['0.3']; 
-          </pre>
-        </div>
-      </section>
-      <section>
-        <h3>The <code>Keyframe</code> interface</h3>
-        <p>
-          An individual <a>key frame</a> is represented by the <a>Keyframe</a>
-          interface.
-        </p>
-        <div class="issue">
-          <p>
-            Currently a <a>Keyframe</a> can only target a single property which
-            is defined on the <a>KeyframeAnimationEffect</a>.
-            This is different to CSS.
-            Is this something we want to change?
-            It would complicate the API, of course, but is it worth it?
-          </p>
-        </div>
-        <p>
-          <dl title="interface Keyframe" class="idl">
-            <dt>Constructor (KeyframeDictionary dictionary)</dt>
-            <dd>
-              <p>
-                Creates a new <a>Keyframe</a> object using the parameters
-                specified in <var>dictionary</var>.
-              </p>
-              <p>
-                <code><var>dictionary</var>.offset</code> is clamped to the
-                range [0, 1] before setting.
-              </p>
-            </dd>
-            <dt>attribute DOMString value</dt>
-            <dd>
-              The value to assign to the target attribute or property at the
-              given offset.
-            </dd>
-            <dt>attribute double offset</dt>
-            <dd>
-              <p>
-                A value between 0 and 1 inclusive representing the offset
-                within the iteration duration of the animation where this value
-                should appear.
-              </p>
-              <p>
-                If this keyframe belongs to a <a>KeyframeList</a>, changes to
-                this value cause the <a>KeyframeList</a> to be immediately
-                re-sorted using a stable sort such that all children are ordered
-                by their offset but children with identical offsets retain their
-                relative position in the list.
-              </p>
-              <p>
-                Exceptions:
-              </p>
-              <dl class="exceptions">
-                <dt>DOMException of type <code>IndexSizeError</code></dt>
-                <dd>
-                  Raised on setting a value outside the range [0,1].
-                </dd>
-              </dl>
-            </dd>
-            <dt>attribute DOMString? timingFunction</dt>
-            <dd>
-              <p>
-                An optional <a>timing function</a> to apply between this
-                keyframe and the next keyframe in any <a>KeyframeList</a> in
-                which this object appears.
-              </p>
-              <p>
-                The acceptable values and the handling of unrecognized values is
-                identical to the behavior described for the
-                <a href="#widl-TimingDictionary-timingFunction"
-                class="idlType"><code>timingFunction</code></a> member of
-                <a>TimingDictionary</a>.
-              </p>
-            </dd>
-          </dl>
-        </p>
-      </section>
-      <section>
-        <h3>The <code>KeyframeDictionary</code> dictionary</h3>
-        <p>
-          To simplify creation of <a>Keyframe</a> objects
-          a <code>KeyframeDictionary</code> can be used.
-        </p>
-        <p>
-          The members of the dictionary correspond to attributes in the
-          <a>Keyframe</a> interface which provides a more complete description
-          of their meaning and usage.
-        </p>
-        <dl title="dictionary KeyframeDictionary" class="idl">
-          <dt>DOMString value = ""</dt>
-          <dd>
-            The value to assign to the target attribute or property at the given
-            offset.
-          </dd>
-          <dt>double offset = 1</dt>
-          <dd>
-            A value between 0 and 1 (inclusive) representing the offset within
-            the iteration duration of the animation where this value should
-            appear.
-          </dd>
-          <dt>DOMString? timingFunction = null</dt>
+          <dt>sequence&lt;Keyframe&gt; getFrames()</dt>
           <dd>
             <p>
-              A string specifying the <a>timing function</a> to apply between
-              this keyframe and the next keyframe in any <a>KeyframeList</a> in
-              which this object appears.
+              Returns the <a>keyframes</a> that make up this effect as
+              a sequence of <a>Keyframe</a> objects.
+              Any <a>KeyframeShortcut</a> objects passed to this object's
+              constructor or <code>getFrames</code> method will have been
+              expanded to the equivalent <a>Keyframe</a> object using the
+              procedure defined in
+              <a href="#translating-from-a-keyframeshortcut-to-a-keyframe"
+              class="sectionRef"></a>.
             </p>
             <p>
-              The acceptable values and the handling of unrecognized values is
-              identical to the behavior described for the
-              <a href="#widl-TimingDictionary-timingFunction"
-              class="idlType"><code>timingFunction</code></a> member of
-              <a>TimingDictionary</a>.
+              Note that the normalization applied to the list of
+              <a>keyframes</a> associated with this effect does not affect the
+              value returned by this method.
+            </p>
+          </dd>
+          <dt>void setFrames(KeyframeParameters frames)</dt>
+          <dd>
+            <p>
+              Replaces the set of <a>keyframes</a> that make up this effect.
+            </p>
+            <p>
+              Any <a>KeyframeShortcut</a> objects in <var>frames</var> are
+              converted to equivalent <a>Keyframe</a> objects using the
+              procedure defined in <a
+              href="#translating-from-a-keyframeshortcut-to-a-keyframe"
+              class="sectionRef"></a> before they are stored.
+            </p>
+            <p>
+              Before being used by the animation model, the set of frames
+              associated with this effect is normalized using the procedure
+              defined in <a
+              href="#procedure-for-normalizing-the-list-of-keyframes"
+              class="sectionRef"></a>.
+            </p>
+            <p>
+              As a result of normalization, if <var>frames</var> is not
+              <a>loosely sorted by offset</a> this effect will not contribute to
+              the final <a>animation value</a>.
             </p>
           </dd>
         </dl>
+        <section>
+          <h4>Procedure for normalizing the list of keyframes</h4>
+          <p>
+            Before passing the list of <a
+            title="Keyframe interface">Keyframes</a> specified in the API to the
+            animation model so that the <a>simple animation value</a> can be
+            calculated (see <a
+            href="#the-simple-animation-value-of-a-keyframe-animation-effect"
+            class="sectionRef"></a>), the following normalization is performed.
+          </p>
+          <ol>
+            <li>Let <var>normalized keyframes</var> be a copy of the
+                <a>keyframe</a> list returned by <code>getFrames</code>.
+            <li>If <var>normalized keyframes</var> is not <a>loosely sorted by
+                offset</a>, return an empty list.
+            <li>If there exist any <a>keyframes</a> whose specified positional
+                offset is less than zero, remove all <a>keyframes</a> from the
+                start of <var>normalized keyframes</var> up to and including the
+                <a>keyframe</a> with the largest specified positional offset
+                that is still less than zero.
+            <li>Likewise, if there exist any <a>keyframes</a> whose specified
+                offset is greater than one, remove all <a>keyframes</a> from
+                <a>keyframe</a> with the smallest specified positional offset
+                that is still greater than one until the end of
+                <var>normalized keyframes</var>.
+            <li>Set the <a title="positional offset of a keyframe">positional
+                offset</a> of any keyframes without a specified offset using the
+                procedure defined in <a
+                href="#procedure-for-evenly-distributing-keyframes"
+                class="sectionRef"></a>.
+            <li>Remove all property values in <var>normalized keyframes</var>
+                that are invalid or not supported by the implementation.
+            <li>For each <a>keyframe</a> in <var>normalized keyframes</var>,
+                if there are two or more properties for the same property,
+                remove all but the last property value for each property.
+            <li>Return <var>normalized keyframes</var>.
+          </ol>
+          <div class="note">
+            <p>
+              Note that this normalization is only applied to the keyframes
+              before they are passed to the model and does not affect the result
+              returned by <code>getFrames</code>.
+            </p>
+          </div>
+        </section>
+      </section>
+      <section>
+        <h3>The <code>KeyframeValue</code> dictionary</h3>
+        <p>
+          The value of a property within a given <a>keyframe</a> can be
+          specified using a <a>KeyframeValue</a> dictionary object.
+        </p>
+        <dl title="dictionary KeyframeValue" class="idl">
+          <dt>DOMString property</dt>
+          <dd>
+            <p>
+              The name of the CSS property to which the value should be applied.
+              For example, <span class="prop-value">border-radius</span>.
+            </p>
+            <p>
+              Property names are matched using the same rules as specified for
+              <a
+              href="http://dev.w3.org/csswg/cssom/#widl-CSSStyleDeclaration-getPropertyValue-DOMString-DOMString-property"><code>getPropertyValue</code></a>
+              on <code>CSSStyleDeclaration</code> [[!CSSOM]].
+              Specifically, for CSS property names that are defined to match
+              case-insensitively, <a
+              href="http://dom.spec.whatwg.org/#ascii-case-insensitive">ASCII
+              case-insensitive</a> matching is used.
+              Otherwise, a <a
+              href="http://dom.spec.whatwg.org/#case-sensitive">case-sensitive</a>
+              match is used.
+            </p>
+            <p class="todo">
+              This matching is currently (2013-04-26) only defined in the ED of
+              CSSOM.
+              Once a newer WD becomes available we should refer to that or
+              simply drop this reference and reproduce any needed definitions
+              here.
+            </p>
+          </dd>
+          <dt>DOMString value</dt>
+          <dd>
+            <p>
+              The value of the property.
+            </p>
+            <p class="issue">
+              Should this be <code>any</code>?
+            </p>
+          </dd>
+          <dt>CompositeOperation composite? = null</dt>
+          <dd>
+            <p>
+              The <a>composition operation</a> used to combine
+              <code>value</code> with the <a>underlying value</a>.
+            </p>
+            <p>
+              If <code>null</code>, the <a>composition operation</a>
+              specified on the <a>KeyframeAnimationEffect</a> will be used.
+            </p>
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>Keyframe</code> dictionary</h3>
+        <dl title="dictionary Keyframe" class="idl">
+          <dt>sequence&lt;KeyframeValue&gt; values</dt>
+          <dd>
+            <p>
+              A sequence of zero or more <a>KeyframeValue</a> objects.
+            </p>
+            <p>
+              If two or more <a>KeyframeValue</a> objects in the sequence have
+              a <a>property</a> that match the same CSS property using the
+              matching behavior defined for <code>property</code>, the last
+              valid and supported <a>KeyframeValue</a> object in the sequence is
+              used as defined by <a 
+              href="#procedure-for-normalizing-the-list-of-keyframes"
+              class="sectionRef"></a>.
+            </p>
+            <p>
+              When all <a>KeyframeValue</a> objects match different CSS
+              properties, the order of the sequence has no significance.
+            </p>
+          </dd>
+          <dt>double offset = null</dt>
+          <dd>
+            <p>
+              The <a title="positional offset of a keyframe">positional
+              offset</a> of the <a>keyframe</a> specified as a number between
+              0.0 and 1.0 inclusive or <code>null</code>.
+            </p>
+            <p>
+              <a>Keyframes</a> with offsets outside the range [0.0,1.0] are
+              ignored when calculating animation values as defined in
+              <a
+              href="#procedure-for-normalizing-the-list-of-keyframes"
+              class="sectionRef"></a>.
+            </p>
+            <p>
+              A <code>null</code> value indicates that the <a>keyframe</a>
+              should be positioned automatically using the algorithm defined in
+              <a href="#procedure-for-evenly-distributing-keyframes"
+              class="sectionRef"></a> and applied in
+              <a
+              href="#procedure-for-normalizing-the-list-of-keyframes"
+              class="sectionRef"></a>.
+            </p>
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h3>The <code>KeyframeShortcut</code> type</h3>
+        <p>
+          In order to simplify the creation of simple <a>keyframe animation
+          effects</a>, in ECMAScript execution environments an additional
+          <a>KeyframeShortcut</a> type is introduced.
+          This type is purely for the purposes of input and is never returned by
+          the programming interface.
+        </p>
+        <div class="idl" title="typedef Object KeyframeShortcut">
+          <section>
+            <h4>Translating from a <code>KeyframeShortcut</code> to a <code>Keyframe</code></h4>
+            <div class="note">
+              <p>
+                Since accessing the properties of an ECMAScript user object can
+                have side effects, the manner in which these properties is
+                accessed is important.
+                In light of this consideration the procedure for processing
+                a <a>KeyframeShortcut</a> has the following properties:
+              </p>
+              <ul>
+                <li>Every property is read only once.</li>
+                <li>Properties are read in a well-defined order.</li>
+                <li>Properties corresponding to unsupported target properties or
+                    attributes are not read.</li>
+              </ul>
+            </div>
+            <p>
+              A <a>KeyframeShortcut</a> object, <var>shortcut</var> is converted
+              to an equivalent <a title="Keyframe interface">Keyframe</a> object
+              using the following procedure:
+            </p>
+            <ol>
+              <li>Let <var>keyframe</var> be a new <a
+                  title="Keyframe interface">Keyframe</a> object with
+                  an empty sequence of <a>KeyframeValue</a>s and
+                  a <code>null</code> <code>offset</code>.
+              <li>Create a list, <var>supported properties</var>, of property
+                  names and attribute names that <a title="animatable">can be
+                  animated</a> by the implementation.
+              <li>Convert each property name in <var>supported properties</var>
+                  to the equivalent IDL attribute by applying the <a
+                  href="http://dev.w3.org/csswg/cssom/#css-property-to-idl-attribute">CSS
+                  property to IDL attribute</a> algorithm [[!CSSOM]].
+              <li>If the user agent supports animation of the <span
+                  class="prop-name">float</a> CSS property, replace 'float' in
+                  <var>supported properties</var> with 'cssFloat'.
+              <li>Let <var>animation properties</var> be an empty sequence.
+              <li>Iterate over the properties of <code>shortcut</code>.
+                  For each <var>property</var> in <code>shortcut</code>, if
+                  <var>property</var> also exists in <var>supported
+                  properties</var> based on a case-sensitive comparison, append
+                  <var>property</var> to <var>animation properties</var>.
+              <li>For user agents that support both a prefixed and an
+                  unprefixed version of some CSS properties, remove all
+                  prefixed properties from <var>animation properties</var>
+                  where the corresponding unprefixed version is also
+                  present in <var>animation properties</var>.
+              <li>Sort <var>animation properties</var> lexicographically by
+                  the Unicode codepoints that define each element.
+              <li>Iterate over <var>animation properties</var> and for each
+                  element, <var>name</var>, perform the following steps:
+                <ol>
+                  <li>Create a new <a>KeyframeValue</a> object with the
+                      following attribute values:
+                    <ul>
+                      <li><code>property</code>: the result of applying the
+                          the <a
+                      href="http://dev.w3.org/csswg/cssom/#idl-attribute-to-css-property">IDL
+                           attribute to CSS property</a> algorithm [[!CSSOM]] to
+                           <var>name</var> unless <var>name</var> is
+                           a case-sensitive match for the string 'cssFloat' in
+                           which case let <code>property</code> be the
+                           string 'float'.
+                      <li><code>value</code>: the result of reading the
+                          <var>name</var> property of <var>shortcut</var>
+                      <li><code>composite</code>: <code>null</code>
+                    </ul>
+                  <li>Append the new <a>KeyframeValue</a> to
+                      <var>keyframe</var>'s list of <code>values</code>.
+                </ol>
+              <li>Return <var>keyframe</var>
+            </ol>
+            <div class="issue">
+              <p>
+                We'd like to be able support specifying the keyframe offset
+                using this syntax but a <code>offset</code> property here could
+                be taken to mean either the positional offset of the keyframe or
+                a CSS property called 'offset' should one be created.
+              </p>
+              <p>
+                We have a few options:
+              </p>
+              <ul>
+                <li>'offset' maps to a CSS property called 'offset'&mdash;if
+                    you want to specify the offset you have to use the full
+                    syntax.
+                <li>'offset' maps to the keyframe positional offset.
+                    If a CSS 'offset' property is ever introduced, either:
+                  <ul>
+                    <li>you won't be able to animate it using the shortcut
+                    <li>we'll introduce some other name especially for it,
+                        e.g. 'cssOffset'
+                  </ul>
+                <li>Rename the <code>offset</code> member of <a
+                    title="Keyframe interface">Keyframe</a> now to avoid risk
+                    of a later clash, e.g. 'keyframeOffset'
+              </ul>
+            </div>
+          </section>
+        </div>
+        <section>
+          <h4>The <code>KeyframeOrShortcut</code> typedef</h4>
+          <div class="idl"
+            title="typedef (Keyframe or KeyframeShortcut) KeyframeOrShortcut">
+            <p>
+              In ECMAScript execution environments, the
+              <a>KeyframeOrShortcut</a> type is used to indicate either
+              a <a>Keyframe</a> dictionary object or a <a>KeyframeShortcut</a>
+              object.
+            </p>
+            <p>
+              In non-ECMAScript execution environments where
+              <a>KeyframeShortcut</a> is not defined, <a>KeyframeOrShortcut</a>
+              type is simply an alias for <a>Keyframe</a>, that is,
+              <code>typedef Keyframe KeyframeOrShortcut</code>.
+            </p>
+            <section>
+              <h4>Distinguishing a <code>KeyframeShortcut</code> from
+              a <code>Keyframe</code></h4>
+              <p>
+                In WebIDL the members of a union must be
+                <a
+                href="http://www.w3.org/TR/WebIDL/#dfn-distinguishable">distinguishable</a>
+                [[!WEBIDL]],
+                A <a title="Keyframe interface">Keyframe</a> object can be
+                distinguished from a <a>KeyframeShortcut</a> object by the
+                presence of a <code>values</code> property on the object.
+              </p>
+              <div class="issue">
+                <p>Is this enough? If we introduce a CSS 'values' property we
+                   will have the same problem as with 'offset'.</p>
+              </div>
+            </section>
+          </div>
+        </section>
+      </section>
+      <section>
+        <h3>The <code>KeyframeParameters</code> typedef</h3>
+        <p>
+          It is common to create animations with a single 'target' keyframe.
+          To support this usage, the <a title="Keyframe interface">Keyframe</a>
+          interface supports passing a list of <a>keyframes</a> or a single
+          <a>keyframe</a>.
+        </p>
+        <div class="idl"
+          title="typedef (KeyframeOrShortcut or sequence&lt;KeyframeOrShortcut&gt;) KeyframeParameters">
+          Throughout this specification we use the <a>KeyframeParameters</a>
+          type to represent either a single keyframe (whether using the
+          <a>KeyframeShortcut</a> type or a regular <a>Keyframe</a> dictionary
+          object) or a list of such keyframes.
+        </div>
       </section>
       <section>
         <h3>The <code>PathAnimationEffect</code> interface</h3>

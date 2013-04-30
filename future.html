@@ -1238,6 +1238,227 @@
           </dl>
         </section>
       </section>
+      <section>
+        <h3>The <code>KeyframeList</code> interface</h3>
+        <p>
+          The <a>KeyframeList</a> object is a collection of <a>Keyframe</a>
+          objects sorted by the offset of each <a>Keyframe</a>.
+        </p>
+        <dl title="interface KeyframeList" class="idl">
+          <dt>readonly attribute unsigned long length</dt>
+          <dd>
+            The number of frames in the list.
+          </dd>
+          <dt>void clear ()</dt>
+          <dd>
+            Removes all frames from this list.
+          </dd>
+          <dt>getter Keyframe? (unsigned long index)</dt>
+          <dd>
+            Returns the frame at <code>index</code> if it exists or
+            <code>null</code> otherwise.
+          </dd>
+          <dt>Keyframe add((Keyframe or KeyframeDictionary) frame)</dt>
+          <dd>
+            <p>
+              Adds <var>frame</var> to the list such that the list remains
+              sorted by the offset of the frames.
+            </p>
+            <p>
+              If <var>frame</var> is of type <a>KeyframeDictionary</a> then
+              a <a>Keyframe</a> object is first constructed by calling
+              <code>Keyframe(<var>frame</var>)</code> before adding the
+              newly constructed <a>Keyframe</a> to the list.
+            </p>
+            <p>
+              If there already exists a frame in this list with offset
+              <code><var>frame</var>.offset</code>, the newly added
+              <var>frame</var> will appear in the list <em>after</em> the
+              already existing frames in the list with the same offset.
+            </p>
+            <p>
+              If <var>frame</var> is already part of another <a>KeyframeList</a>
+              it is first removed from that list before being added to this
+              list.
+            </p>
+            <p>
+              Exceptions:
+            </p>
+            <dl class="exceptions">
+              <dt>DOMException of type <code>IndexSizeError</code></dt>
+              <dd>
+                Raised if <var>frame</var> is a <a>KeyframeDictionary</a> whose
+                offset is outside the range [0,1] or missing.
+              </dd>
+            </dl>
+          </dd>
+          <dt>Keyframe? remove(unsigned long index)</dt>
+          <dd>
+            Removes the frame at position <var>index</var> and returns it.
+            If index is outside the range [0, length), then <code>null</code> is
+            returned.
+          </dd>
+          <dt>long indexOf(Keyframe frame)</dt>
+          <dd>
+            Returns the index of <var>frame</var> within the list. If
+            <var>frame</var> is not a member of the list, returns
+            <code>-1</code>.
+          </dd>
+          <dt>KeyframeList distribute()</dt>
+          <dd>
+            <p>
+              Adjusts the offsets of the frames in the list such that the
+              offsets are spaced equidistantly whilst maintaining their current
+              order and such that the first frame (when there are multiple
+              frames) has offset 0 and the last frame (if any) has offset 1.
+            </p>
+            <p>
+              For <var>frame</var> at position <var>i</var> in the list where
+              0 &le; <var>i</var> &lt; <code>length</code>, an offset will be
+                assigned equal to <code>i / (length - 1)</code> unless
+                <code>length</code> is 1 in which case it will be given offset
+                1.
+            </p>
+            <p>
+              After applying the changes, this list is returned.
+            </p>
+          </dd>
+        </dl>
+        <div class="annotation">
+          <p>
+            The following changes for making keyframes easier to work with in
+            future have been proposed:
+          </p>
+          <pre class="example sh_javascript">
+// Currently you have to do this
+effect.frames.add({ property: 'left', offset: 0.3, value: '100px' }); 
+
+// It would be nice if you could also do this
+effect.frames.add(0.3, 'left', '100px');
+
+// Also, fetching by offset would be good
+
+// Returns the last frame with offset 0.3 if there is one.
+// If there is none, does the interpolation and returns a new frame? 
+var frame = effect.frames['0.3']; 
+          </pre>
+        </div>
+      </section>
+      <section>
+        <h3>The <code>Keyframe</code> interface</h3>
+        <p>
+          An individual <a>key frame</a> is represented by the <a>Keyframe</a>
+          interface.
+        </p>
+        <div class="issue">
+          <p>
+            Currently a <a>Keyframe</a> can only target a single property which
+            is defined on the <a>KeyframeAnimationEffect</a>.
+            This is different to CSS.
+            Is this something we want to change?
+            It would complicate the API, of course, but is it worth it?
+          </p>
+        </div>
+        <p>
+          <dl title="interface Keyframe" class="idl">
+            <dt>Constructor (KeyframeDictionary dictionary)</dt>
+            <dd>
+              <p>
+                Creates a new <a>Keyframe</a> object using the parameters
+                specified in <var>dictionary</var>.
+              </p>
+              <p>
+                <code><var>dictionary</var>.offset</code> is clamped to the
+                range [0, 1] before setting.
+              </p>
+            </dd>
+            <dt>attribute DOMString value</dt>
+            <dd>
+              The value to assign to the target attribute or property at the
+              given offset.
+            </dd>
+            <dt>attribute double offset</dt>
+            <dd>
+              <p>
+                A value between 0 and 1 inclusive representing the offset
+                within the iteration duration of the animation where this value
+                should appear.
+              </p>
+              <p>
+                If this keyframe belongs to a <a>KeyframeList</a>, changes to
+                this value cause the <a>KeyframeList</a> to be immediately
+                re-sorted using a stable sort such that all children are ordered
+                by their offset but children with identical offsets retain their
+                relative position in the list.
+              </p>
+              <p>
+                Exceptions:
+              </p>
+              <dl class="exceptions">
+                <dt>DOMException of type <code>IndexSizeError</code></dt>
+                <dd>
+                  Raised on setting a value outside the range [0,1].
+                </dd>
+              </dl>
+            </dd>
+            <dt>attribute DOMString? timingFunction</dt>
+            <dd>
+              <p>
+                An optional <a>timing function</a> to apply between this
+                keyframe and the next keyframe in any <a>KeyframeList</a> in
+                which this object appears.
+              </p>
+              <p>
+                The acceptable values and the handling of unrecognized values is
+                identical to the behavior described for the
+                <a href="#widl-TimingDictionary-timingFunction"
+                class="idlType"><code>timingFunction</code></a> member of
+                <a>TimingDictionary</a>.
+              </p>
+            </dd>
+          </dl>
+        </p>
+      </section>
+      <section>
+        <h3>The <code>KeyframeDictionary</code> dictionary</h3>
+        <p>
+          To simplify creation of <a>Keyframe</a> objects
+          a <code>KeyframeDictionary</code> can be used.
+        </p>
+        <p>
+          The members of the dictionary correspond to attributes in the
+          <a>Keyframe</a> interface which provides a more complete description
+          of their meaning and usage.
+        </p>
+        <dl title="dictionary KeyframeDictionary" class="idl">
+          <dt>DOMString value = ""</dt>
+          <dd>
+            The value to assign to the target attribute or property at the given
+            offset.
+          </dd>
+          <dt>double offset = 1</dt>
+          <dd>
+            A value between 0 and 1 (inclusive) representing the offset within
+            the iteration duration of the animation where this value should
+            appear.
+          </dd>
+          <dt>DOMString? timingFunction = null</dt>
+          <dd>
+            <p>
+              A string specifying the <a>timing function</a> to apply between
+              this keyframe and the next keyframe in any <a>KeyframeList</a> in
+              which this object appears.
+            </p>
+            <p>
+              The acceptable values and the handling of unrecognized values is
+              identical to the behavior described for the
+              <a href="#widl-TimingDictionary-timingFunction"
+              class="idlType"><code>timingFunction</code></a> member of
+              <a>TimingDictionary</a>.
+            </p>
+          </dd>
+        </dl>
+      </section>
     </section>
 
   </body>
