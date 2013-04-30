@@ -5762,17 +5762,17 @@
                     Assign <code><var>animation</var>.effect</code> to
                     <var>effect</var>.
                   </dd>
-                  <dt>If <var>effect</var> is <code>null</code>,</dt>
+                  <dt>If <var>effect</var> is a <a>KeyframeParameters</a>,</dt>
                   <dd>
                     Set <code><var>animation</var>.effect</code> to
-                    <code>null</code>.
+                    a new <a>KeyframeAnimationEffect</a> object constructed by
+                    passing <var>effect</var> as the <var>frames</var> parameter
+                    and with the other parameters set to their default values.
                   </dd>
                   <dt>Otherwise,</dt>
                   <dd>
-                    Set <code><var>animation</var>.effect</code> to the return
-                    value of calling <a
-                  href="#widl-AnimationEffect-createFromProperties-AnimationEffect-object-properties"
-                  class="idlType"><code>AnimationEffect.createFromProperties</code></a><code>(<var>effect</var>)</code>.
+                    Set <code><var>animation</var>.effect</code> to
+                    <code>null</code>.
                   </dd>
                 </dl>
               </li>
@@ -5788,30 +5788,32 @@
                 This may be <code>null</code> for animations that do not target
                 a specific element.
               </dd>
-              <dt>object? effect</dt>
+              <dt>(AnimationEffect or CustomEffect or KeyframeParameters)? effect</dt>
               <dd>
                 The animation effect used to set the <code>effect</code>
-                attribute of the newly created <a>Animation</a> object.
+                attribute of the newly-created <a title="Animation
+                interface">Animation</a> object.
                 <p>
                   If this parameter is an <a>AnimationEffect</a> object or
                   <a>CustomEffect</a> object, it will shared with any
-                  other <a>Animation</a> objects referring to the same
-                  <a>AnimationEffect</a> or <a>CustomEffect</a>
-                  object.
+                  other <a title="Animation interface">Animation</a> objects
+                  referring to the same <a>AnimationEffect</a> or
+                  <a>CustomEffect</a> object.
                   It will <em>not</em> be copied.
                 </p>
                 <p>
-                  If this parameter is <code>null</code>, the newly created
-                  <a>Animation</a> will also have a <code>null</code> animation
-                  effect.
+                  If this parameter of type <a>KeyframeParameters</a>,
+                  the <a>animation effect</a> of the newly-created
+                  <a title="Animation interface">Animation</a> will be
+                  a newly-created <a>KeyframeAnimationEffect</a> object
+                  initialized by using this object as the list of
+                  <a>keyframes</a> and with all other parameters set to their
+                  default values.
                 </p>
                 <p>
-                  Otherwise, if this parameter is any other type of object, it
-                  will be passed to <a
-                  href="#widl-AnimationEffect-createFromProperties-AnimationEffect-object-properties"
-                  class="idlType"><code>AnimationEffect.createFromProperties</code></a>
-                  and the resulting <a>AnimationEffect</a> object used as the
-                  animation effect.
+                  If this parameter is <code>null</code>, the newly-created
+                  <a title="Animation interface">Animation</a> will also have
+                  a <code>null</code> animation effect.
                 </p>
               </dd>
               <dt>optional (double or TimingDictionary)? timing = null</dt>
@@ -6148,177 +6150,6 @@ new SeqGroup(
               We either need a more rigorous definition here or (probably
               better) a sets of steps on a per-subclass basis.
             </p>
-          </dd>
-          <dt>static AnimationEffect? createFromProperties ()</dt>
-          <dd>
-            <p>
-              Creates an <a>AnimationEffect</a> representing the passed-in
-              collection of properties.
-            </p>
-            <div class="note">
-              <p>
-                Note that this method requires handling the passed in parameter
-                in a manner not yet supported by Web IDL and hence this method
-                is ECMAScript-specific.
-              </p>
-              <p>
-                Since accessing the properties of an ECMAScript user object can
-                have side effects, the manner in which these properties is
-                accessed is important.
-                In light of this consideration the following procedure has the
-                following properties:
-              </p>
-              <ul>
-                <li>Every property is read only once.</li>
-                <li>Properties are read in a well-defined order.</li>
-                <li>Properties corresponding to unsupported target properties or
-                    attributes are not read.</li>
-              </ul>
-            </div>
-            <p>
-              The interpretation of the passed-in <code>properties</code> object
-              can be described in three parts.
-            </p>
-            <p><strong>Part 1 &ndash; Determine the set of
-               animation properties</strong></p>
-            <ol>
-              <li>Create a list, <var>supported properties</var>, of property
-                  names and attribute names that <a title="animatable">can be
-                  animated</a> by the implementation.</li>
-              <li>Let <var>animation properties</var> be an empty sequence.</li>
-              <li>Iterate through the properties of <code>properties</code>. For
-                  each <var>property</var> in <code>properties</code>, if
-                  <var>property</var> also exists in <var>supported
-                  properties</var> based on a case-sensitive comparison, append
-                  <var>property</var> to <var>animation properties</var>.
-                  <p class="note">
-                    Whilst the iteration order for properties of an ECMAScript
-                    object is implementation-dependent, the order here is not
-                    significant to the outcome as <var>animation
-                    properties</var> will be sorted before being iterated over.
-                  </p>
-                  <p class="issue">
-                    How do we handle <code>accumulate</code> and
-                    <code>composite</code>? We'd like to be able to
-                    list them in the same property bag but that would mean we
-                    could never animate properties of the same name.
-                  </p>
-              </li>
-            </ol>
-            <p><strong>Part 2 &ndash; Create the <a>AnimationEffect</a>
-               objects</strong></p>
-            <p>
-              The <a>AnimationEffect</a> object produced depends on the length
-              of <var>animation properties</var> as follows:
-            </p>
-            <dl class="switch">
-              <dt>If <var>animation properties</var> is of zero length,</dt>
-              <dd>
-                return <code>null</code>.
-                <div class="note">
-                  <p>
-                    This behavior of returning <code>null</code> allows
-                    alternative animation effects to be provided based on the
-                    capabilities of the user agent as follows:
-                  </p>
-                  <pre class="example sh_javascript">
-elem.animate(
-  AnimationEffect.createFromProperties({ transform: 'translate(-100px)' }) ||
-  AnimationEffect.createFromProperties({ top: '-100px' }),
-  3);
-                  </pre>
-                </div>
-              </dd>
-              <dt>Othewise,</dt>
-              <dd>
-                <ol>
-                  <li>Let <var>name</var> be the value of the element
-                      in <var>animation properties</var>.</li>
-                  <li>Let <var>value</var> be the value of
-                      <code>properties.<var>name</var></code>.</li>
-                  <li>Return a new <a>KeyframeAnimationEffect</a> object
-                      according to the steps in part 3 below based on
-                      <var>name</var> and <var>value</var>.</li>
-                </ol>
-              </dd>
-            </dl>
-            <div class="todo">
-              <p>
-                We need to allow <a>keyframe animation effects</a> to have
-                multiple target properties and update the above to handle this.
-              </p>
-              <p>
-                We probably want to include the following steps:
-              </p>
-              <ol>
-                <li>Sort <var>animation properties</var> lexicographically by
-                    the Unicode codepoints that define each property
-                    name.</li>
-                <li>For user agents that support both a prefixed and an
-                    unprefixed version of some CSS properties, remove all
-                    prefixed properties from <var>animation properties</var>
-                    where the corresponding unprefixed version is also
-                    present.</li>
-              </ol>
-              <p>
-                But we might also want to consider if we re-arrange the
-                structure of the passed in object to more closely match CSS?
-              </p>
-              <p>
-                It might be acceptable to support either:
-              </p>
-              <pre class="example sh_javascript">
-var anim = new Animation(elem, { left: '100px' }, 3);
-              </pre>
-              <p>
-                or:
-              </p>
-              <pre class="example sh_javascript">
-var anim = new Animation(elem,
-  [{ offset: 0, left: '100px', right: '200px' }, ... ], 3);
-              </pre>
-              <p>
-                but not:
-              </p>
-              <pre class="example sh_javascript">
-var anim = new Animation(elem,
-  { left: ['100px', ...], right: ['200px', ...] }, 3);
-              </pre>
-              <p>
-                But I don't know how much that buys us and the second case is
-                complicated anyway since it means you can't animate an offset
-                property (maybe you can escape it?).
-              </p>
-            </div>
-            <p><strong>Part 3 &ndash; Create each
-               <a>KeyframeAnimationEffect</a> object</strong></p>
-            <p>
-              Based on a given <var>name</var> and <var>value</var>, a new
-              <a>KeyframeAnimationEffect</a> is created as follows:
-            </p>
-            <dl class="switch">
-              <dt>If <var>value</var> is not of type <code>(DOMString or
-              sequence&lt;(<a>KeyframeDictionary</a> or
-              DOMString)&gt;)</code>,</dt>
-              <dd>
-                Throw a <code>TypeError</code> as defined by [[!ECMA-262]].
-              </dd>
-              <dt>Otherwise,</dt>
-              <dd>
-                Construct a new <a>KeyframeAnimationEffect</a> by calling
-                <code>KeyframeAnimationEffect(<var>name</var>,
-                <var>value</var>)</code>.
-              </dd>
-            </dl>
-            <dl class="parameters">
-              <dt>object properties</dt>
-              <dd>
-                An object whose object properties represent the CSS properties
-                or element attributes to be animated.
-                The values corresponding to these properties are the animation
-                values to be applied as described above.
-              </dd>
-            </dl>
           </dd>
         </dl>
         <div class="annotation">
