@@ -6491,15 +6491,17 @@ new SeqGroup(
               </ul>
             </div>
             <p>
-              A <a>KeyframeShortcut</a> object, <var>shortcut</var> is converted
-              to an equivalent <a title="Keyframe interface">Keyframe</a> object
-              using the following procedure:
+              A <a>KeyframeShortcut</a> object, <var>shortcut</var>, is
+              converted to an equivalent <a
+              title="Keyframe interface">Keyframe</a> object using the following
+              procedure:
             </p>
             <ol>
               <li>Let <var>keyframe</var> be a new <a
                   title="Keyframe interface">Keyframe</a> object with
-                  an empty sequence of <a>KeyframeValue</a>s and
-                  a <code>null</code> <code>offset</code>.
+                  an empty sequence of <a>KeyframeValue</a>s,
+                  a <code>null</code> <code>offset</code> attribute, and a
+                  a <code>null</code> <code>composite</code> attribute.
               <li>Create a list, <var>supported properties</var>, of property
                   names and attribute names that <a title="animatable">can be
                   animated</a> by the implementation.
@@ -6512,10 +6514,34 @@ new SeqGroup(
                   <var>supported properties</var> with 'cssFloat'.
               <li>Let <var>animation properties</var> be an empty sequence.
               <li>Iterate over the properties of <code>shortcut</code>.
-                  For each <var>property</var> in <code>shortcut</code>, if
-                  <var>property</var> also exists in <var>supported
-                  properties</var> based on a case-sensitive comparison, append
-                  <var>property</var> to <var>animation properties</var>.
+                  For each <var>property</var> in <code>shortcut</code>,
+                  perform the step corresponding to the first matching condition
+                  from below, if any.
+                <dl class="switch">
+                  <dt>If <var>property</var> is a case-sensitive match for
+                    the string 'offset',</dt>
+                  <dd>
+                    if <code><var>shortcut</var>.offset</code> is
+                    a Number, set the <code>offset</code> attribute of
+                    <var>keyframe</var> to
+                    <code><var>shortcut</var>.offset</code>.
+                  </dd>
+                  <dt>if <var>property</var> is a case-sensitive match for
+                    the string 'composite',</dt>
+                  <dd>
+                    If <code><var>shortcut</var>.composite</code> is
+                    a case-sensitive match for one of the values of the
+                    <a>CompositeOperation</a> enumeration,
+                    set the <code>composite</code> attribute of
+                    <var>keyframe</var> to
+                    <code><var>shortcut</var>.composite</code>.
+                  </dd>
+                  <dt>Otherise, if <var>property</var> also exists in
+                    <var>supported properties</var> based on a case-sensitive
+                    comparison,</dt>
+                  <dd>append <var>property</var> to <var>animation
+                    properties</var>.</dd>
+                </dl>
               <li>For user agents that support both a prefixed and an
                   unprefixed version of some CSS properties, remove all
                   prefixed properties from <var>animation properties</var>
@@ -6539,7 +6565,6 @@ new SeqGroup(
                            string 'float'.
                       <li><code>value</code>: the result of reading the
                           <var>name</var> property of <var>shortcut</var>
-                      <li><code>composite</code>: <code>null</code>
                     </ul>
                   <li>Append the new <a>KeyframeValue</a> to
                       <var>keyframe</var>'s list of <code>values</code>.
@@ -6548,28 +6573,21 @@ new SeqGroup(
             </ol>
             <div class="issue">
               <p>
-                We'd like to be able support specifying the keyframe offset
-                using this syntax but a <code>offset</code> property here could
-                be taken to mean either the positional offset of the keyframe or
-                a CSS property called 'offset' should one be created.
+                The above algorithm gives special meaning to the property names
+                'offset' and 'composite'.
+                If a CSS property called 'offset' or 'composite' is ever
+                introduced it will clash with the meaning here.
               </p>
               <p>
                 We have a few options:
               </p>
               <ul>
-                <li>'offset' maps to a CSS property called 'offset'&mdash;if
-                    you want to specify the offset you have to use the full
-                    syntax.
-                <li>'offset' maps to the keyframe positional offset.
-                    If a CSS 'offset' property is ever introduced, either:
-                  <ul>
-                    <li>you won't be able to animate it using the shortcut
-                    <li>we'll introduce some other name especially for it,
-                        e.g. 'cssOffset'
-                  </ul>
-                <li>Rename the <code>offset</code> member of <a
-                    title="Keyframe interface">Keyframe</a> now to avoid risk
-                    of a later clash, e.g. 'keyframeOffset'
+                <li>Add special handling at that time to allow addressing the
+                    property of the same name, e.g. <code>cssOffset</code>.
+                <li>Rename these keywords now to avoid risk of a later clash,
+                    e.g. 'keyframeOffset'.
+                    (For consistency this should also be extended to the name of
+                    the member of the <a>Keyframe</a> dictionary).
               </ul>
             </div>
           </section>
