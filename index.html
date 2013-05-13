@@ -3129,7 +3129,7 @@
     </section>
 
     <section>
-      <h2>Keyframe frame animation effects</h2>
+      <h2>Keyframe animation effects</h2>
       <p>
         A <dfn>keyframe animation effect</dfn> is an <a>animation effect</a>
         that produces <a>animation values</a> for its <a>target properties</a>
@@ -3148,8 +3148,8 @@
         title="positional offset of a keyframe">positional offset of each
         keyframe</a>.
       </p>
-      <p class="issue">
-        Unlike CSS, the current proposal is that it is <em>not</em> possible to
+      <p class="note">
+        Unlike CSS, the proposal here is that it is <em>not</em> possible to
         associate a <a>timing function</a> directly with a <a>keyframe</a>.
         Rather, this would be achieved by setting a chain of <a>timing
         functions</a> on the <a>timed item</a> (proposal for this is still in
@@ -3173,9 +3173,10 @@
         effects</a> in the <a>animation stack</a>.
       </p>
       <p>
-        Furthermore, each property value specified in a <a>keyframe</a> may
-        also have associated with it an optional <a>composition operation</a>.
-        If no <a>composition operation</a> is specified for a property value,
+        Furthermore, each <a>keyframe</a> may also have an associated
+        <a>composition operation</a> that is applied to all values specified in
+        that <a>keyframe</a>.
+        If no <a>composition operation</a> is specified for a <a>keyframe</a>,
         the <a>composition operation</a> specified for the <a>keyframe
         animation effect</a> is used.
       </p>
@@ -3230,12 +3231,10 @@
           <li>Iterate over each <var>keyframe</var> in <var>property-specific
               keyframes</var> and for each <var>keyframe</var>, if:
               <ul>
-                <li>the property value specified for <var>target property</var>
-                    on <var>keyframe</var> has a <a>composition operation</a>
+                <li><var>keyframe</var> has a <a>composition operation</a>
                     of <a title="composition operation add">add</a>, or
-                <li>the property value specified for <var>target property</var>
-                    on <var>keyframe</var> has no <a>composition operation</a>
-                    and the <a>composition operation</a> of this <a>keyframes
+                <li><var>keyframe</var> has no <a>composition operation</a>
+                    and the <a>composition operation</a> of this <a>keyframe
                     animation effect</a> is <a
                     title="composition operation add">add</a>
               </ul>
@@ -3290,7 +3289,7 @@
             Return the result of <a title="interpolation">interpolating</a>
             between the property values defined for <var>start keyframe</var>
             and <var>end keyframe</var> using the procedure defined for their
-            <a>property type</a> with <var>interval distance</a> as the
+            <a>property type</a> with <var>interval distance</var> as the
             interpolation parameter.
           </li>
         </ol>
@@ -6248,7 +6247,7 @@ new SeqGroup(
                 The <a>composition operation</a> used to composite this
                 animation with the <a>animation stack</a>, as specified by one
                 of the <a>CompositeOperation</a> enumeration values.
-                This is used for all property values that do not specify
+                This is used for all keyframes that do not specify
                 a <a>composition operation</a>.
               </dd>
               <dt>optional AccumulateOperation accumulate = "none"</dt>
@@ -6266,7 +6265,7 @@ new SeqGroup(
               <a>CompositeOperation</a> enumeration values.
             </p>
             <p>
-              This is used for all property values that do not specify
+              This is used for all keyframes that do not specify
               a <a>composition operation</a>.
             </p>
           </dd>
@@ -6403,17 +6402,6 @@ new SeqGroup(
               Should this be <code>any</code>?
             </p>
           </dd>
-          <dt>CompositeOperation composite? = null</dt>
-          <dd>
-            <p>
-              The <a>composition operation</a> used to combine
-              <code>value</code> with the <a>underlying value</a>.
-            </p>
-            <p>
-              If <code>null</code>, the <a>composition operation</a>
-              specified on the <a>KeyframeAnimationEffect</a> will be used.
-            </p>
-          </dd>
         </dl>
       </section>
       <section>
@@ -6438,7 +6426,7 @@ new SeqGroup(
               properties, the order of the sequence has no significance.
             </p>
           </dd>
-          <dt>double offset = null</dt>
+          <dt>double? offset = null</dt>
           <dd>
             <p>
               The <a title="positional offset of a keyframe">positional
@@ -6460,6 +6448,17 @@ new SeqGroup(
               <a
               href="#procedure-for-normalizing-the-list-of-keyframes"
               class="sectionRef"></a>.
+            </p>
+          </dd>
+          <dt>CompositeOperation? composite = null</dt>
+          <dd>
+            <p>
+              The <a>composition operation</a> used to combine the values
+              specified in this keyframe with the <a>underlying value</a>.
+            </p>
+            <p>
+              If <code>null</code>, the <a>composition operation</a>
+              specified on the <a>KeyframeAnimationEffect</a> will be used.
             </p>
           </dd>
         </dl>
