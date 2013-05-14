@@ -1,7 +1,7 @@
 <!-- vim: set expandtab ts=2 sw=2 tw=80: -->
 <svg xmlns="http://www.w3.org/2000/svg"
   xmlns:xlink="http://www.w3.org/1999/xlink"
-  width="100%" height="100%" viewBox="0 0 500 900">
+  width="100%" height="100%" viewBox="0 0 500 700">
   <defs>
     <style type="text/css">
     svg {
@@ -122,15 +122,58 @@
       </g>
     </g>
   </g>
-  <!-- A: pause before start -->
-  <g transform="translate(10 100)">
+  <!-- A: pause during active interval -->
+  <g transform="translate(10 120)">
+    <!-- Initial state -->
+    <g transform="translate(120)">
+      <rect width="330" height="50" class="activeSpan"/>
+      <path d="M0 50l90-18.75h90l150-31.25v50z" class="animProgress"/>
+      <use xlink:href="#star"/>
+      <text x="5" y="-25" class="startTimeLabel">start<tspan x="5"
+        dy="1em">time</tspan></text>
+      <text x="15" y="35" class="animationLabel">A</text>
+    </g>
+    <!-- Pause actions -->
+    <g transform="translate(210)">
+      <rect width="90" height="50" class="pauseSpan"/>
+      <path d="M0 0v40" class="dottedArrow"/>
+      <text y="-10" class="timeLabel">pause</text>
+      <path d="M90 50v-40" class="dottedArrow"/>
+      <text x="90" y="70" class="timeLabel">unpause</text>
+    </g>
+    <!-- Result arrow -->
+    <text x="240" y="100" class="resultArrow">&#x21d3;</text>
+    <!-- Updated state -->
+    <g transform="translate(210 160)">
+      <rect width="240" height="50" class="activeSpan"/>
+      <path d="M0 50l240-50v50z" class="animProgress"/>
+      <text y="-35">Player current time</text>
+      <path d="M0-25h270" class="arrowLine"/>
+      <path d="M0-30v10m120-10v10m120-10v10" class="tick"/>
+      <g transform="translate(0 -5)" class="tickLabel">
+        <text x="0">0</text>
+        <text x="120">1</text>
+        <text x="240">2</text>
+      </g>
+      <text x="15" y="35" class="animationLabel">A&#x2032;</text>
+      <g transform="translate(-90)">
+        <line y2="50" class="dashLine"/>
+        <use xlink:href="#star"/>
+        <path d="M2 55s0 7 7 7h29s7 0 7 7c0 0 0-7 7-7h29s7 0 7-7"
+          class="bracket"/>
+        <text x="45" y="90" class="regionLabel">time drift</text>
+      </g>
+    </g>
+  </g>
+  <!-- B: pause before start -->
+  <g transform="translate(10 440)">
     <!-- Initial state -->
     <g transform="translate(120)">
       <rect width="240" height="50" class="activeSpan"/>
       <path d="M0 50l240-50v50z" class="animProgress"/>
       <use xlink:href="#star"/>
       <text x="5" y="-8" class="startTimeLabel">start time</text>
-      <text x="15" y="35" class="animationLabel">A</text>
+      <text x="15" y="35" class="animationLabel">B</text>
     </g>
     <!-- Pause actions -->
     <g transform="translate(30)">
@@ -142,56 +185,15 @@
       <text x="60" y="70" class="timeLabel">unpause</text>
     </g>
     <!-- Result arrow -->
-    <text x="240" y="85" class="resultArrow">&#x21d3;</text>
+    <text x="240" y="95" class="resultArrow">&#x21d3;</text>
     <!-- Updated state -->
-    <g transform="translate(120 145)">
+    <g transform="translate(180 160)">
       <rect width="240" height="50" class="activeSpan"/>
       <path d="M0 50l240-50v50z" class="animProgress"/>
       <text y="-40">Player current time</text>
-      <path d="M0-30h360" class="arrowLine"/>
+      <path d="M0-30h300" class="arrowLine"/>
       <path d="M0-35v10m120-10v10m120-10v10" class="tick"/>
       <g transform="translate(0 -10)" class="tickLabel">
-        <text x="0">0</text>
-        <text x="120">1</text>
-        <text x="240">2</text>
-      </g>
-      <use xlink:href="#star"/>
-      <text x="15" y="35" class="animationLabel">A&#x2032;</text>
-    </g>
-  </g>
-  <!-- B: pause before start, and unpause during -->
-  <g transform="translate(10 360)">
-    <!-- Pause interval backing
-         (We do this because we don't really want the translucent pause shading
-         to blend with the background of the spec when it is embedded there
-         since depending on the styling of the spec the shading can be hard to
-         see. So we add a white backing rectangle to blend with. )-->
-    <rect x="30" width="90" height="50" fill="white"/>
-    <!-- Initial state -->
-    <g transform="translate(120)">
-      <rect width="300" height="50" class="activeSpan"/>
-      <path d="M0 48h60l240-48v50h-300z" class="animProgress"/>
-      <use xlink:href="#star"/>
-      <text x="15" y="35" class="animationLabel">B</text>
-    </g>
-    <!-- Pause actions -->
-    <g transform="translate(30)">
-      <rect width="150" height="50" class="pauseSpan"/>
-      <path d="M0 0v40" class="dottedArrow"/>
-      <text y="-10" class="timeLabel">pause</text>
-      <path d="M150 50v-40" class="dottedArrow"/>
-      <text x="150" y="70" class="timeLabel">unpause</text>
-    </g>
-    <!-- Result arrow -->
-    <text x="240" y="88" class="resultArrow">&#x21d3;</text>
-    <!-- Updated state -->
-    <g transform="translate(180 145)">
-      <rect width="240" height="50" class="activeSpan"/>
-      <path d="M0 50l240-50v50z" class="animProgress"/>
-      <text y="-35">Player current time</text>
-      <path d="M0-25h300" class="arrowLine"/>
-      <path d="M0-30v10m120-10v10m120-10v10" class="tick"/>
-      <g transform="translate(0 -5)" class="tickLabel">
         <text x="0">0</text>
         <text x="120">1</text>
         <text x="240">2</text>
@@ -203,47 +205,6 @@
         <path d="M2 55s0 7 7 7h14s7 0 7 7c0 0 0-7 7-7h14s7 0 7-7"
           class="bracket"/>
         <text x="30" y="90" class="regionLabel">time drift</text>
-      </g>
-    </g>
-  </g>
-  <!-- C: pause during active interval -->
-  <g transform="translate(10 660)">
-    <!-- Initial state -->
-    <g transform="translate(120)">
-      <rect width="330" height="50" class="activeSpan"/>
-      <path d="M0 50l90-18.75h90l150-31.25v50z" class="animProgress"/>
-      <use xlink:href="#star"/>
-      <text x="15" y="35" class="animationLabel">C</text>
-    </g>
-    <!-- Pause actions -->
-    <g transform="translate(210)">
-      <rect width="90" height="50" class="pauseSpan"/>
-      <path d="M0 0v40" class="dottedArrow"/>
-      <text y="-10" class="timeLabel">pause</text>
-      <path d="M90 50v-40" class="dottedArrow"/>
-      <text x="90" y="70" class="timeLabel">unpause</text>
-    </g>
-    <!-- Result arrow -->
-    <text x="240" y="85" class="resultArrow">&#x21d3;</text>
-    <!-- Updated state -->
-    <g transform="translate(210 145)">
-      <rect width="240" height="50" class="activeSpan"/>
-      <path d="M0 50l240-50v50z" class="animProgress"/>
-      <text y="-35">Player current time</text>
-      <path d="M0-25h270" class="arrowLine"/>
-      <path d="M0-30v10m120-10v10m120-10v10" class="tick"/>
-      <g transform="translate(0 -5)" class="tickLabel">
-        <text x="0">0</text>
-        <text x="120">1</text>
-        <text x="240">2</text>
-      </g>
-      <text x="15" y="35" class="animationLabel">C&#x2032;</text>
-      <g transform="translate(-90)">
-        <line y2="50" class="dashLine"/>
-        <use xlink:href="#star"/>
-        <path d="M2 55s0 7 7 7h29s7 0 7 7c0 0 0-7 7-7h29s7 0 7-7"
-          class="bracket"/>
-        <text x="45" y="90" class="regionLabel">time drift</text>
       </g>
     </g>
   </g>

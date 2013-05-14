@@ -677,34 +677,19 @@
             setting the <a>time drift</a>.
           </p>
           <p>
-            Pausing before a player's <a title="player start time">start
-            time</a> will cause the player's <a>source content</a> to begin in
-            a paused state but does not delay its start as is illustrated below.
+            The effect of pausing on a <a>player</a>'s <a>time drift</a> is
+            illustrated below.
           </p>
           <div class="figure">
             <img src="img/pausing.svg" width="600">
           </div>
           <p class="caption">
-            The effect of pausing a player at different moments.<br>
-            In case A, the player is paused and unpaused before its <a>start
-            time</a>.
-            The pause has no effect.<br><br>
-            In case B, the player is paused before the
-            <a title="player start time">start time</a> and remains paused.
-            At the scheduled <a title="player start time">start time</a> the
-            <a>source content</a> begins playing in a paused state.
-            When the player is unpaused it continues playing.
-            The resulting player has a <a>time drift</a> equivalent to the
-            interval from the <a title="player start time">start time</a> to
-            when it was unpaused.<br><br>
-            In case C, the player is paused and unpaused during the <a>active
-            interval</a> of the source content.
-            After unpausing, the player has a <a>time drift</a> equivalent to
-            the duration of the pause interval.
-          </p>
-          <p class="issue">
-            I suspect we don't want this behavior now that player is a separate
-            object.
+            The effect of pausing a <a>player</a>.<br>
+            Whether pausing before or after a <a>player</a>'s <a
+            title="player start time">start time</a>
+            the duration of the interval during which the <a>player</a> was
+            paused is added to the <a>player</a>'s <a>time drift</a> whilst the
+            <a title="player start time">start time</a> remains unaffected.
           </p>
         </section>
         <section>
@@ -758,23 +743,8 @@
             is unpaused or seeked.
           </p>
           <p>
-            Since pausing does not take effect prior to when a player's source
-            content begins, we first define the beginning of a player's source
-            content for the purposes of pausing as a player's <em>earliest
-            moment</em>.
-            The calculation is as follows:
-          </p>
-          <blockquote>
-            <dfn>earliest moment</dfn> = <code>min(0, <var>start delay of
-            source content</var>)</code>
-          </blockquote>
-          <p class="issue">
-            I'm pretty sure we don't want this behavior now that the player is
-            separate to the source content.
-          </p>
-          <p>
-            Using this definition we can define the value of <a>time drift</a>
-            at a given moment as follows:
+            The value of <a>time drift</a> at a given moment is calculated as
+            follows:
           </p>
           <dl class="switch">
             <dt>If the <a>paused state</a> is true,</dt>
@@ -783,13 +753,17 @@
               <code>(<a>effective timeline time</a> - <a
               title="player start time">start time</a>) * <a
               title="player playback rate">playback rate</a> -
-              max(<a>pause start time</a>, <a>earliest moment</a>)</code>.
+              <a>pause start time</a></code>.
             </dd>
             <dt>Otherwise,</dt>
             <dd>
               Return the stored value for this property.
             </dd>
           </dl>
+          <p class="todo">
+            These formulae need to be verified since removing the special
+            behavior regarding pausing before the start time.
+          </p>
         </section>
         <section>
           <h4>Updating the <a>paused state</a></h4>
