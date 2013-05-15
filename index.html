@@ -2605,7 +2605,7 @@
       <p>
         An <dfn>animation effect</dfn> takes a <a>time fraction</a> and
         a <a>current iteration</a> value and uses them to calculate an
-        <a>animation value</a> for its <a>target properties</a>.
+        <a>intermediate animation value</a> for its <a>target properties</a>.
         Each <a>animation</a> may have at most one <a>animation effect</a>
         associated with it.
       </p>
@@ -2674,25 +2674,29 @@
         </p>
       </section>
       <section>
-        <h3>Animation values</h3>
+        <h3>Intermediate animation values</h3>
         <p>
           Given a <a>time fraction</a>, a <a>current iteration</a>, and an
           <a>underlying value</a>, an <a>animation effect</a> produces
-          an <dfn>animation value</dfn> for each <a>animatable</a> <a
-          title="target properties">target property</a>.
+          an <dfn>intermediate animation value</dfn> for each <a>animatable</a>
+          <a title="target properties">target property</a>.
+          Before being applied to the <a>target properties</a>,
+          these <a>intermediate animation values</a> are composed together using
+          the process defined in <a href="#combining-animations"
+          class="sectionRef"></a>.
         </p>
         <p>
-          The <a>animation value</a> is established by first calculating
-          a <a>simple animation value</a> and then applying <a>accumulation</a>
-          behavior.
+          An <a>intermediate animation value</a> is established by first
+          calculating an <a>unaccumulated animation value</a> and then applying
+          <a>accumulation</a> behavior.
         </p>
         <section>
-          <h3>Simple animation values</h3>
+          <h3>Unaccumulated animation values</h3>
           <p>
-            The <dfn>simple animation value</dfn> is the result of evaluating an
-            <a>animation effect</a> for a given property, <a>time fraction</a>
-            and <a>underlying value</a> <em>independent</em> of the <a>current
-            iteration</a>.
+            The <dfn>unaccumulated animation value</dfn> is the result of
+            evaluating an <a>animation effect</a> for a given property, <a>time
+            fraction</a> and <a>underlying value</a> <em>independent</em> of the
+            <a>current iteration</a>.
             The procedure for calculating this value depends on the specific
             type of <a>animation effect</a> and is defined subsequently (see <a
             href="#the-simple-animation-value-of-a-keyframe-animation-effect"
@@ -2706,38 +2710,41 @@
           <p>
             <a>Animation effects</a> may be defined such that as the
             <a>animation</a> that is applying them is <a
-            href="#repeating">repeated</a>, the <a>animation value</a>
-            builds on the value produced by previous iterations.
+            href="#repeating">repeated</a>, the <a>intermediate animation
+            value</a> builds on the value produced by previous iterations.
             This behavior is called <dfn>accumulation</dfn>.
           </p>
           <p>
             The <a>accumulation</a> behavior of an <a>animation effect</a> is
             specified by the <a>animation effect</a>'s <dfn>accumulation
-            operation</dfn> property.  The <a>accumulation operation</a>
-            property takes one of the following two values.
+            operation</dfn> property.
+            The <a>accumulation operation</a> property takes one of the
+            following two values.
           </p>
           <dl>
             <dt><dfn title="accumulation operation sum">sum</dfn></dt>
             <dd>
               <p>
-                The <a>animation value</a> produced the <a>animation effect</a>
-                for a given property is the sum of the <a>simple animation
-                value</a> for the given <a>time fraction</a> and the final
-                <a>animation value</a> of the previous iteration (i.e. the
-                result of evaluating the <a>animation value</a> with
-                a <a>time fraction</a> of 1, and a <a>current iteration</a> of
-                <code><a>current iteration</a> - 1</code>).
+                The <a>intermediate animation value</a> produced by the
+                <a>animation effect</a> for a given property is the sum of the
+                <a>simple animation value</a> for the given <a>time fraction</a>
+                and the final <a>intermediate animation value</a> of the
+                previous iteration (i.e. the result of evaluating the
+                <a>intermediate animation value</a> with a <a>time fraction</a>
+                of 1, and a <a>current iteration</a> of <code><a>current
+                iteration</a> - 1</code>).
               </p>
               <p>
-                If the <a>current iteration</a> is zero, the <a>animation
-                value</a> is just the <a>simple animation value</a>.
+                If the <a>current iteration</a> is zero, the <a>intermediate
+                animation value</a> is just the <a>unaccumulated animation
+                value</a>.
               </p>
             </dd>
             <dt><dfn
               title="accumulation operation none">none</dfn></dt>
             <dd>
-              The <a>animation value</a> for the <a>animation effect</a> is
-              just the <a>simple animation value</a>.
+              The <a>intermediate animation value</a> for the <a>animation
+              effect</a> is just the <a>unaccumulated animation value</a>.
             </dd>
           </dl>
           <p>
@@ -2757,9 +2764,9 @@
               example,
             </p>
             <p>
-              The <a>animation value</a> for a given property, <a>time
-              fraction</a> and <a>current iteration</a> value is calculated as
-              follows:
+              The <a>intermediate animation value</a> for a given property,
+              <a>time fraction</a> and <a>current iteration</a> value is
+              calculated as follows:
             </p>
             <ol>
               <li>Let <var>current simple value</var> be the <a>simple animation
@@ -2767,8 +2774,8 @@
                   fraction</a>.</li>
               <li>
                 <p>
-                  Return the <a>animation value</a> based on the first matching
-                  condition from the following,
+                  Return the <a>intermediate animation value</a> based on the
+                  first matching condition from the following,
                 </p>
                 <dl class="switch">
                   <dt>If <a>accumulation operation</a> is <a
@@ -2782,8 +2789,9 @@
                   <dd>
                     <ol>
                       <li>Let <var>final value</var> be the result of evaluating
-                          the <a>simple animation value</a> of the <a>animation
-                          effect</a> with a <a>time fraction</a> of 1.</li>
+                          the <a>unaccumulated animation value</a> of the
+                          <a>animation effect</a> with a <a>time fraction</a> of
+                          1.</li>
                       <li>Let <var>previous simple value</var> be the result of
                           <a title="addition">adding</a> <var>last value</var>
                           to itself <a>current iteration</a> times.
@@ -2804,9 +2812,9 @@
       <h2>Combining animations</h2>
       <div class="informative">
         <p>
-          After calculating the <a>animation values</a> for an <a>animation
-          effect</a> they are applied to the <a>animation effect</a>'s <a>target
-          properties</a>.
+          After calculating the <a>intermediate animation values</a> for an
+          <a>animation effect</a> they are applied to the <a>animation
+          effect</a>'s <a>target properties</a>.
         </p>
         <p>
           Since it is possible for multiple <a>in effect</a> <a
@@ -2830,8 +2838,8 @@
           <img src="img/animation-cascade.svg" width="450">
         </div>
         <p class="caption">
-          Overview of the application of <a>animation values</a> to their
-          <a>target properties</a>.<br>
+          Overview of the application of <a>intermediate animation values</a> to
+          their <a>target properties</a>.<br>
           The results of <a>animation effects</a> targetting the same property
           are composited together using an <a>animation stack</a>.<br>
           The result of this composition is written to an override stylesheet
@@ -2839,8 +2847,8 @@
           <code>!important</code> rules.
         </p>
         <p>
-          For this first part of this operation&mdash;combining <a
-          title="animation value">animation values</a> that target the same <a
+          For this first part of this operation&mdash;combining <a>intermediate
+          animation values</a> that target the same <a
           title="target property">property</a>&mdash; it is necessary to
           determine both
           <em>how</em> the <a>animation effects</a>
@@ -2850,14 +2858,14 @@
           their relative <em>priority</em>.
         </p>
         <p>
-          The matter of <em>how</em> <a>animation values</a> are combined is
-          governed by any <a>composition operations</a> associated with
-          the corresponding <a>animation effects</a>.
+          The matter of <em>how</em> <a>intermediate animation values</a> are
+          combined is governed by any <a>composition operations</a> associated
+          with the corresponding <a>animation effects</a>.
         </p>
         <p>
-          The relative <em>priority</em> of <a>animation values</a> is
-          determined by an <a>animation stack</a> established for each animated
-          property.
+          The relative <em>priority</em> of <a>intermediate animation values</a>
+          is determined by an <a>animation stack</a> established for each
+          animated property.
         </p>
       </div>
       <section>
@@ -3012,7 +3020,7 @@
         <h3>Calculating the result of an animation stack</h3>
         <p>
           In order to calculate the final value of an <a>animation stack</a>,
-          the <a>animation values</a> of each
+          the <a>intermediate animation values</a> of each
           <a>animation effect</a> in the stack are combined in order of priority
           from lowest to highest priority.
         </p>
@@ -3026,26 +3034,26 @@
         </p>
         <p>
           For each <a>animation effect</a> in the stack, the appropriate
-          <a>animation value</a> from the <a>animation effect</a> is combined
-          with the <a>underlying value</a> to produce a new value.
+          <a>intermediate animation value</a> from the <a>animation effect</a>
+          is combined with the <a>underlying value</a> to produce a new value.
           This resulting value becomes the <a>underlying value</a> for combining
           the next <a>animation effect</a> in the stack.
         </p>
         <p>
           The final value of an <a>animation stack</a>, called the
           <dfn>composited value</dfn>, is simply the result of combining the
-          <a>animation value</a> of the final (highest priority) <a>animation
-          effect</a> in the stack with the <a>underlying value</a> at that
-          point.
+          <a>intermediate animation value</a> of the final (highest priority)
+          <a>animation effect</a> in the stack with the <a>underlying value</a>
+          at that point.
         </p>
       </section>
       <section>
         <h3>Animation composition</h3>
         <p>
-          The specific operation used to combine an <a>animation value</a> with
-          an <a>underlying value</a> is determined by the <a>animation
-          effect</a> that produced the <a>animation value</a> and is called the
-          <dfn>composition operation</dfn>.
+          The specific operation used to combine an <a>intermediate animation
+          value</a> with an <a>underlying value</a> is determined by the
+          <a>animation effect</a> that produced the <a>intermediate animation
+          value</a> and is called the <dfn>composition operation</dfn>.
         </p>
         <p>
           This specification defines two common <a>composition operations</a> as
@@ -3054,23 +3062,24 @@
         <dl>
           <dt><dfn title="composition operation replace">replace</dfn></dt>
           <dd>
-            The result of compositing the <a>animation value</a> with the
-            <a>underlying value</a> is simply the <a>animation value</a>.
+            The result of compositing the <a>intermediate animation value</a>
+            with the <a>underlying value</a> is simply the <a>intermediate
+            animation value</a>.
           </dd>
           <dt><dfn title="composition operation add">add</dfn></dt>
           <dd>
             <p>
-              The <a>animation value</a> is <a title="addition">added</a> to the
-              <a>underlying value</a>.
+              The <a>intermediate animation value</a> is <a
+              title="addition">added</a> to the <a>underlying value</a>.
               For <a>property types</a> where
               <a>addition</a> is defined such that it is not commutative, the
               order of the operands is <code><a>underlying value</a>
-              + <a>animation value</a></code>.
+              + <a>intermediate animation value</a></code>.
             </p>
             <p>
-              If <a>animation value</a> and <a>underlying value</a> are not of
-              the same <a>property type</a>, or if they are of the same
-              <a>property type</a> but that <a>property type</a> is not
+              If <a>intermediate animation value</a> and <a>underlying value</a>
+              are not of the same <a>property type</a>, or if they are of the
+              same <a>property type</a> but that <a>property type</a> is not
               <a>additive</a>, <a
               title="composition operation replace">replace</a> behavior is
               applied.
@@ -3123,9 +3132,9 @@
       <h2>Keyframe animation effects</h2>
       <p>
         A <dfn>keyframe animation effect</dfn> is an <a>animation effect</a>
-        that produces <a>animation values</a> for its <a>target properties</a>
-        by interpolating between a series of property values positioned at
-        fractional offsets.
+        that produces <a>intermediate animation values</a> for its <a>target
+        properties</a> by interpolating between a series of property values
+        positioned at fractional offsets.
       </p>
       <p>
         Each set of property values indexed by a positional offset is called
@@ -3172,20 +3181,20 @@
         animation effect</a> is used.
       </p>
       <section>              
-        <h3>The simple animation value of a keyframe animation effect</h3>
+        <h3>The unaccumulated animation value of a keyframe animation effect</h3>
         <p>
-          The <a>simple animation value</a> of a single property referenced by
-          a <a>keyframe animation effect</a> as one of its <a>target
-          properties</a>, for a given <a>time fraction</a> and <a>underlying
-          value</a> is calculated as follows.
+          The <a>unaccumulated animation value</a> of a single property
+          referenced by a <a>keyframe animation effect</a> as one of its
+          <a>target properties</a>, for a given <a>time fraction</a> and
+          <a>underlying value</a> is calculated as follows.
         </p>
         <ol>
           <li>Let <var>target property</var> be the property for which the
-              <a>simple animation value</a> is to be calculated.
+              <a>unaccumulated animation value</a> is to be calculated.
           <li>If <var>target property</var> is not <a>animatable</a> abort the
               procedure since the effect cannot be applied.</li>
           <li>Let <var>time fraction</var> be the <a>time fraction</a> for which
-              the <a>simple animation value</a> is to be calculated.</li>
+              the <a>unaccumulated animation value</a> is to be calculated.</li>
           <li>Let <var>underlying value</var> be the current <a>underlying
               value</a>.
           <li>Define the <dfn>neutral value for composition</dfn> as a value
@@ -3418,7 +3427,7 @@
       <h2>Path animation effects</h2>
       <p>
         A <dfn>path animation effect</dfn> is an <a>animation effect</a> that
-        produces transform <a>animation values</a>
+        produces transform <a>intermediate animation values</a>
         such that a <a>target element</a> follows a specified geometric curve.
       </p>
       <div class="todo">
@@ -3443,18 +3452,18 @@
         </p>
       </div>
       <section>
-        <h4>The simple animation value of a path animation effect</h4>
+        <h4>The unaccumulated animation value of a path animation effect</h4>
         <div class="todo">
         <p>
-          When  <var>rotate</var> is set to false, the <var>animation
+          When <var>rotate</var> is set to false, the <var>animation
           value</var> at <a>time fraction</a> <var>t</var> is the transform
           defined by a translation equal to the location on the path at
           <var>t</var>.
         </p>
         <p>
           When <var>rotate</var> is set to true, the
-          <var>animation value</var> is the transform defined by the above
-          translation followed by a rotation defined by the following
+          <var>intermediate animation value</var> is the transform defined by
+          the above translation followed by a rotation defined by the following
           process:
         </p>
         <ol>
@@ -6179,8 +6188,8 @@ new SeqGroup(
           <dd>
             Corresponds to the <a
             title="accumulation operation none">none</a>
-            accumulation operation value such that the <a>animation value</a>
-            produced is independent of the <a>current iteration</a>.
+            accumulation operation value such that the <a>intermediate animation
+            value</a> produced is independent of the <a>current iteration</a>.
           </dd>
         </dl>
       </section>
@@ -6307,7 +6316,7 @@ new SeqGroup(
             <p>
               As a result of normalization, if <var>frames</var> is not
               <a>loosely sorted by offset</a> this effect will not contribute to
-              the final <a>animation value</a>.
+              the final <a>composited value</a>.
             </p>
           </dd>
         </dl>
@@ -6316,8 +6325,8 @@ new SeqGroup(
           <p>
             Before passing the list of <a
             title="Keyframe interface">Keyframes</a> specified in the API to the
-            animation model so that the <a>simple animation value</a> can be
-            calculated (see <a
+            animation model so that the <a>unaccumulated animation value</a> can
+            be calculated (see <a
             href="#the-simple-animation-value-of-a-keyframe-animation-effect"
             class="sectionRef"></a>), the following normalization is performed.
           </p>
