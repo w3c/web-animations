@@ -733,7 +733,7 @@
           </p>
         </section>
         <section>
-          <h4>Calculating the <a>time drift</a></h4>
+          <h4>Calculating the time drift</h4>
           <p>
             The <a>time drift</a> value is both a stored and a calculated value.
             When a player is paused, the value is calculated from the <a>pause
@@ -2556,16 +2556,23 @@
               </dt>
               <dd>
                 Return the result of recalculating the <a>transformed time</a>
-                using a <a>local time</a> of zero and an <a>iteration
+                using a <a>local time</a> less than <a>start delay</a> (e.g.
+                <code><a>start delay</a> - 1</code>) and an <a>iteration
                 duration</a> of 1.
               </dd>
               <dt>
                 Otherwise,
               </dt>
               <dd>
-                Return the result of recalculating the <a>transformed time</a>
-                using a <a>local time</a> of <a>iteration count</a> and an
-                <a>iteration duration</a> of 1.
+                <ol>
+                  <li>Let <var>normalized active duration</var> be the result of
+                      recalculating the <a>active duration</a> using an
+                      <a>iteration duration</a> of 1.
+                  <li>Return the result of recalculating the <a>transformed
+                      time</a> using a <a>local time</a> of <var>normalized
+                      active duration</var> and an <a>iteration duration</a> of
+                      1.
+                </ol>
               </dd>
             </dl>
           </dd>
@@ -2573,7 +2580,9 @@
             Otherwise,
           </dt>
           <dd>
-            Return <a>transformed time</a> / <a>iteration duration</a>.
+            Return <a>transformed time</a> / <a>iteration duration</a> unless
+            <a>transformed time</a> is <code>null</code>, in which case return
+            <code>null</code>.
           </dd>
         </dl>
         <p class="note">
