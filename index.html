@@ -5669,16 +5669,8 @@ interface Duration {
             </p>
             <ol>
               <li>Create a new <a>ParGroup</a> object, <var>group</var>.</li>
-              <li>Set the <code>specified</code> member of <var>group</var>
-                  as follows,
+              <li>Set <var>timing input</var> as follows,
                 <dl class="switch">
-                  <dt>If <var>timing</var> is a <a>Timing</a> object,</dt>
-                  <dd>
-                    <p>
-                      Set <code><var>animation</var>.specified</code> to refer
-                      to <var>timing</var>.
-                    </p>
-                  </dd>
                   <dt>If <var>timing</var> is a <a>TimingInput</a> object,</dt>
                   <dd>
                     Let <var>timing input</var> refer to <var>timing</var>.
@@ -5699,9 +5691,7 @@ interface Duration {
                 </dl>
               </li>
               <li>
-                If <var>timing input</var> is set to a <a>TimingInput</a>
-                object,
-                set <code><var>animation</var>.specified</code> to a new
+                Set <code><var>animation</var>.specified</code> to a new
                 <a>Timing</a> object whose attributes are assigned the
                 value of the member of the same name on <var>timing input</var>.
                 <p class="todo">
@@ -5716,6 +5706,19 @@ interface Duration {
                 <var>children</var>)</code>.
               </li>
             </ol>
+            <div class="note">
+              <p>
+                Note that since <a>Timing</a> objects have the same member
+                names as <a>TimingInput</a> dictionaries, it is also possible to
+                pass the <code>specified</code> member of another
+                <a>TimedItem</a> as the <var>timing</var> parameter.
+              </p>
+              <p>
+                Doing so will cause the <a>Timing</a> object to be treated as
+                a <a>TimingInput</a> dictionary and thus it will effectively be
+                cloned, not shared.
+              </p>
+            </div>
             <dl class="parameters">
               <dt>sequence&lt;TimedItem&gt;? children</dt>
               <dd>
@@ -5727,7 +5730,7 @@ interface Duration {
                   semantics as the <code><a>TimingGroup</a>.add</code> method.
                 </p>
               </dd>
-              <dt>optional (unrestricted double or TimingInput or Timing)? timing = null</dt>
+              <dt>optional (unrestricted double or TimingInput)? timing = null</dt>
               <dd>
                 <p>
                   The timing properties or <a>iteration duration</a> of the new
@@ -5773,7 +5776,7 @@ interface Duration {
           class="idl">
           <dt>
           Constructor (sequence&lt;TimedItem&gt;? children,
-              optional (unrestricted double or TimingInput or Timing)? timing = null)
+              optional (unrestricted double or TimingInput)? timing = null)
           </dt>
           <dd>
             The meaning and handling of each of the parameters in this
@@ -5811,17 +5814,6 @@ interface Duration {
               <li>Set the <code>specified</code> member of <var>animation</var>
                   as follows,
                 <dl class="switch">
-                  <dt>If <var>timing</var> is a <a>Timing</a> object,</dt>
-                  <dd>
-                    <p>
-                      Set <code><var>animation</var>.specified</code> to refer
-                      to <var>timing</var>.
-                    </p>
-                    <div class="issue">
-                      Is this sharing useful or likely to trip authors up?
-                      Should we clone?
-                    </div>
-                  </dd>
                   <dt>If <var>timing</var> is a <a>TimingInput</a> object,</dt>
                   <dd>
                     Let <var>timing input</var> refer to <var>timing</var>.
@@ -5876,6 +5868,16 @@ interface Duration {
               Examples of the usage of this constructor are given in <a
               href="#creating-a-new-animation-object" class="sectionRef"></a>.
             </p>
+            <div class="note">
+              <p>
+                Note that as with <a
+                href="#widl-ctor-TimingEvent--DOMString-type-TimingEventInit-eventInitDict">the
+                constructor for <a>TimingGroup</a></a>s
+                it is possible to pass in a <a>Timing</a> object here (e.g. the
+                <code>specified</code> member of another <a>TimedItem</a>) in
+                which case it will be cloned.
+              </p>
+            </div>
             <dl class="parameters">
               <dt>AnimationTarget? element</dt>
               <dd>
@@ -5911,7 +5913,7 @@ interface Duration {
                   a <code>null</code> animation effect.
                 </p>
               </dd>
-              <dt>optional (unrestricted double or TimingInput or Timing)? timing = null</dt>
+              <dt>optional (unrestricted double or TimingInput)? timing = null</dt>
               <dd>
                 <p>
                   The timing properties or <a>iteration duration</a> of the new
