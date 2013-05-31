@@ -430,7 +430,7 @@
           A consequence of this hierarchical arrangement is that complex
           animation arrangements can be reversed, scheduled, accelerated and so
           on, as a whole unit since the manipulations applied to the parent
-          cascade down to its descendants.
+          cascade down to its <a>descendants</a>.
           Furthermore, since time has a common source, it is easy to synchronize
           animations.
         </p>
@@ -912,13 +912,13 @@
       <p>
         <a>Timed items</a> can be chained together into a hierarchy using
         <a>timings groups</a>.
-        Only the <a>root timed item</a> of such a hierarchy can be <dfn
+        Only the <a>root</a> <a>timed item</a> of such a hierarchy can be <dfn
         title="directly associated with a player">directly associated</dfn> with
         a <a>player</a>.
         Attempting to associate a <a>timed item</a> that has a <a>parent timing
         group</a> with a <a>player</a> results in the <a>timed item</a> being
         removed from the <a>parent timing group</a>.
-        A <a>timed item</a> with an ancestor <a>timing group</a> that is
+        A <a>timed item</a> with an <a>ancestor</a> <a>timing group</a> that is
         <a>directly associated with a player</a> is <dfn
         title="indirectly associated with a player">indirectly associated</dfn>
         with that <a>player</a>.
@@ -1151,10 +1151,10 @@
               <p>
                 The <a>timed item</a>'s <a>local time</a> falls either before or
                 inside the item's <a>active interval</a>, <em>or</em> the
-                <a>local time</a> of an ancestor <a>timing group</a> falls
-                before or inside its <a>active interval</a> thereby opening up
-                the possibility that this <a>timed item</a> might play again
-                (e.g. due to repeating).
+                <a>local time</a> of an <a>ancestor</a> <a>timing group</a>
+                falls before or inside its <a>active interval</a> thereby
+                opening up the possibility that this <a>timed item</a> might
+                play again (e.g. due to repeating).
               </p>
               <p>
                 This state is used in the <a
@@ -2212,20 +2212,51 @@
         A <dfn>timing group</dfn> is a type of <a>timed item</a> that contains
         an ordered sequence of zero or more <a>timed items</a> known as <dfn
         title="child timed item">child timed items</dfn>.
+      </p>
+      <p>
         At a given moment, a <a>timed item</a> may be a <a>child timed item</a>
         of at most one <a>timing group</a> known as the <dfn>parent timing
         group</dfn>.
-        Furthermore, the <a>parent timing group</a> cannot be the same <a>timed
+        The <a>parent timing group</a> cannot be the same <a>timed
         item</a> as the <a>child timed item</a> itself.
       </p>
       <p>
-        For a given <a>timed item</a>, <var>item</var>, it is possible to
-        construct a chain of <a>timed items</a> that begins
-        at <var>item</var> and traverses each <a>parent timing group</a> until
-        until it arrives at a <a>timed item</a> without a <a>parent timing
-        group</a>.
-        The last <a>timed item</a> in the chain at the opposite end to
-        <var>item</var> is called the <dfn>root timed item</dfn>.
+        By nesting <a>timing groups</a> it is possible to create hierarchical
+        tree structures.
+        The following terms are used to describe the parts and properties of
+        such structures and are defined in [[!DOM4]]:
+      </p>
+      <ul>
+        <li><dfn><a
+        href="http://www.w3.org/TR/dom/#concept-tree-order">tree order</a></dfn>
+        <li><dfn><a
+        href="http://www.w3.org/TR/dom/#concept-tree-root">root</a></dfn>
+        <li><dfn><a
+        href="http://www.w3.org/TR/dom/#concept-tree-ancestor">ancestor</a></dfn>
+        <li><dfn><a
+        href="http://www.w3.org/TR/dom/#concept-tree-descendant">descendant</a></dfn>
+        <li><dfn><a
+        href="http://www.w3.org/TR/dom/#concept-tree-inclusive-ancestor">inclusive ancestor</a></dfn>
+        <li><dfn><a
+        href="http://www.w3.org/TR/dom/#concept-tree-inclusive-descendant">inclusive descendant</a></dfn>
+        <li><dfn><a
+        href="http://www.w3.org/TR/dom/#concept-tree-next-sibling">next
+        sibling</a></dfn>
+        <li><dfn><a
+        href="http://www.w3.org/TR/dom/#concept-tree-previous-sibling">previous
+        sibling</a></dfn>
+        <li><dfn><a
+        href="http://www.w3.org/TR/dom/#concept-tree-first-child">first child</a></dfn>
+        <li><dfn><a
+        href="http://www.w3.org/TR/dom/#concept-tree-last-child">last child</a></dfn>
+      </ul>
+      <p class="note">
+        Note that in applying these definitions to <a>timed items</a>, the term
+        <em>parent</em> refers exclusively to a <a>parent timing group</a> and
+        does not include the <a>player</a> which with a <a>timed item</a> may be
+        <a title="directly associated with a player">directly associated</a>
+        despite the fact that conceptually the <a>player</a> acts as a parent
+        time source.
       </p>
       <p>
         The temporal relationship between a <a>child timed item</a> and its
@@ -3901,17 +3932,17 @@
         </p>
         <ul>
           <li><a>Timing functions</a> on the <a>timed
-              item</a> and all ancestor <a>timing
-              groups</a> are ignored.</li>
+              item</a> and all <a>ancestor</a> <a>timing groups</a> are
+              ignored.</li>
           <li>The <a>fill modes</a> of the <a>timed item</a>
-              and all ancestor <a>timing groups</a> are
+              and all <a>ancestor</a> <a>timing groups</a> are
               treated as <span class="prop-value">none</a>.</li>
         </ul>
         <p>
           For example, the <em>uneased inherited time</em> of a <a>timed
           item</a> is calculated using the regular definition of <a>inherited
           time</a> after applying the two modifications to the timing of the
-          item and its ancestors noted above.
+          item and its <a>ancestors</a> noted above.
         </p>
         <p>
           Normally the time value used as input to a child <a>timed item</a>
@@ -4174,9 +4205,9 @@
                   <a>timingend</a> events.</li>
               <li>
                 For events generated by <a>timed items</a>
-                with a common ancestor <a>timing group</a>, events are ordered
-                based on a preorder depth-first traversal of the descendents of
-                the ancestor <a>timing group</a>.
+                with a common <a>ancestor</a> <a>timing group</a>, events are
+                ordered based on a <a>tree order</a> traversal of the
+                descendents of the <a>ancestor</a> <a>timing group</a>.
               </li>
               <li>
                 Events generated by a <a>timed item</a>
@@ -4355,7 +4386,7 @@
           <p>
             If the <a>time adjusted flag</a> of the <a>player</a> has been set,
             no update of the <a>previous active state</a> of the <a>source
-            content</a> and its descendants is performed.
+            content</a> and its <a>descendants</a> is performed.
           </p>
           <p>
             The <var>timeline time</var> used in the <a>seeked event
@@ -4805,8 +4836,8 @@
             <p>
               A <a>player</a> can only be associated with at most one <a>timed
               item</a>, and likewise, a <a>timed item</a> can only be
-              associated&mdash;either directly or via an ancestor&mdash;with at
-              most one <a>player</a>.
+              associated&mdash;either directly or via an
+              <a>ancestor</a>&mdash;with at most one <a>player</a>.
               In order to maintain these invariants, on setting this value, the
               following procedure is performed:
             </p>
@@ -4962,7 +4993,7 @@
                 <li>uses a union of a string and a double to represent
                     a duration which opens up questions about whether strings
                     such as <code>"3s"</code> should be allowed (and allowing
-                    them makes walking the tree more complex.
+                    them makes walking the tree more complex).
               </ul>
               <p>
                 However, it separates "specified" timing from "computed" timing
@@ -5118,26 +5149,84 @@ interface Duration {
               Should this be <code>parentGroup</code>?
             </div>
           </dd>
-          <dt>void remove ()</dt>
+          <dt>readonly attribute TimedItem? previousSibling</dt>
+          <dd>
+            The <a>previous sibling</a> of this <a>timed item</a>.
+          </dd>
+          <dt>readonly attribute TimedItem? nextSibling</dt>
+          <dd>
+            The <a>next sibling</a> of this <a>timed item</a>.
+          </dd>
+          <dt>void before (TimedItem... items)</dt>
           <dd>
             <p>
-              Removes the <a>TimedItem</a> from any parent <a>TimingGroup</a> or
-              <a title="directly associated with a player">directly
-              associated</a> <a>player</a> by performing the following steps:
+              Inserts <var>items</var> before this <a>timed item</a>.
             </p>
-            <dl class="switch">
-              <dt>If this <a>TimedItem</a> has a
-                  <a>parent timing group</a>,</dt>
-              <dd>
-                Remove this <a>TimedItem</a> from the <a>parent timing
-                group</a>'s list of <a>child timed items</a>.
-              </dd>
-              <dt>If this <a>TimedItem</a> is <a>directly associated with
-                  a player</a>,</dt>
-              <dd>
-                Disassociate this <a>TimedItem</a> from the <a>player</a>.
-              </dd>
-            </dl>
+            <ol>
+              <li>If there is no <a>parent timing group</a>, terminate these
+                  steps.
+              <li>If any of the <a>timed items</a> in <var>items</var> is an
+                  <a>inclusive ancestor</a> of this <a>timed item</a>
+                  throw a <code>HierarchyRequestError</code> exception and
+                  terminate these steps. 
+              <li><a title="insert children">Insert</a> <var>items</var> before
+                  this <a>timed item</a>.
+            </ol>
+            <div class="note">
+              <p>
+                Note that this definition precludes the following usage since
+                <code>item</code> is an <a>inclusive ancestor</a> of itself:
+              </p>
+              <pre class="example sh_javascript">
+                item.before(item); // throws HierarchyRequestError
+              </pre>
+            </div>
+          </dd>
+          <dt>void after (TimedItem... items)</dt>
+          <dd>
+            <p>
+              Inserts <var>items</var> after this <a>timed item</a>.
+            </p>
+            <ol>
+              <li>If there is no <a>parent timing group</a>, terminate these
+                  steps.
+              <li>If any of the <a>timed items</a> in <var>items</var> is an
+                  <a>inclusive ancestor</a> of this <a>timed item</a>
+                  throw a <code>HierarchyRequestError</code> exception and
+                  terminate these steps. 
+              <li>Let <var>reference child</var> be the <a
+                  title="next sibling not included">next sibling of
+                  this timed item not in <var>items</var></a>.
+              <li><a title="insert children">Insert</a> <var>items</var> before
+                  <var>reference child</var>.
+            </ol>
+          </dd>
+          <dt>void replace (TimedItem... items)</dt>
+          <dd>
+            <p>
+              Replaces this <a>TimedItem</a> with the passed in
+              <var>items</var>.
+            </p>
+            <ol>
+              <li>If there is no <a>parent timing group</a>, terminate these
+                  steps.
+              <li>If any of the <a>timed items</a> in <var>items</var> is an
+                  <a>inclusive ancestor</a> of the <a>parent timing group</a>
+                  throw a <code>HierarchyRequestError</code> exception and
+                  terminate these steps. 
+              <li>Let <var>reference child</var> be the <a
+                  title="next sibling not included">next sibling of
+                  this timed item not in <var>items</var></a>.
+              <li><a title="remove a timed item">Remove</a> this <a>timed
+                  item</a> from its <a>parent timing group</a>.
+              <li><a title="insert children">Insert</a> <var>items</var> before
+                  <var>reference child</var>.
+            </ol>
+          </dd>
+          <dt>void remove ()</dt>
+          <dd>
+            <a title="remove a timed item">Removes</a> this <a>timed
+            item</a> from its <a>parent timing group</a>.
           </dd>
           <dt>// Associated player</dt><dd></dd>
           <dt>Player? getPlayer()</dt>
@@ -5150,11 +5239,10 @@ interface Duration {
               in the same hierarchy</em>.
             </p>
             <p>
-              Since <a>players</a> are only associated with the
-              root <a>timed item</a> in a hierarchy, this method will look up
-              the parent <a>timing group</a> of this <a>timed item</a>, if any,
-              and continue all the way to the root of the hierarchy and then
-              return the <a>player</a> associated with the root item, if any.
+              Since <a>players</a> are only directly associated with the
+              <a>root</a> <a>timed item</a> in a hierarchy, this method will
+              <a>player</a> associated with the <a>root</a> <a>timed item</a>,
+              if any.
             </p>
             <p>
               This method will return <code>null</code> if this <a>timed
@@ -5525,30 +5613,26 @@ interface Duration {
           defined by Web Animations share a common <a>TimingGroup</a>
           interface as defined below.
         </p>
-        <div class="todo">
-          Need to redo these methods to align with newer DOM methods (and remove
-          <code>splice</code>).
-        </div>
         <p>
           The <code>TimingGroup</code> interface supports indexed
           properties with indices in the range 0 &le; <var>index</var> &lt;
           <code>length</code>. 
         </p>
-        <dl title="interface TimingGroup : TimedItem"
-          class="idl">
+        <dl title="interface TimingGroup : TimedItem" class="idl">
           <dt>readonly attribute unsigned long length</dt>
           <dd>
             The number of <a>child timed items</a> in
             the group.
           </dd>
-          <dt>void clear ()</dt>
+          <dt>readonly attribute TimedItem? firstChild</dt>
           <dd>
-            <p>
-              Removes all <a>child timed items</a> from
-              the group.
-            </p>
+            The <a>first child</a> of this <a>timing group</a>.
           </dd>
-          <dt>getter TimedItem? (unsigned long index)</dt>
+          <dt>readonly attribute TimedItem? lastChild</dt>
+          <dd>
+            The <a>last child</a> of this <a>timing group</a>.
+          </dd>
+          <dt>getter TimedItem? item(unsigned long index)</dt>
           <dd>
             <p>
               Returns the <a>child timed item</a> at <code>index</code>.
@@ -5556,118 +5640,74 @@ interface Duration {
               <code>length</code> returns <code>null</code>.
             </p>
           </dd>
-          <dt>setter TimedItem (unsigned long index, TimedItem newItem)</dt>
+          <dt>void prepend (TimedItem... items)</dt>
           <dd>
-            <p>
-              Replaces the <a>child timed item</a> at <code>index</code> with
-              <code>newItem</code> by calling <code>splice(index, 1,
-              newItem)</code>.
-            </p>
-            <p>
-              No attempt is made to check if the item at <code>index</code> is
-              already <code>newItem</code>.
-              In such a case, <code>newItem</code> will be removed from this
-              group and re-added as per the usual operation of
-              <code>splice</code>.
-            </p>
-            <p>
-              Returns <code>newItem</code>.
-            </p>
-            <p>
-              Exceptions:
-            </p>
-            <dl class="exceptions">
-              <dt>DOMException of type <code>IndexSizeError</code></dt>
-              <dd>
-                Raised if <code>index</code> is outside of the range 0 &le;
-                <var>index</var> &lt; <code>length</code>.
-              </dd>
-            </dl>
-            <div class="note">
-              Whilst <code>splice</code> allows negative indices,
-              WebIDL requires index property setters to take an index of type
-              <code>unsigned long</code> and hence <code>index</code> is
-              restricted to the range 0 &le; <var>index</var> &lt;
-              <code>group.length</code>.
-            </div>
+            <ol>
+              <li>If any of the <a>timed items</a> in <var>items</var> is an
+                  <a>inclusive ancestor</a> of this <a>timed item</a>
+                  throw a <code>HierarchyRequestError</code> exception and
+                  terminate these steps. 
+              <li><a title="insert children">Insert</a> <var>items</var> before
+                  the <a>first child</a>.
+            </ol>
           </dd>
-          <dt>sequence&lt;TimedItem&gt; add (TimedItem newItem,
-                                             TimedItem... otherItems)</dt>
+          <dt>void append (TimedItem... items)</dt>
           <dd>
-            <p>
-              Adds <code>newItem</code> and each <code>otherItems</code> as the
-              last item(s) in the group by calling <code>splice(group.length, 0,
-              newItem, otherItem1, ... otherItemN)</code>.
-            </p>
-            <p>
-              Returns a sequence containing the added items:
-              <code>[newItem, otherItem1, ... otherItemN]</code>.
-            </p>
-          </dd>
-          <dt>
-            sequence&lt;TimedItem&gt; splice ()
-          </dt>
-          <dd>
-            <p>
-              Modifies the sequence of <a>child timed
-              items</a> of this group by first removing <code>deleteCount</code>
-              items from <code>start</code> followed by adding
-              <code>newItems</code> at the same point.
-            </p>
-            <p>
-              The operation of splice is based on <a
-                href="http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262%205th%20edition%20December%202009.pdf#page=140">ECMAScript 5's
-                Array.prototype.splice</a>.
-            </p>
-            <p>
-              Returns a sequence of the items removed from group during the
-              removal step (regardless of whether these items were re-added
-              during the addition step).
-            </p>
-            <dl class="parameters">
-              <dt>long start</dt>
-              <dd>
-                The index at which items should be removed and inserted.
-                Negative indices represent an offset from the end of the list of
-                items.
-                This value is clamped to the range [-<code>length</code>,
-                <code>length</code>].
-              </dd>
-              <dt>unsigned long deleteCount</dt>
-              <dd>
-                The number of items to remove from the group beginning at
-                <code>start</code>.
-                Negative values are clamped to zero, and all other values are
-                clamped such that
-                0 &lt; <code>start</code> + <code>deleteCount</code> &le;
-                length.
-              </dd>
-              <dt>sequence&lt;TimedItem&gt; newItems</dt>
-              <dd>
-                The items to be added at <code>start</code>.
-                Each item, if it already has a <a>parent timing group</a>
-                (including this group), is first removed from its <a>parent
-                timing group</a> before being added to this group.
-              </dd>
-            </dl>
-          </dd>
-          <dt>
-            sequence&lt;TimedItem&gt; splice (long start,
-              unsigned long deleteCount, TimedItem... newItem)
-          </dt>
-          <dd>
-            An overload of <code>splice</code> that takes a variadic list of
-            items rather than requiring a sequence.
-            The operation is identical to <code>splice(unsigned long start,
-            unsigned long deleteCount, sequence&lt;TimedItem&gt;
-            newItems)</code>.
-          </dd>
-          <dt>long indexOf (TimedItem item)</dt>
-          <dd>
-            Returns the index of <code>item</code> within the group.
-            If <code>item</code> is not in the group, returns <code>-1</code>.
+            <ol>
+              <li>If any of the <a>timed items</a> in <var>items</var> is an
+                  <a>inclusive ancestor</a> of this <a>timed item</a>
+                  throw a <code>HierarchyRequestError</code> exception and
+                  terminate these steps. 
+              <li><a title="insert children">Insert</a> <var>items</var> before
+                  <code>null</code>.
+            </ol>
           </dd>
         </dl>
+        <section>
+          <h2>Common definitions for manipulating hierarchies</h2>
+          <p>The <dfn title="next sibling not included">next sibling of
+             <var>item</var> not included</dfn> in a set of <a>timed
+             items</a>, <var>items</var> is determined using the following
+             steps:</p>
+          <ol>
+            <li>Let <var>context item</var> be <var>item</var>.
+            <li>While the <a>next sibling</a> of <var>context item</var> is not
+                <code>null</code> perform the following steps:
+              <ol>
+                <li>Let <var>context item</var> be the <a>next sibling</a> of
+                    <var>context item</var>.
+                <li>If <var>context item</var> is not in <var>items</var> return
+                    <var>context item</var> and terminate these steps.
+              </ol>
+            <li>Return <code>null</code>.
+          </ol>
+          <p>To <dfn title="remove a timed item">remove</dfn> an <var>item</var>
+             its parent or player, perform the steps corresponding to the first
+             matching condition from below, if any:
+          <dl class="switch">
+            <dt>If <var>item</var> has a <a>parent timing group</a>,</dt>
+            <dd>
+              Remove <var>item</var> from the <a>parent timing group</a>'s list
+              of <a>child timed items</a>.
+            </dd>
+            <dt>If <var>item</var> is <a>directly associated with
+                a player</a>,</dt>
+            <dd>
+              Disassociate <var>item</var> from the <a>player</a>.
+            </dd>
+          </dl>
+          <p>To <dfn title="insert children">insert</dfn> a series of zero or
+             more <a>timed items</a>, <var>items</var>, to <var>parent</var>'s
+             list of <a>child timed items</a> before <var>reference child</var>
+             perform the following steps for each <var>item</var> in
+             <var>items</var>:</p>
+          <ol>
+            <li><a title="remove a timed item">Remove</a> <var>item</var>
+                from its parent.
+            <li>Insert <var>item</var> to <var>parent</var>'s list of <a>child
+                timed items</a> before <var>reference child</var>.
+          </ol>
+        </section>
       </section>
       <section>
         <h3>The <code>ParGroup</code> interface</h3>
@@ -7738,7 +7778,7 @@ new SeqGroup(
                   class="timeMark">t</var>|.
               <li>If <var class="timeMark">t<sub>pos</sub></var> is <span
                   class="position">minus</span> and (<var>iteration index</var>
-                  – <var class="timeMark">active start</var>) % <a>iteration
+                   E<var class="timeMark">active start</var>) % <a>iteration
                   duration</a> = 0,
                   let <var>iteration index</var> be max(0, <var>iteration
                   index</var> - 1).
@@ -7753,9 +7793,9 @@ new SeqGroup(
                   <a>uneased local time from uneased child time</a>
                   defined in
                   <a href="#inverse-timing-calculations" class="sectionRef"></a>
-                  for each ancestor of this <a>timed item</a> in turn up to the
-                  <a>root timed item</a> using <var>t</var> as the initial
-                  <var>uneased local time</var>.
+                  for each <a>ancestor</a> of this <a>timed item</a> in turn up
+                  to the <a>root</a> <a>timed item</a> using <var>t</var> as the
+                  initial <var>uneased local time</var>.
               <li>Let the <var>uneased local player time</var> be the result of
                   calculating the
                   <a>uneased inherited time from uneased local time</a> for
