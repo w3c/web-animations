@@ -3696,6 +3696,56 @@
 
     <section>
       <h2>Timing events</h2>
+      <div class='issue'>
+      <p>
+        The current event model has two undesirable consequences:
+        <ul>
+          <li>
+            Applications that need good-quality information on events will
+            need to implement both seeked mode handling and normal mode
+            handling. Having both is likely to result in applications only
+            relying on the information available in the lower-quality
+            seeked mode, as switching between the two is system-dependent,
+            opaque to users of the model, and uncontrollable. This makes the
+            higher-quality mode seem to be a complication rather than an
+            improvement.
+          </li>
+          <li>
+            Uneased timing can cause events to be reordered with respect
+            to how they are visually percieved; and can also cause events
+            to be delivered with timestamps in the future. This is likely to
+            be quite confusing to users of the model.
+          </li>
+        </ul>
+      </p>
+      <p>
+        We've explored a few different models to try and mitigate these
+        problems. Some ideas we've looked at that seem promising:
+        <ul>
+          <li>
+            Primitive onstart / onend events that fire only when an 
+            animation first starts playing and last stops playing.
+          </li>
+          <li>
+            An onchange event that fires when the play state (e.g. current
+            iteration, fill state, etc.) of an Animation changes, and provides
+            a summary only of ther changes since the last sample. This is 
+            guaranteed to generate no more than one event per animation per
+            sample.
+          </li>
+          <li>
+            A lazily-constructed list of change elements that provides a more
+            detailed understanding of the changes since the last sample. This
+            would be somewhat costly to generate for large sample intervals,
+            but would not be constructed by default.
+          </li>
+        </ul>
+        <p>
+          See <a href='http://lists.w3.org/Archives/Public/public-fx/2013AprJun/0184.html'>
+          Sections 8 and 14 of minuted discussion</a>.
+        </p>
+      </p>
+      </div>
       <p>
         As <a>timed items</a> play they report changes to
         their status through <dfn title="timing event">timing events</dfn>.
