@@ -6437,16 +6437,22 @@ new SeqGroup(
         </section>
       </section>
       <section>
-        <h3>The <code>PseudoElement</code> interface</h3>
+        <h3>The <code>PseudoElementReference</code> interface</h3>
+        <p class="issue">
+          We should replace this with the <a
+          href="http://dev.w3.org/csswg/cssom/#the-pseudoelement-interface"><code>PseudoElement</code></a>
+          from CSSOM unless it gets dropped.
+        </p>
         <p>
           Since <a>animations</a> may also target
           pseudo-elements, Web Animations API introduces the
-          <a>PseudoElement</a> interface to represent such targets.
+          <a>PseudoElementReference</a> interface to represent such targets.
         </p>
-        <dl title="interface PseudoElement" class="idl">
+        <dl title="interface PseudoElementReference" class="idl">
           <dt>Constructor (Element element, DOMString pseudoElement)</dt>
           <dd>
-            Creates a new pseudo-element using <var>element</var> as the <a
+            Creates a new pseudo-element reference using <var>element</var> as
+            the <a
             href="http://www.w3.org/TR/css3-selectors/#subject">subject</a>
             and <var>pseudoElement</var> as the pseudo-element to match (e.g.
             &lsquo;<code>::first-line</code>&rsquo;).
@@ -6479,70 +6485,14 @@ new SeqGroup(
             </dl>
           </dd>
         </dl>
-        <div class="feedbackWanted">
-          <p>
-            This is an interface that may be useful in other specifications and
-            so there are a few considerations to bear in mind:
-          </p>
-          <ul>
-            <li>
-              <p>
-                Currently no validation is performed at all.
-                You can set <code>pseudoElement</code> to
-                &lsquo;<code>::batman</code>&rsquo; and we'll just ignore it
-                when compositing (still need to define this).
-              </p>
-              <p>
-                This is in order to provide better fallback.
-                For example, if a UA doesn't support a particular pseudo-element
-                it will still run the animation in terms of occupying time and
-                firing events.
-                There simply won't be any visual effect.
-              </p>
-              <p>
-                Also, we have a general pattern in this specification that
-                constructors don't throw.
-              </p>
-              <p>
-                So while this works for this API, is this behavior useful in
-                other specifications?
-              </p>
-            </li>
-            <li>
-              <p>
-                The other issue is that we could just make <a>PseudoElement</a>
-                have an optional <code>pseudoElement</code> attribute and use
-                that everywhere instead of a union of <a>Element</a> or
-                <a>PseudoElement</a> (see <a>AnimationTarget</a>).
-              </p>
-              <p>
-                The reason we don't is that it complicates the 99% case where
-                you're not using pseudo-elements. For example, you have to type
-                <code>anim.target.element</code> which is what so many people
-                don't like about SVG.
-              </p>
-              <p>
-                So, again, this works for this specification, but is it ok for
-                others?
-              </p>
-            </li>
-            <li>
-              While we're at it, should we enforce using double-colons somehow?
-            </li>
-          </ul>
-          <p>
-            Your feedback is most welcome at <a
-            href="mailto:public-fx@w3.org">public-fx@w3.org</a>, subject
-            <em>[web-anim] &hellip;</em>.
-          </p>
-        </div>
       </section>
       <section>
         <h3>The <a>AnimationTarget</a> typedef</h3>
         <div class="idl"
-          title="typedef (Element or PseudoElement) AnimationTarget">
+          title="typedef (Element or PseudoElementReference) AnimationTarget">
           For simplicity, throughout this specification <a>AnimationTarget</a>
-          is used wherever either an <a>Element</a> or a <a>PseudoElement</a>
+          is used wherever either an <a>Element</a> or
+          a <a>PseudoElementReference</a>
           can be used.
         </div>
       </section>
@@ -7313,7 +7263,7 @@ new SeqGroup(
               Returns the set of <a>current</a> <a title="Animation
               interface">Animation</a> objects that have an <a>animation
               effect</a> whose <a>target</a> is this Element.  Note that this
-              does <em>not</em> include <a>PseudoElement</a>s whose
+              does <em>not</em> include <a>PseudoElementReference</a>s whose
               <code>element</code> attribute refers to this Element.
             </p>
             <p>
