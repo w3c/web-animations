@@ -297,6 +297,15 @@
       </p>
     </section>
 
+    <section>
+      <h2>Timing model</h2>
+      <p>
+        This section describes and defines the behavior of the Web Animations
+        timing model.
+        <a>Timing events</a>, however, which are also a feature of the timing
+        model are described separately in <a href="#timing-events"
+        class="sectionRef"></a>.
+      </p>
     <section class="informative">
       <h2>The timing model at a glance</h2>
       <p>
@@ -2810,22 +2819,24 @@
         </p>
       </section>
     </section>
+    </section> <!-- End of timing model -->
 
-    <section class="informative">
-      <h2>Overview of the animation model</h2>
-      <p>
-        The Web Animations <em>animation model</em> takes the <a>time
-        fractions</a> and <a>current iteration</a> values produced by the
-        <em>timing model</em> for a given <a>animation</a> and applies it as the
-        input to the <a>animation</a>'s <a>animation effect</a>.
-      </p>
-      <p>
-        The output of each <a>animation effect</a> is then combined with other
-        <a>animation effects</a> using an <a>animation stack</a> before being
-        applied to the target properties (see <a href="#combining-animations"
-        class="sectionRef"></a>).
-      </p>
-    </section>
+    <section>
+      <h2>Animation model</h2>
+      <div class="informative">
+        <p>
+          The Web Animations <em>animation model</em> takes the <a>time
+          fractions</a> and <a>current iteration</a> values produced by the
+          <em>timing model</em> for a given <a>animation</a> and applies it as
+          the input to the <a>animation</a>'s <a>animation effect</a>.
+        </p>
+        <p>
+          The output of each <a>animation effect</a> is then combined with other
+          <a>animation effects</a> using an <a>animation stack</a> before being
+          applied to the target properties (see <a href="#combining-animations"
+          class="sectionRef"></a>).
+        </p>
+      </div>
 
     <section>
       <h2>Animation effects</h2>
@@ -4344,9 +4355,14 @@
         </p>
       </section>
     </section>
+    </section> <!-- End of animation model -->
 
     <section>
       <h2>Timing events</h2>
+      <div class="issue">
+        Possibly move this section into <a href="#timing-model"
+        class="sectionRef"></a>.
+      </div>
       <div class='issue'>
       <p>
         The current event model has two undesirable consequences:
@@ -7798,157 +7814,150 @@ new SeqGroup(
           </dd>
         </dl>
       </section>
-    </section>
-
-    <section>
-      <h2>Interaction with script</h2>
-      <p>
-        The Web Animations model may be modified using the programming interface
-        defined in <a href="#script-interface" class="sectionRef"></a>.
-        This iteraction between script execution and the state of
-        the model is as follows:
-      </p>
-      <ul>
-        <li>
-          <p>
-            Changes made to the Web Animations model via the script interface
-            are reflected immediately in the values returned by the interfaces
-            defined in this specification.
-          </p>
-          <p>
-            Similarly, methods that operate on the current state of the model
-            such as pausing or reversing are applied to a fully-updated timing
-            model, that is, after all previous modifications have been
-            incorporated.
-          </p>
-          <div class="informative">
+      <section>
+        <h2>Script execution and live updates to the model</h2>
+        <p>
+          The iteraction between script execution and the state of
+          the model is as follows:
+        </p>
+        <ul>
+          <li>
             <p>
-              For example, if the <a title="Player interface">Player</a>
-              associated with an <a title="Animation interface">Animation</a>'s
-              is <a title="seeking">seeked</a> via the API,
-              the value returned when querying the
-              animation's <code>startTime</code> will reflect updated state of
-              the model immediately.
+              Changes made to the Web Animations model via the script interface
+              are reflected immediately in the values returned by the interfaces
+              defined in this specification.
             </p>
-            <pre class="example sh_javascript">
-              // Initially anim's startTime is 3
-              anim.player.currentTime += 2;
-              alert(anim.startTime); // Displays '5'
-            </pre>
             <p>
-              The same concept applies to more complex modifications of the
-              Web Animations model such as adding and removing children from
-              a <a>TimingGroup</a>.
+              Similarly, methods that operate on the current state of the model
+              such as pausing or reversing are applied to a fully-updated timing
+              model, that is, after all previous modifications have been
+              incorporated.
             </p>
-          </div>
-        </li>
-        <li>
-          <p>
-            Changes to the model other than <a
-            href="#seeking-a-timed-item">seek operations</a> do not cause
-            <a href="#timing-events">timing events</a> to be queued
-            immediately.
-            Instead, such events are queued upon the next sample as defined
-            in <a href="#event-dispatch" class="sectionRef"></a>.
-          </p>
-          <p>
-            The behavior of events with relation to seek operations is defined
-            in <a href="#event-dispatch-and-seeking-a-player"
-            class="sectionRef"></a>.
-          </p>
-          <p>
-            Operations such as <a href="#updating-the-playback-rate">updating
-            the playback rate of a player</a> involve performing a <a
-            title="seeking">seek</a> operation and therefore cause events to be
-            queued immediately.
-          </p>
-          <div class="informative">
+            <div class="informative">
+              <p>
+                For example, if the <a title="Player interface">Player</a>
+                associated with an
+                <a title="Animation interface">Animation</a>'s is <a
+                title="seeking">seeked</a> via the API,
+                the value returned when querying the
+                animation's <code>startTime</code> will reflect updated state of
+                the model immediately.
+              </p>
+              <pre class="example sh_javascript">
+                // Initially anim's startTime is 3
+                anim.player.currentTime += 2;
+                alert(anim.startTime); // Displays '5'
+              </pre>
+              <p>
+                The same concept applies to more complex modifications of the
+                Web Animations model such as adding and removing children from
+                a <a>TimingGroup</a>.
+              </p>
+            </div>
+          </li>
+          <li>
             <p>
-              For example, if a series of modifications to the timing model in
-              a single script block causes a <a>TimedItem</a>'s <a>item time</a>
-              to jump from being outside the <a>active interval</a>, to inside
-              the interval, and then outside again, no events are fired as in
-              the following example.
+              Changes to the model other than <a
+              href="#seeking-a-timed-item">seek operations</a> do not cause
+              <a href="#timing-events">timing events</a> to be queued
+              immediately.
+              Instead, such events are queued upon the next sample as defined
+              in <a href="#event-dispatch" class="sectionRef"></a>.
             </p>
-            <pre class="example sh_javascript">
-              // anim is due to start in 3s
-              anim.onstart = function() { alert("started"); };
-              // Accelerate the parent causing anim to enter its active interval
-              anim.parent.playbackRate *= 2;
-              // Adjust the start delay of anim such that it is no longer in its
-              // active interval
-              anim.timing.startDelay = Infinity;
-              // Result: no alert is shown
-            </pre>
-          </div>
-          <div class="issue">
             <p>
-              I think we need some requirements about when events are queued.
-              Can we guarantee, for example, that by the next script block
-              executes events will have been queued.
-              If not, we will really nasty bugs in scripts.
+              The behavior of events with relation to seek operations is defined
+              in <a href="#event-dispatch-and-seeking-a-player"
+              class="sectionRef"></a>.
             </p>
-          </div>
-        </li>
-        <li>
-          <p>
-            Modifications to the model using the script interface do not cause
-            the properties of the target element to be updated and nor is any
-            <a>CustomEffect</a> called until the next sample has been performed
-            at some time after the current script block completes execution.
-          </p>
-          <div class="informative">
             <p>
-              For example, if the used style of an element is queried
-              immediately after applying a new <a>Animation</a> to that element,
-              the result of the new animation will <em>not</em> be incorporated
-              in the value returned.
+              Operations such as <a href="#updating-the-playback-rate">updating
+              the playback rate of a player</a> involve performing a <a
+              title="seeking">seek</a> operation and therefore cause events to
+              be queued immediately.
             </p>
-            <pre class="example sh_javascript">
-              // Set opacity to 0 immediately
-              elem.animate({ opacity: '0' });
-              alert(window.getComputedStyle(elem).opacity);
-              // Displays '1'
-            </pre>
-          </div>
-          <p class="issue">
-            I'm unsure if this is the desired behavior for actions such as
-            <a>seeking</a> and <code>play()</code> (and thus
-            <code>animate()</code>).
-            Gecko, for example, forces a synchronous sample when a seek is
-            performed.
-            This certainly makes testing simpler but I'm not sure if this is
-            a good idea or not.
-          </p>
-        </li>
-        <li>
-          <p>
-            The value returned by the <code>currentTime</code> attribute of
-            a <a>document timeline</a> will not change within a script block.
-          </p>
-          <div class="informative">
+            <div class="informative">
+              <p>
+                For example, if a series of modifications to the timing model in
+                a single script block causes a <a>TimedItem</a>'s <a>item
+                time</a> to jump from being outside the <a>active interval</a>,
+                to inside the interval, and then outside again, no events are
+                fired as in the following example.
+              </p>
+              <pre class="example sh_javascript">
+  // anim is due to start in 3s
+  anim.onstart = function() { alert("started"); };
+  // Accelerate the parent causing anim to enter its active interval
+  anim.parent.playbackRate *= 2;
+  // Adjust the start delay of anim such that it is no longer in its
+  // active interval
+  anim.timing.startDelay = Infinity;
+  // Result: no alert is shown
+              </pre>
+            </div>
+          </li>
+          <li>
             <p>
-              For example, querying the <code>currentTime</code> twice within
-              a long block of code that is executed in the same script block
-              will return the same value as shown in the following example.
+              Modifications to the model using the script interface do not cause
+              the properties of the target element to be updated and nor is any
+              <a>CustomEffect</a> called until the next sample has been
+              performed at some time after the current script block completes
+              execution.
             </p>
-            <pre class="example sh_javascript">
-              var a = document.timeline.currentTime;
-              // ... many lines of code ...
-              var b = document.timeline.currentTime;
-              alert(b - a); // Displays 0
-            </pre>
-          </div>
-          <p class="issue">
-            We may introduce timelines that can be started programmatically
-            (e.g. for SVG).
-            In such a case, the <code>currentTime</code> should probably become
-            zero <em>immediately</em> which would violate this condition.
-            If we do indeed want that then we should probably spec it to force
-            a synchronous sample at that point and note it as an exception here.
-          </p>
-        </li>
-      </ul>
+            <div class="informative">
+              <p>
+                For example, if the used style of an element is queried
+                immediately after applying a new <a>Animation</a> to that
+                element, the result of the new animation will <em>not</em> be
+                incorporated in the value returned.
+              </p>
+              <pre class="example sh_javascript">
+                // Set opacity to 0 immediately
+                elem.animate({ opacity: '0' });
+                alert(window.getComputedStyle(elem).opacity);
+                // Displays '1'
+              </pre>
+            </div>
+            <p class="issue">
+              I'm unsure if this is the desired behavior for actions such as
+              <a>seeking</a> and <code>play()</code> (and thus
+              <code>animate()</code>).
+              Gecko, for example, forces a synchronous sample when a seek is
+              performed.
+              This certainly makes testing simpler but I'm not sure if this is
+              a good idea or not.
+            </p>
+          </li>
+          <li>
+            <p>
+              The value returned by the <code>currentTime</code> attribute of
+              a <a>document timeline</a> will not change within a script block.
+            </p>
+            <div class="informative">
+              <p>
+                For example, querying the <code>currentTime</code> twice within
+                a long block of code that is executed in the same script block
+                will return the same value as shown in the following example.
+              </p>
+              <pre class="example sh_javascript">
+                var a = document.timeline.currentTime;
+                // ... many lines of code ...
+                var b = document.timeline.currentTime;
+                alert(b - a); // Displays 0
+              </pre>
+            </div>
+            <p class="issue">
+              We may introduce timelines that can be started programmatically
+              (e.g. for SVG).
+              In such a case, the <code>currentTime</code> should probably
+              become zero <em>immediately</em> which would violate this
+              condition.
+              If we do indeed want that then we should probably spec it to force
+              a synchronous sample at that point and note it as an exception
+              here.
+            </p>
+          </li>
+        </ul>
+      </section>
     </section>
 
     <section>
