@@ -7052,16 +7052,18 @@ new SeqGroup(
           <a>Custom effects</a> can be defined in script
           using the <a>CustomEffect</a> interface.
         </p>
-        <p class="issue">
-          Should this be a dictionary?
-          I'd like to make <code>clone</code> optional.
-        </p>
         <div title="callback interface CustomEffect" class="idl">
-          <dt>attribute integer priority</dt>
+          <dt>attribute long? priority</dt>
           <dd>
-            The <a title="custom effect priority">priority</a> property of the
-            effect (see <a
+            The <a>custom effect priority</a> property of the effect (see <a
             href="#execution-order-of-custom-effects" class="sectionRef"></a>).
+          </dd>
+          <dt>attribute CustomEffectCloneCallback? clone</dt>
+          <dd>
+            <p>
+              An optional callback method used to create an independent copy of
+              this object.
+            </p>
           </dd>
           <dt>void sample ()</dt>
           <dd>
@@ -7076,15 +7078,16 @@ new SeqGroup(
               </dd>
               <dt>double currentIteration</dt>
               <dd>
-                The <a>current iteration</a> beginning with zero for the first
-                iteration.
+                The <a>current iteration</a> beginning with zero corresponding
+                to the first iteration.
               </dd>
               <dt>AnimationTarget? target</dt>
               <dd>
-                The element to which the effect should be applied, if any.
+                The element or pseudo-element to which the effect should be
+                applied, if any.
                 When this method is called as a result of this object being
-                associated with an <a>Animation</a> object <var>A</var>,
-                this value will be <code><var>A</var>.target</code>.
+                associated with an <a>Animation</a> object <var>A</var>, this
+                value will be <code><var>A</var>.target</code>.
               </dd>
               <dt>double? previousTimeFraction</dt>
               <dd>
@@ -7104,23 +7107,26 @@ new SeqGroup(
               </dd>
             </dl>
           </dd>
-          <dt>CustomEffect clone ()</dt>
-          <dd>
-            Creates an independent copy of this object.
-          </dd>
         </div>
         <p class="issue">
-          Do we need to pass in the <a>Animation</a> as well?
+          Do we need to pass the <a>Animation</a> to <code>sample</code> as
+          well?
           If possible I'd prefer not to but it may necessary for some types of
           effect.
           Might be an additional parameter to add later if it proves
           necessary?
         </p>
-        <p class="issue">
-          Should we pass a dictionary instead?
-          The order of arguments is quite arbitrary and it's likely we might add
-          other ones in the future.
-        </p>
+        <div title="callback CustomEffectCloneCallback = CustomEffect ()" class="idl">
+          <p>
+            <a>CustomEffectCloneCallback</a> is a type of callback function used
+            to create an independent copy of a <a>CustomEffect</a>.
+          </p>
+          <p>
+            When called, the <a
+            href="http://www.w3.org/TR/WebIDL/#dfn-callback-this-value">callback
+            this value</a> refers to <a>CustomEffect</a> object to be cloned.
+          </p>
+        </div>
       </section>
       <section>
         <h3>The <code>TimingEvent</code> interface</h3>
