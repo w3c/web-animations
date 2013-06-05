@@ -1560,6 +1560,10 @@ berjon.respec.prototype = {
 
                 if(span) {
                     secno = span.textContent;
+                    var lt = new RegExp('<', 'g');
+                    secno = secno.replace(lt, '&lt;');
+                    var gt = new RegExp('>', 'g');
+                    secno = secno.replace(gt, '&gt;');
                 }
             }
 
