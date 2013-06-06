@@ -2016,9 +2016,17 @@ berjon.WebIDLProcessor.prototype = {
         mem.description = sn.documentFragment();
         sn.copyChildren(dd, mem.description);
         str = this.parseExtendedAttributes(str, mem);
-    
+
+        // COMMENT
+        var match = /^\s*\/\/\s*(.*)\s*$/.exec(str);
+        if (match) {
+            mem.type = "comment";
+            mem.id = match[1];
+            return mem;
+        }
+
         // MEMBER
-        var match = /^\s*([^=]+\??)\s+([^=\s]+)(?:\s*=\s*(.*))?$/.exec(str);
+        match = /^\s*([^=]+\??)\s+([^=\s]+)(?:\s*=\s*(.*))?$/.exec(str);
         // var match = /^\s*(.*?)\s+(\S+)\s*$/.exec(str);
         if (match) {
             mem.type = "member";
@@ -2483,6 +2491,9 @@ berjon.WebIDLProcessor.prototype = {
             var dl = sn.element("dl", { "class": "dictionary-members" }, sec);
             for (var j = 0; j < things.length; j++) {
                 var it = things[j];
+                if (it.type == "comment")
+                  continue;
+
                 var dt = sn.element("dt", { id: curLnk + it.refId }, dl);
                 sn.element("code", {}, dt, it.id);
                 var desc = sn.element("dd", {}, dl, [it.description]);
@@ -2798,7 +2809,7 @@ berjon.WebIDLProcessor.prototype = {
             str += " {\n";
             var max = 0;
             obj.children.forEach(function (it, idx) {
-                var len = it.datatype.length;
+                var len = it.datatype ? it.datatype.length : 0;
                 if (it.nullable) len = len + 1;
                 if (it.array) len = len + 2;
                 max = (len > max) ? len : max;
@@ -2806,7 +2817,10 @@ berjon.WebIDLProcessor.prototype = {
             var curLnk = "widl-" + obj.refId + "-";
             for (var i = 0; i < obj.children.length; i++) {
                 var ch = obj.children[i];
-                str += this.writeMember(ch, max, indent + 1, curLnk);
+                if (ch.type == "member")
+                  str += this.writeMember(ch, max, indent + 1, curLnk);
+                else
+                  str += this.writeComment(ch, indent + 1, i === 0);
             }
             str += this._idn(indent) + "};</span>\n";
             return str;
