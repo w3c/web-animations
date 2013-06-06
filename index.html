@@ -6638,7 +6638,7 @@ interface Duration {
                     Assign <code><var>animation</var>.effect</code> to
                     <var>effect</var>.
                   </dd>
-                  <dt>If <var>effect</var> is a <a>KeyframeParameters</a>,</dt>
+                  <dt>If <var>effect</var> is a <a>OneOrMoreKeyframes</a>,</dt>
                   <dd>
                     Set <code><var>animation</var>.effect</code> to
                     a new <a>KeyframeAnimationEffect</a> object constructed by
@@ -6674,7 +6674,7 @@ interface Duration {
                 This may be <code>null</code> for animations that do not target
                 a specific element.
               </dd>
-              <dt>(AnimationEffect or CustomEffect or KeyframeParameters)? effect</dt>
+              <dt>(AnimationEffect or CustomEffect or OneOrMoreKeyframes)? effect</dt>
               <dd>
                 The animation effect used to set the <code>effect</code>
                 attribute of the newly-created <a title="Animation
@@ -6688,7 +6688,7 @@ interface Duration {
                   It will <em>not</em> be copied.
                 </p>
                 <p>
-                  If this parameter of type <a>KeyframeParameters</a>,
+                  If this parameter of type <a>OneOrMoreKeyframes</a>,
                   the <a>animation effect</a> of the newly-created
                   <a title="Animation interface">Animation</a> will be
                   a newly-created <a>KeyframeAnimationEffect</a> object
@@ -6940,13 +6940,12 @@ new SeqGroup(
         </dl>
       </section>
       <section>
-        <h3>The <a>AnimationTarget</a> typedef</h3>
+        <h3>The <code>AnimationTarget</code> typedef</h3>
         <div class="idl"
           title="typedef (Element or PseudoElementReference) AnimationTarget">
           For simplicity, throughout this specification <a>AnimationTarget</a>
           is used wherever either an <a>Element</a> or
-          a <a>PseudoElementReference</a>
-          can be used.
+          a <a>PseudoElementReference</a> can be used.
         </div>
       </section>
       <section>
@@ -7059,8 +7058,13 @@ new SeqGroup(
               Creates a new <a>KeyframeAnimationEffect</a> object for the
               given set of keyframes.
             </p>
+            <p>
+              Before storing, each of the keyframes in <var>frames</var> is
+              normalized using the procedure in <a
+              href="#normalizing-a-keyframe-object" class="sectionRef"></a>.
+            </p>
             <dl class="parameters">
-              <dt>KeyframeParameters frames</dt>
+              <dt>OneOrMoreKeyframes frames</dt>
               <dd>
                 The set of <a>keyframes</a> used for calculating animation
                 values for this <a>animation effect</a>.
@@ -7099,47 +7103,46 @@ new SeqGroup(
             <p>
               Returns the <a>keyframes</a> that make up this effect as
               a sequence of <a>Keyframe</a> objects.
-              Any <a>KeyframeShortcut</a> objects passed to this object's
-              constructor or <code>getFrames</code> method will have been
-              expanded to the equivalent <a>Keyframe</a> object using the
-              procedure defined in
-              <a href="#translating-from-a-keyframeshortcut-to-a-keyframe"
-              class="sectionRef"></a>.
             </p>
             <p>
-              Note that the normalization applied to the list of
-              <a>keyframes</a> associated with this effect does not affect the
-              value returned by this method.
+              Note that the normalization applied to the <em>list</em> of
+              <a>keyframes</a> as defined in <a
+              href="#normalizing-the-list-of-keyframes"
+              class="sectionRef"></a> does not affect the value returned by this
+              method.
             </p>
           </dd>
-          <dt>void setFrames(KeyframeParameters frames)</dt>
+          <dt>void setFrames(OneOrMoreKeyframes frames)</dt>
           <dd>
             <p>
               Replaces the set of <a>keyframes</a> that make up this effect.
             </p>
             <p>
-              Any <a>KeyframeShortcut</a> objects in <var>frames</var> are
-              converted to equivalent <a>Keyframe</a> objects using the
-              procedure defined in <a
-              href="#translating-from-a-keyframeshortcut-to-a-keyframe"
-              class="sectionRef"></a> before they are stored.
+              Upon setting, each keyframe in <var>frames</var> is normalized
+              using the procedure in <a href="#normalizing-a-keyframe-object"
+              class="sectionRef"></a> before storing.
             </p>
             <p>
               Before being used by the animation model, the set of frames
               associated with this effect is normalized using the procedure
               defined in <a
-              href="#procedure-for-normalizing-the-list-of-keyframes"
-              class="sectionRef"></a>.
+              href="#normalizing-the-list-of-keyframes" class="sectionRef"></a>.
             </p>
             <p>
-              As a result of normalization, if <var>frames</var> is not
-              <a>loosely sorted by offset</a> this effect will not contribute to
-              the final <a>composited value</a>.
+              As a result of the normalization of the list, if <var>frames</var>
+              is not <a>loosely sorted by offset</a> this effect will not
+              contribute to the final <a>composited value</a>.
             </p>
           </dd>
         </dl>
         <section>
-          <h4>Procedure for normalizing the list of keyframes</h4>
+          <h4>Normalizing the list of keyframes</h4>
+          <div class="issue">
+            This behavior is expected to be revised such that keyframe lists
+            that are not in sequence are accepted and keyframe offsets outside
+            the range [0, 1] are also allowed.
+            Doing so may make this procedure unnecessary.
+          </div>
           <p>
             Before passing the list of <a
             title="Keyframe interface">Keyframes</a> specified in the API to the
@@ -7185,72 +7188,19 @@ new SeqGroup(
         </section>
       </section>
       <section>
-        <h3>The <code>KeyframeValue</code> dictionary</h3>
-        <p>
-          The value of a property within a given <a>keyframe</a> can be
-          specified using a <a>KeyframeValue</a> dictionary object.
-        </p>
-        <dl title="dictionary KeyframeValue" class="idl">
-          <dt>DOMString property</dt>
-          <dd>
-            <p>
-              The name of the CSS property to which the value should be applied.
-              For example, <span class="prop-value">border-radius</span>.
-            </p>
-            <p>
-              Property names are matched using the same rules as specified for
-              <a
-              href="http://dev.w3.org/csswg/cssom/#widl-CSSStyleDeclaration-getPropertyValue-DOMString-DOMString-property"><code>getPropertyValue</code></a>
-              on <code>CSSStyleDeclaration</code> [[!CSSOM]].
-              Specifically, for CSS property names that are defined to match
-              case-insensitively, <a
-              href="http://dom.spec.whatwg.org/#ascii-case-insensitive">ASCII
-              case-insensitive</a> matching is used.
-              Otherwise, a <a
-              href="http://dom.spec.whatwg.org/#case-sensitive">case-sensitive</a>
-              match is used.
-            </p>
-            <p class="todo">
-              This matching is currently (2013-04-26) only defined in the ED of
-              CSSOM.
-              Once a newer WD becomes available we should refer to that or
-              simply drop this reference and reproduce any needed definitions
-              here.
-            </p>
-          </dd>
-          <dt>DOMString value</dt>
-          <dd>
-            <p>
-              The value of the property.
-            </p>
-            <p class="issue">
-              Should this be <code>any</code>?
-            </p>
-          </dd>
-        </dl>
-      </section>
-      <section>
         <h3>The <code>Keyframe</code> dictionary</h3>
-        <dl title="dictionary Keyframe" class="idl">
-          <dt>sequence&lt;KeyframeValue&gt; values</dt>
-          <dd>
-            <p>
-              A sequence of zero or more <a>KeyframeValue</a> objects.
-            </p>
-            <p>
-              If two or more <a>KeyframeValue</a> objects in the sequence have
-              a <a>property</a> that match the same CSS property using the
-              matching behavior defined for <code>property</code>, the last
-              valid and supported <a>KeyframeValue</a> object in the sequence is
-              used as defined by <a 
-              href="#procedure-for-normalizing-the-list-of-keyframes"
-              class="sectionRef"></a>.
-            </p>
-            <p>
-              When all <a>KeyframeValue</a> objects match different CSS
-              properties, the order of the sequence has no significance.
-            </p>
-          </dd>
+        <p>
+          Individual <a>keyframes</a> are represented by a special kind of
+          <a title="Keyframe interface">Keyframe</a> dictionary type whose
+          members map to the properties to be animated.
+          At the time of writing, this kind of open-ended dictionary is not able
+          to be represented using WebIDL and hence special
+          ECMAScript-specific handling for this type is defined in
+          <a href="#normalizing-a-keyframe-object" class="sectionRef"></a>.
+          No handling is defined for other languages.
+        </p>
+        <dl class="idl" title="dictionary Keyframe">
+          <dt>// ... property-value pairs ...</dt><dd></dd>
           <dt>double? offset = null</dt>
           <dd>
             <p>
@@ -7261,8 +7211,7 @@ new SeqGroup(
             <p>
               <a>Keyframes</a> with offsets outside the range [0.0,1.0] are
               ignored when calculating animation values as defined in
-              <a
-              href="#procedure-for-normalizing-the-list-of-keyframes"
+              <a href="#normalizing-the-list-of-keyframes"
               class="sectionRef"></a>.
             </p>
             <p>
@@ -7270,8 +7219,7 @@ new SeqGroup(
               should be positioned automatically using the algorithm defined in
               <a href="#procedure-for-evenly-distributing-keyframes"
               class="sectionRef"></a> and applied in
-              <a
-              href="#procedure-for-normalizing-the-list-of-keyframes"
+              <a href="#normalizing-the-list-of-keyframes"
               class="sectionRef"></a>.
             </p>
           </dd>
@@ -7287,186 +7235,132 @@ new SeqGroup(
             </p>
           </dd>
         </dl>
-      </section>
-      <section>
-        <h3>The <code>KeyframeShortcut</code> type</h3>
-        <p>
-          In order to simplify the creation of simple <a>keyframe animation
-          effects</a>, in ECMAScript execution environments an additional
-          <a>KeyframeShortcut</a> type is introduced.
-          This type is purely for the purposes of input and is never returned by
-          the programming interface.
-        </p>
-        <div class="idl" title="typedef Object KeyframeShortcut">
-          <section>
-            <h4>Translating from a <code>KeyframeShortcut</code> to a <code>Keyframe</code></h4>
-            <div class="note">
-              <p>
-                Since accessing the properties of an ECMAScript user object can
-                have side effects, the manner in which these properties is
-                accessed is important.
-                In light of this consideration the procedure for processing
-                a <a>KeyframeShortcut</a> has the following properties:
-              </p>
-              <ul>
-                <li>Every property is read only once.</li>
-                <li>Properties are read in a well-defined order.</li>
-                <li>Properties corresponding to unsupported target properties or
-                    attributes are not read.</li>
-              </ul>
-            </div>
-            <p>
-              A <a>KeyframeShortcut</a> object, <var>shortcut</var>, is
-              converted to an equivalent <a
-              title="Keyframe interface">Keyframe</a> object using the following
-              procedure:
-            </p>
-            <ol>
-              <li>Let <var>keyframe</var> be a new <a
-                  title="Keyframe interface">Keyframe</a> object with
-                  an empty sequence of <a>KeyframeValue</a>s,
-                  a <code>null</code> <code>offset</code> attribute, and a
-                  a <code>null</code> <code>composite</code> attribute.
-              <li>Create a list, <var>supported properties</var>, of property
-                  names and attribute names that <a title="animatable">can be
-                  animated</a> by the implementation.
-              <li>Convert each property name in <var>supported properties</var>
-                  to the equivalent IDL attribute by applying the <a
-                  href="http://dev.w3.org/csswg/cssom/#css-property-to-idl-attribute">CSS
-                  property to IDL attribute</a> algorithm [[!CSSOM]].
-              <li>If the user agent supports animation of the <span
-                  class="prop-name">float</a> CSS property, replace 'float' in
-                  <var>supported properties</var> with 'cssFloat'.
-              <li>Let <var>animation properties</var> be an empty sequence.
-              <li>Iterate over the properties of <code>shortcut</code>.
-                  For each <var>property</var> in <code>shortcut</code>,
-                  perform the step corresponding to the first matching condition
-                  from below, if any.
-                <dl class="switch">
-                  <dt>If <var>property</var> is a case-sensitive match for
-                    the string 'offset',</dt>
-                  <dd>
-                    if <code><var>shortcut</var>.offset</code> is
-                    a Number, set the <code>offset</code> attribute of
-                    <var>keyframe</var> to
-                    <code><var>shortcut</var>.offset</code>.
-                  </dd>
-                  <dt>if <var>property</var> is a case-sensitive match for
-                    the string 'composite',</dt>
-                  <dd>
-                    If <code><var>shortcut</var>.composite</code> is
-                    a case-sensitive match for one of the values of the
-                    <a>CompositeOperation</a> enumeration,
-                    set the <code>composite</code> attribute of
-                    <var>keyframe</var> to
-                    <code><var>shortcut</var>.composite</code>.
-                  </dd>
-                  <dt>Otherise, if <var>property</var> also exists in
-                    <var>supported properties</var> based on a case-sensitive
-                    comparison,</dt>
-                  <dd>append <var>property</var> to <var>animation
-                    properties</var>.</dd>
-                </dl>
-              <li>For user agents that support both a prefixed and an
-                  unprefixed version of some CSS properties, remove all
-                  prefixed properties from <var>animation properties</var>
-                  where the corresponding unprefixed version is also
-                  present in <var>animation properties</var>.
-              <li>Sort <var>animation properties</var> lexicographically by
-                  the Unicode codepoints that define each element.
-              <li>Iterate over <var>animation properties</var> and for each
-                  element, <var>name</var>, perform the following steps:
-                <ol>
-                  <li>Create a new <a>KeyframeValue</a> object with the
-                      following attribute values:
-                    <ul>
-                      <li><code>property</code>: the result of applying the
-                          the <a
-                      href="http://dev.w3.org/csswg/cssom/#idl-attribute-to-css-property">IDL
-                           attribute to CSS property</a> algorithm [[!CSSOM]] to
-                           <var>name</var> unless <var>name</var> is
-                           a case-sensitive match for the string 'cssFloat' in
-                           which case let <code>property</code> be the
-                           string 'float'.
-                      <li><code>value</code>: the result of reading the
-                          <var>name</var> property of <var>shortcut</var>
-                    </ul>
-                  <li>Append the new <a>KeyframeValue</a> to
-                      <var>keyframe</var>'s list of <code>values</code>.
-                </ol>
-              <li>Return <var>keyframe</var>
-            </ol>
-            <div class="issue">
-              <p>
-                The above algorithm gives special meaning to the property names
-                'offset' and 'composite'.
-                If a CSS property called 'offset' or 'composite' is ever
-                introduced it will clash with the meaning here.
-              </p>
-              <p>
-                We have a few options:
-              </p>
-              <ul>
-                <li>Add special handling at that time to allow addressing the
-                    property of the same name, e.g. <code>cssOffset</code>.
-                <li>Rename these keywords now to avoid risk of a later clash,
-                    e.g. 'keyframeOffset'.
-                    (For consistency this should also be extended to the name of
-                    the member of the <a>Keyframe</a> dictionary).
-              </ul>
-            </div>
-          </section>
-        </div>
         <section>
-          <h4>The <code>KeyframeOrShortcut</code> typedef</h4>
-          <div class="idl"
-            title="typedef (Keyframe or KeyframeShortcut) KeyframeOrShortcut">
+          <h4>Normalizing a <code>Keyframe</code> object</h4>
+          <div class="note">
             <p>
-              In ECMAScript execution environments, the
-              <a>KeyframeOrShortcut</a> type is used to indicate either
-              a <a>Keyframe</a> dictionary object or a <a>KeyframeShortcut</a>
-              object.
+              Since accessing the properties of an ECMAScript user object can
+              have side effects, the manner in which these properties is
+              accessed is important.
+              In light of this consideration the procedure for normalizing
+              a <a>Keyframe</a> has the following properties:
+            </p>
+            <ul>
+              <li>Every property is read only once.</li>
+              <li>Properties are read in a well-defined order.</li>
+              <li>Properties corresponding to unsupported target properties or
+                  attributes are not read.</li>
+            </ul>
+          </div>
+          <p>
+            A <a>Keyframe</a> object, <var>keyframe input</var>, is
+            converted to a normalized internal representation <var>keyframe
+            result</var> using the following procedure:
+          </p>
+          <ol>
+            <li>Let the initial <a
+                title="positional offset of a keyframe">positional offset</a>
+                of <var>keyframe result</var> be <code>null</code>.
+            <li>Let the initial <a>composition operation</a>
+                of <var>keyframe result</var> be <code>null</code>.
+            <li>Create a list, <var>supported properties</var>, of property
+                names and attribute names that <a title="animatable">can be
+                animated</a> by the implementation.
+            <li>Convert each property name in <var>supported properties</var>
+                to the equivalent IDL attribute by applying the <a
+                href="http://dev.w3.org/csswg/cssom/#css-property-to-idl-attribute">CSS
+                property to IDL attribute</a> algorithm [[!CSSOM]].
+            <li>If the user agent supports animation of the <span
+                class="prop-name">float</a> CSS property, replace 'float' in
+                <var>supported properties</var> with 'cssFloat'.
+            <li>Let <var>animation properties</var> be an empty sequence.
+            <li>Iterate over the properties of <var>keyframe input</var>.
+                For each <var>property</var> in <var>keyframe input</var>,
+                perform the step corresponding to the first matching condition
+                from below, if any.
+              <dl class="switch">
+                <dt>If <var>property</var> is a case-sensitive match for
+                  the string 'offset',</dt>
+                <dd>
+                  If <code><var>keyframe input</var>.offset</code> is
+                  a Number, set the <a
+                  title="positional offset of a keyframe">positional offset</a>
+                  of <var>keyframe input</var> to 
+                  <code><var>keyframe input</var>.offset</code>.
+                </dd>
+                <dt>if <var>property</var> is a case-sensitive match for
+                  the string 'composite',</dt>
+                <dd>
+                  If <code><var>keyframe input</var>.composite</code> is
+                  a case-sensitive match for one of the values of the
+                  <a>CompositeOperation</a> enumeration,
+                  set the <a>composition operation</a>
+                  of <var>keyframe input</var> to 
+                  <code><var>keyframe input</var>.composite</code>.
+                </dd>
+                <dt>Otherise, if <var>property</var> also exists in
+                  <var>supported properties</var> based on a case-sensitive
+                  comparison,</dt>
+                <dd>append <var>property</var> to <var>animation
+                  properties</var>.</dd>
+              </dl>
+            <li>For user agents that support both a prefixed and an
+                unprefixed version of some CSS properties, remove all
+                prefixed properties from <var>animation properties</var>
+                where the corresponding unprefixed version is also
+                present in <var>animation properties</var>.
+            <li>Sort <var>animation properties</var> lexicographically by
+                the Unicode codepoints that define each element.
+            <li>Iterate over <var>animation properties</var> and for each
+                element, <var>name</var>, add a new property-value pair to
+                <var>keyframe result</var> as follows:
+              <ul>
+                <li><em>property name</em>: the result of applying the
+                    the <a
+                href="http://dev.w3.org/csswg/cssom/#idl-attribute-to-css-property">IDL
+                    attribute to CSS property</a> algorithm [[!CSSOM]] to
+                    <var>name</var> unless <var>name</var> is
+                    a case-sensitive match for the string 'cssFloat' in
+                    which case use the string 'float'.
+                <li><em>property value</em>: the result of calling
+                    <code>toString</code> on the <var>name</var> property of
+                    <var>keyframe input</var>.
+              </ul>
+            <li>Return <var>keyframe result</var>.
+          </ol>
+          <p>
+            This procedure is performed exactly once per call to
+            <code>setFrames</code> or the constructor for
+            <a>KeyframeAnimationEffect</a>.
+          </p>
+          <div class="issue">
+            <p>
+              The above algorithm gives special meaning to the property names
+              'offset' and 'composite'.
+              If a CSS property called 'offset' or 'composite' is ever
+              introduced it will clash with the meaning here.
             </p>
             <p>
-              In non-ECMAScript execution environments where
-              <a>KeyframeShortcut</a> is not defined, <a>KeyframeOrShortcut</a>
-              type is simply an alias for <a>Keyframe</a>, that is,
-              <code>typedef Keyframe KeyframeOrShortcut</code>.
+              We have a few options:
             </p>
-            <section>
-              <h4>Distinguishing a <code>KeyframeShortcut</code> from
-              a <code>Keyframe</code></h4>
-              <p>
-                In WebIDL the members of a union must be
-                <a
-                href="http://www.w3.org/TR/WebIDL/#dfn-distinguishable">distinguishable</a>
-                [[!WEBIDL]],
-                A <a title="Keyframe interface">Keyframe</a> object can be
-                distinguished from a <a>KeyframeShortcut</a> object by the
-                presence of a <code>values</code> property on the object.
-              </p>
-              <div class="issue">
-                <p>Is this enough? If we introduce a CSS 'values' property we
-                   will have the same problem as with 'offset'.</p>
-              </div>
-            </section>
+            <ul>
+              <li>Add special handling at that time to allow addressing the
+                  property of the same name, e.g. <code>cssOffset</code>.
+              <li>Rename these keywords now to avoid risk of a later clash,
+                  e.g. 'keyframeOffset'.
+                  (For consistency this should also be extended to the name of
+                  the member of the <a>Keyframe</a> dictionary).
+            </ul>
           </div>
         </section>
       </section>
       <section>
-        <h3>The <code>KeyframeParameters</code> typedef</h3>
-        <p>
-          It is common to create animations with a single 'target' keyframe.
-          To support this usage, the <a title="Keyframe interface">Keyframe</a>
-          interface supports passing a list of <a>keyframes</a> or a single
-          <a>keyframe</a>.
-        </p>
+        <h3>The <code>OneOrMoreKeyframes</code> typedef</h3>
         <div class="idl"
-          title="typedef (KeyframeOrShortcut or sequence&lt;KeyframeOrShortcut&gt;) KeyframeParameters">
-          Throughout this specification we use the <a>KeyframeParameters</a>
-          type to represent either a single keyframe (whether using the
-          <a>KeyframeShortcut</a> type or a regular <a>Keyframe</a> dictionary
-          object) or a list of such keyframes.
+          title="typedef (Keyframe or sequence&lt;Keyframe&gt;) OneOrMoreKeyframes">
+          Throughout this specification we use the <a>OneOrMoreKeyframes</a>
+          type to represent either a single keyframe or a list of such
+          keyframes.
         </div>
       </section>
       <section>
@@ -7698,7 +7592,7 @@ new SeqGroup(
               title="Animation interface">Animation</a> object.
             </p>
             <dl class="parameters">
-              <dt>(AnimationEffect or CustomEffect or KeyframeParameters)? effect</dt>
+              <dt>(AnimationEffect or CustomEffect or OneOrMoreKeyframes)? effect</dt>
               <dd>
                 The effect to apply.
                 This value is passed to the <a
