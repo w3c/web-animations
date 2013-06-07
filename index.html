@@ -1302,56 +1302,68 @@
         </p>
         <div class="issue">
           <p>
-          As currently defined, when filling, a TimedItem uses an active time
-          equal to either zero or its active duration, and this is used as the
-          basis for the time which is inherited by its children. This has the
-          effect of snapshotting the children for the duration of the parent's
-          fill. As a result, if a child is active at the time at which it is
-          snapshotted, it will remain so throughout the parent's fill, even if
-          the child is configured to not fill in that direction. This behavior
-          may be surprising. It is particularly problematic in the case of a
-          parent with backwards fill, as by default, children are aligned at
-          the start of the parent's active interval, so will always appear to
-          fill backwards.
+            As currently defined, when filling, a <a>timed item</a> uses an
+            <a>active time</a> equal to either zero or its <a>active
+            duration</a>, and this is used as the basis for the time which is
+            inherited by its children.
           </p>
-
           <p>
-          To avoid this surprising behavior, and to provide greater control, we
-          are considering modifying the definition of fill to depend on the
-          parent's fill state. In particular, when a parent is filling, a child
-          will only be active (and its descendants thus have an effect) if it
-          too is configured to fill in that direction.
+            This has the effect of &lsquo;snapshotting&rsquo; the children for
+            the duration of the parent's fill.
+            As a result, if a child is active at the boundary of an ancestor's
+            <a>active interval</a> and that ancestor is configured to fill at
+            the point, the child will remain active through the ancestor's fill
+            even if the child is <em>not</em> configured to fill in the given
+            direction.
           </p>
-
           <p>
-          To simplify the common use case, we would likely introduce a new
-          'auto' fill mode, which means that a TimedItem's fill mode should
-          match that of its parent, if present, or use forward fill otherwise.
+            This behavior may be surprising in some circumstances..
+            It is particularly noticeable in the case of an ancestor with
+            backwards fill, as for the common case where children are aligned at
+            the start of the parent's active interval, they will also fill
+            backwards regardless of their fill mode.
           </p>
-
-          <a href='http://lists.w3.org/Archives/Public/public-fx/2013AprJun/0184.html'>
-          See Section 2 (Fill modes on descendants) of minuted discussion
-          </a>
+          <p>
+            In order to provide control of this behavior we
+            are considering modifying the definition of fill to depend on the
+            parent's fill state.
+            In particular, when a parent is filling, a child will only be active
+            (and its descendants thus have an effect) if it too is configured to
+            fill in that direction.
+          </p>
+          <p>
+            In order to provide the currently-defined behavior (which we expect
+            is useful for many situations), we would likely introduce a new
+            'auto' fill mode, which means that a <a>timed item</a>'s fill mode
+            should match that of its parent, if present, or use forward fill
+            otherwise.
+          </p>
+          <p>
+            See <a
+            href='http://lists.w3.org/Archives/Public/public-fx/2013AprJun/0184.html'>section
+            2 (Fill modes on descendants) of minuted discussion from Tokyo 2013
+              F2F</a>.
+          </p>
         </div>
         <div class="issue">
           <p>
-          Currently timing functions that generate results outside the range
-          [0, 1] will behave unexpectedly when applied to animation groups,
-          as children will increase iterations or enter into fill mode rather
-          than continuing to extrapolate along their defined behaviours (which
-          is what they would do if the timing function applied to them 
-          directly).
+            Currently <a>timing functions</a> that generate results outside the
+            range [0, 1] will behave unexpectedly when applied to animation
+            groups, as children will increase iterations or enter into fill mode
+            rather than continuing to extrapolate along their defined behaviours
+            (which is what they would do if the timing function applied to them
+            directly).
           </p>
-
           <p>
-          To fix this it is possible we will wish to introduce 'overflow' fill 
-          modes that respond to time values larger than or smaller than the
-          active time range by extrapolating rather than filling.
+            To fix this it is possible we will wish to introduce 'overflow' fill
+            modes that respond to time values larger than or smaller than the
+            active time range by extrapolating rather than filling.
           </p>
-
-          <a href='http://lists.w3.org/Archives/Public/public-fx/2013AprJun/0184.html'>
-          See Section 15 (Overflowing fill) of minuted discussion
-          </a>
+          <p>
+            See <a
+            href='http://lists.w3.org/Archives/Public/public-fx/2013AprJun/0184.html'>section
+            15 (Overflowing fill) of minuted discussion from Tokyo 2013 F2F</a>.
+          </p>
         </div>
       </section>
     </section>
