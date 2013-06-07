@@ -1750,7 +1750,7 @@ berjon.respec.prototype = {
         s = s.replace(/>/g,'&gt;');
         s = s.replace(/"/g,'&quot;');
         s = s.replace(/</g,'&lt;');
-	s = s.replace(/([\u0080-\u3000])/g, function(match) { return '&amp;#x' + match.charCodeAt(0).toString(16); });
+	s = s.replace(/([\u0080-\u3000])/g, function(match) { return '&amp;#x' + match.charCodeAt(0).toString(16) + ';'; });
         return s;
     }
 };
