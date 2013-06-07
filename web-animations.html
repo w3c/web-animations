@@ -16,7 +16,7 @@
       * Allow making cross-references to specific methods and members.
     -->
   <link href="respec/respec.css" rel="stylesheet" type="text/css" charset="utf-8"><link href="web-animations.css" rel="stylesheet" type="text/css" charset="utf-8"><link href="https://www.w3.org/StyleSheets/TR/W3C-ED" rel="stylesheet" type="text/css" charset="utf-8"></head>
-  <body style="display: inherit;"><div class="head"><p><a href="http://www.w3.org/"><img width="72" height="48" src="http://www.w3.org/Icons/w3c_home" alt="W3C"></a></p><h1 class="title" id="title">Web Animations 1.0</h1><h2 id="w3c-editor-s-draft-06-june-2013"><acronym title="World Wide Web Consortium">W3C</acronym> Editor's Draft 06 June 2013</h2><dl><dt>This version:</dt><dd><a href="https://dvcs.w3.org/hg/FXTF/raw-file/default/web-anim/index.html">https://dvcs.w3.org/hg/FXTF/raw-file/default/web-anim/index.html</a></dd><dt>Latest published version:</dt><dd><a href="http://www.w3.org/TR/undefined/">http://www.w3.org/TR/undefined/</a></dd><dt>Latest editor's draft:</dt><dd><a href="https://dvcs.w3.org/hg/FXTF/raw-file/default/web-anim/index.html">https://dvcs.w3.org/hg/FXTF/raw-file/default/web-anim/index.html</a></dd><dt>Previous version:</dt><dd>none</dd><dt>Editors:</dt><dd><span>Brian Birtles</span>, <a href="http://mozilla.jp/">Mozilla Japan</a>,  <span class="ed_mailto"><a href="mailto:bbirtles@mozilla.com">bbirtles@mozilla.com</a></span> </dd>
+  <body style="display: inherit;"><div class="head"><p><a href="http://www.w3.org/"><img width="72" height="48" src="http://www.w3.org/Icons/w3c_home" alt="W3C"></a></p><h1 class="title" id="title">Web Animations 1.0</h1><h2 id="w3c-editor-s-draft-07-june-2013"><acronym title="World Wide Web Consortium">W3C</acronym> Editor's Draft 07 June 2013</h2><dl><dt>This version:</dt><dd><a href="https://dvcs.w3.org/hg/FXTF/raw-file/default/web-anim/index.html">https://dvcs.w3.org/hg/FXTF/raw-file/default/web-anim/index.html</a></dd><dt>Latest published version:</dt><dd><a href="http://www.w3.org/TR/undefined/">http://www.w3.org/TR/undefined/</a></dd><dt>Latest editor's draft:</dt><dd><a href="https://dvcs.w3.org/hg/FXTF/raw-file/default/web-anim/index.html">https://dvcs.w3.org/hg/FXTF/raw-file/default/web-anim/index.html</a></dd><dt>Previous version:</dt><dd>none</dd><dt>Editors:</dt><dd><span>Brian Birtles</span>, <a href="http://mozilla.jp/">Mozilla Japan</a>,  <span class="ed_mailto"><a href="mailto:bbirtles@mozilla.com">bbirtles@mozilla.com</a></span> </dd>
 <dd><span>Shane Stephens</span>, <a href="http://www.google.com/">Google, Inc</a>,  <span class="ed_mailto"><a href="mailto:shans@google.com">shans@google.com</a></span> </dd>
 <dd><span>Alex Danilo</span>, <a href="http://www.google.com/">Google, Inc</a>,  <span class="ed_mailto"><a href="mailto:adanilo@google.com">adanilo@google.com</a></span> </dd>
 <dd><span>Dmitry Baranovskiy</span>, <a href="http://www.adobe.com/">Adobe Systems</a>,  <span class="ed_mailto"><a href="mailto:baranovs@adobe.com">baranovs@adobe.com</a></span> </dd>
@@ -167,12 +167,14 @@
           Takes a moment in time and converts it to a proportional distance
           within a single iteration of an animation called the <em>time
           fraction</em>.
+          An <em>iteration index</em> is also generated for animations
+          that vary as they repeat.
         </dd>
         <dt>Animation model</dt>
         <dd>
-          Takes the <em>time fractions</em> produced by the timing model and
-          converts them into a series of values to apply to the target
-          properties and attributes.
+          Takes the <em>time fractions</em> and <em>iteration indices</em>
+          produced by the timing model and converts them into a series of values
+          to apply to the target properties and attributes.
         </dd>
       </dl>
       <p>
@@ -184,9 +186,9 @@
       <p class="caption">
         Overview of the operation of the Web Animations model.<br>
         The current time is input to the timing model which produces a time
-        fraction.<br>
-        This distance is used as input to the animation model which produces
-        the values to apply.
+        fraction and iteration index.<br>
+        These parameters are used as input to the animation model which produces
+        the values to apply.<br>
       </p>
       <p>
         For example, consider an animation that:
@@ -917,7 +919,7 @@
           </p>
           <p>
             Children take the transformed time values from their
-            parentâcalled the <a href="#dfn-inherited-time" class="internalDFN">inherited time</a>â and add their
+            parent&mdash;called the <a href="#dfn-inherited-time" class="internalDFN">inherited time</a>&mdash; and add their
             <a title="timed item start time" href="#dfn-timed-item-start-time" class="internalDFN">start time</a> to establish their
             own <a title="local time" href="#dfn-local-time" class="internalDFN">local time space</a> as illustrated below.
           </p>
@@ -2881,8 +2883,8 @@
           <code>!important</code> rules.
         </p>
         <p>
-          For this first part of this operationâcombining <a href="#dfn-intermediate-animation-value" class="internalDFN">intermediate
-          animation values</a> that target the same <a title="target property">property</a>â it is necessary to
+          For this first part of this operation&mdash;combining <a href="#dfn-intermediate-animation-value" class="internalDFN">intermediate
+          animation values</a> that target the same <a title="target property">property</a>&mdash; it is necessary to
           determine both
           <em>how</em> the <a href="#dfn-animation-effect" class="internalDFN">animation effects</a>
           associated with the <a href="#dfn-animation" class="internalDFN">animations</a> are combined
@@ -4290,7 +4292,7 @@
             Other potential event types for a later version:
           </p>
           <ul>
-            <li><em>timingpause</em> â
+            <li><em>timingpause</em> &mdash;
               fired whenever <code>paused</code> is newly true on the associated
               <a href="#dfn-player" class="internalDFN">player</a>.
               <p>
@@ -4298,7 +4300,7 @@
                 paused.<br> Likewise <em>unpause</em>.
               </p>
             </li>
-            <li><em>timingseek</em> â
+            <li><em>timingseek</em> &mdash;
               fired whenever <code>currentTime</code> is set on the
               <a href="#dfn-player" class="internalDFN">player</a> associated with a <a href="#dfn-timed-item" class="internalDFN">timed item</a>.
               <p>
@@ -4307,7 +4309,7 @@
                 a seek.
               </p>
             </li>
-            <li><em>timingdirectionchange</em> â
+            <li><em>timingdirectionchange</em> &mdash;
               fired whenever the effective direction of the item changes (due to
               the direction attribute, changes to playbackRate, calling reverse
               etc. on either the item or an ancestor)
@@ -4316,7 +4318,7 @@
                 stop audio when playing backwards.
               </p>
             </li>
-            <li><em>timingnewanimation</em> â
+            <li><em>timingnewanimation</em> &mdash;
               fired whenever a new <a href="#dfn-animation" class="internalDFN">Animation</a> object is created.
               <p>
                 Use case: a timeline debugger. You want to show all animations
@@ -4693,7 +4695,7 @@
           <li>a <a href="#dfn-player" class="internalDFN">player</a> is <a title="seeking" href="#dfn-seeking" class="internalDFN">seeked</a>.</li>
         </ul>
         <p>
-          In the former caseâwhen a <a href="#dfn-timeline" class="internalDFN">timeline</a> is <a title="sampling" href="#dfn-sampling" class="internalDFN">sampled</a>âsince Web Animations put no
+          In the former case&mdash;when a <a href="#dfn-timeline" class="internalDFN">timeline</a> is <a title="sampling" href="#dfn-sampling" class="internalDFN">sampled</a>&mdash;since Web Animations put no
           requirements on the time between successive samples, it is often the
           case  that the moment when a change in state that should produce an
           event is scheduled to occur does not line up with a sample.
@@ -4714,7 +4716,7 @@
           is used and yet is undefined.
         </p>
         <p>
-          For the latter caseâwhen a <a href="#dfn-player" class="internalDFN">player</a> is <a title="seeking" href="#dfn-seeking" class="internalDFN">seeked</a>âthe behavior is defined in <a href="#event-dispatch-and-seeking-a-player" class="sectionRef">section 5.7.2 Event dispatch and seeking a player</a>.
+          For the latter case&mdash;when a <a href="#dfn-player" class="internalDFN">player</a> is <a title="seeking" href="#dfn-seeking" class="internalDFN">seeked</a>&mdash;the behavior is defined in <a href="#event-dispatch-and-seeking-a-player" class="sectionRef">section 5.7.2 Event dispatch and seeking a player</a>.
         </p>
         <p class="todo">
           Make sure we update the previous sample time for a seek/etc.
@@ -4929,9 +4931,9 @@
               <p>
                 This behavior extends only to actual changes to the
                 values.
-                Setting a property to its current valueâfor example, by
+                Setting a property to its current value&mdash;for example, by
                 using the <a href="#script-interface">script
-                interface</a>â does <em>not</em> cause the flag to be set.
+                interface</a>&mdash; does <em>not</em> cause the flag to be set.
               </p>
             </li>
             <li>
@@ -4960,9 +4962,9 @@
             <p>
               It was introduced since in some situations it is useful to
               distinguish between an animation completing normally
-              (<a href="#dfn-timingend" class="internalDFN">timingend</a>âin which case actions that are scheduled
+              (<a href="#dfn-timingend" class="internalDFN">timingend</a>&mdash;in which case actions that are scheduled
               to occur at the end of the animation should be performed) and
-              being prematurely terminated (<a href="#dfn-timingcancel" class="internalDFN">timingcancel</a>âin which
+              being prematurely terminated (<a href="#dfn-timingcancel" class="internalDFN">timingcancel</a>&mdash;in which
               case such actions will generally not be performed).
             </p>
             <p>
@@ -5301,8 +5303,8 @@ Player  playNow(optional TimedItem? source = null);</pre>
             <p>
               A <a href="#dfn-player" class="internalDFN">player</a> can only be associated with at most one <a href="#dfn-timed-item" class="internalDFN">timed
               item</a>, and likewise, a <a href="#dfn-timed-item" class="internalDFN">timed item</a> can only be
-              associatedâeither directly or via an
-              <a href="#dfn-ancestor" class="internalDFN">ancestor</a>âwith at most one <a href="#dfn-player" class="internalDFN">player</a>.
+              associated&mdash;either directly or via an
+              <a href="#dfn-ancestor" class="internalDFN">ancestor</a>&mdash;with at most one <a href="#dfn-player" class="internalDFN">player</a>.
               In order to maintain these invariants, on setting this value, the
               following procedure is performed:
             </p>
@@ -5609,7 +5611,7 @@ timing<span class="sh_symbol">.</span>specified<span class="sh_symbol">.</span>a
           </dd><dt id="widl-TimedItem-player"><code>player</code> of type <span class="idlAttrType"><a href="#idl-def-Player" class="idlType"><code>Player</code></a></span>, readonly, nullable</dt><dd>
             <p>
               The <a href="#dfn-player" class="internalDFN">player</a> associated with this <a href="#dfn-timed-item" class="internalDFN">timed
-              item</a>âeither <a title="directly associated with a player" href="#dfn-directly-associated-with-a-player" class="internalDFN">directly</a> or
+              item</a>&mdash;either <a title="directly associated with a player" href="#dfn-directly-associated-with-a-player" class="internalDFN">directly</a> or
               <a title="indirectly associated with a player" href="#dfn-indirectly-associated-with-a-player" class="internalDFN">indirectly</a>.
               This object can be used to perform play control such as pausing or
               rewinding on this <a href="#dfn-timed-item" class="internalDFN">timed item</a> <em>and all other timed items
