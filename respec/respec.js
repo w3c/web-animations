@@ -1753,7 +1753,11 @@ berjon.respec.prototype = {
         s = s.replace(/\u2014/g, '&amp;mdash;');
         s = s.replace(/\u2018/g, '&amp;lsquo;');
         s = s.replace(/\u2019/g, '&amp;rsquo;');
-        s = s.replace(/\u00d7/g, '&amp;#xd7;')
+        s = s.replace(/\u00d7/g, '&amp;#xd7;');
+        s = s.replace(/\u2265/g, '&amp;ge;');
+        s = s.replace(/\u03C0/g, '&amp;pi;');
+        s = s.replace(/\u2718/g, '&amp;#x2718;');
+        s = s.replace(/\u2714/g, '&amp;#x2714;');
         return s;
     }
 };
