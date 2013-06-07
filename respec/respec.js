@@ -1751,6 +1751,8 @@ berjon.respec.prototype = {
         s = s.replace(/"/g,'&quot;');
         s = s.replace(/</g,'&lt;');
         s = s.replace(/\u2014/g, '&amp;mdash;');
+        s = s.replace(/\u2018/g, '&amp;lsquo;');
+        s = s.replace(/\u2019/g, '&amp;rsquo;');
         return s;
     }
 };

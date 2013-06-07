@@ -186,7 +186,7 @@
       <p class="caption">
         Overview of the operation of the Web Animations model.<br>
         The current time is input to the timing model which produces a time
-        fraction and iteration index.<br>
+        fraction and an iteration index.<br>
         These parameters are used as input to the animation model which produces
         the values to apply.<br>
       </p>
@@ -219,7 +219,7 @@
         This section describes and defines the behavior of the Web Animations
         timing model.
         <a href="#dfn-timing-event" class="internalDFN">Timing events</a>, however, which are also a feature of the timing
-        model are described separately in <a href="#timing-events" class="sectionRef">section 5. Timing events</a>.
+        model, are described separately in <a href="#timing-events" class="sectionRef">section 5. Timing events</a>.
       </p>
     <div class="informative section" id="the-timing-model-at-a-glance">
       <h3><span class="secno">3.1 </span>The timing model at a glance</h3><div class="informative-bg"><p><em>This section is non-normative.</em></p>
@@ -245,7 +245,7 @@
             real-world time, animations will progress at an identical rate
             regardless of the capabilities of the device running them.
           </dd>
-          <dt>Direction agnostic</dt>
+          <dt>Direction-agnostic</dt>
           <dd>
             Since the sequence of inputs is insignificant, the model is
             directionless.
@@ -265,8 +265,8 @@
           timing model.
         </p>
         <p>
-          Firstly, events are fired when, for example, one sample falls
-          on the opposite side of an animation's interval boundary to the
+          Firstly, <a href="#dfn-timing-event" class="internalDFN">timing events</a> are fired when, for example, one sample
+          falls on the opposite side of an animation's interval boundary to the
           previous sample.
           This is certainly stative behavior.
           However, events should be considered as a layer added on top of the
@@ -276,8 +276,8 @@
         <p>
           The other exception to this stateless behavior is that a number of
           methods defined in the <a href="#script-interface">programming
-          interface</a> to the model provide play control such as pausing and
-          reversing an item.
+          interface</a> to the model provide play control such as pausing
+          an item.
           These methods are defined in terms of the time at which they are
           called and are therefore stative.
           These methods are provided primarily for convenience and are not part
@@ -312,7 +312,7 @@
         <p>
           A consequence of this hierarchical arrangement is that complex
           animation arrangements can be reversed, scheduled, accelerated and so
-          on, as a whole unit since the manipulations applied to the parent
+          on as a whole unit since the manipulations applied to the parent
           cascade down to its <a href="#dfn-descendant" class="internalDFN">descendants</a>.
           Furthermore, since time has a common source, it is easy to synchronize
           animations.
@@ -427,12 +427,16 @@
           this occurs between the <em>domComplete</em> and
           <em>loadEventStart</em> timings.
         </p>
+        <div class="issue">
+          This is not correct.
+          We need a means to start animations prior to document load.
+        </div>
         <p>
           Since the <a href="#dfn-document-timeline" class="internalDFN">document timeline</a> is tied to the <a href="#dfn-global-clock" class="internalDFN">global clock</a>
           by a fixed offset, <a href="#dfn-time-value" class="internalDFN">time values</a> reported by the <a href="#dfn-document-timeline" class="internalDFN">document
           timeline</a> increase monotonically.
           Furthermore, since no scaling is applied, these <a href="#dfn-time-value" class="internalDFN">time values</a>
-          represent wall-clock seconds.
+          are proportional to wall-clock seconds.
         </p>
       </div>
     </div>
@@ -477,7 +481,7 @@
       <div id="the-current-time-of-a-player" class="section">
         <h4><span class="secno">3.5.1 </span>The current time of a player</h4>
         <p>
-          <a href="#dfn-player" class="internalDFN">Players</a> also provide a <a href="#dfn-time-value" class="internalDFN">time value</a> to their <a href="#dfn-source-content" class="internalDFN">source
+          <a href="#dfn-player" class="internalDFN">Players</a> provide a <a href="#dfn-time-value" class="internalDFN">time value</a> to their <a href="#dfn-source-content" class="internalDFN">source
           content</a> called the player's <dfn id="dfn-current-time">current time</dfn>.
           The calculation of the <a href="#dfn-current-time" class="internalDFN">current time</a> is as follows:
         </p>
@@ -494,7 +498,7 @@
           <li><var>timeline time</var> is the current <a href="#dfn-time-value" class="internalDFN">time value</a> of the
           <a href="#dfn-timeline" class="internalDFN">timeline</a> with which this <a href="#dfn-player" class="internalDFN">player</a> is associated.</li>
           <li><var>start time</var> is the player's <a title="player start time" href="#dfn-player-start-time" class="internalDFN">start time</a>.</li>
-          <li><var>playback rate</var> is the <a title="player playback rate" href="#dfn-player-playback-rate" class="internalDFN">playback rate</a> value described in <a href="#speed-control" class="sectionRef">section 3.5.3 Speed control</a>.</li>
+          <li><var>playback rate</var> is the player's <a title="player playback rate" href="#dfn-player-playback-rate" class="internalDFN">playback rate</a> value described in <a href="#speed-control" class="sectionRef">section 3.5.3 Speed control</a>.</li>
           <li><var>time drift</var> is the <a href="#dfn-time-drift" class="internalDFN">time drift</a> value described in
           <a href="#seeking-and-pausing" class="sectionRef">section 3.5.2 Seeking and pausing</a>.</li>
         </ul>
@@ -505,9 +509,10 @@
         <p>
           It is often useful to treat the <a href="#dfn-current-time" class="internalDFN">current time</a> as zero when it
           would otherwise be <code>null</code>.
-          Hence we define the <dfn id="dfn-effective-current-time">effective current time</dfn> as being equal
-          to <a href="#dfn-current-time" class="internalDFN">current time</a> unless it is <code>null</code>, in which case
-          the <var>effective current time</var> be zero.
+          We define the <dfn id="dfn-effective-current-time">effective current time</dfn> as being equal
+          to <a href="#dfn-current-time" class="internalDFN">current time</a> unless the <a href="#dfn-current-time" class="internalDFN">current time</a> is
+          <code>null</code>,
+          in which case the <var>effective current time</var> is zero.
         </p>
         <p>
           The procedure for performing manual updates to the <a href="#dfn-current-time" class="internalDFN">current time</a>
@@ -713,7 +718,7 @@
             </li>
           </ol>
           <p>
-            The timing events queued when a seek is performed are
+            The <a href="#dfn-timing-event" class="internalDFN">timing events</a> queued when a seek is performed are
             described in <a href="#event-dispatch-and-seeking-a-player" class="sectionRef">section 5.7.2 Event dispatch and seeking a player</a>.
           </p>
         </div>
@@ -1155,13 +1160,13 @@
         </div>
         <p class="caption">
           Examples of various fill modes and the states produced.<br>
-          (a) fill mode ânoneâ. The timed item has no effect outside
+          (a) fill mode &lsquo;none&rsquo;. The timed item has no effect outside
               its active interval.<br>
-          (b) fill mode âforwardsâ. After the active interval has
+          (b) fill mode &lsquo;forwards&rsquo;. After the active interval has
               finished, the timed value continues to maintain a fill value.<br>
-          (c) fill mode âbackwardsâ. The timed item produces a fill
+          (c) fill mode &lsquo;backwards&rsquo;. The timed item produces a fill
               value until the start of the active interval.<br>
-          (d) fill mode âbothâ. Both before and after the active
+          (d) fill mode &lsquo;both&rsquo;. Both before and after the active
               interval the timed item produces a fill value.
         </p> 
         <p class="note">
@@ -3651,9 +3656,9 @@
         <div class="note">
           <p>
             [<cite><a class="bibref" rel="biblioentry" href="#bib-CSS3-TRANSITIONS">CSS3-TRANSITIONS</a></cite>] requires future CSS specifications to provide
-            an âanimatable:â line for each newly defined property.
+            an &lsquo;animatable:&rsquo; line for each newly defined property.
             This line defines whether properties can animate and how that
-            animation occurs. Note that âanimatable: noneâ in this
+            animation occurs. Note that &lsquo;animatable: none&rsquo; in this
             regard merely means that a property is not continuously animatable
             - that is, not interpolable.
           </p>
@@ -3747,8 +3752,8 @@
         <p>
           Some properties accept a combination of typed values and keywords.
           For example, border-width accepts both <code>&lt;length&gt;</code>
-          values and âthickâ, âmediumâ and
-          âthinâ keywords. <a href="#animation-of-keywords-and-primitive-types" class="sectionRef">section 4.6.4 Animation of keywords and primitive types</a> describes how to deal with interpolation to
+          values and &lsquo;thick&rsquo;, &lsquo;medium&rsquo; and
+          &lsquo;thin&rsquo; keywords. <a href="#animation-of-keywords-and-primitive-types" class="sectionRef">section 4.6.4 Animation of keywords and primitive types</a> describes how to deal with interpolation to
           and/or from a keyword value.
         </p>
         <p>
@@ -3808,10 +3813,10 @@
           are related by a constant scalar multiple then the result is
           evaluated as defined in [<cite><a class="bibref" rel="biblioentry" href="#bib-CSS3-VALUES">CSS3-VALUES</a></cite>] before being returned.
           </p><div class="annotation">
-            The CSS âpxâ unit is related to the CSS âinâ
+            The CSS &lsquo;px&rsquo; unit is related to the CSS &lsquo;in&rsquo;
             unit by a constant scalar multiple of 96 (i.e. 96px = 1in). On the
-            other hand, the CSS âemâ unit is not related to the
-            âinâ unit by a constant scalar multiple.
+            other hand, the CSS &lsquo;em&rsquo; unit is not related to the
+            &lsquo;in&rsquo; unit by a constant scalar multiple.
           </div>
           <div class="note">
             [<cite><a class="bibref" rel="biblioentry" href="#bib-CSS3-TRANSITIONS">CSS3-TRANSITIONS</a></cite>] defines the following default formula for interpolation:
@@ -3968,7 +3973,7 @@
           A keyword value may be defined as equivalent to a primitive type,
           either directly, or via some intermediate calculation. For example,
           for the background-position property, [<cite><a class="bibref" rel="biblioentry" href="#bib-CSS21">CSS21</a></cite>] defines the
-          âtopâ keyword to be equivalent to â0%â. In
+          &lsquo;top&rsquo; keyword to be equivalent to &lsquo;0%&rsquo;. In
           these cases, the equivalent primitive type shall be used, and
           interpolation and addition performed as defined in <a href="#animation-of-like-types" class="sectionRef">section 4.6.2 Animation of like types</a> or <a href="#animation-of-non-matching-primitive-types" class="sectionRef">section 4.6.3 Animation of non-matching primitive types</a>.
         </p>
@@ -5741,8 +5746,8 @@ timing<span class="sh_symbol">.</span>specified<span class="sh_symbol">.</span>a
                 Note that the <code>iterationCount</code> is effectively
                 <em>added</em> to the <code>iterationStart</code> such that
                 a timed item with an <code>iterationStart</code> of
-                â0.5â and <code>iterationCount</code> of
-                â2â would still repeat twice however it would begin
+                &lsquo;0.5&rsquo; and <code>iterationCount</code> of
+                &lsquo;2&rsquo; would still repeat twice however it would begin
                 and end half-way through the timed item's <a href="#dfn-iteration-interval" class="internalDFN">iteration
                 interval</a>.
               </p>
@@ -5750,7 +5755,7 @@ timing<span class="sh_symbol">.</span>specified<span class="sh_symbol">.</span>a
                 Setting the <code>iterationStart</code> to a value greater than
                 or equal to one is typically only useful in combination with an
                 animation effect that has an <code>accumulate</code> property of
-                âaccumulateâ.
+                &lsquo;accumulate&rsquo;.
               </p>
             </div>
           </dd><dt id="widl-Timing-iterationCount"><code>iterationCount</code> of type <span class="idlAttrType"><a>unrestricted double</a></span></dt><dd>
@@ -5839,9 +5844,9 @@ timing<span class="sh_symbol">.</span>specified<span class="sh_symbol">.</span>a
             <p>
               In addition to the values defined in CSS Transitions, this method
               extends the <code>steps()</code> function notation to allow
-              âmiddleâ as a transition point keyword (e.g.
+              &lsquo;middle&rsquo; as a transition point keyword (e.g.
               <code>steps(3, middle)</code>).
-              Similarly, the keyword âsteps-middleâ is recognized
+              Similarly, the keyword &lsquo;steps-middle&rsquo; is recognized
               and given the meaning <code>steps(1, middle)</code>.
             </p>
             <p>
@@ -6432,7 +6437,7 @@ interface <span class="idlInterfaceID">Animation</span> : <span class="idlSuperc
             The <a href="#dfn-animation" class="internalDFN">Animation</a> constructor offers a number of approaches to
             creating a new <a href="#dfn-animation" class="internalDFN">Animation</a> object.
             At its simplest, an <a href="#dfn-animation" class="internalDFN">Animation</a> object that changes the
-            âleftâ property of <var>elem</var> to 100 over three
+            &lsquo;left&rsquo; property of <var>elem</var> to 100 over three
             seconds can be achieved as follows:
           </p>
           <pre class="example sh_javascript sh_sourceCode"><span class="sh_keyword">var</span> anim <span class="sh_symbol">=</span> <span class="sh_keyword">new</span> <span class="sh_function">Animation</span><span class="sh_symbol">(</span>elem<span class="sh_symbol">,</span> <span class="sh_cbracket">{</span> left<span class="sh_symbol">:</span> <span class="sh_string">'100px'</span> <span class="sh_cbracket">}</span><span class="sh_symbol">,</span> <span class="sh_number">3</span><span class="sh_symbol">);</span></pre>
@@ -6491,7 +6496,7 @@ interface <span class="idlInterfaceID">Animation</span> : <span class="idlSuperc
             This is particularly useful in combination with other <a title="animation" href="#dfn-animation" class="internalDFN">animations</a> or <a href="#dfn-timed-item" class="internalDFN">timed
             items</a>.
             For example, fading an element before switching
-            âdisplayâ to ânoneâ can be achieved as
+            &lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
             follows,
           </p>
           <pre class="example sh_javascript sh_sourceCode"><span class="sh_keyword">new</span> <span class="sh_function">SeqGroup</span><span class="sh_symbol">(</span>
@@ -6530,7 +6535,7 @@ interface <span class="idlInterfaceID">PseudoElementReference</span> {
             Creates a new pseudo-element reference using <var>element</var> as
             the <a href="http://www.w3.org/TR/css3-selectors/#subject">subject</a>
             and <var>pseudoElement</var> as the pseudo-element to match (e.g.
-            â<code>::first-line</code>â).
+            &lsquo;<code>::first-line</code>&rsquo;).
           <table class="parameters"><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">element</td><td class="prmType"><code><a href="#idl-def-Element" class="idlType"><code>Element</code></a></code></td><td class="prmNullFalse">â</td><td class="prmOpt prmOptFalse">â</td><td class="prmDesc"></td></tr><tr><td class="prmName">pseudoElement</td><td class="prmType"><code><a>DOMString</a></code></td><td class="prmNullFalse">â</td><td class="prmOpt prmOptFalse">â</td><td class="prmDesc"></td></tr></table></dd></dl></div><div id="attributes-7" class="section"><h4><span class="secno">6.11.2 </span>Attributes</h4><dl class="attributes"><dt id="widl-PseudoElementReference-element"><code>element</code> of type <span class="idlAttrType"><a href="#idl-def-Element" class="idlType"><code>Element</code></a></span></dt><dd>
             The element used as the <a href="http://www.w3.org/TR/css3-selectors/#subject">subject</a> for
             matching a pseudo-element.
@@ -6544,7 +6549,7 @@ interface <span class="idlInterfaceID">PseudoElementReference</span> {
             </dl>
           </dd><dt id="widl-PseudoElementReference-pseudoElement"><code>pseudoElement</code> of type <span class="idlAttrType"><a>DOMString</a></span></dt><dd>
             The pseudo-element including the initial colon(s). For example,
-            â<code>::after</code>â.
+            &lsquo;<code>::after</code>&rsquo;.
             <p>Exceptions:</p>
             <dl class="exceptions">
               <dt>DOMException of type
@@ -7681,14 +7686,14 @@ interface <span class="idlInterfaceID">TimingEvent</span> : <span class="idlSupe
           </li><li>a <span class="property">position</span>: <span class="position">minus</span>, <span class="position">zero</span>,
             or <span class="position">plus</span>, and
           </li><li>a Boolean flag indicating if the mark represents the endpoint of
-              an interval or not (regardless of which âendâ of the
+              an interval or not (regardless of which &lsquo;end&rsquo; of the
               interval the mark represents)
         </li></ul>
         <p>
           We can use subscript notation to indicate these properties.
           For example, <var class="timeMark">t<sub>minus|end</sub></var>.
           If the time mark does not represent an interval endpoint, the
-          â|endâ part of the subscript text is dropped, as in
+          &lsquo;|end&rsquo; part of the subscript text is dropped, as in
           <var class="timeMark">t<sub>minus</sub></var>.
         </p>
         <p>
@@ -7818,7 +7823,7 @@ interface <span class="idlInterfaceID">TimingEvent</span> : <span class="idlSupe
               associated with the <a href="#dfn-player" class="internalDFN">player</a> that is initialized to <span class="timeMark">0<sub>zero|end</sub></span> when the
               <a href="#dfn-player" class="internalDFN">player</a> is first created.
           </li><li>Let <var>sample time</var> be the result of calculating the
-              <a href="#dfn-player" class="internalDFN">player</a>âs <a href="#dfn-current-time" class="internalDFN">current time</a> at timeline time <var>t</var>.
+              <a href="#dfn-player" class="internalDFN">player</a>&rsquo;s <a href="#dfn-current-time" class="internalDFN">current time</a> at timeline time <var>t</var>.
           </li><li>Let <var>sample mark</var> be <var class="timeMark">sample
               time<sub>plus</sub></var>.
           </li><li>Let <var>events</var> be an empty sequence of <a href="#dfn-timing-event" class="internalDFN">timing
@@ -7902,9 +7907,9 @@ interface <span class="idlInterfaceID">TimingEvent</span> : <span class="idlSupe
             return <var>events</var>.
           </li><li>If |<var class="timeMark">active start</var>| =
               |<var class="timeMark">active end</var>| and the <a href="#dfn-timed-item" class="internalDFN">timed
-              item</a>âs <a href="#dfn-iteration-count" class="internalDFN">iteration count</a> is infinity, let
+              item</a>&rsquo;s <a href="#dfn-iteration-count" class="internalDFN">iteration count</a> is infinity, let
               <var>effective iteration count</var> be 1, otherwise let it be
-              the <a href="#dfn-timed-item" class="internalDFN">timed item</a>âs <a href="#dfn-iteration-count" class="internalDFN">iteration count</a>.
+              the <a href="#dfn-timed-item" class="internalDFN">timed item</a>&rsquo;s <a href="#dfn-iteration-count" class="internalDFN">iteration count</a>.
           </li><li>Let <var>iteration times</var> be a sequence of <a href="#dfn-time-value" class="internalDFN">time
               values</a> populated with the results of calculating |<var class="timeMark">active start</var>| + <var>i</var> * <a href="#dfn-iteration-duration" class="internalDFN">iteration
               duration</a> for each integer <var>i</var> in the range 0 &lt;
