@@ -1750,6 +1750,7 @@ berjon.respec.prototype = {
         s = s.replace(/>/g,'&gt;');
         s = s.replace(/"/g,'&quot;');
         s = s.replace(/</g,'&lt;');
+	s = s.replace(/\u2014/g, '&mdash;');
         return s;
     }
 };
