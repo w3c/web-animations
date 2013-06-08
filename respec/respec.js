@@ -2353,7 +2353,7 @@ berjon.WebIDLProcessor.prototype = {
     makeMarkup:    function (summaryOnly /*=false*/) {
         var df = sn.documentFragment();
         var pre = sn.element("pre", { "class": "idl" }, df);
-        pre.innerHTML = this.writeAsWebIDL(this.parent, 0);
+        pre.innerHTML = this.writeAsWebIDL(this.parent, 0, summaryOnly);
         if (typeof summaryOnly === "undefined" || summaryOnly === false) {
             df.appendChild(this.writeAsHTML(this.parent));
         }
@@ -2656,12 +2656,20 @@ berjon.WebIDLProcessor.prototype = {
         // return sn.idThatDoesNotExist(id);
     },
     
-    writeAsWebIDL:    function (obj, indent) {
+    writeAsWebIDL:    function (obj, indent, summaryOnly /* = false */) {
+        console.log(summaryOnly);
+        function id(refId) {
+            console.log(refId, summaryOnly);
+            return summaryOnly ? (refId + '-s') : (refId);
+        }
+        if (summaryOnly) {
+            console.log('woo');
+        }
         if (obj.type == "module") {
             if (obj.id == "outermost") {
                 var fragments = [];
                 for (var i = 0; i < obj.children.length; i++) {
-                  fragments.push(this.writeAsWebIDL(obj.children[i], indent));
+                  fragments.push(this.writeAsWebIDL(obj.children[i], indent, summaryOnly));
                 }
                 return fragments.join("\n");
             }
@@ -2677,7 +2685,7 @@ berjon.WebIDLProcessor.prototype = {
         else if (obj.type == "typedef") {
             var nullable = obj.nullable ? "?" : "";
             var arr = obj.array ? "[]" : "";
-            var str = "<span class='idlTypedef' id='idl-def-" + obj.refId +
+            var str = "<span class='idlTypedef' id='idl-def-" + id(obj.refId) +
                       "'>typedef ";
             if (obj.extendedAttributes)
                 str += "[<span class='extAttr'>" + obj.extendedAttributes +
@@ -2692,7 +2700,7 @@ berjon.WebIDLProcessor.prototype = {
         else if (obj.type == "callback") {
             var nullable = obj.nullable ? "?" : "";
             var arr = obj.array ? "[]" : "";
-            var str = "<span class='idlCallback' id='idl-def-" + obj.refId +
+            var str = "<span class='idlCallback' id='idl-def-" + id(obj.refId) +
                       "'>callback <span class='idlCallbackID'>" + obj.id +
                       "</span> = <span class='idlCallbackType'>" +
                       this.writeDatatype(obj.datatype) + "</span>" +
@@ -2704,9 +2712,9 @@ berjon.WebIDLProcessor.prototype = {
         else if (obj.type == "enum") {
 			var enm = [];
 			for (var i = 0; i < obj.children.length; i++) {
-				enm.push('<a href="#widl-' + obj.refId + '-' + obj.children[i].refId + '">' + obj.children[i].value + '</a>');
+				enm.push('<a href="#widl-' + id(obj.refId) + '-' + id(obj.children[i].refId) + '">' + obj.children[i].value + '</a>');
 			};
-            return  "<span class='idlEnum' id='idl-def-" + obj.refId + "'>enum <span class='idlEnumName'>" + 
+            return  "<span class='idlEnum' id='idl-def-" + id(obj.refId) + "'>enum <span class='idlEnumName'>" + 
                     obj.id +
                     "</span> {<span class='idlEnumValues'> \"" + enm.join('", "') + "\" </span>};</span>\n";
         }
@@ -2714,7 +2722,7 @@ berjon.WebIDLProcessor.prototype = {
             return  "<span class='idlImplements'><a>" + obj.id + "</a> implements <a>" + obj.datatype + "</a>;";
         }
         else if (obj.type == "interface") {
-            var str = "<span class='idlInterface' id='idl-def-" + obj.refId + "'>";
+            var str = "<span class='idlInterface' id='idl-def-" + id(obj.refId) + "'>";
             // prepare constructors string
             var ctors = [];
             var curLnk = "widl-ctor-";
@@ -2778,7 +2786,7 @@ berjon.WebIDLProcessor.prototype = {
             return str;
         }
         else if (obj.type == "exception") {
-            var str = "<span class='idlException' id='idl-def-" + obj.refId + "'>";
+            var str = "<span class='idlException' id='idl-def-" + id(obj.refId) + "'>";
             if (obj.extendedAttributes) str += this._idn(indent) + "[<span class='extAttr'>" + obj.extendedAttributes + "</span>]\n";
             str += this._idn(indent) + "exception <span class='idlExceptionID'>" + obj.id + "</span> {\n";
             var maxAttr = 0, maxConst = 0, hasRO = false;
@@ -2799,7 +2807,7 @@ berjon.WebIDLProcessor.prototype = {
             return str;
         }
         else if (obj.type == "dictionary") {
-            var str = "<span class='idlDictionary' id='idl-def-" + obj.refId + "'>";
+            var str = "<span class='idlDictionary' id='idl-def-" + id(obj.refId) + "'>";
             if (obj.extendedAttributes) str += this._idn(indent) + "[<span class='extAttr'>" + obj.extendedAttributes + "</span>]\n";
             str += this._idn(indent) + "dictionary <span class='idlDictionaryID'>" + obj.id + "</span>";
             if (obj.superclasses && obj.superclasses.length) str += " : " +
