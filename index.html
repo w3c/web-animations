@@ -6,6 +6,8 @@
     <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
     <script src="respec/respec.js" class="remove"></script>
     <script src="respec/js/sh_javascript.min.js" class="remove"></script>
+    <script src="../shared/MathJax/MathJax.js?config=MML_SVGorMML,local/local"
+      type="text/javascript"></script>
     <script class="remove">
       var respecConfig = {
         // specification status (e.g. WD, LCWD, NOTE, etc.). If in doubt use
@@ -2071,8 +2073,8 @@
           for the <a>timed item</a> to progress in a series of distinct steps.
         </p>
         <p>
-          For such situations Web Animations provides a variety of <a>timing
-          functions</a> that scale the progress of a <a>timed item</a>.
+          For such situations Web Animations provides <a>timing functions</a>
+          that scale the progress of a <a>timed item</a>.
         </p>
         <p>
           <a>Timing functions</a> take an input time fraction and produce
@@ -2091,8 +2093,7 @@
         </p>
         <p>
           Such <a>timing functions</a> can be applied to an iteration of
-          a <a>timed item</a> as a whole or to a segment of a <a>keyframe
-          animation effect</a>.
+          a <a>timed item</a>.
         </p>
       </section>
       <section>
@@ -2129,9 +2130,10 @@
             segments.
           </p>
           <p>
-            <a href='http://lists.w3.org/Archives/Public/public-fx/2013AprJun/0184.html'>
-            See Section 5 (Chained timing functions) of minuted discussion
-            </a>
+            See <a
+            href='http://lists.w3.org/Archives/Public/public-fx/2013AprJun/0184.html'>section
+            5 (Chained timing functions) of minuted discussion from Tokyo
+              2013 F2F</a>.
           </p>
         </div>
       </section>
@@ -2190,8 +2192,8 @@
         </p>
         <div class="issue">
           <p>
-            Should we extend <code>cubic-bezier</code> to allow multiple
-            segments, using syntax such as the following:
+            It has been proposed to extend <code>cubic-bezier</code> to allow
+            multiple segments, using syntax such as the following:
           </p>
           <pre>
             <code>cubic-bezier( [ &lt;number&gt;{6} ; ]* &lt;number&gt;{4} )</code>
@@ -2252,120 +2254,211 @@
         </p>
       </section>
       <section>
-        <h3>Paced Timing</h3>
+        <h3>Paced timing</h3>
         <div class='todo'>
           <p>Insert a nice diagram showing how this works</p>
         </div>
         <p>
-          A <dfn>paced timing function</dfn> is a type of <a>timing function</a>
-          that maps linear time onto time values that produce constant-speed
-          changes in the <a>referenced property</a> for the target effect over
-          the period of time for which the paced timing function applies.
+          A <dfn>paced timing function</dfn> scales the input time such that the
+          resulting time values cause a <dfn>referenced property</dfn> that is
+          animated by a specified <a>animation effect</a>, referred to as the
+          <dfn>paced effect</dfn>,
+          to change at a constant rate over the period of time for which the
+          paced timing function applies.
         </p>
         <p>
-          The <dfn>referenced property</dfn> of a <a>paced timing function</a>
-          is the property name provided within the parantheses of the string
-          definition of the function.
+          The syntax for specifying a paced timing function is:
+          <code>paced(<a
+          href="http://www.w3.org/TR/css3-syntax/#property">&lt;property&gt;</a>)</code>.
+          The <code>&lt;property&gt;</code> argument is the <a>referenced
+          property</a> of the <a>paced timing function</a>.
         </p>
         <div class='informative'>
           <p>
-            For example, if the string specifying the <a>paced timing
-            function</a> is <code>paced(transform)</code> then the 
-            <a>referenced property</a> will be <code>transform</code>
+            For example, <code>paced(transform)</code> would indicate that the
+            time should be scaled such that changes to the <span
+            class="prop-name">transform</span> property occur at a constant
+            rate.
           </p>
         </div>
         <p>
-          If the <a>referenced property</a> is not modified by the target
-          effect, if the referenced property is not interpolable, or if the
-          referenced property is not a valid property, then the <a>paced timing
-          function</a> is treated as linear for the purpose of timing model
-          calculations.
+          The <a>paced effect</a> is the <a>animation effect</a> specified on
+          the same <a>timed item</a> where the <a>paced timing function</a> is
+          applied.
+          As a result, <a>paced timing functions</a> can only be used on
+          <a>animations</a> and not other types of <a>timed items</a>.
         </p>
         <p>
-          A <a>paced timing function</a> is defined by the following process:
-          <ul>
+          If <em>any</em> of the following conditions is true, the
+          <a>linear timing function</a> is used for the purpose of timing model
+          calculations:
+        </p>
+        <ul>
+          <li>there is no <a>paced effect</a> (because the <a>timed item</a> is
+              not an <a>animation</a> or does not specify an <a>animation
+              effect</a>), or
+          <li>the <a>referenced property</a> is not one of the <a>target
+              properties</a> of the <a>paced effect</a>, or
+          <li>the <a>referenced property</a> is not <a>interpolable</a>, or
+          <li>the <a>referenced property</a> is not a valid property.
+        </ul>
+        <section>
+          <h2>Evaluating a paced timing function</h2>
+          <p>
+            The result of evaluating a <a>paced timing function</a> at
+            <var>input time</var> is calculated as follows:
+          </p>
+          <ol>
             <li>
-              Let the <var>length list</var> be the list of lengths of 
-              inter-keyframe segments or path elements, with length defined
-              as below.
-            </li>
+              Let <var>length list</var> be a sequence of length values
+              calculated using the rules defined in <a
+              href="#calculating-the-length-between-two-property-values"
+              class="sectionRef"></a>
+              for the <a>referenced property</a> between each pair of keyframes
+              that refers to the <a>referenced property</a> in a <a>keyframe
+              animation effect</a>,
+              or between each path segment in a <a>path animation effect</a>.
+              <p class="issue">
+                Need to confirm this approach is actually backwards-compatible
+                with SVG with regards to motion-path behavior.
+              </p>
             <li>
-              Let the <var>total length</var> be the sum of lengths in the
+              If the number of items in <var>length list</var> is 1 or less let
+              the output of the timing function be <var>input time</var> and
+              terminate these steps.
+            <li>
+              Let <var>total length</var> be the sum of values in
               <var>length list</var>.
-            </li>
             <li>
-              For any given input <a>time fraction</a>, let the
-              <var>distance</var> be given by the formula:
-              <code><a>time fraction</a> &#215; <var>total length</var></code>.
-            </li>
+              If <var>total length</var> is zero let
+              the output of the timing function be <var>input time</var> and
+              terminate these steps.
             <li>
-              Let the <var>current position</var> be initialized to 0.
-            </li>
+              Let <var>distance</var> be
+              <code><var>input time</var> &#215; <var>total length</var></code>.
             <li>
-              Let the <var>current distance</var> be initialized to 0.
-            </li>
+              Let <var>current position</var> be 0.
             <li>
-              Let <var>current length</var> be initialized to the length
-              indexed by <var>current distance</var> in the <var>length list
-              </var>.
-            </li>
+              Let <var>current distance</var> be 0.
             <li>
-              While <var>distance</var> is larger than the
-              amount given by <code><var>current distance</var> + <var>current
-              length</var></code>, increment the <var>current position</var>
-              and increase the <var>current distance</var> by the
-              <var>current length</var>, then update <var>current length</var>
-              to the length in <var>length list</var> indexed by <var>current
-              position</var>.
-            </li>
+              Let <var>current length</var> be the first value in <var>length
+              list</var>.
+            <li>While <var>distance</var> &gt; <code><var>current distance</var>
+              + <var>current length</var></code>, perform the following steps:
+              <ol>
+                <li>Increment <var>current position</var> by 1.
+                <li>Increase <var>current distance</var> by <var>current
+                    length</var>.
+                <li>Let <var>current length</var> be the value at
+                    position <var>current position</var> in <var>length
+                    list</var>.
+              </ol>
             <li>
-              The resulting output <a>time fraction</a> is given by the
-              following formula: 
+              The output of the paced timing function is the result of
+              evaluating:
               <code><var>current distance</var> / <var>total length</var> + 
                 (<var>distance</var> - <var>current distance</var>) / 
                 <var>current length</var></code>
-            </li>
-          </ul>
-        </p>
-        <p>
-          For numeric values, length is defined as the absolute value of the
-          difference between two values. Length is defined for colors by the
-          formula <code>sqrt((ra - rb)^2 + (ga - gb)^2 + (ba - bb)^2 + 
-          255x255x(aa - ab)^2)</code> where the colors between which the length
-          is to be measured are rgba(ra, ga, ba, aa) and rgba(rb, gb, bb, ab)
-          respectively.
-        </p>
-        <p>
-          The definition of length for transform values depends on whether
-          adjacent keyframe values of the transform property have matching
-          first components. If the components are translate functions, then
-          euclidean distance between the two translation vectors is used. 
-          If the components are scale functions, then the absolute difference
-          between the average scale values is used.  If the components are 
-          rotate functions, then the absolute difference between rotation 
-          angles is used.
-        </p>
-        <p>
-          If the components match but are not scale, rotate or translate
-          functions, then the <a>paced timing function</a> is treated as
-          linear for the purpose of timing model calculations.
-        </p>
-        <p>
-          If the components do not match, then interpolation between the 
-          components will require matrix decomposition. In this case the
-          euclidean distance between the translate components of the
-          decomposed matrices provides the length.
-        </p>
-        <div class='informative'>
-          <p>
-            Note that the speed of all inter-keyframe interpolations and
-            all path elements is linear within the keyframe segment or
-            path element.
+          </ol>
+          <p class="issue">
+            Is this algorithm necessary? Would a prose description suffice?
           </p>
-        </div>
-        <p>
-          
-        </p>
+        </section>
+        <section>
+          <h2>Calculating the length between two property values</h2>
+          <p>
+            The length between any two property values depends on the type of
+            values as follows:
+          </p>
+          <dl>
+            <dt>For numeric values,</dt>
+            <dd>
+              length is defined as the absolute value of the
+              difference between two values.
+              <p class="todo">
+                Need to explain how this applies to length values.
+              </p>
+            </dd>
+            <dt>For colors,</dt>
+            <dd>
+              length is defined as the result of evaluating the following
+              expression
+              <math display="block">
+              <mrow>
+                <msqrt>
+                  <msup>
+                    <mrow>
+                      <mfenced open="(" close=")" separators=",">
+                        <mrow><mi>ra</mi><mo>-</mo><mi>rb</mi></mrow></mfenced>
+                    </mrow><mn>2</mn>
+                  </msup>
+                  <mo>+</mo>
+                  <msup>
+                    <mrow>
+                      <mfenced open="(" close=")" separators=",">
+                        <mrow><mi>ga</mi><mo>-</mo><mi>gb</mi></mrow></mfenced>
+                    </mrow><mn>2</mn>
+                  </msup>
+                  <mo>+</mo>
+                  <msup>
+                    <mrow>
+                      <mfenced open="(" close=")" separators=",">
+                        <mrow><mi>ba</mi><mo>-</mo><mi>bb</mi></mrow></mfenced>
+                    </mrow><mn>2</mn>
+                  </msup>
+                  <mo>+</mo>
+                  <mn>255</mn><mo>&times;</mo><mn>255</mn><mo>&times;</mo>
+                  <msup>
+                    <mrow>
+                      <mfenced open="(" close=")" separators=",">
+                        <mrow><mi>aa</mi><mo>-</mo><mi>ab</mi></mrow>
+                      </mfenced>
+                    </mrow><mn>2</mn>
+                  </msup>
+                </msqrt>
+              </mrow>
+              </math>
+              <p>
+                where the colors between which the length is to be measured are
+                <code>rgba(ra, ga, ba, aa)</code> and
+                <code>rgba(rb, gb, bb, ab)</code> respectively.
+              </p>
+            </dd>
+            <dt>For transform values,</dt>
+            <dd>
+              <p>
+                The definition of length for transform values depends on whether
+                adjacent keyframe values of the transform property have matching
+                first components.
+                If the components are translate functions, then euclidean
+                distance between the two translation vectors is used. 
+                If the components are scale functions, then the absolute
+                difference between the average scale values is used.
+                If the components are rotate functions, then the absolute
+                difference between rotation angles is used.
+              </p>
+              <p>
+                If the components match but are not scale, rotate or translate
+                functions, then the <a>linear timing function</a> is used
+                for the purpose of timing model calculations.
+              </p>
+              <p>
+                If the components do not match, then interpolation between the 
+                components will require matrix decomposition.
+                In this case the length is calculated using the euclidean
+                distance between the translate components of the decomposed
+                matrices.
+              </p>
+              <p class="todo">
+                Need a reference for euclidean distance.
+              </p>
+              <p class="todo">
+                This only refers to keyframe values.
+                Need to explain what to do for paths.
+              </p>
+            </dd>
+          </dl>
+        </section>
       </section>
       <section>
         <h3>Calculating the transformed time</h3>
@@ -2378,33 +2471,17 @@
             If the <a>directed time</a> is <code>null</code>,
             return <code>null</code>.
           </li>
-          <li>
-            Scale the <a>directed time</a> as follows:
-            <dl class="switch">
-              <dt>If the <a>timed item</a> has a <a>timing function</a>
-                  associated with it,</dt>
-              <dd>
-                <ol>
-                  <li>Let <var>iteration fraction</var> be the result of
-                      evaluating <code><a>directed time</a> / <a>iteration
-                      duration</a></code> unless <a>iteration duration</a> is
-                      zero, in which case let <var>iteration fraction</var> be
-                      zero.</li>
-                  <li>Let <var>scaled fraction</var> be the result of
-                      evaluating the <a>timed item</a>'s <a>timing function</a>
-                      with <var>iteration fraction</var> as the input time
-                      fraction.
-                  <li>Return the result of evaluating <code><var>scaled
-                      fraction</var> * <a>iteration duration</a></code>.
-                  </li>
-                </ol>
-              </dd>
-              <dt>Otherwise,</dt>
-              <dd>
-                Return the <a>directed time</a>.
-              </dd>
-            </dl>
-          </li>
+          <li>Let <var>iteration fraction</var> be the result of
+              evaluating <code><a>directed time</a> / <a>iteration
+              duration</a></code> unless <a>iteration duration</a> is
+              zero, in which case let <var>iteration fraction</var> be
+              zero.</li>
+          <li>Let <var>scaled fraction</var> be the result of
+              evaluating the <a>timed item</a>'s <a>timing function</a>
+              with <var>iteration fraction</var> as the input time
+              fraction.
+          <li>Return the result of evaluating <code><var>scaled
+              fraction</var> * <a>iteration duration</a></code>.
         </ol>
       </section>
     </section>
