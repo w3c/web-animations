@@ -2721,10 +2721,13 @@
           that schedules its <a>child timed items</a> such that they play
           simultaneously.
         </p>
-        <p>
-          The <a title="timed item start time">start time</a> of a <a>child
-          timed item</a> of a <a>parallel timing group</a> is zero.
-        </p>
+        <section>
+          <h4>The start time of children of a parallel timing group</h4>
+          <p>
+            The <a title="timed item start time">start time</a> of a <a>child
+            timed item</a> of a <a>parallel timing group</a> is zero.
+          </p>
+        </section>
         <section>
           <h4>The intrinsic iteration duration of a parallel timing group</h4>
           <p>
@@ -2792,34 +2795,11 @@
         <section>
           <h4>The start time of children of a sequence timing group</h4>
           <p>
-            The <a title="timed item start time">start time</a> of the <a>child
-            timed items</a> of a <a>sequence timing group</a> is established
-            according to the following procedure.
+            The <a title="timed item start time">start time</a> of a <a>child
+            timed item</a> of a <a>sequence timing group</a> is the <a>end
+            time</a> of the child's <a>previous sibling</a>.
+            If the child has no <a>previous sibling</a> the start time is zero.
           </p>
-          <ol>
-            <li>Let the <var>accumulated start time</var> be zero.
-            <li>
-              <p>
-                Iterate over each <a>child timed item</a> in the group beginning
-                with the first item in the group and proceed to the last.
-                For each child perform the following steps:
-              </p>
-              <ol>
-                <li>
-                  Let <var>child</var> be the current child.
-                </li>
-                <li>
-                  Let the <a title="timed item start time">start time</a> of
-                  <var>child</var> be <var>accumulated start time</var>.
-                </li>
-                <li>
-                  Let <var>accumulated start time</var> be
-                  the <a>end time</a> of <var>child</var> after updating
-                  its <a title="timed item start time">start time</a>.
-                </li>
-              </ol>
-            </li>
-          </ol>
           <div class="note">
             <p>
               When the <a>active duration</a> is positive infinity the behavior
@@ -2831,7 +2811,7 @@
               that occur later in the sequence will not play.
             </p>
             <p>
-              Similarly, the above procedure does not restrict
+              Similarly, the above definition does not restrict
               <a title="timed item start time">start times</a> to positive
               values and hence some children may not play due to a negative
               <a>start delay</a> on children that occur earlier in the group
@@ -2872,7 +2852,7 @@
             group</a> is equivalent to the <a
             title="timed item start time">start time</a> of a hypothetical
             <a>child timed item</a> appended to the group's children calculated
-            according to the procedure described in <a
+            according to the definition in <a
             href="#the-start-time-of-children-of-a-sequence-timing-group"
             class="sectionRef"></a> unless that produces a negative value, in
             which case the <a>intrinsic iteration duration</a> is zero.
