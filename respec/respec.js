@@ -313,9 +313,6 @@ berjon.respec.prototype = {
         if (dt && dt.publicId) {
             str += " PUBLIC '" + dt.publicId + "' '" + dt.systemId + "'";
         }
-        else { // when HTML5 is allowed we can remove this
-            str += " PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' 'http://www.w3.org/TR/html4/loose.dtd'";
-        }
         str += ">\n";
         str += "<html";
         var ats = document.documentElement.attributes;
@@ -2657,13 +2654,8 @@ berjon.WebIDLProcessor.prototype = {
     },
     
     writeAsWebIDL:    function (obj, indent, summaryOnly /* = false */) {
-        console.log(summaryOnly);
         function id(refId) {
-            console.log(refId, summaryOnly);
             return summaryOnly ? (refId + '-s') : (refId);
-        }
-        if (summaryOnly) {
-            console.log('woo');
         }
         if (obj.type == "module") {
             if (obj.id == "outermost") {
