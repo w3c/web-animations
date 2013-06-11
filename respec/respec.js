@@ -793,9 +793,9 @@ berjon.respec.prototype = {
             "<a href='http://www.w3.org/Consortium/Legal/ipr-notice#Copyright'>Copyright</a> &copy; " ;
         if (this.copyrightStart && this.copyrightStart != this.publishDate.getFullYear()) header += this.copyrightStart + '-';
         header += this.publishDate.getFullYear();
-        header += " <a href='http://www.w3.org/'><acronym title='World Wide Web Consortium'>W3C</acronym></a><sup>&reg;</sup> " +
-            "(<a href='http://www.csail.mit.edu/'><acronym title='Massachusetts Institute of Technology'>MIT</acronym></a>, " +
-            "<a href='http://www.ercim.eu/'><acronym title='European Research Consortium for Informatics and Mathematics'>ERCIM</acronym></a>, " +
+        header += " <a href='http://www.w3.org/'><abbr title='World Wide Web Consortium'>W3C</abbr></a><sup>&reg;</sup> " +
+            "(<a href='http://www.csail.mit.edu/'><abbr title='Massachusetts Institute of Technology'>MIT</abbr></a>, " +
+            "<a href='http://www.ercim.eu/'><abbr title='European Research Consortium for Informatics and Mathematics'>ERCIM</abbr></a>, " +
             "<a href='http://www.keio.ac.jp/'>Keio</a>), All Rights Reserved. " +
             "W3C <a href='http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer'>liability</a>, " + 
             "<a href='http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks'>trademark</a> and " +
@@ -950,13 +950,13 @@ berjon.respec.prototype = {
                 header += this.publishDate.getFullYear();
                 if (this.additionalCopyrightHolders) header += " " + this.additionalCopyrightHolders + " &amp;";
                 if (this.doRDFa) {
-                    header += " <span rel='dcterms:publisher'><span typeof='foaf:Organization'><a rel='foaf:homepage' property='foaf:name' content='World Wide Web Consortium' href='http://www.w3.org/'><acronym title='World Wide Web Consortium'>W3C</acronym></a><sup>&reg;</sup></span></span> ";
+                    header += " <span rel='dcterms:publisher'><span typeof='foaf:Organization'><a rel='foaf:homepage' property='foaf:name' content='World Wide Web Consortium' href='http://www.w3.org/'><abbr title='World Wide Web Consortium'>W3C</abbr></a><sup>&reg;</sup></span></span> ";
                 } else {
-                    header += " <a href='http://www.w3.org/'><acronym title='World Wide Web Consortium'>W3C</acronym></a><sup>&reg;</sup> ";
+                    header += " <a href='http://www.w3.org/'><abbr title='World Wide Web Consortium'>W3C</abbr></a><sup>&reg;</sup> ";
                 }
                 header +=
-                    "(<a href='http://www.csail.mit.edu/'><acronym title='Massachusetts Institute of Technology'>MIT</acronym></a>, " +
-                    "<a href='http://www.ercim.eu/'><acronym title='European Research Consortium for Informatics and Mathematics'>ERCIM</acronym></a>, " +
+                    "(<a href='http://www.csail.mit.edu/'><abbr title='Massachusetts Institute of Technology'>MIT</abbr></a>, " +
+                    "<a href='http://www.ercim.eu/'><abbr title='European Research Consortium for Informatics and Mathematics'>ERCIM</abbr></a>, " +
                     "<a href='http://www.keio.ac.jp/'>Keio</a>), All Rights Reserved. " +
                     "W3C <a href='http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer'>liability</a>, " + 
                     "<a href='http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks'>trademark</a> and " +
@@ -1363,7 +1363,7 @@ berjon.respec.prototype = {
                             sn.text("[", df);
                             // embed a cite with an a inside of it
                             var el = sn.element("cite", {} , df);
-                            sn.element("a", { "class": "bibref", rel: "biblioentry", href: "#bib-" + ref }, el, ref);
+                            sn.element("a", { "class": "bibref", href: "#bib-" + ref }, el, ref);
                             sn.text("]", df);
                         }
                         else {
@@ -1674,7 +1674,6 @@ berjon.respec.prototype = {
                 href:       css,
                 rel:        "stylesheet",
                 type:       "text/css",
-                charset:    "utf-8"
             }, document.documentElement.firstElementChild);
         }
     },
