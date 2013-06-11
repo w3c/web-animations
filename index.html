@@ -3759,12 +3759,18 @@
               <a href='#determining-the-current-path-element-and-element-fraction' class='sectionRef'>
               </a>.
             <li>
-              Calculate the <a>rotation value</a> using the process defined in 
-              <a href='#calculating-the-rotation-value-of-the-current-path-element' class='sectionRef'></a>.
+              Calculate the <a title="rotation value along a path">rotation
+              value</a> for the <var>current path element</var> and <var>element
+              fraction</var> using the process defined in 
+              <a
+              href='#calculating-the-rotation-value-of-a-path-animation-effect' class='sectionRef'></a>.
             <li>
-              Calculate the <a>translation value</a> using the process defined
-              in
-              <a href='#calculating-the-translation-value-of-the-current-path-element' class='sectionRef'></a>.
+              Calculate the <a
+              title="translation value along a path">translation
+              value</a> for the <var>current path element</var> and <var>element
+              fraction</var> using the process defined in 
+              <a
+              href='#calculating-the-translation-value-of-a-path-animation-effect' class='sectionRef'></a>.
             <li>
               Let the <var>transform value</var> be the result of combining
               the <a>rotation value</a> and <a> translation value</a>
@@ -3862,49 +3868,59 @@
         </dl>
       </section>
       <section>
-        <h3>Calculating the rotation value of the current path element</h3>
+        <h3>Calculating the rotation value of a path animation effect</h3>
         <p>
-          The <dfn>rotation value</dfn> of the <a>current element</a> is the
-          rotation produced by that element at the <a>element fraction</a>.
+          For a given <a>path element</a> and <a>element fraction</a>,
+          the <dfn title="rotation value along a path">rotation value</dfn> at
+          that point is calculated according to the steps corresponding to the
+          first matching condition from below:
         </p>
         <dl class='switch'>
           <dt>If the <a>automatic rotation flag</a> is not set,</dt>
           <dd>
-            the <a>rotation value</a> of the <a>current element</a> is the
-            <a>rotation angle</a>
+            the <a title="rotation value along a path">rotation value</a> of the
+            given <a>path element</a> is the <a>rotation angle</a>.
           </dd>
           <dt>Otherwise,</dt>
           <dd>
-            the <a>rotation value</a> of the <a>current element</a> is the sum
-            of:
+            the <a title="rotation value along a path">rotation value</a> of the
+            <a>current element</a> is the sum of:
             <ul>
               <li>
-                the angle of the tangent vector of the <a>current element</a>
+                the angle of the tangent vector of the given <a>path element</a>
                 at the point selected in
-                <a href='#calculating-the-translation-value-of-the-current-path-element' class='sectionRef'></a>
-                for the purpose of calculating the <a>translation value</a>; 
+                <a
+                href='#calculating-the-translation-value-of-a-path-animation-effect'
+                class='sectionRef'></a>
+                for the purpose of calculating the <a
+                title="translation value along a path">translation value</a>; 
                 and
               </li>
               <li>
-                the <a>rotation angle</a>
+                the <a>rotation angle</a>.
               </li>
             </ul>
           </dd>
         </dl>
         <p>
-          For continuous elements (all elements except moveto), the angle of
-          the tangent vector for the purpose of these calculations is defined 
-          to be an integer multiple of 2&pi; different from the value given by
-          standard mathematical formulae for tangents to curves in 2
-          dimensional space. See 
-          <a href='http://en.wikipedia.org/wiki/Tangential_angle'>
-          http://en.wikipedia.org/wiki/Tangential_angle</a> for 
-          more information.
+          For continuous <a>path elements</a> (all elements except moveto),
+          the angle of the tangent vector for the purpose of these calculations
+          is defined to be an integer multiple of 2&pi; different from the value
+          given by <a
+          href="http://en.wikipedia.org/wiki/Tangential_angle">standard
+          mathematical formulae for tangents to curves in 2
+          dimensional space</a>.
+        </p>
+        <p class="todo">
+          What does &ldquo;different from&rdquo; mean here?
         </p>
         <p>
-          For moveto, which is discontinuous, the angle of the tangent vector
-          for the purpose of these calculations is always an integer multiple
-          of 2&pi;.
+          For moveto <a>path elements</a>, which are discontinuous,
+          the angle of the tangent vector for the purpose of these calculations
+          is always an integer multiple of 2&pi;.
+        </p>
+        <p class="todo">
+          Any multiple?
         </p>
         <p>
           At non-smooth junction points, the angle of the tangent vector for
@@ -3924,20 +3940,22 @@
         </p>
         <p>
           When computing angles after discontinuous or non-smooth jumps,
-          multiple possible solutions will be available -these solutions 
-          differ by integer multiples of 2&pi;. The solution that lies closest
-          to the previous tangent angle must be selected.
+          multiple possible solutions may be available.
+          These solutions will differ by integer multiples of 2&pi;.
+          In such cases the solution that lies closest to the previous tangent
+          angle is used.
         </p>
         <p>
           Please see
           <a href='#algorithms-for-path-animation-effects' class='sectionRef'></a>
-          for a full non-normative treatment of this topic.
+          for a non-normative treatment of this topic.
         </p>
       </section>
       <section>
-        <h3>Calculating the translation value of the current path element</h3>
+        <h3>Calculating the translation value of a path animation effect</h3>
         <p>
-          The <dfn>translation value</dfn> of the <a>current path element</a> is
+          The <dfn title="translation value along a path">translation
+          value</dfn> of the <a>current path element</a> is
           determined using the following process:
         </p>
         <ol>
