@@ -1078,7 +1078,8 @@
           <dt>If the <a>timed item</a> has a <a>parent timing group</a>,</dt>
           <dd>
             the inherited time is the <a>parent timing group</a>'s current
-            <a title="transformed time">transformed time value</a>.
+            <a title="exported transformed time">exported transformed time
+            value</a>.
           </dd>
           <dt>If the <a>timed item</a> is directly associated with
               a <a>player</a>,</dt>
@@ -1186,6 +1187,20 @@
               At all other times, the <a>transformed time</a> of a <a>timed
               item</a> is <code>null</code>.
             </dd>
+            <dt><a>filling backwards</a></dt>
+            <dd>
+              The <a>timed item</a>'s <a>local time</a> falls before its
+              <a>active interval</a> and its <a>fill mode</a> (see <a
+              href="#fill-behavior" class="sectionRef"></a>) causes it to
+              affect its target.
+            </dd>
+            <dt><a>filling forwards</a></dt>
+            <dd>
+              The <a>timed item</a>'s <a>local time</a> falls after its
+              <a>active interval</a> and its <a>fill mode</a> (see <a
+              href="#fill-behavior" class="sectionRef"></a>) causes it to
+              affect its target.
+            </dd>
           </dl>
           <p>
             The normative definition of each of these states follows.
@@ -1224,6 +1239,16 @@
           href="#calculating-the-active-time" class="sectionRef"></a> is not
           <code>null</code>.
         </p>
+        </p>
+          A timed item is <dfn>filling backwards</dfn> if it is <a>in
+          effect</a> and its <a>local time</a> is <em>less than</em> its
+          <a>start delay</a>.
+        </p>
+        </p>
+          A timed item is <dfn>filling forwards</dfn> if it is <a>in effect</a>
+          and its <a>local time</a> is <em>greater than or equal to</em> its
+          <a>start delay</a>.
+        </p>
       </section>
     </section>
 
@@ -1239,8 +1264,9 @@
       <ul>
         <li>none,</li>
         <li>forwards,</li>
-        <li>backwards, and</li>
-        <li>both.</li>
+        <li>backwards,</li>
+        <li>both, and</li>
+        <li>auto.</li>
       </ul>
       <p>
         The normative definition of these modes is incorporated in the
@@ -1285,6 +1311,22 @@
             For times that occur after the <a>active interval</a>, the
             <span class="prop-value">forwards</span> fill behavior is used.
           </dd>
+          <dt>auto</dt>
+          <dd>
+            If a parent group is present, use its <a>effective fill mode</a>,
+            otherwise use the <span class="prop-value">forwards</span> fill
+            behaviour.
+            <p class="note">
+              Note that in both CSS Animations [[CSS3-ANIMATIONS]] and SVG
+              [[SVG112]] the default fill mode is "none".
+              Web Animations differs in this regard since it was determined
+              that when generating animations from script, forwards filling is
+              the more commonly-desired behavior.
+            </p>
+            <p class="issue">
+              Some feedback suggests the default here should be "both".
+            </p>
+          </dd>
         </dl>
         <p>
           Some examples of the these fill modes are illustrated below.
@@ -1314,51 +1356,6 @@
         </p>
         <div class="issue">
           <p>
-            As currently defined, when filling, a <a>timed item</a> uses an
-            <a>active time</a> equal to either zero or its <a>active
-            duration</a>, and this is used as the basis for the time which is
-            inherited by its children.
-          </p>
-          <p>
-            This has the effect of &lsquo;snapshotting&rsquo; the children for
-            the duration of the parent's fill.
-            As a result, if a child is active at the boundary of an ancestor's
-            <a>active interval</a> and that ancestor is configured to fill at
-            the point, the child will remain active through the ancestor's fill
-            even if the child is <em>not</em> configured to fill in the given
-            direction.
-          </p>
-          <p>
-            This behavior may be surprising in some circumstances..
-            It is particularly noticeable in the case of an ancestor with
-            backwards fill, as for the common case where children are aligned at
-            the start of the parent's active interval, they will also fill
-            backwards regardless of their fill mode.
-          </p>
-          <p>
-            In order to provide control of this behavior we
-            are considering modifying the definition of fill to depend on the
-            parent's fill state.
-            In particular, when a parent is filling, a child will only be active
-            (and its descendants thus have an effect) if it too is configured to
-            fill in that direction.
-          </p>
-          <p>
-            In order to provide the currently-defined behavior (which we expect
-            is useful for many situations), we would likely introduce a new
-            'auto' fill mode, which means that a <a>timed item</a>'s fill mode
-            should match that of its parent, if present, or use forward fill
-            otherwise.
-          </p>
-          <p>
-            See <a
-            href='http://lists.w3.org/Archives/Public/public-fx/2013AprJun/0184.html'>section
-            2 (Fill modes on descendants) of minuted discussion from Tokyo 2013
-              F2F</a>.
-          </p>
-        </div>
-        <div class="issue">
-          <p>
             Currently <a>timing functions</a> that generate results outside the
             range [0, 1] will behave unexpectedly when applied to animation
             groups, as children will increase iterations or enter into fill mode
@@ -1377,6 +1374,42 @@
             15 (Overflowing fill) of minuted discussion from Tokyo 2013 F2F</a>.
           </p>
         </div>
+      </section>
+      <section>
+        <h3>Effective fill mode</h3>
+        <p>
+          The <dfn>effective fill mode</dfn> of a <a>timed item</a> is based
+          on its <a>fill mode</a>, but uses its parent group’s <a>fill
+          mode</a> (if present) to resolve the meaning of the value <span
+          class="prop-value">auto</span>.
+        </p>
+        <ol>
+          <li>
+            If <a>fill mode</a> is <span class="prop-value">auto</span>,
+            <dl class="switch">
+              <dt>
+                If the parent group is <code>null</code>,
+              </dt>
+              <dd>
+                return <span class="prop-value">forwards</span>.
+              </dd>
+              <dt>
+                Otherwise,
+              </dt>
+              <dd>
+                return the parent's <a>effective fill mode</a>.
+              </dd>
+            </dl>
+          </li>
+          <li>
+            Otherwise, return the <a>fill mode</a>.
+          </li>
+        </ol>
+        <p>
+          The normative definition of these modes is incorporated in the
+          calculation of the <a>active time</a> in <a
+          href="#calculating-the-active-time" class="sectionRef"></a>.
+        </p>
       </section>
     </section>
 
@@ -1787,12 +1820,59 @@
           </p>
           <ol>
             <li>
-              If <a>local time</a> is <code>null</code>, return
-              <code>null</code>.
+              If <a>local time</a> is <code>null</code>, the result depends on
+              whether the parent is currently filling, as follows.
+              <dl class="switch">
+                <dt>
+                  If the parent group is <code>null</code>,
+                </dt>
+                <dd>
+                  return <code>null</code>.
+                </dd>
+                <dt>
+                  Otherwise, if the parent is <a>filling backwards</a> and the
+                  <a>timed item</a>'s <a>effective fill mode</a> is <span
+                  class="prop-value">backwards</span> or <span
+                  class="prop-value">both</span>,
+                </dt>
+                <dd>
+                  return zero.
+                </dd>
+                <dt>
+                  Otherwise, if the parent is <a>filling forwards</a> and the
+                  <a>timed item</a>'s <a>effective fill mode</a> is <span
+                  class="prop-value">forwards</span> or <span
+                  class="prop-value">both</span>,
+                </dt>
+                <dd>
+                  return the <a>active duration</a>.
+                </dd>
+              </dl>
+              <div class="issue">
+                <p>
+                  In earlier revisions of this specification, when a timed
+                  item's parent was filling, the child's state was always
+                  snapshotted at the time corresponding to the start or end of
+                  the <em>parent's</em> active interval. The current definition
+                  of active time means that when a timed item's parent is
+                  filling, if the child's fill state is such that it too is
+                  filling, it will always use an active time that corresponds
+                  to the start or end of <em>its own</em> active interval. This
+                  means that the behaviour will differ in cases where a child
+                  and parent both use fill, but the active interval of the
+                  child is clipped by that of the parent.
+                </p>
+                <p>
+                  We should work through some use cases to confirm that the new
+                  behavior is acceptable. The alternative is to modify the
+                  definition of fill such that the child fills using its active
+                  time at the point at which it is clipped by its parent.
+                </p>
+              </div>
             </li>
             <li>
               If <code><a>local time</a> &lt; <a>start delay</a></code>
-              the result depends on the <a>fill mode</a> as follows,
+              the result depends on the <a>effective fill mode</a> as follows,
               <dl class="switch">
                 <dt>
                   If the <a>fill mode</a> is <span
@@ -1817,7 +1897,8 @@
               delay</a></code>.
             </li>
             <li>
-              Otherwise, the result depends on the <a>fill mode</a> as follows,
+              Otherwise, the result depends on the <a>effective fill mode</a>
+              as follows,
               <dl class="switch">
                 <dt>
                   If the <a>fill mode</a> is <span
@@ -2054,6 +2135,24 @@
               Otherwise, return the <a>iteration duration</a>
               - <a>iteration time</a>.
             </p>
+          </li>
+        </ol>
+      </section>
+      <section>
+        <h3>Calculating the exported transformed time</h3>
+        <p>
+          The <dfn>exported transformed time</dfn> is based on the
+          <a>transformed time</a> and is used by child <a>timed items</a> as
+          their <a>inherited time</a>.
+          It is calculated as follows.
+        </p>
+        <ol>
+          <li> 
+            If the <a>timed item</a> is <a>filling backwards</a> or is <a>filling
+            forwards</a>, return <code>null</code>.
+          </li>
+          <li> 
+            Otherwise, return <a>transformed time</a>.
           </li>
         </ol>
       </section>
@@ -6375,21 +6474,11 @@ interface Duration {
               the <a>Timing</a> interface.
             </p>
           </dd>
-          <dt>FillMode fillMode = "forwards"</dt>
+          <dt>FillMode fillMode = "auto"</dt>
           <dd>
             <p>
               The <a>fill mode</a> as specified by one of the <a>FillMode</a>
               enumeration values.
-            </p>
-            <p class="note">
-              Note that in both CSS Animations [[CSS3-ANIMATIONS]] and SVG
-              [[SVG112]] the default fill mode is "none".
-              Web Animations differs in this regard since it was determined
-              that when generating animations from script, forwards filling is
-              the more commonly-desired behavior.
-            </p>
-            <p class="issue">
-              Some feedback suggests the default here should be "both".
             </p>
           </dd>
           <dt>double iterationStart = 0.0</dt>
@@ -6483,6 +6572,12 @@ interface Duration {
             <dt>both</dt>
             <dd>
               Fill backwards and forwards.
+            </dd>
+            <dt>auto</dt>
+            <dd>
+              If a parent group is present, use its <a>effective fill
+              mode</a>, otherwise use the <span
+              class="prop-value">forwards</span> fill behaviour.
             </dd>
           </dl>
         </section>
@@ -7043,7 +7138,7 @@ var anim =
             case default timing values will be used.
             Since the <a>intrinsic iteration duration</a> of an animation is
             zero, and the default <code>fillMode</code> when constructing an
-            <a>Animation</a> is <span class="prop-value">forwards</span>, it is
+            <a>Animation</a> is <span class="prop-value">auto</span>, it is
             possible to create animations that simply set a property without
             any interpolation as follows,
           </p>
