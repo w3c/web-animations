@@ -1264,8 +1264,9 @@
       <ul>
         <li>none,</li>
         <li>forwards,</li>
-        <li>backwards, and</li>
-        <li>both.</li>
+        <li>backwards,</li>
+        <li>both, and</li>
+        <li>auto.</li>
       </ul>
       <p>
         The normative definition of these modes is incorporated in the
@@ -1309,6 +1310,22 @@
 
             For times that occur after the <a>active interval</a>, the
             <span class="prop-value">forwards</span> fill behavior is used.
+          </dd>
+          <dt>auto</dt>
+          <dd>
+            If a parent group is present, use its <a>effective fill mode</a>,
+            otherwise use the <span class="prop-value">forwards</span> fill
+            behaviour.
+            <p class="note">
+              Note that in both CSS Animations [[CSS3-ANIMATIONS]] and SVG
+              [[SVG112]] the default fill mode is "none".
+              Web Animations differs in this regard since it was determined
+              that when generating animations from script, forwards filling is
+              the more commonly-desired behavior.
+            </p>
+            <p class="issue">
+              Some feedback suggests the default here should be "both".
+            </p>
           </dd>
         </dl>
         <p>
@@ -1357,6 +1374,42 @@
             15 (Overflowing fill) of minuted discussion from Tokyo 2013 F2F</a>.
           </p>
         </div>
+      </section>
+      <section>
+        <h3>Effective fill mode</h3>
+        <p>
+          The <dfn>effective fill mode</dfn> of a <a>timed item</a> is based
+          on its <a>fill mode</a>, but uses its parent group’s <a>fill
+          mode</a> (if present) to resolve the meaning of the value <span
+          class="prop-value">auto</span>.
+        </p>
+        <ol>
+          <li>
+            If <a>fill mode</a> is <span class="prop-value">auto</span>,
+            <dl class="switch">
+              <dt>
+                If the parent group is <code>null</code>,
+              </dt>
+              <dd>
+                return <span class="prop-value">forwards</span>.
+              </dd>
+              <dt>
+                Otherwise,
+              </dt>
+              <dd>
+                return the parent's <a>effective fill mode</a>.
+              </dd>
+            </dl>
+          </li>
+          <li>
+            Otherwise, return the <a>fill mode</a>.
+          </li>
+        </ol>
+        <p>
+          The normative definition of these modes is incorporated in the
+          calculation of the <a>active time</a> in <a
+          href="#calculating-the-active-time" class="sectionRef"></a>.
+        </p>
       </section>
     </section>
 
@@ -1778,7 +1831,7 @@
                 </dd>
                 <dt>
                   Otherwise, if the parent is <a>filling backwards</a> and the
-                  <a>timed item</a>'s <a>fill mode</a> is <span
+                  <a>timed item</a>'s <a>effective fill mode</a> is <span
                   class="prop-value">backwards</span> or <span
                   class="prop-value">both</span>,
                 </dt>
@@ -1787,7 +1840,7 @@
                 </dd>
                 <dt>
                   Otherwise, if the parent is <a>filling forwards</a> and the
-                  <a>timed item</a>'s <a>fill mode</a> is <span
+                  <a>timed item</a>'s <a>effective fill mode</a> is <span
                   class="prop-value">forwards</span> or <span
                   class="prop-value">both</span>,
                 </dt>
@@ -1819,7 +1872,7 @@
             </li>
             <li>
               If <code><a>local time</a> &lt; <a>start delay</a></code>
-              the result depends on the <a>fill mode</a> as follows,
+              the result depends on the <a>effective fill mode</a> as follows,
               <dl class="switch">
                 <dt>
                   If the <a>fill mode</a> is <span
@@ -1844,7 +1897,8 @@
               delay</a></code>.
             </li>
             <li>
-              Otherwise, the result depends on the <a>fill mode</a> as follows,
+              Otherwise, the result depends on the <a>effective fill mode</a>
+              as follows,
               <dl class="switch">
                 <dt>
                   If the <a>fill mode</a> is <span
@@ -6420,21 +6474,11 @@ interface Duration {
               the <a>Timing</a> interface.
             </p>
           </dd>
-          <dt>FillMode fillMode = "forwards"</dt>
+          <dt>FillMode fillMode = "auto"</dt>
           <dd>
             <p>
               The <a>fill mode</a> as specified by one of the <a>FillMode</a>
               enumeration values.
-            </p>
-            <p class="note">
-              Note that in both CSS Animations [[CSS3-ANIMATIONS]] and SVG
-              [[SVG112]] the default fill mode is "none".
-              Web Animations differs in this regard since it was determined
-              that when generating animations from script, forwards filling is
-              the more commonly-desired behavior.
-            </p>
-            <p class="issue">
-              Some feedback suggests the default here should be "both".
             </p>
           </dd>
           <dt>double iterationStart = 0.0</dt>
@@ -6528,6 +6572,12 @@ interface Duration {
             <dt>both</dt>
             <dd>
               Fill backwards and forwards.
+            </dd>
+            <dt>auto</dt>
+            <dd>
+              If a parent group is present, use its <a>effective fill
+              mode</a>, otherwise use the <span
+              class="prop-value">forwards</span> fill behaviour.
             </dd>
           </dl>
         </section>
@@ -7088,7 +7138,7 @@ var anim =
             case default timing values will be used.
             Since the <a>intrinsic iteration duration</a> of an animation is
             zero, and the default <code>fillMode</code> when constructing an
-            <a>Animation</a> is <span class="prop-value">forwards</span>, it is
+            <a>Animation</a> is <span class="prop-value">auto</span>, it is
             possible to create animations that simply set a property without
             any interpolation as follows,
           </p>
