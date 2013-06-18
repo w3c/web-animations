@@ -4048,163 +4048,107 @@
     <section>
       <h2>Animation of property types</h2>
       <section>
-        <div class='note'>
-          <p>
-            Properties defined as animatable by CSS Transitions in
-            [[CSS3-TRANSITIONS]] specify animation types. These types in turn
-            specify interpolation procedures for each property. The procedures
-            described in [[CSS3-TRANSITIONS]] are replaced by the interpolation
-            definitions in <a href='#animation-of-property-types'
-            class='sectionRef'></a>. Note that this change is
-            backwards-compatible - the interpolation definitions in this
-            specification produce the same result as [[CSS3-TRANSITIONS]]
-            unless [[CSS3-TRANSITIONS]] specifies that no interpolation can
-            occur.
-          </p>
-        </div>
+        <p>
+          The specific procedures for <a>interpolation</a> and <a>addition</a>
+          of animation values for common CSS value types are defined below.
+        </p>
+        <p>
+          For a given pair of animation values, the procedures depend on the
+          types of the two values.
+          If there is no set of procedures matching the particular types of the
+          two values, the default procedures defined in <a
+          href="#default-animation-procedures" class="sectionRef"></a> is used.
+        </p>
+        <p class="issue">
+          In CSS transitions the interpolation procedure is determined by the
+          property, not the specific values.
+          Do we really want to define this in terms of the values in question?
+          That seems to remove flexibility to make different properties with the
+          same value types interpolate differently or turn off additive behavior
+          on a per-property basis.
+        </p>
+        <p>
+          For each set of procedures, a common notation is used. For
+          <a>interpolation</a>,
+        </p>
+        <ul>
+          <li><var>V<sub>res</sub></var> is the result of the
+              <a>interpolation</a> operation,
+          <li><var>p</var> is the interpolation parameter, and
+          <li><var>V<sub>start</sub></var> and <var>V<sub>end</var></var> are
+              the animation values representing the start and end of the
+              interpolation interval respectively.
+        </ul>
+        <p>For addition,</p>
+        <ul>
+          <li><var>V<sub>res</sub></var> is the result of the <a>addition</a>
+              operation,
+          <li><var>V<sub>a</sub></var> and <var>V<sub>b</var></var> are
+              the two animation values to be added.
+        </ul>
+        <p>
+          When an <a>addition</a> procedure is not commutative,
+          <var>V<sub>a</sub></var> represents the first term of the operation
+          and <var>V<sub>b</sub></var> represents the second.
+        </p>
         <div class='informative'>
           <p>
-            The mechanism of action of [[CSS3-TRANSITIONS]] and this
-            specification sometimes differ. However, the results of both
-            mechanisms are consistent with each other.
+            In some cases the mechanism by which <a>interpolation</a> and
+            <a>addition</a> is achieved differs from that defined in
+            [[CSS3-TRANSITIONS]].
+            However, the observable results of these operations should be
+            identical.
           </p>
           <p>
-            For example, [[CSS3-TRANSITIONS]] length values are always
+            For example, in [[CSS3-TRANSITIONS]] length values are always
             converted to computed style pixel lengths and interpolated as
-            numbers, whereas this specification performs interpolation between
-            different length units using calc expressions.
+            numbers, whereas in this specification <a>interpolation</a> between
+            different length units is defined using calc expressions.
           </p>
         </div>
-        <p>
-          When animating property types, procedures for interpolation and
-          addition are required.
-        </p>
-        <p>
-          [[CSS3-VALUES]] defines common values and units that CSS 
-          properties accept.
-        </p>
-        <p>
-          To determine the appropriate animation interpolation and addition
-          algorithms to use for any given start and end value, first determine
-          the types of the values. If the types match, then the algorithms used
-          are given by <a href="#animation-of-like-types"
-          class="sectionRef"></a>. 
-        </p>
-        <p>
-          Some properties accept values of multiple different primitive types.
-          For example, the padding-* properties accept a type of
-          <code>&lt;padding-width&gt;</code>, which can either be a
-          <code>&lt;length&gt;</code> or a <code>&lt;percentage&gt;</code>. <a
-          href="#animation-of-non-matching-primitive-types"
-          class="sectionRef"></a> defines the algorithm to be used to deal with
-          interpolation when the type of the start and the type of the end do
-          not match.
-        </p>
-        <p>
-          Some properties accept a combination of typed values and keywords.
-          For example, border-width accepts both <code>&lt;length&gt;</code>
-          values and &lsquo;thick&rsquo;, &lsquo;medium&rsquo; and
-          &lsquo;thin&rsquo; keywords. <a
-          href="#animation-of-keywords-and-primitive-types"
-          class="sectionRef"></a> describes how to deal with interpolation to
-          and/or from a keyword value.
-        </p>
-        <p>
-          <a href="#animation-of-shorthand-properties" class="sectionRef"></a>
-          describes how to deal with interpolation between CSS shorthand values.
-        </p>
-        <p>
-          Calc expressions can be used in place of <code>&lt;length&gt;</code>,
-          <code>&lt;frequency&gt;</code>, <code>&lt;angle&gt;</code>,
-          <code>&lt;time&gt;</code>, <code>&lt;number&gt;</code> and
-          <code>&lt;integer&gt;</code> values. <a
-          href="#animation-of-css-calc-expressions" class="sectionRef"></a>
-          describes how to deal with interpolation to and/or from calc
-          expressions.
-        </p>
-        <p>
-          <a href="#animation-of-transform-lists" class="sectionRef"></a>
-          describes how to deal with interpolation of CSS and SVG transform
-          lists.
-        </p>
-        <p>
-          If no specific algorithms are provided here, then the default 
-          algorithms defined in 
-          <a href="#default-animation-algorithms" class="sectionRef"></a> 
-          are used.  Note that the neutral value does not match any value 
-          type and thus all calculations involving the neutral value will 
-          use the default algorithms.
-        </p>
-      </section>
-      <section>
-        <h3>Default Animation Algorithms</h3>
-        <p>
-        Given the output <i>p</i> of a timing function, the result
-        <i>V</i><sub>res</sub> of interpolating between two values,
-        <i>V</i><sub>start</sub> and <i>V</i><sub>end</sub> is given by
-         <blockquote>
-          <dl class="switch">
-            <dt>If 0 &lt;= <i>p</i> &lt; 0.5</dt>
-            <dd><i>V</i><sub>res</sub> = <i>V</i><sub>start</sub></dd>
-            <dt>Otherwise,</dt>
-            <dd><i>V</i><sub>res</sub> = <i>V</i><sub>end</sub></dd>
-          </dl>
-         </blockquote>
-         Note that interpolation is never performed on invalid values.
-        </p>
-        <p>
-          Addition is between two values <i>V</i><sub>a</sub> and 
-          <i>V</i><sub>b</sub>. The result <i>V</i><sub>res</sub> is given by 
-         <blockquote>
-            <i>V</i><sub>res</sub> = <i>V</i><sub>a</sub> + <i>V</i><sub>a</sub> 
-         </blockquote>
       </section>
       <section>
         <h3>Animation of like types</h3>
         <p>
-          If the result of the interpolation is specified by a calc expression
-          and the units of <i>V</i><sub>start</sub> and <i>V</i><sub>end</sub>
-          are related by a constant scalar multiple then the result is
-          evaluated as defined in [[CSS3-VALUES]] before being returned.
-          <div class="annotation">
-            The CSS &lsquo;px&rsquo; unit is related to the CSS &lsquo;in&rsquo;
-            unit by a constant scalar multiple of 96 (i.e. 96px = 1in). On the
-            other hand, the CSS &lsquo;em&rsquo; unit is not related to the
-            &lsquo;in&rsquo; unit by a constant scalar multiple.
-          </div>
-          <div class="note">
-            [[CSS3-TRANSITIONS]] defines the following default formula for interpolation:
-            <blockquote>
-              <i>V</i><sub>res</sub> = (1 - <i>p</i>) * <i>V</i><sub>start</sub>
-                + <i>p</i>  * <i>V</i><sub>end</sub>
-            </blockquote>
-          </div>
+          When the types being interpolated or animated equal the following
+          specific procedures are used.
         </p>
         <p>
-          If the result of the addition is specified by a calc expression and
-          the units of <i>V</i><sub>a</sub>  and <i>V</i><sub>b</sub>  are
-          related by a constant scalar multiple then the result is evaluated as
-          defined in [[CSS3-VALUES]] before being returned.
-          <div class="note">
-            The default formula for single valued types is to use the CSS3
-            calc() function: 
-            <blockquote>
-              <i>V</i><sub>res</sub> = calc(<i>V</i><sub>a</sub> + 
-              <i>V</i><sub>b</sub>)
-            </blockquote>
-          </div>
+          Note that in all cases, if the result of the addition is specified by
+          a calc expression and the units of <var>V<sub>a</sub></var>  and
+          <var>V<sub>b</sub></var> are related by a constant scalar multiple
+          then the result of the calc expression is evaluated as defined in
+          [[CSS3-VALUES]] before being returned.
         </p>
+        <p class="issue">
+          What does &ldquo;being returned&rdquo; mean here?
+        </p>
+        <div class="informative">
+          <p>
+            For example, the CSS &lsquo;px&rsquo; unit is related to the CSS
+            &lsquo;in&rsquo; unit by a constant scalar multiple of 96 (i.e.
+            96px = 1in).
+            On the other hand, the CSS &lsquo;em&rsquo; unit is not related to
+            the &lsquo;in&rsquo; unit by a constant scalar multiple.
+          </p>
+        </div>
         <section>
           <h4>
             The &lt;integer&gt;, &lt;number&gt; and &lt;percentage&gt; 
             types
           </h4>
           <p>
-            Interpolation is performed as defined in [[CSS3-TRANSITIONS]].
+            Interpolation is calculated as defined in [[CSS3-TRANSITIONS]].
+          </p>
+          <p class="issue">
+            This is weird: we partly redefine what is already described in
+            [[CSS3-TRANSITIONS]] and party reuse its definitions.
+            We should either redefine everything here, or simply extend what is
+            there.
           </p>
           <p>
-            Addition is performed as <i>V</i><sub>res</sub> = 
-            <i>V</i><sub>a</sub> + <i>V</i><sub>b</sub>.
+            Addition is calculated as <var>V<sub>res</sub></var> = 
+            <var>V<sub>a</sub></var> + <var>V<sub>b</sub></var>.
           </p>
         </section>
         <section>
@@ -4213,32 +4157,32 @@
             &lt;frequency&gt; types
           </h4>
           <p>
-            Interpolation is performed as <i>V</i><sub>res</sub> = (1 - 
-            <i>p</i>) * <i>V</i><sub>start</sub> + <i>p</i>  * <i>V</i>
+            Interpolation is calculated as <var>V<sub>res</sub></var> = (1 - 
+            <i>p</i>) * <var>V<sub>start</sub></var> + <i>p</i>  * <i>V</i>
             <sub>end</sub>.
           </p>
           <p>
-            Addition is performed as <i>V</i><sub>res</sub> = calc(<i>V</i>
-            <sub>a</sub> + <i>V</i><sub>b</sub>).
+            Addition is calculated as <var>V<sub>res</sub></var> = calc(<i>V</i>
+            <sub>a</sub> + <var>V<sub>b</sub></var>).
           </p>
         </section>
         <section>
           <h4>The &lt;resolution&gt; type</h4>
           <div class="issue">Do we want to interpolate this?</div>
           <p>
-            Interpolation is performed as <i>V</i><sub>res</sub> = 
-            (1 - <i>p</i>) * <i>V</i><sub>start</sub> + <i>p</i>  * 
-            <i>V</i><sub>end</sub>.
+            Interpolation is calculated as <var>V<sub>res</sub></var> = 
+            (1 - <i>p</i>) * <var>V<sub>start</sub></var> + <i>p</i>  * 
+            <var>V<sub>end</sub></var>.
           </p>
           <p>
-            Addition is performed as <i>V</i><sub>res</sub> = 
-            calc(<i>V</i><sub>a</sub> + <i>V</i><sub>b</sub>).
+            Addition is calculated as <var>V<sub>res</sub></var> = 
+            calc(<var>V<sub>a</sub></var> + <var>V<sub>b</sub></var>).
           </p>        
         </section>
         <section>
           <h4>The &lt;color&gt; type</h4>
           <p>
-            Interpolation is performed as defined in [[CSS3-TRANSITIONS]].
+            Interpolation is calculated as defined in [[CSS3-TRANSITIONS]].
           </p>
           <p>
             Addition is performed on each RGBA color component in premultiplied
@@ -4249,6 +4193,10 @@
             What we do for addition depends on why we're adding. As defined
             here, the result will tend to saturate to opaque white.
           </div>
+          <div class="issue">
+            Do we clamp upon each addition, or wait until the end?
+            Does it make a difference if we never actually subtract?
+          </div>
         </section>
         <section>
           <h4>The &lt;image&gt; type</h4>
@@ -4256,19 +4204,25 @@
             Interpolation is performed using the cross-fade() function as
             defined in [[CSS4IMAGES]]:
             <blockquote>
-              <i>V</i><sub>res</sub> = cross-fade(<i>p</i>,
-              <i>V</i><sub>start</sub> , <i>V</i><sub>end</sub>).
+              <var>V<sub>res</sub></var> = cross-fade(<i>p</i>,
+              <var>V<sub>start</sub></var> , <var>V<sub>end</sub></var>).
             </blockquote>
           </p>
           <p>
-            Addition is defined as the composition of <i>V</i><sub>a</sub> over
-            <i>V</i><sub>b</sub>,, with <i>V</i><sub>a</sub> and
-            <i>V</i><sub>b</sub> aligned at their top left corners. The height
-            and width of the result is the maximum of the heights and widths of
-            <i>V</i><sub>a</sub> and <i>V</i><sub>b</sub>. Any result pixels
-            outside the bounds of <i>V</i><sub>a</sub> or <i>V</i><sub>b</sub>
-            are defined to be rgba(0, 0, 0, 0).
+            Addition is defined as the composition of <var>V<sub>a</sub></var>
+            over
+            <var>V<sub>b</sub></var>, with <var>V<sub>a</sub></var> and
+            <var>V<sub>b</sub></var> aligned at their top left corners.
+            The height and width of the result is the maximum of the heights and
+            widths of <var>V<sub>a</sub></var> and <var>V<sub>b</sub></var>. Any
+            result pixels outside the bounds of <var>V<sub>a</sub></var> or
+            <var>V<sub>b</sub></var> are defined to be rgba(0, 0, 0, 0).
           </p>
+          <div class="issue">
+            Probably need to spell out that &ldquo;over&rdquo; here refers to
+            the Porter-Duff operator of that name (if, indeed, that is what it
+            means here).
+          </div>
           <div class="issue">
             This does not match the saturating behaviour defined for addition 
             of colors.
@@ -4290,10 +4244,10 @@
         <section>
           <h4>The &lt;transform-function&gt; type</h4>
           <p>
-            Interpolation is performed as defined in [[CSS3-TRANSFORMS]].
+            Interpolation is calculated as defined in [[CSS3-TRANSFORMS]].
           </p>
           <p>
-            Addition is performed as an accumulation as defined in 
+            Addition is calculated as an accumulation as defined in 
             [[CSS3-TRANSFORMS]].
           </p>
         </section>
@@ -4302,34 +4256,36 @@
         <h3>Animation of non-matching primitive types</h3>
         <p>
           In general, non-matching primitive types cannot be interpolated or
-          added. Non-matching primitive types may only be interpolated or added
+          added.
+          Non-matching primitive types may only be interpolated or added
           if the property value they are defined on allows both those types,
-          for example &lt;length&gt; and &lt;percent&gt;. In these cases, the CSS
-          calc() function as defined in [[CSS3-VALUES]] is used.
+          for example &lt;length&gt; and &lt;percent&gt;.
+          In these cases, the CSS calc() function as defined in [[CSS3-VALUES]]
+          is used.
         </p>
         <p>
           For interpolation:
           <blockquote>
-            <i>V</i><sub>res</sub> = calc((1 - <i>p</i>) * 
-            <i>V</i><sub>start</sub> + <i>p</i>  * <i>V</i><sub>end</sub>).
+            <var>V<sub>res</sub></var> =
+              calc((1 - <i>p</i>) * <var>V<sub>start</sub></var> +
+                   <i>p</i>  * <var>V<sub>end</sub></var>).
           </blockquote>  
         </p>
         <p>
           For addition:
           <blockquote>
-            <i>V</i><sub>res</sub> = calc(<i>V</i><sub>a</sub> + <i>V</i><sub>b</sub>).
+            <var>V<sub>res</sub></var> =
+              calc(<var>V<sub>a</sub></var> + <var>V<sub>b</sub></var>).
           </blockquote>
         </p>
       </section>
       <section>
         <h3>Animation of keywords and primitive types</h3>
         <p>
-          A keyword value may be defined as equivalent to a primitive type,
-          either directly, or via some intermediate calculation. For example,
-          for the background-position property, [[CSS21]] defines the
-          &lsquo;top&rsquo; keyword to be equivalent to &lsquo;0%&rsquo;. In
-          these cases, the equivalent primitive type shall be used, and
-          interpolation and addition performed as defined in <a
+          If keyword value is be defined as equivalent to a primitive type,
+          either directly, or via some intermediate calculation, the equivalent
+          primitive type is be used, and
+          interpolation and addition calculated are defined in <a
           href="#animation-of-like-types" class="sectionRef"></a> or <a
           href="#animation-of-non-matching-primitive-types"
           class="sectionRef"></a>.
@@ -4340,11 +4296,12 @@
           interpolation is used. For example, the font-weight property 
           accepts an ordered list of values from 100 to 900 in
           steps of 100. The interpolation in this case is defined as ((1 -
-          <i>p</i>) * <i>V</i><sub>start</sub> + <i>p</i> *
-          <i>V</i><sub>end</sub>), rounded to the nearest member of the list.
-          Addition in this case is defined as (<i>V</i><sub>a</sub> +
-          <i>V</i><sub>b</sub>), clamped to remain within the specifed list of
-          values. 
+          <i>p</i>) * <var>V<sub>start</sub></var> + <i>p</i> *
+          <var>V<sub>end</sub></var>), rounded to the nearest member of the
+          list.
+          Addition in this case is defined as (<var>V<sub>a</sub></var>
+          + <var>V<sub>b</sub></var>), clamped to remain within the specifed
+          list of values. 
         </p>
         <p>
           In all other cases, the keyword value is not interpolable. Result of
@@ -4356,34 +4313,77 @@
         <p>
           Shorthand properties are animated as defined in [[CSS3-TRANSITIONS]].
         </p>
+        <div class="issue">
+          We probably should just duplicate that text here.
+          For example, it's not obvious from that sentence how addition works
+          since transitions has not concept of addition.
+        </div>
       </section>
       <section>
         <h3>Animation of CSS calc expressions</h3>
         <p>
           For interpolation:
           <blockquote>
-            <i>V</i><sub>res</sub> = calc((1 - <i>p</i>) *
-            <i>V</i><sub>start</sub> + <i>p</i>  * <i>V</i><sub>end</sub>).
+            <var>V<sub>res</sub></var> = calc((1 - <i>p</i>) *
+            <var>V<sub>start</sub></var> + <i>p</i>  * <var>V<sub>end</sub></var>).
           </blockquote>  
         </p>
         <p>
           For addition:
           <blockquote>
-            <i>V</i><sub>res</sub> = calc(<i>V</i><sub>a</sub> +
-            <i>V</i><sub>b</sub>).
+            <var>V<sub>res</sub></var> = calc(<var>V<sub>a</sub></var> +
+            <var>V<sub>b</sub></var>).
           </blockquote>
         </p>
       </section>
       <section>
         <h3>Animation of transform lists</h3>
         <p>
-          Interpolation of transform lists is performed as defined in
-          [[CSS3-TRANSFORMS]]
+          Interpolation of CSS and SVG transform lists is performed as defined
+          in [[CSS3-TRANSFORMS]]
         </p>
         <p>
-          Addition of transform lists is performed by appending
-          <i>V</i><sub>b</sub> to <i>V</i><sub>a</sub>.
+          Addition of CSS and SVG transform lists is performed by appending
+          <var>V<sub>b</sub></var> to <var>V<sub>a</sub></var>.
         </p>
+      </section>
+      <section>
+        <h3>Default animation procedures</h3>
+        <p>
+          In the case that no specific set of procedures matches the
+          pair of <a>animation values</a>, the following default procedures are
+          used.
+        </p>
+        <p>
+          Note that the neutral value does not match any value 
+          type and thus all calculations involving the neutral value will 
+          use the default algorithms.
+        </p>
+        <div class="issue">
+          What is this neutral value? We have the <a>neutral value for
+          composition</a> but that has a specific meaning and addition procedure
+          defined where it is used.
+        </div>
+        <p>
+        Given the output <i>p</i> of a timing function, the result
+        <var>V<sub>res</sub></var> of interpolating between two values,
+        <var>V<sub>start</sub></var> and <var>V<sub>end</sub></var> is given by
+         <blockquote>
+          <dl class="switch">
+            <dt>If 0 &le; <i>p</i> &lt; 0.5</dt>
+            <dd><var>V<sub>res</sub></var> = <var>V<sub>start</sub></var></dd>
+            <dt>Otherwise,</dt>
+            <dd><var>V<sub>res</sub></var> = <var>V<sub>end</sub></var></dd>
+          </dl>
+         </blockquote>
+         Note that interpolation is never performed on invalid values.
+        </p>
+        <p>
+          Addition is between two values <var>V<sub>a</sub></var> and 
+          <var>V<sub>b</sub></var>. The result <var>V<sub>res</sub></var> is given by 
+         <blockquote>
+            <var>V<sub>res</sub></var> = <var>V<sub>a</sub></var> + <var>V<sub>a</sub></var> 
+         </blockquote>
       </section>
     </section>
 
