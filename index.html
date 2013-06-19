@@ -4471,60 +4471,60 @@
         class="sectionRef"></a>.
       </div>
       <div class='issue'>
-      <p>
-        The current event model has two undesirable consequences:
+        <p>
+          The current event model has two undesirable consequences:
+          <ul>
+            <li>
+              There are two different modes in which events are dispatched:
+              seeked mode and regular mode.
+              Some applications will need to provide different handling based on
+              the mode which complicates handling.
+              Other applications will simply assume seeked mode behavior since
+              the mode can change based on parameters outside the application's
+              control (such as being switched to a background tab causing the
+              refresh rate to drop and the maximum event threshold to be
+              exceeded).
+            </li>
+            <li>
+              Uneased timing can cause events to be reordered with respect
+              to how they are visually percieved and can also cause events
+              to be delivered with timestamps in the future.
+            </li>
+          </ul>
+        </p>
+        <p>
+          One alternative under consideration is as follows:
+        </p>
         <ul>
           <li>
-            There are two different modes in which events are dispatched: seeked
-            mode and regular mode.
-            Some applications will need to provide different handling based on
-            the mode which complicates handling.
-            Other applications will simply assume seeked mode behavior since the
-            mode can change based on parameters outside the application's
-            control (such as being switched to a background tab causing the
-            refresh rate to drop and the maximum event threshold to be
-            exceeded).
+            Primitive onstart / onend events that fire only when an 
+            animation first starts playing and last stops playing.
           </li>
           <li>
-            Uneased timing can cause events to be reordered with respect
-            to how they are visually percieved and can also cause events
-            to be delivered with timestamps in the future.
+            An onchange event that fires when the play state (e.g. current
+            iteration, fill state, etc.) of an Animation changes, and provides
+            a summary only of ther changes since the last sample.
+            No more than one event is generated per animation per sample.
+          </li>
+          <li>
+            The list of actual changes associated with a change event would be
+            lazily generated since this could be costly to generate for large
+            sample intervals.
           </li>
         </ul>
-      </p>
-      <p>
-        One alternative under consideration is as follows:
-      </p>
-      <ul>
-        <li>
-          Primitive onstart / onend events that fire only when an 
-          animation first starts playing and last stops playing.
-        </li>
-        <li>
-          An onchange event that fires when the play state (e.g. current
-          iteration, fill state, etc.) of an Animation changes, and provides
-          a summary only of ther changes since the last sample.
-          No more than one event is generated per animation per sample.
-        </li>
-        <li>
-          The list of actual changes associated with a change event would be
-          lazily generated since this could be costly to generate for large
-          sample intervals.
-        </li>
-      </ul>
-      <p>
-        See <a
-        href='http://lists.w3.org/Archives/Public/public-fx/2013AprJun/0184.html'>sections
-        8 and 14 of minuted discussion from Tokyo 2013 F2F</a>.
-      </p>
-      <p>
-        Another possibility is that rather that switching to seeked event
-        dispatch when there are many events to dispatch due to delays between
-        samples, to instead ignore the delay (as is required for SVG).
-        This would make seeked event dispatch predictable.
-        This approach, however, does not address the issues regarding uneased
-        timing.
-      </p>
+        <p>
+          See <a
+          href='http://lists.w3.org/Archives/Public/public-fx/2013AprJun/0184.html'>sections
+          8 and 14 of minuted discussion from Tokyo 2013 F2F</a>.
+        </p>
+        <p>
+          Another possibility is that rather that switching to seeked event
+          dispatch when there are many events to dispatch due to delays between
+          samples, to instead ignore the delay (as is required for SVG).
+          This would make seeked event dispatch predictable.
+          This approach, however, does not address the issues regarding uneased
+          timing.
+        </p>
       </div>
       <p>
         As <a>timed items</a> play they report changes to
