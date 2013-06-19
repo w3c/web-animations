@@ -6660,8 +6660,7 @@ interface Duration {
             <ol>
               <li>Create a new <a title="Animation interface">Animation</a>
                   object, <var>animation</var>.</li>
-              <li>Set the <code>specified</code> member of <var>animation</var>
-                  as follows,
+              <li>Set <var>timing input</var> as follows,
                 <dl class="switch">
                   <dt>If <var>timing</var> is a <a>TimingInput</a> object,</dt>
                   <dd>
@@ -6787,7 +6786,7 @@ interface Duration {
               using an audio API.
             </p>
             <p class="note">
-              Note that in a future version <a>AnimationTarget</a> may be
+              Note that in a future version, <a>AnimationTarget</a> may be
               extended to allow targetting, for example, a sequence of elements.
               Therefore, code that is intended to be used with arbitrary
               <a>Animation</a> objects should test the concrete type of
@@ -6797,7 +6796,7 @@ interface Duration {
             <p class="issue">
               If SVG is extended to allow multiple targets (using, e.g.,
               <code>select="rect"</code>) then it might be most natural to
-              represent that in the API but allowing the <code>target</code> to
+              represent that in the API by allowing the <code>target</code> to
               refer to multiple elements.
               It's something that deserves attention for version 1.
             </p>
@@ -6808,7 +6807,7 @@ interface Duration {
                 interface">Animation</a> object using the following procedure.
               </p>
               <ol>
-                <li>Let <var>source</var> be a the <a
+                <li>Let <var>source</var> be the <a
                     title="Animation interface">Animation</a> object to
                     clone, that is, this object.</li>
                 <li>Let <var>cloned timing</var> be a new <a>TimingInput</a>
@@ -6863,25 +6862,25 @@ interface Duration {
 var anim = new Animation(elem, { left: '100px' }, 3);
           </pre>
           <p>
-            The second parameter, representing the animation effect, may specify
-            multiple properties, an <a>AnimationEffect</a> object, or even
-            a callback object.
+            The second parameter, representing the <a>animation effect</a>, may
+            specify multiple properties, an <a>AnimationEffect</a> object, or
+            even a callback object.
           </p>
           <pre class='example sh_javascript'>
 // Specify multiple properties at once
 var animA = new Animation(elem, { left: '100px', top: '300px' }, 3);
 
 // Specify multiple frames
-var animA = new Animation(elem, [ { left: '100px' } , { left: '300px' } ], 3);
+var animB = new Animation(elem, [ { left: '100px' }, { left: '300px' } ], 3);
 
 // Share the animation effect of another animation
-var animB = new Animation(elem, animA.effect, 3);
+var animC = new Animation(elem, animB.effect, 3);
 
 // Supply a specialized animation effect
-var animC = new Animation(elem, new PathAnimationEffect( ... ), 3);
+var animD = new Animation(elem, new PathAnimationEffect( ... ), 3);
 
 // Supply a custom script-based animation effect
-var animC = new Animation(elem,
+var animE = new Animation(elem,
   { 
     sample: function(time) { 
       if (time !== null) {
@@ -6889,8 +6888,7 @@ var animC = new Animation(elem,
       } else {
         document.documentElement.currentScale = 1.0;
       }
-    },
-    clone: function { return this; }
+    }
   }, 3);
           </pre>
           <p class="todo">
@@ -6902,7 +6900,7 @@ var animC = new Animation(elem,
             simply be a number representing the <a>iteration duration</a> as
             above, or, to specify further timing properties such as the <a
             title="timed item playback rate">playback rate</a>,
-            a <a>TimingInput</a> can be used as follows:
+            a <a>TimingInput</a> object can be used as follows:
           </p>
           <pre class='example sh_javascript'>
 var anim =
@@ -6911,8 +6909,8 @@ var anim =
           <p>
             It is also possible to omit the timing parameter altogether in which
             case default timing values will be used.
-            Since the <a>intrinsic iteration duration</a> of an animation is
-            zero, and the default <code>fillMode</code> when constructing an
+            Since the <a>intrinsic iteration duration</a> of an <a>animation</a>
+            is zero, and the default <code>fillMode</code> when constructing an
             <a>Animation</a> is <span class="prop-value">forwards</span>, it is
             possible to create animations that simply set a property without
             any interpolation as follows,
@@ -6943,8 +6941,11 @@ new SeqGroup(
             For simple effects, the <a
             href="#extensions-to-the-element-interface"><code>Element.animate</code></a>
             shortcut is more convenient since it performs this last step
-            automatically.
+            automatically. For example,
           </p>
+          <pre class='example sh_javascript'>
+elem.animate({ left: '100px' }, 3);
+          </pre>
         </section>
       </section>
       <section>
