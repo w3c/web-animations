@@ -6877,7 +6877,8 @@ var animB = new Animation(elem, [ { left: '100px' }, { left: '300px' } ], 3);
 var animC = new Animation(elem, animB.effect, 3);
 
 // Supply a specialized animation effect
-var animD = new Animation(elem, new PathAnimationEffect( ... ), 3);
+var animD =
+  new Animation(elem, new PathAnimationEffect("M100 250C100 50 400 50 400 250"), 3);
 
 // Supply a custom script-based animation effect
 var animE = new Animation(elem,
@@ -6891,10 +6892,6 @@ var animE = new Animation(elem,
     }
   }, 3);
           </pre>
-          <p class="todo">
-            Fill in the parameters for <a>PathAnimationEffect</a> above once
-            we have decided on them.
-          </p>
           <p>
             The third parameter representing the animation's timing, may
             simply be a number representing the <a>iteration duration</a> as
@@ -7417,29 +7414,102 @@ elem.animate({ left: '100px' }, 3);
           <a>Path animation effects</a> are
           represented by the <a>PathAnimationEffect</a> interface.
         </p>
-        <p class="todo">
-          <a>Path animation effects</a> themselves
-          are yet to be defined, and much more so this interface.
-        </p>
-        <dl title="[Constructor] interface PathAnimationEffect
-          : AnimationEffect" class="idl">
+        <dl title="interface PathAnimationEffect : AnimationEffect" class="idl">
+          <dt>Constructor ()</dt>
+          <dd>
+            <p>
+              Creates a new <a>PathAnimationEffect</a> object with the specified
+              parameters.
+            </p>
+            <dl class="parameters">
+              <dt>(DOMString or SVGPathSegList) path</dt>
+              <dd>
+                <p>
+                  The <a>path</a> which defines the motion.
+                </p>
+                <p>
+                  A string may be provided specifying the path using the syntax
+                  for <a
+                  href="http://www.w3.org/TR/SVG11/paths.html#PathData">SVG path
+                  data</a> [[SVG11]].
+                </p>
+                <p>
+                  If a string is provided, it is converted into an
+                  <code>SVGPathSegList</code> using the procedures defined for
+                  parsing <a
+                  href="http://www.w3.org/TR/SVG11/paths.html#PathData">path
+                  data</a> in [[SVG11]].
+                  Any errors encountered in the path data causing parsing to
+                  cease and the path data processed up to that point to be used.
+                </p>
+                <p>
+                  The resulting <a>SVGPathSegList</a> is assigned to the
+                  <code>path</code> attribute of the generated object without
+                  copying.
+                </p>
+              </dd>
+              <dt>optional AutoRotationMode autoRotate = "none"</dt>
+              <dd>
+                The <a>automatic rotation flag</a> setting for the generated
+                effect.
+              </dd>
+              <dt>optional double angle = 0</dt>
+              <dd>
+                The <a>rotation angle</a> for the generated effect.
+              </dd>
+              <dt>optional CompositeOperation composite = "replace"</dt>
+              <dd>
+                The <a>composition operation</a> used to composite this
+                animation with the <a>animation stack</a>, as specified by one
+                of the <a>CompositeOperation</a> enumeration values.
+              </dd>
+            </dl>
+          </dd>
+          <dt>attribute SVGPathSegList segments</dt>
+          <dd>
+            The list of segments that make up the <a>path</a>.
+            <p class="issue">
+              Is this the correct data type here?
+            </p>
+            <p class="issue">
+              Is this sufficient to allow us to animate along an animated path?
+              Do we need to spell out how this works in more detail?
+            </p>
+          </dd>
+          <dt>attribute AutoRotationFlag autoRotate</dt>
+          <dd>
+            The <a>automatic rotation flag</a> of the <a>path animation
+            effect</a>.
+          </dd>
+          <dt>attribute double angle</dt>
+          <dd>
+            The <a>rotation angle</a> of the <a>path animation effect</a>.
+          </dd>
           <dt>attribute CompositeOperation composite</dt>
           <dd>
             The <a>composition operation</a> used to composite this animation
             with the <a>animation stack</a>, as specified by one of the
             <a>CompositeOperation</a> enumeration values.
           </dd>
-          <dt>attribute SVGPathSegList segments</dt>
-          <dd>
-            The list of segments that make up this path.
-          </dd>
-          <dt>attribute boolean rotate</dt>
-          <dd>
-            True if objects animating along this path should be rotated
-            such that their positive x axis is aligned with the direction of
-            movement along the path.
-          </dd>
         </dl>
+        <section>
+          <h4>The <code>AutoRotationMode</code> enumeration</h4>
+          <p>
+            The values of the <a>automatic rotation flag</a> of a <a>path
+            animation effect</a> are represented by the <a>AutoRotationMode</a>
+            enumeration.
+          </p>
+          <dl title="enum AutoRotationMode" class="idl">
+            <dt>auto</dt>
+            <dd>
+              Corresponds to setting the <a>automatic rotation flag</a>.
+            </dd>
+            <dt>none</dt>
+            <dd>
+              Corresponds to clearing the <a>automatic rotation flag</a>.
+            </dd>
+          </dl>
+        </section>
       </section>
       <section>
         <h3>The <code>CustomEffect</code> callback interface</h3>
