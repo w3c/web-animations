@@ -2792,6 +2792,31 @@
               repeated meaning that the above example can be achieved by simply
               specifying &ldquo;step-end&rdquo; once.
             </p>
+            <p>
+              It is also possible to control the extent of each link in output
+              time independently of its length in input time. In particular,
+              while the start input time must be less than the end input time,
+              this constraint does not apply to the start and end output
+              times. This provides greater control and allows complex timing
+              function chains to be constructed from the primitive timing
+              functions definded in this spec.
+            </p>
+            <p>
+              For example, in the following example, the ease-in-out timing
+              function occupies three-quarters of the input time range and
+              extends to an output time of 1.5. The ease-in timing function
+              which follows it therefore occupies the remaining quarter of the
+              input time and runs from 1.5 to 1.0 in output time.
+            <div class="figure">
+              <!-- I'll leave the SVG magic to Brian -->
+              <img src="img/timing-function-chain-with-independent-input-and-output-positions.png"
+                  width="400"
+                  alt="A timing function chain with independent input and output positions specified">
+            </div>
+            <p class="caption">
+              The length of each link in input time can be controlled
+              independently of its extent in output time.
+            </p>
           </div>
           <p>
             The mapping of the input range of a <a>timing function chain</a>'s
@@ -2802,13 +2827,18 @@
             The <dfn>timing function position list</dfn> is:
           </p>
           <ul>
-            <li>a sequence of floating-point values
+            <li>a sequence of pairs of floating-point numbers
             <li>of length equal to the number of functions in the <a>timing
                 function chain</a> plus 1
             <li>whose values are in the range [0, 1],
-            <li>whose first and last values are 0 and 1 respectively, and
-            <li>whose values are sorted in ascending order.
+            <li>whose first and last values are (0, 0) and (1, 1) respectively, and
+            <li>whose values are ordered such that the first numbers in each
+                pair form an acending sequence
           </ul>
+          <p>
+            Each pair in the list specifies the input and output time of the
+            transition point between two adjacent links in a <a>timing
+            function chain</a>.
           <section>
             <h2>Normalizing a timing function position list</h2>
             <p>
@@ -2824,7 +2854,9 @@
                 <ul>
                   <li>a <var>spacing mode</var> of &ldquo;distribute&rdquo;
                       or &ldquo;align&rdquo;; or
-                  <li>a list of positions, <var>input positions</var>.
+                  <li>a list of items, <var>input positions</var>, where each
+                      item is either a single floating-point value or a pair of
+                      floating-point values.
                 </ul>
             </ul>
             <p>
@@ -2841,10 +2873,11 @@
               <li>Let <var>length</var> be the number of items in
                   <var>chain</var> plus 1.
               <li>The normalized <a>timing function position list</a> is a list
-                  of floating point numbers of length <var>length</var> such
+                  of pairs of floating point numbers of length <var>length</var> such
                   that the value of the element at index <var>n</var>, with
-                  indices beginning at zero, is equal to <code><var>n</var>
-                  &times; 1 &divide; (<var>length</var> - 1)</code>.
+                  indices beginning at zero, is equal to <code>(<var>n</var>
+                  &times; 1 &divide; (<var>length</var> - 1), <var>n</var>
+                  &times; 1 &divide; (<var>length</var> - 1))</code>.
             </ol>
             <p>The procedure when <var>spacing mode</var> is
                &ldquo;align&rdquo; depends on the <a>timed item</a> to which
@@ -2856,11 +2889,13 @@
                   animation effect</a>,</dt>
               <dd>
                 <p>
-                  The normalized <a>timing function position list</a> is a list
-                  of numbers corresponding to the <a
-                  title="positional offset of a keyframe">keyframe offsets</a>
-                  of the <a>keyframe animation effect</a>'s list of
-                  <a>keyframes</a>.
+                  The normalized <a>timing function position list</a> is a
+                  list of pairs, with length equal to the number of
+                  <a>keyframes</a> in the <a>keyframe animation effect</a>.
+                  Within each pair, the two values are equal to each other and
+                  equal to the
+                  <a title="positional offset of a keyframe">keyframe offsets</a>
+                  of the corresponding <a>keyframe</a>.
                 </p>
                 <p>
                   Note that this refers to the keyframe offset values
@@ -2876,10 +2911,11 @@
               <dd>
                 <p>
                   The normalized <a>timing function position list</a> is a list
-                  of numbers where each value is the result of traversing the
-                  <a>path elements</a> in the <a>path animation effect</a> in
-                  order and calculating the ratio of the path length at the end
-                  of the <a>path element</a> and the total path length.
+                  of pairs, with length equal to the number of
+                  <a>path elements</a> in the <a>path animation effect</a>.
+                  Within each pair, the two values are equal to each other and
+                  equal to the ratio of the path length at the end of the
+                  corresponding <a>path element</a> and the total path length.
                 </p>
                 <p>
                   <a>Path elements</a> that correspond to moveto elements
@@ -2898,35 +2934,38 @@
               provided is as follows:
             </p>
             <ol>
-              <li>If <em>any</em> of the following conditions are true, use
+              <li>If <em>any</em> of the following conditions are false, use
                   <a>distribute spacing</a> and terminate these steps:
                 <ul>
-                  <li><var>input positions</var> is empty.
-                  <li><var>input positions</var> is not sorted in ascending
-                      order.
+                  <li><var>input positions</var> is not empty.
+                  <li><var>input positions</var> is sorted such that the
+                  sequence formed by taking the value of each single-value
+                  entry and the first value of each pair entry, is in
+                  ascending order.
                   <li>The first and last values of <var>input positions</var>
-                      are not 0 and 1 respectively.
+                      are (0, 0) and (1, 1) respectively.
                       <p class="annotation">
-                        An implication of the above two conditions is that no
-                        values outside the range [0, 1] are allowed.
-                        If we allow keyframe offsets outside [0, 1] we will need
-                        to allow timing function offsets outside that range too
-                        for consistency.
+                        An implication of the above two conditions is that all
+                        input times must be in the range [0, 1]. If we allow
+                        keyframe offsets outside [0, 1] we will need to allow
+                        timing function offsets outside that range too for
+                        consistency.
                       </p>
                       <div class="note">
                         <p>
                           We could consider relaxing the constraint that the
-                          first and last values are zero and 1, and simply
-                          require that all values are in the range [0, 1]. We
-                          would then prepend and append linear timing
-                          functions as required.
+                          first and last values are (0, 0) and (1, 1), and
+                          simply require that all input values are in the
+                          range [0, 1]. We would then prepend and append
+                          linear timing functions as required.
                         </p>
                         <p>
                           This makes more sense if or when we allow timing
                           functions to cover input times outside the range [0,
                           1]. Assuming that this applied to timing function
                           chains, the first and last values in the position
-                          list would no longer be restricted to 0 and 1.
+                          list would no longer be restricted to input times of
+                          0 and 1.
                         </p>
                       </div>
                 </ul>
@@ -2934,9 +2973,10 @@
                   <var>input positions</var>.
             </ol>
             <p>
-              Note that even applying the above procedures, the normalized
-              <a>timing function position list</a> may not be suitable since it
-              may not be of the required length (as defined in <a
+              Note that even after applying the above procedures, the
+              normalized <a>timing function position list</a> may not be
+              suitable since it may not be of the required length (as defined
+              in <a
               href="#the-timing-function-position-list"
               class="sectionRef"></a>).
               Any difference in lengths is accommodated for by adjusting the
@@ -3021,21 +3061,23 @@
           </p>
           <ol>
             <li>
-              Let <var>start index</var> be the index of the last value in the
-              <a>timing function position list</a> that is less than or equal to
-              <var>x</var> when iterating from the start of <a>timing function
-              position list</a> to the end.
+              Let <var>start index</var> be the index of the last entry in the
+              <a>timing function position list</a> where the first value in
+              the pair is less than or equal to <var>x</var> when iterating
+              from the start of <a>timing function position list</a> to the
+              end.
             <li>
-              If the value at <var>start index</var> in <a>timing function
-              position list</a> is equal to one, decrement <var>start
-              index</var> by one.
+              If the first value in the pair at <var>start index</var> in
+              <a>timing function position list</a> is equal to one, decrement
+              <var>start index</var> by one.
             <li>
-              Let <var>x<sub>start</sub></var> be the value in the <a>timing
-              function position list</a> at <var>start index</var>.
+              Let <var>x<sub>start</sub></var> be the first value in the pair
+              in <a>timing function position list</a> at <var>start
+              index</var>.
             <li>
-              Let <var>x<sub>end</sub></var> be the value in the <a>timing
-              function position list</a> at <code><var>start index</var>
-              + 1</code>.
+              Let <var>x<sub>end</sub></var> be the first value in the pair in
+              <a>timing function position list</a> at <code><var>start
+              index</var> + 1</code>.
             <li>
               Let <var>f</var> be the <a>timing function</a> in the <a>timing
               function chain</a> at <var>start index</var>.
@@ -3049,10 +3091,18 @@
               <code><var>y<sub>local</sub></var>
               = f(<var>x<sub>local</sub></var>)</code>
             <li>
+              Let <var>y<sub>start</sub></var> be the second value in the pair
+              in <a>timing function position list</a> at <var>start
+              index</var>.
+            <li>
+              Let <var>y<sub>end</sub></var> be the second value in the pair in
+              <a>timing function position list</a> at <code><var>start
+              index</var> + 1</code>.
+            <li>
               The result of evaluating the <a>timing function chain</a> is then
-              <code><var>x<sub>start</sub></var> + <var>y<sub>local</sub></var>
-              &times; (<var>x<sub>end</sub></var>
-              - <var>x<sub>start</sub></var>)</code>.
+              <code><var>y<sub>start</sub></var> + <var>y<sub>local</sub></var>
+              &times; (<var>y<sub>end</sub></var>
+              - <var>y<sub>start</sub></var>)</code>.
           </ol>
         </section>
       </section>
@@ -7121,31 +7171,16 @@ interface Duration {
         <section>
           <h4>The <code>EasingTimesInput</code> typedef</h4>
           <div class="idl"
-            title="typedef (SpacingMode or sequence&lt;double&gt;) EasingTimesInput">
+            title="typedef (SpacingMode or sequence&lt;double&gt; or sequence&lt;DOMPoint&gt;) EasingTimesInput">
             <p>
               For simplicity, throughout this specification
               <a>EasingTimesInput</a> is used to represent either a list of
-              values corresponding to a <a>timing function position list</a> or
+              values or points corresponding to a <a>timing function position list</a> or
               a <a>SpacingMode</a> from which a <a>timing function position
               list</a> may be synthesized according to the procedure in
               <a href="#normalizing-a-timing-function-position-list"
               class="sectionRef"></a>.
             </p>
-            <div class="annotation">
-              <p>
-                If we later extend easing times to allow controlling the output
-                ranges (i.e. a <var>y</var> value as well), we could achieve
-                that by making the type <code>(SpacingMode or
-                sequence&lt;double&gt; or sequence&lt;DOMPoint&gt;)</code> or
-                something of that sort.
-              </p>
-              <p>
-                That would be backwards-compatible but would make it hard to
-                write code that falls back gracefully.
-                An alternative would be to simply add
-                <code>getEasingPoints</code> etc.
-              </p>
-            </div>
           </div>
         </section>
         <section>
