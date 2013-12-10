@@ -2422,6 +2422,11 @@
           step).
         </p>
         <p>
+          Note that to avoid ambiguity when using <a>smoothed</a> with a
+          <a>step timing function</a>, we define the gradient of a <a>step
+          timing function</a> to be zero at input values of zero and 1.
+        </p>
+        <p>
           A <a>step timing function</a> may be specified as a string
           using the following syntax:
         </p>
@@ -3105,6 +3110,43 @@
               - <var>y<sub>start</sub></var>)</code>.
           </ol>
         </section>
+      </section>
+      <section>
+        <h3>Smoothing of timing functions</h3>
+        <p>
+          Individual cubic Bézier <a>timing functions</a> within a <a>timing
+          function chain</a> may be marked as <dfn>smoothed</dfn>.
+          This means that an attempt is made to modify the cubic Bézier curve
+          to ensure that it is C1-continuous with the previous <a>timing
+          function</a> in the <a>timing function chain</a>.
+        </p>
+        <p>
+          Cubic Bézier curves are defined by anchor points and control points.
+          The first anchor point and control point define a vector which is
+          tangential to the Bézier at the first anchor point.
+        </p>
+        <p>
+          When a cubic Bézier curve is <a>smoothed</a>, the first control
+          point is adjusted such that the vector defined by the first anchor
+          point and this control point remains unchanged in length, but
+          changes in direction to match the positive tangent of the curve
+          defined by the previous <a>timing function</a> in the <a>timing
+          function chain</a> at local time fraction 1.
+        </p>
+        <p>
+          If the cubic Bézier curve in question is the first <a>timing
+          function</a> in a <a>timing function chain</a>, then the first
+          control point is adjusted such that the vector defined by the first
+          anchor point and this control point has a gradient of zero.
+        </p>
+        <p class="note">
+          The above procedure for smoothing is only effective if the first
+          control point of the cubic Bézier curve is not (0, 0).
+        </p>
+        <p>
+          If <a>smoothed</a> is applied to any other type of <a>timing
+          function</a>, it is ignored.
+        </p>
       </section>
       <section>
         <h3>Calculating the transformed time</h3>
@@ -4600,7 +4642,7 @@
         </ol>
         <p>
           The length of a path element is determined, where possible, via 
-          closed-form solutions. For some path elements (e.g. beziers) a
+          closed-form solutions. For some path elements (e.g. Béziers) a
           closed-form solution is not generally possible, and approximations
           should be used.
         </p>
