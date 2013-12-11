@@ -1876,8 +1876,16 @@
         </p>
         <blockquote>
           <dfn>repeated duration</dfn> =
-            <code><a>iteration duration</a> *
+            <code><a>iteration duration</a> &times;
                   <a>iteration count</a></code>
+            <p>
+              If either the <a>iteration duration</a> or <a>iteration count</a>
+              are zero, the <a>repeated duration</a> is zero.
+            </p>
+            <p class="note">
+              This clarification is needed since the result of infinity
+              multiplied by zero is undefined according to IEEE 754-2008.
+            </p>
         </blockquote>
         <p>
           The <a>active duration</a> is calculated according to the following
@@ -1979,7 +1987,17 @@
           </p>
           <blockquote>
             <dfn>start offset</dfn> =
-              <code><a>iteration start</a> * <a>iteration duration</a></code>
+              <code><a>iteration start</a> &times;
+                    <a>iteration duration</a></code>
+              <p>
+                If the <a>iteration start</a> is zero, the <a>start offset</a>
+                is zero.
+              </p>
+              <p class="note">
+                This clarification is needed since the <a>iteration duration</a>
+                may be infinity and the result of infinity multiplied by zero is
+                undefined according to IEEE 754-2008.
+              </p>
           </blockquote>
           <p>
             The <dfn>scaled active time</dfn> is calculated according to
@@ -1995,17 +2013,22 @@
               <a title="timed item playback rate">playback rate</a> as follows,
               <dl class="switch">
                 <dt>If the <a title="timed item playback rate">playback rate</a>
-                    is negative,</dt>
+                    is less than zero,</dt>
                 <dd>
-                Return <code>(<a>active time</a> -
-                              <a>active duration</a>)
-                        * <a title="timed item playback rate">playback rate</a>
-                        + <a>start offset</a></code>.
+                  Return <code>(<a>active time</a> -
+                                <a>active duration</a>)
+                   &times; <a title="timed item playback rate">playback rate</a>
+                          + <a>start offset</a></code>.
+                </dd>
+                <dt>If the <a title="timed item playback rate">playback rate</a>
+                    is zero,</dt>
+                <dd>
+                  Return <a>start offset</a>.
                 </dd>
                 <dt>Otherwise,</dt>
                 <dd>
                   Return <code><a>active time</a>
-                  * <a title="timed item playback rate">playback rate</a>
+                  &times; <a title="timed item playback rate">playback rate</a>
                   + <a>start offset</a></code>.
                 </dd>
             </li>
@@ -3063,7 +3086,14 @@
               with <var>iteration fraction</var> as the input time
               fraction.
           <li>Return the result of evaluating <code><var>scaled
-              fraction</var> * <a>iteration duration</a></code>.
+              fraction</var> &times; <a>iteration duration</a></code>.
+              If the <var>scaled fraction</var> is zero, let the result be
+              zero.
+              <p class="note">
+                This clarification is needed since the <a>iteration duration</a>
+                may be infinity and the result of infinity multiplied by zero is
+                undefined according to IEEE 754-2008.
+              </p>
         </ol>
       </section>
     </section>
@@ -9527,6 +9557,8 @@ elem.animate({ left: '100px' }, 3);
         <li>Fixed a bug in the calculation of the time fraction for zero-length
             iteration durations (<a href="#calculating-the-time-fraction"
             class="sectionRef"></a>).
+        <li>Clarified behavior in cases where a value of infinity may be
+            multiplied with zero.
         <li>Added the following members to the <a
             title="Player interface">Player</a> interface:
             <ul>
