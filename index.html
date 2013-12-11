@@ -4195,20 +4195,11 @@
           positional offsets is provided below.
         </p>
         <p>
-          Given a list of <a>keyframes</a> whose <a
-          title="positional offset of a keyframe">positional offets</a> are
-          either a real number in the range [0, 1] or unspecified,
-          we define such as list as <dfn>loosely sorted by offset</dfn> if, for
-          each <a>keyframe</a> in the list that has a specified offset, the
-          offset is greater than or equal to the offset of the previous
-          <a>keyframe</a> in the list with a specified offset, if any.
-        </p>
-        <p>
           Given a list of <a>keyframes</a>, <var>initial keyframe list</var>,
-          that is <a>loosely sorted by offset</a> we can evenly distribute the
-          <a>keyframes</a> with unspecified <a
-          title="positional offset of a keyframe">positional offsets</a> between
-          those frames with specified offsets using the following procedure:
+          we can evenly distribute the <a>keyframes</a> with unspecified <a
+          title="positional offset of a keyframe">positional offsets</a>
+          between those frames with specified offsets using the following
+          procedure:
         </p>
         <ol>
           <li>Let <var>distributed keyframes</var> be a copy of <var>initial
@@ -4251,6 +4242,12 @@
                 * <var>i</var>
                 / (<var>n</var> + 1)</code>
               </p>
+          <li>Sort <var>distributed keyframes</var> by the <a
+              title="positional offset of a keyframe">positional offset</a> of
+              each <a>keyframe</a> such that the partial order of
+              <a>keyframes</a> with equal <a
+              title="positional offset of a keyframe">positional offsets</a>
+              remains constant.
           <li>Return <var>distributed keyframes</var>.
         </ol>
       </section>
@@ -7962,19 +7959,13 @@ elem.animate({ left: '100px' }, 3);
               defined in <a
               href="#normalizing-the-list-of-keyframes" class="sectionRef"></a>.
             </p>
-            <p>
-              As a result of the normalization of the list, if <var>frames</var>
-              is not <a>loosely sorted by offset</a> this effect will not
-              contribute to the final <a>composited value</a>.
-            </p>
-          </dd>
+<         </dd>
         </dl>
         <section>
           <h4>Normalizing the list of keyframes</h4>
           <div class="issue">
-            This behavior is expected to be revised such that keyframe lists
-            that are not in sequence are accepted and keyframe offsets outside
-            the range [0, 1] are also allowed.
+            This behavior is expected to be revised such that keyframe offsets
+            outside the range [0, 1] are allowed.
             Doing so may make this procedure unnecessary.
           </div>
           <p>
@@ -7988,8 +7979,6 @@ elem.animate({ left: '100px' }, 3);
           <ol>
             <li>Let <var>normalized keyframes</var> be a copy of the
                 <a>keyframe</a> list returned by <code>getFrames</code>.
-            <li>If <var>normalized keyframes</var> is not <a>loosely sorted by
-                offset</a>, return an empty list.
             <li>If there exist any <a>keyframes</a> whose specified positional
                 offset is less than zero, remove all <a>keyframes</a> from the
                 start of <var>normalized keyframes</var> up to and including the
