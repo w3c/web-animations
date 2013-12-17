@@ -1207,6 +1207,29 @@
           If the <a>inherited time</a> is <code>null</code> then the local time
           is also <code>null</code>.
         </p>
+        <p>
+          For a <a>timed item</a>, the <dfn>inherited overflow boundary</dfn> at
+          a given moment is based on the first matching condition from the
+          following:
+        </p>
+        <dl class="switch">
+          <dt>If the <a>timed item</a> has a <a>parent timing group</a>,</dt>
+          <dd>
+            the inherited overflow boundary is the <a>parent timing
+            group</a>'s <a>overflow boundary</a>.
+          </dd>
+          <dt>Otherwise,</dt>
+          <dd>
+            the inherited overflow boundary is <code>null</code>.
+          </dd>
+        </dl>
+        <p>
+          The <dfn>parent overflow boundary</dfn> of a <a>timed item</a> is
+          the <a>timed item</a>'s <a>inherited overflow boundary</a> minus its
+          <a title="timed item start time">start time</a>.
+          If the <a>inherited overflow boundary</a> is <code>null</code> then
+          the parent overflow boundary is also <code>null</code>.
+        </p>
       </section>
       <section>
         <h3>Timed item phases and states</h3>
@@ -1267,7 +1290,8 @@
                 Corresponds to a <a>timed item</a> whose <a>active time</a> is
                 changing on each sample.
                 This occurs when the <a>timed item</a> <em>and all its
-                ancestors</em> are in the <a>active phase</a>.
+                ancestors</em> are <a>in play</a> and the root ancestor is in
+                the <a>active phase</a>.
                 <a>Animations</a> only &ldquo;move&rdquo; when they are
                 <a>in play</a>.
               </p>
@@ -1280,6 +1304,17 @@
                 mode</a>, the child <a>timed item</a> may be effectively be
                 snapshotted within the <a>active phase</a> despite no longer
                 being <a>in play</a>.
+              </p>
+              <p>
+                Conversely, it is possible for a <a>timed item</a> to be <a>in
+                play</a> without being in the <a>active phase</a>.
+                For example, a <a>parent timing group</a> that is <a>in
+                play</a> may have a <a>timing function</a> which causes it to
+                be <a>overflowing</a>.
+                The child <a>timed item</a> of such a <a>parent timing
+                group</a> may be in <a>in play</a> even if its local time
+                falls outside its <a>active interval</a>, causing it to not be
+                in the <a>active phase</a>.
               </p>
               <p>
                 Transitions to and from the <a>in play</a> state trigger
@@ -1356,18 +1391,19 @@
           duration</a>.
         </p>
         <p>
-          A <a>timed item</a> is <dfn>in play</dfn> if <em>all</em>
+          A <a>timed item</a> is <dfn>in play</dfn> if <em>any</em>
           of the following conditions are met:
         </p>
-        <ol>
-          <li>the <a>timed item</a> is in the <a>active phase</a>, and
-          <li>the <a>timed item</a> has a <a>parent timing group</a> that is
-              <a>in play</a> or else is <a>directly associated with a player</a>
-              that is not <a>bounded</a>.
-        </ol>
+        <ul>
+          <li>the <a>timed item</a> is in the <a>active phase</a> and has a
+              <a>parent timing group</a> that is <a>in play</a> or else is
+              <a>directly associated with a player</a> that is not
+              <a>bounded</a>.
+          <li>the <a>timed item</a> is <a>overflowing</a>. 
+        </ul>
         <p>
           A timed item is <dfn>current</dfn> if it <em>any</em> of the following
-          conditions is true:
+          conditions are true:
         </p>
         <ul>
           <li>it is in the <a>before phase</a>, or
@@ -1381,6 +1417,15 @@
           href="#calculating-the-active-time" class="sectionRef"></a> is not
           <code>null</code>.
         </p>
+        <p>
+          A timed item is <dfn>overflowing</dfn> if its <a>parent overflow
+          boundary</a> is not <code>null</code> and falls inside its <a>active
+          interval</a>.
+        </p>
+        <div class="note">
+          Note that this definition of overflow means that the property is not
+          inherited. It is possible for a timed item to not overflow even
+          though its parent is overflowing.
       </section>
     </section>
 
@@ -1475,26 +1520,6 @@
           item is only defined (that is, not <code>null</code>) inside the
           <a>active interval</a> <em>or</em> when a fill is applied.
         </p>
-        <div class="issue">
-          <p>
-            Currently <a>timing functions</a> that generate results outside the
-            range [0, 1] will behave unexpectedly when applied to animation
-            groups, as children will increase iterations or enter into fill mode
-            rather than continuing to extrapolate along their defined behavior
-            (which is what they would do if the timing function applied to them
-            directly).
-          </p>
-          <p>
-            To fix this it is possible we will wish to introduce 'overflow' fill
-            modes that respond to time values larger than or smaller than the
-            active time range by extrapolating rather than filling.
-          </p>
-          <p>
-            See <a
-            href='http://lists.w3.org/Archives/Public/public-fx/2013AprJun/0184.html'>section
-            15 (Overflowing fill) of minuted discussion from Tokyo 2013 F2F</a>.
-          </p>
-        </div>
       </section>
     </section>
 
@@ -1909,11 +1934,17 @@
             The <dfn>active time</dfn> is based on the <a>local time</a>
             and <a>start delay</a>.
             However, it is only defined when the <a>timed item</a> should
-            produce an output and hence depends on its <a>fill mode</a> and
-            phase as well as the phase of its <a>parent timing group</a>, if
-            any, as follows,
+            produce an output and hence depends on its <a>fill mode</a>, phase
+            and whether it is <a>overflowing</a>, as well as the phase of its
+            <a>parent timing group</a>.
+            It is calculated using the first matching condition from the
+            following,
           </p>
           <dl class="switch">
+            <dt>If the timed item is <a>overflowing</a>,</dt>
+            <dd>
+              Return <code><a>local time</a> - <a>start delay</a></code>.
+            </dd>
             <dt>If the timed item is in the <a>before phase</a>,</dt>
             <dd>
               The result depends on the <a>fill mode</a> as follows.
@@ -2048,16 +2079,17 @@
               If the <a>iteration duration</a> is zero, return zero.
             </li>
             <li>
-              If <code><a>scaled active time</a> - <a>start
-              offset</a></code> is equal to the <a>repeated duration</a>,
-              and <a>iteration count</a> is not zero,
-              and <code>(<a>iteration count</a> + <a>iteration start</a>)
-              % 1</code> is zero,
-              return the <a>iteration duration</a>.
+              If the <a>current iteration</a> is zero, return <a>scaled active
+              time</a>.
+              <p class="note">
+                This clarification is needed since the <a>iteration duration</a>
+                may be infinity and the result of infinity multiplied by zero is
+                undefined according to IEEE 754-2008.
+              </p>
             </li>
             <li>
-              Otherwise, return <code><a>scaled active time</a>
-              % <a>iteration duration</a></code>.
+              Otherwise, return <code><a>scaled active time</a> - <a>current
+              iteration</a> &times <a>iteration duration</a></code>.
             </li>
           </ol>
         </section>
@@ -2082,13 +2114,10 @@
             1</code>.
           </li>
           <li>
-            If the <a>iteration time</a> equals the <a>iteration
-            duration</a>, return <code><a>iteration start</a>
-            + <a>iteration count</a> - 1</code>.
-          </li>
-          <li>
-            Return <code>floor(<a>scaled active time</a> /
-            <a>iteration duration</a>)</code>.
+            Return the result of evaluating <code>floor(<a>scaled active
+            time</a> / <a>iteration duration</a>)</code>, clamped to the range
+            <code>[0, ceil(<a>iteration start</a> + <a>iteration count</a>) -
+            1]</code>.
             <p class="note">
               If the <a>iteration duration</a> is infinite, the
               result of <code>floor(<a>scaled active time</a> /
@@ -3094,6 +3123,21 @@
                 may be infinity and the result of infinity multiplied by zero is
                 undefined according to IEEE 754-2008.
               </p>
+        </ol>
+      </section>
+      <section>
+        <h3>Calculating the overflow boundary</h3>
+        <p>
+          The <dfn>overflow boundary</dfn> is calculated from the
+          <a>transformed time</a> using the following steps:
+        </p>
+        <ol>
+          <li>If the <a>transformed time</a> is <code>null</code>, return
+              <code>null</code>.
+          <li>If the <a>transformed time</a> is less than zero, return zero.
+          <li>If the <a>transformed time</a> is greater than or equal to the
+              <a>iteration duration</a>, return the <a>iteration duration</a>.
+          <li>Otherwise, return <code>null</code>.
         </ol>
       </section>
     </section>
