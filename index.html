@@ -2269,6 +2269,24 @@
           (i.e. positive and negative infinity are permitted).
         </p>
         <p>
+          A <a>timing function</a> also takes an input <dfn>discontinuity
+          bias</dfn> which is used to disambiguate evaluations at time
+          fractions which fall exactly on a discontinuity in the output of the
+          <a>timing function</a>.
+          The possible values of <a>discontinuity bias</a> are:
+        </p>
+        <ul>
+          <li><dfn>negative bias</dfn>, and</li>
+          <li><dfn>positive bias</dfn></li>
+        </ul>
+        <p>
+          A value of <a>negative bias</a> means that evaluations which fall
+          exactly at a discontinuity take the value on the side closest to
+          negative infinity.
+          A value of <a>positive bias</a> means that such evaluations take the
+          value on the side closest to positive infinity.
+        </p>
+        <p>
           <a>Timed items</a> have one <a>timing function</a> associated with
           them.
           The default <a>timing function</a> is the <dfn>linear timing
@@ -2431,6 +2449,7 @@
             Some example step timing functions are illustrated below.
           </p>
           <div class="figure">
+            <!-- Needs updating to remove closed/open circles. -->
             <img src="img/step-timing-func-examples.svg" width="700"
                 alt="Example step timing functions.">
           </div>
@@ -2451,13 +2470,6 @@
           The output time, starting at zero, rises by an amount equal to the
           interval duration once during each interval at the transition point
           which may be either the start, midpoint, or end of the interval.
-        </p>
-        <p>
-          In keeping with Web Animation's model for endpoint exclusive
-          interval timing (see <a href="#interval-timing"
-          class="sectionRef"></a>), the output time at the transition point is
-          the time <em>after</em> applying the increase (i.e. the top of the
-          step).
         </p>
         <p>
           A <a>step timing function</a> may be specified as a string
@@ -3100,6 +3112,10 @@
               evaluating the <a>timed item</a>'s <a>timing function</a>
               with <var>iteration fraction</var> as the input time
               fraction.
+              The value of the <a>timing function</a>'s <a>discontinuity
+              bias</a> input parameter is <a>negative bias</a> if the <a>timed
+              item</a> is in the <a>before phase</a> and <a>positive bias</a>
+              otherwise.
           <li>Return the result of evaluating <code><var>scaled
               fraction</var> &times; <a>iteration duration</a></code>.
               If the <var>scaled fraction</var> is zero, let the result be
