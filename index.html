@@ -2461,6 +2461,35 @@
           step).
         </p>
         <p>
+          When applied to a <a>timed item</a>, <a>step timing functions</a>
+          take an additional input indicating if the <a>timed item</a> is in
+          the <a>before phase</a> or not.
+          For an input time of zero, <a>step timing functions</a> whose
+          transition point is at the start of the interval, produce an output
+          time value of zero when the <a>timed item</a> is in the <a>before
+          phase</a> and an output time value equal to the height of the first
+          step otherwise.
+        </p>
+        <p class="issue">
+          Once we rework timing functions on animation effects we will probably
+          need to adjust the above condition to also include when applied to the
+          first interval in an animation effect.
+        </p>
+        <div class="issue">
+          <p>
+            Alternatively, we could update the procedure for calculating the
+            <a>transformed time</a> and simply return zero if <var>iteration
+            fraction</var> is zero and we are in the <a>before phase</a>.
+            The advantage of this is it would cover all timing functions.
+            The disadvantage is that we would have to add the same logic when
+            evaluating animation effects.
+          </p>
+          <p>
+            Revisit this after we change the way timing functions are applied to
+            animation effects.
+          </p>
+        </div>
+        <p>
           A <a>step timing function</a> may be specified as a string
           using the following syntax:
         </p>
@@ -9510,6 +9539,9 @@ elem.animate({ left: '100px' }, 3);
             that the <a>current time</a> behaves more like a DVD or cassette
             player.
         <li>Introduced an <a>end delay</a> property to timed items.
+        <li>Added extra wording so that a <a>timed item</a> with a step-start
+            timing function produces zero before it starts if it is frozen at
+            the start time.
         <li>Introduced <a>timing function chains</a> and added the
             <code>easingTime</code> attribute to the <a>TimingInput</a>
             dictionary and the <code>getEasingTime</code> and
