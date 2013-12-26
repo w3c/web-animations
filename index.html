@@ -3693,21 +3693,133 @@
         <h3>Target properties</h3>
         <p>
           Each <a>animation effect</a> can have zero or more associated
-          <dfn>target properties</dfn>.
-          Not all properties may be animated by an <a>animation effect</a>.
-          Properties that may be animated by an <a>animation effect</a> are 
-          defined as <dfn>animatable</dfn>.
-          The set of <a>animatable</a> properties is is defined in <a
-          href="#animatable-properties" class="sectionRef"></a>.
+          <dfn title="target property">target properties</dfn>.
+        </p>
+          <a title="target property">Target properties</a> may be CSS properties
+          or DOM attributes.
+          If a given <a>animation target</a> has an attribute with the same name
+          as a CSS property, any <a>target property</a> is taken to refer to to
+          the CSS property.
+        </p>
+        <p class="note">
+          If there ever exists a situation where we need to animate an attribute
+          with the same name as a property (other than a <a
+          href="http://www.w3.org/TR/SVG2/intro.html#TermPresentationAttribute">presentation
+          attribute</a> [[SVG2]]) then we will need to introduce
+          a disambiguation strategy. Generally, however, such naming should be
+          avoided at all costs.
+        </p>
+      </section>
+      <section>
+        <h3>Procedures for animating properties</h3>
+        <p>
+          In order to animate a <a>target property</a> the following procedures
+          must be defined.
+        </p>
+        <ul>
+          <li><dfn>interpolation</dfn> &mdash; given two target property values
+              <var>V</var><sub>start</sub> and <var>V</var><sub>end</sub>,
+              produces an intermediate value <var>V</var><sub>res</sub> at
+              a distance of <var>p</var> along the interval between
+              <var>V</var><sub>start</sub> and <var>V</var><sub>end</sub>
+              such that
+              <var>p</var> = 0 produces <var>V</var><sub>start</sub> and
+              <var>p</var> = 1 produces <var>V</var><sub>end</sub>.
+          <li><dfn>addition</dfn> &mdash; given two target property values
+              <var>V</var><sub>a</sub> and <var>V</var><sub>b</sub> returns the
+              sum of the two properties <var>V</var><sub>result</sub>.
+              For addition that is not commutative (for example, matrix
+              multiplication) <var>V</var><sub>a</sub> represents the first term
+              of the operation and <var>V</var><sub>b</sub> represents the
+              second.
+          <li><dfn>distance computation</dfn> &mdash; given two target property
+              values <var>V</var><sub>start</sub> and
+              <var>V</var><sub>end</sub> calculates some notion of scalar
+              distance between the values, <var>distance</var>.
+        </ul>
+        <p class="note">
+          While <a>addition</a> can often be expressed in terms of the same
+          weighted sum function used to define <a>interpolation</a>, this is not
+          always the case.
+          For example, interpolation of transform matrices involves
+          decomposing and interpolating the matrix components whilst addition
+          relies on matrix multiplication.
+        </p>
+      </section>
+      <section>
+        <h3>Specific animation types</h3>
+        <p>
+          The procedures used for animating a given <a>target property</a> are
+          specific to the <dfn title="animation type">type of animation</dfn>
+          defined for the <a>target property</a>.
         </p>
         <p>
-          An <a>animation effect</a> that targets a property that is not
-          <a>animatable</a> will have no effect on the property.
-          However, an <a>animation</a> that applies such an <a>animation
-          effect</a> will still exhibit the usual behavior for a <a>timed
-          item</a> such as firing <a>timing events</a> and occupying time in
-          a <a>sequence timing group</a>.
+          For CSS properties, the <a title="animation type">type of
+          animation</a> is defined by the "Animatable:" line in the summary of
+          the property's definition or in [[CSS3-TRANSITIONS]] for properties
+          that lack a such a line.
         </p>
+        <p class="annotation">
+          The default <a>animation type</a> for CSS properties is "as string".
+          Should this be defined here or in CSS Animations Level 4?
+        </p>
+        <p>
+          For DOM attributes, the type of animation is defined alongside
+          the attribute definition.
+          Unlike CSS properties, if such a definition is not provided the
+          default animation type is "no animation".
+        </p>
+        <p>
+          Following is a series of pre-defined <a>animation types</a>.
+          [[CSS3-TRANSITIONS]] provides further CSS-specific animation types.
+        </p>
+        <p>
+          For <a>animation types</a> that do not define a procedure for
+          <a>addition</a>, the procedure for <a>interpolation</a> is used with
+          <var>V</var><sub>start</sub> set to <var>V</var><sub>a</sub>,
+          <var>V</var><sub>end</sub> set to <var>V</var><sub>b</sub>,
+          and <var>p</var> set to 1.
+          Animation types for which addition should not performed must define an
+          <a>addition</a> procedure that simple returns
+          <var>V</var><sub>b</sub>.
+        </p>
+        <p>
+          For <a>animation types</a> that do not define a procedure for
+          <a>distance computation</a>, distance for any given
+          <var>V</var><sub>start</sub> and <var>V</var><sub>end</sub> is 1.
+        </p>
+        <section>
+          <h4>Not animatable</h4>
+          <p>
+            Some properties are specifically defined as <dfn>not
+            animatable</dfn>.
+            For example, properties defining animation parameters are <a>not
+            animatable</a> since doing so would create complex recursive
+            behavior.
+          </p>
+          <p>
+            Unlike other <a>animation types</a>, no procedures for
+            <a>interpolation</a>, <a>addition</a> and <a>distance
+            computation</a> are defined for properties whose <a>animation
+            type</a> is <a>not animatable</a> since these properties should not
+            be modified.
+          </p>
+          <p>
+            An <a>animation effect</a> that targets a property that is
+            <a>not animatable</a> will still exhibit the usual behavior for
+            a <a>timed item</a> such as firing <a>timing events</a> and
+            occupying time in a <a>sequence timing group</a>.
+          </p>
+        </section>
+        <section>
+          <h4>Animatable as string</h4>
+        </section>
+        <section>
+          <h4>Animatable as integer</h4>
+        </section>
+        <section>
+          <h4>Other animation types</h4>
+        </section>
       </section>
       <section>
         <h3>Target property types</h3>
