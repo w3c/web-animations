@@ -3877,6 +3877,111 @@
           </ul>
         </section>
         <section>
+          <h4>Animatable as length, percentage, or calc</h4>
+          <p>
+            A <a>target property</a> that is <dfn>animatable as length,
+            percentage, or calc</dfn> has the following <a>animation
+            behavior</a>:
+          </p>
+          <ul>
+            <li><a title="animation interpolation">interpolation</a>:
+                as defined in [[CSS3-TRANSITIONS]].
+            <li><a title="animation addition">addition</a>:
+                calc(<var>V</var><sub>a</sub> + <var>V</var><sub>b</sub>)<br>
+                (Nested <code>calc()</code> functions are expanded when
+                determining the computed value as defined in <a
+                href="http://www.w3.org/TR/css3-values/#calc-computed-value">CSS
+                Values and Units</a> [[!CSS3-VALUES]].)
+            <li><a>distance computation</a>: as with <a>animatable as real
+                number</a> but using the <a
+                href="http://www.w3.org/TR/CSS2/cascade.html#used-value">used
+                value</a> [[!CSS21]] for <var>V</var><sub>start</sub> and
+                <var>V</var><sub>end</sub>.
+          </ul>
+        </section>
+        <section>
+          <h4>Animatable as color</h4>
+          <p>
+            A <a>target property</a> that is <dfn>animatable as color</dfn> has
+            the following <a>animation behavior</a>:
+          </p>
+          <ul>
+            <li><a title="animation interpolation">interpolation</a>:
+                as defined in [[CSS3-TRANSITIONS]].
+            <li><a title="animation addition">addition</a>:
+                as with <a>as real number</a> but performed on each RGBA color
+                component in premultiplied space.
+                <p class="note">
+                  Since negative color is not currently supported, clamping of
+                  the channel values may be performed upon each addition or once
+                  when <a>composition</a> is complete.
+                </p>
+            <li><a>distance computation</a>:
+                <blockquote role="math" aria-describedby="math-color-distance">
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                  <mi>distance</mi><mo>=</mo>
+                  <mrow>
+                    <msqrt>
+                      <msup>
+                        <mrow>
+                          <mfenced open="(" close=")" separators=",">
+                            <mrow><msub><mi>R</mi> end</msub>
+                                  <mo>-</mo>
+                                  <msub><mi>R</mi> start</msub></mrow></mfenced>
+                        </mrow><mn>2</mn>
+                      </msup>
+                      <mo>+</mo>
+                      <msup>
+                        <mrow>
+                          <mfenced open="(" close=")" separators=",">
+                            <mrow><msub><mi>G</mi> end</msub>
+                                  <mo>-</mo>
+                                  <msub><mi>G</mi> start</msub></mrow></mfenced>
+                        </mrow><mn>2</mn>
+                      </msup>
+                      <mo>+</mo>
+                      <msup>
+                        <mrow>
+                          <mfenced open="(" close=")" separators=",">
+                            <mrow><msub><mi>B</mi> end</msub>
+                                  <mo>-</mo>
+                                  <msub><mi>B</mi> start</msub></mrow></mfenced>
+                        </mrow><mn>2</mn>
+                      </msup>
+                      <mo>+</mo>
+                      <msup>
+                        <mrow>
+                          <mfenced open="(" close=")" separators=",">
+                            <mrow><msub><mi>A</mi> end</msub>
+                                  <mo>-</mo>
+                                  <msub><mi>A</mi> start</msub></mrow></mfenced>
+                          </mfenced>
+                        </mrow><mn>2</mn>
+                      </msup>
+                    </msqrt>
+                  </mrow>
+                  </math>
+                  <pre id="math-color-distance">sqrt((R<sub>end</sub>
+                  - R<sub>start</sub>)^2 + (G<sub>end</sub>
+                  - G<sub>start</sub>)^2 + (B<sub>end</sub>
+                  - B<sub>start</sub>)^2 + (A<sub>end</sub>
+                  - A<sub>start</sub>)^2)</pre>
+                </blockquote>
+                <div>
+                  where &lt;<var>R|G|B|A</var><sub>start|end</sub>&gt;
+                  represents the red, green, blue, or alpha channel of
+                  <var>V</var><sub>start</sub> or <var>V</var><sub>end</sub>
+                  respectively.
+                  Each value is normalized to the [0.0, 1.0] range and expressed
+                  in premultiplied color space.
+                </div>
+          </ul>
+          <p class="issue">
+            Should we call this &ldquo;animatable as premultiplied RGBA additive
+            color in sRGB color space&rdquo; instead?
+          </p>
+        </section>
+        <section>
           <h4>Other animation behaviors</h4>
         </section>
       </section>
