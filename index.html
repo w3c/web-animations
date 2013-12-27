@@ -3984,7 +3984,86 @@
           </p>
         </section>
         <section>
+          <h4>Animatable as transform list</h4>
+          <p>
+            A <a>target property</a> that is <dfn>animatable as transform
+            list</dfn> has the following <a>animation behavior</a>:
+          </p>
+          <ul>
+            <li><a title="animation interpolation">interpolation</a>:
+                as defined in <a
+                href="http://www.w3.org/TR/css3-transforms/#interpolation-of-transforms">Interpolation
+                of Transforms</a> [[CSS3-TRANSFORMS]].
+            <li><a title="animation addition">addition</a>: performed by
+                accumulating transform lists as 
+                &lsquo;<var>V</var><sub>a</sub> <var>V</var><sub>b</sub>&rsquo;.
+                Accumulation is defined in [[CSS3-TRANSFORMS]].
+            <li><a>distance computation</a>: <span class="todo">See issue
+                below</span>
+          </ul>
+          <div class="issue">
+            <p>
+              For <a>distance computation</a> we previously defined it as
+              follows:
+            </p>
+            <ol>
+              <li>Look only at the first component of the two lists
+              <li>If both are translate &rarr; euclidean distance
+              <li>If both are scale &rarr; absolute difference
+              <li>If both are rotate &rarr; absolute difference
+              <li>If both match but are something else &rarr; use linear
+              <li>If they don't match &rarr; use matrix decomposition and
+                  euclidean distance between translate components
+            </ol>
+            <p>
+              This seems really arbitrary, especially part 5.
+            </p>
+            <p>
+              Also, looking at only the first component seems odd.
+              Going through each component, working out the distance and then
+              getting the square of the distance also seems much more consistent
+              with what we do elsewhere.
+            </p>
+          </div>
+        </section>
+        <section>
           <h4>Other animation behaviors</h4>
+          <p>
+            The set of <a>animation behaviors</a> defined here may be extended
+            by other specifications.
+            For example, properties with using the &lt;image&gt; type are
+            animated using the interpolation behavior defined in <a
+            href="http://dev.w3.org/csswg/css-images-4/#interpolation">CSS Image
+            Values and Replaced Content</a>
+            [[CSS4-IMAGES]].
+          </p>
+          <div class="issue">
+            <p>
+              There are a bunch of CSS properties for which distance (and in
+              some cases addition) is not defined or which need special
+              handling.
+            </p>
+            <p>
+              For example,
+            </p>
+            <ul>
+              <li>font-stretch (an enum but handled like an integer)
+              <li>visibility (0 or 1 depending on if endpoints match or not)
+              <li>flex-grow and flex-shrink which allow animation only if one of
+                  the endpoints is 0)
+              <li>value pairs, triples (use square distance)
+              <li>rects (use square distance)
+              <li>dash arrays (square distance but a bit weird due to
+                               percentages)
+              <li>shadows (square distance of components)
+              <li>filters (undefined)
+              <li>background-position (special list handling needed)
+              <li>pair lists
+            </ul>
+            <p>
+              Should we define these here or in the CSS Animation 4 spec?
+            </p>
+          </div>
         </section>
       </section>
       <section>
