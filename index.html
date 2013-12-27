@@ -3998,6 +3998,23 @@
                 accumulating transform lists as 
                 &lsquo;<var>V</var><sub>a</sub> <var>V</var><sub>b</sub>&rsquo;.
                 Accumulation is defined in [[CSS3-TRANSFORMS]].
+                <p>
+                  However, when addition is performed for the purpose of
+                  <a>accumulation</a>, the resulting transform list must be
+                  collapsed to produce the same number and type of functions as
+                  when calculating the <a>unaccumulated animation value</a>.
+                </p>
+                <p>
+                  For example, an animation effect that produces an
+                  <a>intermediate animation value</a> consisting of a rotation
+                  function and a translate function when the <a>current
+                  iteration</a> is zero, should also produce a single rotation
+                  function and a single translate function and in the same order
+                  when producing the <a>intermediate animation value</a> for
+                  values of <a>current iteration</a> greater than zero even when
+                  the <a>accumulation operation</a> is <a
+                  title="accumulation operation sum">sum</a>.
+                </p>
             <li><a>distance computation</a>: <span class="todo">See issue
                 below</span>
           </ul>
@@ -4067,40 +4084,6 @@
         </section>
       </section>
       <section>
-        <h3>Target property types</h3>
-        <p>
-          The specific operations involved in animating a <a
-          title="target properties">target property</a> differ based on the
-          <dfn>property type</dfn>.
-          For example, the specific procedure for animating a property that
-          specifies a color will differ from a property that specifies a length.
-          Each <a>animatable</a> property defines one or more <a>property
-          types</a> to use when animating.
-        </p>
-        <p>
-          In order to produce a smooth change between property values,
-          a procedure for <dfn>interpolation</dfn> is required.
-          A given <a>property type</a> is <dfn>interpolable</dfn> if there is
-          a procedure defined to interpolate between two values of that type.
-        </p>
-        <p>
-          In order to support <a>accumulation</a> and <a
-          title="composition operation add">additive composition</a>,
-          a procedure for <dfn>addition</dfn> is required.
-          A given <a>property type</a> is <dfn>additive</dfn> if there is
-          a procedure defined to add two values of that type.
-        </p>
-        <p>
-          An initial list of <a>property types</a> and their procedures for
-          <a>interpolation</a> and <a>addition</a> is given in <a
-          href="#animation-of-property-types" class="sectionRef"></a>.
-          In addition to this initial list, specifications that define CSS
-          properties may provide additional property types to define the
-          procedures for interpolation and addition of the values of those
-          properties.
-        </p>
-      </section>
-      <section>
         <h3>Intermediate animation values</h3>
         <p>
           Given a <a>time fraction</a>, a <a>current iteration</a>, and an
@@ -4112,22 +4095,6 @@
           the process defined in <a href="#combining-animations"
           class="sectionRef"></a>.
         </p>
-        <div class="issue">
-          <p>
-            The use of the term 'value' here is misleading, as the output of
-            the effect stage can not be resolved to a concrete value until it
-            is composited with an underlying value. This takes place in the
-            compositing stage, when the animation stack is resolved. It is
-            therfore more accurate to describe the output of the effect stage
-            as a set of values and corresponding composition operations, which
-            are used to modify an underlying value. The same is true of the
-            unaccumulated animation value.
-          </p>
-          <p>
-            Use of this more precise terminology will also allow the algorithm
-            for accumulation to be specified more precisely.
-          </p>
-        </div>
         <p>
           An <a>intermediate animation value</a> is established by first
           calculating an <a>unaccumulated animation value</a> and then applying
@@ -4152,8 +4119,8 @@
           <h3>Accumulating animation values</h3>
           <p>
             <a>Animation effects</a> may be defined such that as the
-            <a>animation</a> that is applying them is <a
-            href="#repeating">repeated</a>, the <a>intermediate animation
+            <a>animation</a> that is applying them <a
+            href="#repeating">repeats</a>, the <a>intermediate animation
             value</a> builds on the value produced by previous iterations.
             This behavior is called <dfn>accumulation</dfn>.
           </p>
@@ -4169,13 +4136,15 @@
             <dd>
               <p>
                 The <a>intermediate animation value</a> produced by the
-                <a>animation effect</a> for a given property is the sum of the
-                <a>unaccumulated animation value</a> for the given <a>time
-                fraction</a> and the final <a>intermediate animation value</a>
-                of the previous iteration (i.e. the result of evaluating the
-                <a>intermediate animation value</a> with a <a>time fraction</a>
-                of 1, and a <a>current iteration</a> of <code><a>current
-                iteration</a> - 1</code>).
+                <a>animation effect</a> for a given property is the sum (as
+                calculated using the <a title="animation addition">addition</a>
+                procedure of the <a>target property</a>) of the <a>unaccumulated
+                animation value</a> for the given <a>time fraction</a> and the
+                final <a>intermediate animation value</a> of the previous
+                iteration (i.e. the result of evaluating the <a>intermediate
+                animation value</a> with a <a>time fraction</a> of 1, and
+                a <a>current iteration</a> of <code><a>current iteration</a>
+                - 1</code>).
               </p>
               <p>
                 If the <a>current iteration</a> is zero, the <a>intermediate
@@ -4191,13 +4160,6 @@
             </dd>
           </dl>
           <p>
-            <a>Accumulation</a> behavior is only applied for <a>target
-            properties</a> that are <a>additive</a>.
-            For <a>target properties</a> whose values are not <a>additive</a>,
-            an <a>accumulation operation</a> of
-            <a title="accumulation operation none">none</a> is used.
-          </p>
-          <p>
             <a>Accumulation</a> behavior is only applied for <a
             title="keyframe animation effect">keyframe animation effects</a>
             when the <a>composition operation</a> is uniform across all
@@ -4207,14 +4169,6 @@
             varies, an <a>accumulation operation</a> of <a
             title="accumulation operation none">none</a> is used.
           </p>
-          <div class="issue">
-            The definition of accumulation here needs review.
-            The intention is to provide compatible behavior with SVG but also
-            needs to account for the possibility of <a>timing functions</a>
-            whose final output value is not 1 (if we allow that), and possible
-            differences in the way <a
-            title="composition operation">composition</a> is defined.
-          </div>
         </section>
       </section>
     </section>
