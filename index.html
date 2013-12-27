@@ -3778,20 +3778,16 @@
         </p>
         <p>
           For <a>animation behaviors</a> that do not define a procedure for
-          <a title="animation addition">addition</a>, the procedure for <a
-          title="animation interpolation">interpolation</a> is used with
-          <var>V</var><sub>start</sub> set to <var>V</var><sub>a</sub>,
-          <var>V</var><sub>end</sub> set to <var>V</var><sub>b</sub>,
-          and <var>p</var> set to 1.
-          <a>Animation behaviors</a> for which <a
-          title="animation addition">addition</a> should not performed must
-          define an addition procedure that simply returns
-          <var>V</var><sub>b</sub>.
+          <a title="animation addition">addition</a> or which as defined as
+          <dfn>not additive</dfn>, the <a
+          title="animation addition">addition procedure</a> is simply
+          <var>V</var><sub>res</sub> = <var>V</var><sub>b</sub>.
         </p>
         <p>
           For <a>animation behaviors</a> that do not define a procedure for
-          <a>distance computation</a>, distance for any given
-          <var>V</var><sub>start</sub> and <var>V</var><sub>end</sub> is 1.
+          <a>distance computation</a> or which are defined as <dfn>not
+          paceable</dfn>, the <a>distance computation</a> procedure is simply
+          <var>distance</var> = 1.
         </p>
         <section>
           <h4>Not animatable</h4>
@@ -3819,9 +3815,66 @@
         </section>
         <section>
           <h4>Animatable as string</h4>
+          <p>
+            A <a>target property</a> that is <dfn>animatable as string</dfn>
+            has the following <a>animation behavior</a>:
+          </p>
+          <ul>
+            <li><a title="animation interpolation">interpolation</a>:
+              <div role="math" aria-describedby="math-string-interpolation"
+                style="display: inline">
+                <math xmlns="http://www.w3.org/1998/Math/MathML">
+                  <msub><mi>V</mi> res</msub><mo>=</mo>
+                  <mrow>
+                    <mfenced open="{" close="">
+                      <mtable>
+                        <mtr>
+                          <mtd columnalign="left">
+                            <msub><mi>V</mi> start</msub>
+                          </mtd>
+                          <mtd columnalign="left">
+                            <mtext>if&nbsp;</mtext><mi>p</mi>
+                            <mo>&lt;</mo><mn>0.5</mn>
+                          </mtd>
+                        </mtr>
+                        <mtr>
+                          <mtd columnalign="left">
+                            <msub><mi>V</mi> end</msub>
+                          </mtd>
+                          <mtd columnalign="left">
+                            <mtext>if&nbsp;</mtext><mi>p</mi>
+                            <mo>&ge;</mo><mn>0.5</mn>
+                          </mtd>
+                        </mtr>
+                      </mtable>
+                    </mfenced>
+                  </mrow>
+                </math>
+                <div id="math-string-interpolation">
+                  <var>V</var><sub>res</sub> =
+                    <var>V</var><sub>start</sub>, if <var>p</var> &lt; 0.5 or
+                    <var>V</var><sub>end</sub>, if <var>p</var> &ge; 0.5
+                </div>
+              </div>
+          </ul>
         </section>
         <section>
-          <h4>Animatable as integer</h4>
+          <h4>Animatable as real number</h4>
+          <p>
+            A <a>target property</a> that is <dfn>animatable as real
+            number</dfn> has the following <a>animation behavior</a>:
+          </p>
+          <ul>
+            <li><a title="animation interpolation">interpolation</a>:
+                <var>V</var><sub>res</sub> =
+                  (1 - <var>p</var>) &times; <var>V</var><sub>start</sub>
+                  + <var>p</var> &times; <var>V</var><sub>end</sub>
+            <li><a title="animation addition">addition</a>:
+                  <var>V</var><sub>a</sub> + <var>V</var><sub>b</sub>
+            <li><a>distance computation</a>:
+                <var>distance</var> = |<var>V</var><sub>end</sub>
+                                       - <var>V</var><sub>start</sub>|
+          </ul>
         </section>
         <section>
           <h4>Other animation behaviors</h4>
