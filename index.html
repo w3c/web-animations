@@ -2640,8 +2640,9 @@
           <li>there is no <a>paced effect</a> (because the <a>timed item</a> is
               not an <a>animation</a> or does not specify an <a>animation
               effect</a>), or
-          <li>the <a>referenced property</a> is not one of the <a>target
-              properties</a> of the <a>paced effect</a>, or
+          <li>the <a>referenced property</a> is not one of the <a
+              title="target property">target properties</a> of the <a>paced
+              effect</a>, or
           <li>the <a>referenced property</a> is not <a>interpolable</a>, or
           <li>the <a>referenced property</a> is not a valid property.
         </ul>
@@ -3576,9 +3577,9 @@
       <p>
         An <dfn>animation effect</dfn> takes a <a>time fraction</a> and
         a <a>current iteration</a> value and uses them to calculate an
-        <a>intermediate animation value</a> for its <a>target properties</a>.
-        Each <a>animation</a> may have at most one <a>animation effect</a>
-        associated with it.
+        <a>intermediate animation value</a> for its <a
+        title="target property">target properties</a>.  Each <a>animation</a>
+        may have at most one <a>animation effect</a> associated with it.
       </p>
       <p>
         Since the result of an <a>animation effect</a> is based on the
@@ -3609,7 +3610,7 @@
           href="http://www.w3.org/TR/SVG2/intro.html#TermPresentationAttribute">presentation
           attribute</a> [[SVG2]]) then we will need to introduce
           a disambiguation strategy. Generally, however, such naming should be
-          avoided at all costs.
+          avoided.
         </p>
       </section>
       <section>
@@ -3679,15 +3680,15 @@
           behaviors</a>.
         </p>
         <p>
-          For <a>animation behaviors</a> that do not define a procedure for
-          <a title="animation addition">addition</a> or which as defined as
+          For <a>animation behaviors</a> that do not define a specific procedure
+          for <a title="animation addition">addition</a> or which are defined as
           <dfn>not additive</dfn>, the <a
           title="animation addition">addition procedure</a> is simply
           <var>V</var><sub>res</sub> = <var>V</var><sub>b</sub>.
         </p>
         <p>
-          For <a>animation behaviors</a> that do not define a procedure for
-          <a>distance computation</a> or which are defined as <dfn>not
+          For <a>animation behaviors</a> that do not define a specific procedure
+          for <a>distance computation</a> or which are defined as <dfn>not
           paceable</dfn>, the <a>distance computation</a> procedure is simply
           <var>distance</var> = 1.
         </p>
@@ -3811,8 +3812,8 @@
             <li><a title="animation interpolation">interpolation</a>:
                 as defined in [[CSS3-TRANSITIONS]].
             <li><a title="animation addition">addition</a>:
-                as with <a>as real number</a> but performed on each RGBA color
-                component in premultiplied space.
+                as with <a>animatable as real number</a> but performed on each
+                RGBA color component in premultiplied space.
                 <p class="note">
                   Since negative color is not currently supported, clamping of
                   the channel values may be performed upon each addition or once
@@ -3991,8 +3992,9 @@
           Given a <a>time fraction</a>, a <a>current iteration</a>, and an
           <a>underlying value</a>, an <a>animation effect</a> produces
           an <dfn>intermediate animation value</dfn> for each <a>animatable</a>
-          <a title="target properties">target property</a>.
-          Before being applied to the <a>target properties</a>,
+          <a>target property</a>.
+          Before being applied to the <a title="target property">target
+          properties</a>,
           these <a>intermediate animation values</a> are composed together using
           the process defined in <a href="#combining-animations"
           class="sectionRef"></a>.
@@ -4081,7 +4083,7 @@
         <p>
           After calculating the <a>intermediate animation values</a> for an
           <a>animation effect</a> they are applied to the <a>animation
-          effect</a>'s <a>target properties</a>.
+          effect</a>'s <a title="target property">target properties</a>.
         </p>
         <p>
           Since it is possible for multiple <a>in effect</a> <a
@@ -4095,11 +4097,10 @@
         <p>
           After compositing the results of <a>animation
           effects</a> together, the composited result is combined with other
-          styles applied to the <a title="target properties">target
-          property</a>.
+          values specified for the <a>target property</a>.
         </p>
         <p>
-          An overview of this arrangement is illustrated below:
+          For a CSS <a>target property</a> the arrangement is illustrated below:
         </p>
         <div class="figure">
           <img src="img/animation-cascade.svg" width="450"
@@ -4111,9 +4112,15 @@
           their <a>target properties</a>.<br>
           The results of <a>animation effects</a> targetting the same property
           are composited together using an <a>animation stack</a>.<br>
-          The result of this composition is written to an override stylesheet
+          The result of this composition is written to an animation stylesheet
           that is more important than other stylesheets but less than any
           <code>!important</code> rules.
+        </p>
+        <p>
+          For <a>target property</a> that specifies a DOM attribute, the
+          composited result is combined with the value of the attribute
+          specified in the DOM or the lacuna value for that attribute if it is
+          not specified.
         </p>
         <p>
           For the first part of this operation&mdash;combining <a>intermediate
@@ -4165,12 +4172,15 @@
                   animation priority</a> specified for <var>A</var> and
                   <var>B</var> so that lower priorities sort first.
               <li>Sort <var>A</var> and <var>B</var> by the <a>player start
-                  time</a> of the <var>associated player</var> of each
-                  of <var>A</var> and <var>B</var> so that earlier times sort
-                  first.
+                  time</a> of the <var>associated player</var> of each of
+                  <var>A</var> and <var>B</var> converted to the time space of
+                  the <a>global clock</a> so that earlier times sort first.
               <li>Sort by the <a>player sequence number</a> so that lower
                   sequence numbers sort first.
               <li>Sort <var>A</var> and <var>B</var> in <a>tree order</a>.
+                  (By this point, <var>A</var> and <var>B</var> must have the
+                  same <a>player</a> since otherwise the order would have been
+                  resolved in the previous step.)
            </ol>
         </ol>
         <p>
@@ -4216,10 +4226,6 @@
         <p>
           Each step in the process of evaluating an <a>animation stack</a> takes
           an <dfn>underlying value</dfn> as input.
-          The initial <a>underlying value</a> is the <a>base value</a> of the
-          target property as defined in <a
-          href="#combining-with-other-styles--the-override-stylesheet"
-          class="sectionRef"></a>.
         </p>
         <p>
           For each <a>animation effect</a> in the stack, the appropriate
@@ -4259,61 +4265,101 @@
           <dd>
             <p>
               The <a>intermediate animation value</a> is <a
-              title="addition">added</a> to the <a>underlying value</a>.
-              For <a>property types</a> where
-              <a>addition</a> is defined such that it is not commutative, the
-              order of the operands is <code><a>underlying value</a>
-              + <a>intermediate animation value</a></code>.
-            </p>
-            <p>
-              If <a>intermediate animation value</a> and <a>underlying value</a>
-              are not of the same <a>property type</a>, or if they are of the
-              same <a>property type</a> but that <a>property type</a> is not
-              <a>additive</a>, <a
-              title="composition operation replace">replace</a> behavior is
-              applied.
+              title="animation addition">added</a> to the <a>underlying
+              value</a>.
+              For <a>animation behaviors</a> where the
+              <a title="animation addition">addition operation</a> is defined
+              such that it is not commutative, the order of the operands is
+              <code><a>underlying value</a> + <a>intermediate animation
+              value</a></code>.
             </p>
           </dd>
         </dl>
       </section>
       <section>
-        <h3>Combining with other styles: the override stylesheet</h3>
+        <h3>Applying the composited result</h3>
         <p>
-          Applying a <a>composited value</a> to a property depends on
-          establishing an <a>override stylesheet</a>.
+          The process for a applying a <a>composited value</a> depends on if the
+          <a>target property</a> refers to a CSS property or a DOM attribute.
         </p>
-        <p>
-          The <dfn>override stylesheet</dfn> contains
-          <a title="composited value">composited animation values</a>
-          and acts with a higher priority than all other stylesheets.
-          However, <code>!important</code> rules from all other stylesheets act
-          with a higher priority than the <a>override stylesheet</a>.
-          The <a>override stylesheet</a> is regenerated each time the
-          <a>animation model</a> is updated (see <a href="#animation-effects"
-          class="sectionRef"></a>).
-        </p>
-        <p>
-        </p>
-        <p>
-          The <a>composited value</a> calculated for a property is applied
-          using the following process.
-        </p>
-        <ol>
-          <li>Calculate the <dfn>base value</dfn> of the property as
-              the value generated for that property by computing the <a
-              href="http://www.w3.org/TR/CSS2/cascade.html#used-value">used
-              value</a> [[!CSS21]] for that property in the absence of the
-              <a>override stylesheet</a>.</li>
-          <li>Establish the <a>animation stack</a> for the property (see <a
-              href="#the-animation-stack" class="sectionRef"></a>).</li>
-          <li>Calculate the <a>composited value</a> of the <a>animation
-              stack</a> passing in the <a>base value</a> of the property as the
-              initial <a>underlying value</a> (see <a
-              href="#calculating-the-result-of-an-animation-stack"
-              class="sectionRef"></a>).</li>
-          <li>Insert the <a>composited value</a> into the <a>override
-              stylesheet</a>.</li>
-        </ol>
+        <section>
+          <h4>Applying the result to a CSS property</h4>
+          <p>
+            Applying a <a>composited value</a> to a CSS <a>target property</a>
+            depends on establishing an <a>animation stylesheet</a>.
+          </p>
+          <p>
+            The <dfn>animation stylesheet</dfn> contains
+            <a title="composited value">composited animation values</a>
+            and acts with a higher priority than all other stylesheets.
+            However, <code>!important</code> rules from all other stylesheets
+            act with a higher priority than the <a>animation stylesheet</a>.
+            The <a>animation stylesheet</a> is regenerated each time the
+            <a>animation model</a> is updated (see <a href="#animation-effects"
+            class="sectionRef"></a>).
+          </p>
+          <p>
+            The <a>composited value</a> calculated for a CSS <a>target
+            property</a> is applied using the following process.
+          </p>
+          <ol>
+            <li>Calculate the <var>base value</var> of the property as
+                the value generated for that property by computing the <a
+                href="http://www.w3.org/TR/CSS2/cascade.html#used-value">used
+                value</a> [[!CSS21]] for that property in the absence of the
+                <a>animation stylesheet</a>.
+            <li>Establish the <a>animation stack</a> for the property (see <a
+                href="#the-animation-stack" class="sectionRef"></a>).</li>
+            <li>Calculate the <a>composited value</a> of the <a>animation
+                stack</a> passing in the <var>base value</var> of the property
+                as the initial <a>underlying value</a> (see <a
+                href="#calculating-the-result-of-an-animation-stack"
+                class="sectionRef"></a>).
+            <li>Insert the <a>composited value</a> into the <a>animation
+                stylesheet</a>.
+          </ol>
+        </section>
+        <section>
+          <h4>Applying the composited result to a DOM attribute</h4>
+          <p>
+            DOM attributes are, unless otherwise specified, <a>not
+            animatable</a>.
+            For each attribute that has a specific <a>animation behavior</a>
+            associated with it, an attribute value to use when the attribute is
+            not specified or in error must be defined, referred to as the
+            <dfn>lacuna value</dfn>.
+            For example, SVG2 ([[SVG2]]) defines <a
+            href="http://www.w3.org/TR/SVG2/intro.html#TermLacunaValue">lacunae
+            values</a> for its attributes.
+          </p>
+          <p>
+            The <a>composited value</a> calculated for a DOM attribute <a>target
+            property</a> is applied using the following process.
+          </p>
+          <ol>
+            <li>Let the <var>base value</var> of the property be the value
+                specified for attribute in the DOM or,
+                if the attribute value is not specified in the DOM, the
+                <a>lacuna value</a> for that attribute.
+            <li>Establish the <a>animation stack</a> for the property (see <a
+                href="#the-animation-stack" class="sectionRef"></a>).</li>
+            <li>Calculate the <a>composited value</a> of the <a>animation
+                stack</a> passing in the <var>base value</var> of the attribute
+                as the initial <a>underlying value</a> (see <a
+                href="#calculating-the-result-of-an-animation-stack"
+                class="sectionRef"></a>).</li>
+            <li>Record the <a>composited value</a> as the <dfn>animated
+                attribute value</dfn> of the attribute.
+          </ol>
+          <p>
+            The <a>animated attribute value</a> does not replace the value of
+            the attribute in the DOM although it may be accessible via some
+            other interface.
+            For all intents and purposes other than interaction with DOM
+            interfaces, user agents must treat the <a>animated attribute
+            value</a> as the attribute value.
+          </p>
+        </section>
       </section>
     </section>
 
@@ -5322,8 +5368,7 @@
           <a>Custom effects</a> are executed after all
           <a>animation effects</a> have completed and
           applied their result to their targets (see <a
-          href="#combining-with-other-styles--the-override-stylesheet"
-          class="sectionRef"></a>).
+          href="#combining-with-other-values" class="sectionRef"></a>).
         </p>
         <p class="issue">
           Need to define this more precisely.
@@ -8099,8 +8144,8 @@ elem.animate({ left: '100px' }, 3);
             Corresponds to the <a
             title="composition operation replace">replace</a>
             <a>composition operation</a> value such that
-            the <a>animation effect</a> overrides the <a>base value</a> it is
-            combined with.
+            the <a>animation effect</a> overrides the <a>underlying value</a> it
+            is combined with.
           </dd>
           <dt>add</dt>
           <dd>
@@ -8108,7 +8153,7 @@ elem.animate({ left: '100px' }, 3);
             title="composition operation add">add</a>
             <a>composition operation</a> value such that
             the <a>animation effect</a> is <a title="addition">added</a> to
-            <a>base value</a> it is combined with.
+            <a>underlying value</a> it is combined with.
           </dd>
         </dl>
       </section>
