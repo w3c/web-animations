@@ -4048,6 +4048,10 @@
         animation effect</a> is used.
       </p>
       <section>              
+        <h3>Spacing keyframes</h3>
+        <p>TBD</p>
+      </section>
+      <section>              
         <h3>The unaccumulated animation value of a keyframe animation effect</h3>
         <p>
           The <a>unaccumulated animation value</a> of a single property
@@ -7414,12 +7418,24 @@ elem.animate({ left: '100px' }, 3);
               a sequence of <a title="Keyframe interface">Keyframe</a> objects.
             </p>
             <p>
-              Note that the normalization applied to the <em>list</em> of
-              <a>keyframes</a> as defined in <a
-              href="#normalizing-the-list-of-keyframes"
-              class="sectionRef"></a> does not affect the value returned by this
-              method.
+              The value returned differs from the <var>frames</var> parameter
+              passed into <code>setFrames</code> or the constructor for this
+              interface in the following ways:
             </p>
+            <ul>
+              <li>The normalization defined in <a
+                  href="#normalizing-a-list-of-keyframes"
+                  class="sectionRef"></a> is applied to <var>frames</var> which
+                  may result in some frames being removed or re-ordered and some
+                  properties being removed.
+              <li>The result of computing the <a
+                  title="positional offset of a keyframe">positional offset</a>
+                  of each <a title="Keyframe interface">Keyframe</a>
+                  as defined in <a href="#spacing-keyframes"
+                  class="sectionRef"></a> is stored in the
+                  <code>computedOffset</code> property of each frame as
+                  a Number.
+            </ul>
           </dd>
           <dt>void setFrames(OneOrMoreKeyframes frames)</dt>
           <dd>
@@ -7431,132 +7447,53 @@ elem.animate({ left: '100px' }, 3);
               using the procedure in <a href="#normalizing-a-keyframe-object"
               class="sectionRef"></a> before storing.
             </p>
-            <p>
-              Before being used by the animation model, the set of frames
-              associated with this effect is normalized using the procedure
-              defined in <a
-              href="#normalizing-the-list-of-keyframes" class="sectionRef"></a>.
-            </p>
-            <p>
-              As a result of the normalization of the list, if <var>frames</var>
-              is not <a>loosely sorted by offset</a> this effect will not
-              contribute to the final <a>composited value</a>.
-            </p>
           </dd>
         </dl>
         <section>
-          <h4>Normalizing the list of keyframes</h4>
-          <div class="issue">
-            This behavior is expected to be revised such that keyframe lists
-            that are not in sequence are accepted and keyframe offsets outside
-            the range [0, 1] are also allowed.
-            Doing so may make this procedure unnecessary.
-          </div>
+          <h4>Normalizing a list of keyframes</h4>
           <p>
-            Before passing the list of <a
-            title="Keyframe interface">Keyframes</a> specified in the API to the
-            animation model so that the <a>unaccumulated animation value</a> can
-            be calculated (see <a
-            href="#the-unaccumulated-animation-value-of-a-keyframe-animation-effect"
-            class="sectionRef"></a>), the following normalization is performed.
+            For each call to <code>setFrames</code> or the <a>KeyframeEffect</a>
+            constructor the following normalization is performed on the passed
+            in <var>frames</var> parameter before storing its value.
           </p>
           <ol>
-            <li>Let <var>normalized keyframes</var> be a copy of the
-                <a>keyframe</a> list returned by <code>getFrames</code>.
-            <li>If <var>normalized keyframes</var> is not <a>loosely sorted by
-                offset</a>, return an empty list.
-            <li>If there exist any <a>keyframes</a> whose specified positional
-                offset is less than zero, remove all <a>keyframes</a> from the
-                start of <var>normalized keyframes</var> up to and including the
-                <a>keyframe</a> with the largest specified positional offset
-                that is still less than zero.
-            <li>Likewise, if there exist any <a>keyframes</a> whose specified
-                offset is greater than one, remove all <a>keyframes</a> from
-                <a>keyframe</a> with the smallest specified positional offset
+            <li>For each <a title="Keyframe interface">Keyframe</a> object in
+                <var>frames</var> apply the normalization described in <a
+                href="#normalizing-a-keyframe-object" class="sectionRef"></a>.
+                Any exceptions thrown that by procedure will likewise abort this
+                procedure.
+            <li>If <var>frames</var> is not <a>loosely sorted by offset</a>,
+                then,
+                <dl class="switch">
+                  <dt>If each <a title="Keyframe interface">Keyframe</a> has
+                      a <a title="positional offset of a keyframe">specified
+                      offset</a>,</dt>
+                  <dd>Sort <var>frames</var> in ascending order by <a
+                      title="positional offset of a keyframe">specified
+                      offset</a>.</dd>
+                  <dt>Otherwise,</dt>
+                  <dd>Throw a DOMException of type
+                      <code>InvalidModificationError</code>.</dd>
+                </dl>
+            <li>If there exist any <a title="Keyframe interface">Keyframe</a>
+                objects in <var>frames</var> whose <a
+                title="positional offset of a keyframe">specified positional
+                offset</a> is less than zero, remove all keyframes
+                objects from the start of <var>frames</var> up to and including
+                the keyframe with the largest specified positional offset that
+                is still less than zero.
+            <li>Likewise, if there exist any <a
+                title="Keyframe interface">Keyframe</a> objects in
+                <var>frames</var> whose <a
+                title="positional offset of a keyframe">specified positional
+                offset</a> is greater than one, remove all <a>keyframes</a> from
+                keyframe with the smallest specified positional offset
                 that is still greater than one until the end of
-                <var>normalized keyframes</var>.
-            <li>Set the <a title="positional offset of a keyframe">positional
-                offset</a> of any keyframes without a specified offset using the
-                procedure defined in <a
-                href="#procedure-for-evenly-distributing-keyframes"
-                class="sectionRef"></a>.
-            <li>Remove all property values in <var>normalized keyframes</var>
-                that are invalid or not supported by the implementation.
-            <li>Return <var>normalized keyframes</var>.
+                <var>frames</var>.
+            <li>Remove all property values in <var>frames</var> that are invalid
+                or not supported by the implementation.
           </ol>
-          <div class="note">
-            <p>
-              Note that this normalization is only applied to the keyframes
-              before they are passed to the model and does not affect the result
-              returned by <code>getFrames</code>.
-            </p>
-          </div>
         </section>
-      </section>
-      <section>
-        <h3>The <code>Keyframe</code> dictionary</h3>
-        <p>
-          Individual <a>keyframes</a> are represented by a special kind of
-          <a title="Keyframe interface">Keyframe</a> dictionary type whose
-          members map to the properties to be animated.
-          At the time of writing, this kind of open-ended dictionary cannot
-          be represented using WebIDL and hence special
-          ECMAScript-specific handling for this type is defined in
-          <a href="#normalizing-a-keyframe-object" class="sectionRef"></a>.
-          No handling is defined for other languages.
-        </p>
-        <dl class="idl" title="dictionary Keyframe">
-          <dt>// ... property-value pairs ...</dt><dd></dd>
-          <dt>double? offset = null</dt>
-          <dd>
-            <p>
-              The <a title="positional offset of a keyframe">positional
-              offset</a> of the <a>keyframe</a> specified as a number between
-              0.0 and 1.0 inclusive or <code>null</code>.
-            </p>
-            <p>
-              <a>Keyframes</a> with offsets outside the range [0.0, 1.0] are
-              ignored when calculating animation values as defined in
-              <a href="#normalizing-the-list-of-keyframes"
-              class="sectionRef"></a>.
-            </p>
-            <p>
-              A <code>null</code> value indicates that the <a>keyframe</a>
-              should be positioned automatically using the algorithm defined in
-              <a href="#procedure-for-evenly-distributing-keyframes"
-              class="sectionRef"></a> and applied in
-              <a href="#normalizing-the-list-of-keyframes"
-              class="sectionRef"></a>.
-            </p>
-            <div class="issue">
-              Is <code>offset</code> too generic? How about
-              <code>timeOffset</code> or <code>keyTime</code>?
-            </div>
-          </dd>
-          <dt>DOMString easing = "linear"</dt>
-          <dd>
-            <p>
-              The <a>timing function</a> used to transform the progress of time
-              from this keyframe until the next in the series.
-            </p>
-            <p>
-              The syntax and error-handling associated with parsing this string
-              is identical to that defined for the <code>easing</code> attribute
-              of the <a title="Timing interface">Timing</a> interface.
-            </p>
-          </dd>
-          <dt>CompositeOperation? composite = null</dt>
-          <dd>
-            <p>
-              The <a>composition operation</a> used to combine the values
-              specified in this keyframe with the <a>underlying value</a>.
-            </p>
-            <p>
-              If <code>null</code>, the <a>composition operation</a>
-              specified on the <a>KeyframeEffect</a> will be used.
-            </p>
-          </dd>
-        </dl>
         <section>
           <h4>Normalizing a <code>Keyframe</code> object</h4>
           <div class="note">
@@ -7565,7 +7502,8 @@ elem.animate({ left: '100px' }, 3);
               have side effects, the manner in which these properties is
               accessed is important.
               In light of this consideration the procedure for normalizing
-              a <a>Keyframe</a> has the following properties:
+              a <a title="Keyframe interface">Keyframe</a> object has the
+              following properties:
             </p>
             <ul>
               <li>Each property that is read, is read only once.</li>
@@ -7604,21 +7542,52 @@ elem.animate({ left: '100px' }, 3);
                 <dt>If <var>property</var> is a case-sensitive match for
                   the string 'offset',</dt>
                 <dd>
-                  If <code><var>keyframe input</var>.offset</code> is
-                  a Number, set the <a
-                  title="positional offset of a keyframe">positional offset</a>
-                  of <var>keyframe input</var> to 
+                  Set the <a title="positional offset of a keyframe">positional
+                  offset</a> of <var>keyframe input</var> to the result of
+                  applying the <a
+                  href="http://www.w3.org/TR/WebIDL/#es-double">procedure for
+                  converting an ECMAScript value into an IDL double</a> defined
+                  in WebIDL [[!WEBIDL]] to
                   <code><var>keyframe input</var>.offset</code>.
                 </dd>
-                <dt>if <var>property</var> is a case-sensitive match for
+                <dt>If <var>property</var> is a case-sensitive match for
+                  the string 'computedOffset',</dt>
+                <dd>
+                  Ignore <var>property</var> and continue to the next property.
+                </dd>
+                <dt>If <var>property</var> is a case-sensitive match for
+                  the string 'easing',</dt>
+                <dd>
+                  <p>
+                    Set the <a>timing function</a> of <var>keyframe input</var>
+                    to the result of applying <a
+                    href="http://www.w3.org/TR/WebIDL/#es-DOMString">the
+                    procedure for converting an ECMAScript value to an IDL
+                    DOMString value</a> defined in WebIDL [[!WEBIDL]] to
+                    <code><var>keyframe input</var>.easing</code> with the <a
+                    href="http://www.w3.org/TR/WebIDL/#TreatNullAs">[TreatNullAs=EmptyString]</a>
+                    annotation in effect.
+                  </p>
+                  <p>
+                    If the resulting string does not conform to the 
+                    grammar defined for the <a
+                    href="#widl-Timing-easing"><code>easing</code></a> attribute
+                    of the <a title="Timing interface">Timing</a> interface or
+                    is not supported by the implementation then
+                    set the <a>timing function</a> of <var>keyframe input</var>
+                    to the string &ldquo;linear&rdquo;.
+                  </p>
+                </dd>
+                <dt>If <var>property</var> is a case-sensitive match for
                   the string 'composite',</dt>
                 <dd>
-                  If <code><var>keyframe input</var>.composite</code> is
-                  a case-sensitive match for one of the values of the
-                  <a>CompositeOperation</a> enumeration,
-                  set the <a>composition operation</a>
-                  of <var>keyframe input</var> to 
-                  <code><var>keyframe input</var>.composite</code>.
+                  Set the <a>composition operation</a> of <var>keyframe
+                  input</var> to the result applying <a
+                  href="http://www.w3.org/TR/WebIDL/#es-enumeration">the
+                  procedure for converting an ECMAScript value to an IDL
+                  enumeration type</a> defined in WebIDL [[!WEBIDL]] to
+                  <code><var>keyframe input</var>.offset</code> with
+                  <a>CompositeOperation</a> as the enumeration type.
                 </dd>
                 <dt>Otherwise, if <var>property</var> also exists in
                   <var>supported properties</var> based on a case-sensitive
@@ -7631,6 +7600,10 @@ elem.animate({ left: '100px' }, 3);
                 prefixed properties from <var>animation properties</var>
                 where the corresponding unprefixed version is also
                 present in <var>animation properties</var>.
+                <p class="issue">
+                  I'd like to remove this step.
+                  Prefixes are history.
+                </p>
             <li>Sort <var>animation properties</var> lexicographically by
                 the Unicode codepoints that define each element.
             <li>Iterate over <var>animation properties</var> and for each
@@ -7653,15 +7626,10 @@ elem.animate({ left: '100px' }, 3);
               </ul>
             <li>Return <var>keyframe result</var>.
           </ol>
-          <p>
-            This procedure is performed exactly once per call to
-            <code>setFrames</code> or the constructor for
-            <a>KeyframeEffect</a>.
-          </p>
           <div class="issue">
             <p>
               The above algorithm gives special meaning to the property names
-              'offset' and 'composite'.
+              'offset', 'computedOffset', and 'composite'.
               If a CSS property called 'offset' or 'composite' is ever
               introduced it will clash with the meaning here.
             </p>
@@ -7676,6 +7644,72 @@ elem.animate({ left: '100px' }, 3);
             </ul>
           </div>
         </section>
+      </section>
+      <section>
+        <h3>The <code>Keyframe</code> dictionary</h3>
+        <p>
+          Individual <a>keyframes</a> are represented by a special kind of
+          <a title="Keyframe interface">Keyframe</a> dictionary type whose
+          members map to the properties to be animated.
+          At the time of writing, this kind of open-ended dictionary cannot
+          be represented using WebIDL and hence special
+          ECMAScript-specific handling for this type is defined in
+          <a href="#normalizing-a-keyframe-object" class="sectionRef"></a>.
+          No handling is defined for other languages.
+        </p>
+        <dl class="idl" title="dictionary Keyframe">
+          <dt>// ... property-value pairs ...</dt><dd></dd>
+          <dt>double? offset = null</dt>
+          <dd>
+            <p>
+              The <a title="positional offset of a keyframe">positional
+              offset</a> of the <a>keyframe</a> specified as a number between
+              0.0 and 1.0 inclusive or <code>null</code>.
+            </p>
+            <p>
+              <a>Keyframes</a> with offsets outside the range [0.0, 1.0] are
+              ignored when calculating animation values as defined in
+              <a href="#normalizing-a-list-of-keyframes"
+              class="sectionRef"></a>.
+            </p>
+            <p>
+              A <code>null</code> value indicates that the <a>keyframe</a>
+              should be positioned automatically using the algorithm defined in
+              <a href="#procedure-for-evenly-distributing-keyframes"
+              class="sectionRef"></a>.
+            </p>
+          </dd>
+          <dt>DOMString easing = "linear"</dt>
+          <dd>
+            <p>
+              The <a>timing function</a> used to transform the progress of time
+              from this keyframe until the next keyframe in the series.
+            </p>
+            <p>
+              The syntax and error-handling associated with parsing this string
+              is identical to that defined for the <code>easing</code> attribute
+              of the <a title="Timing interface">Timing</a> interface.
+            </p>
+          </dd>
+          <dt>CompositeOperation? composite = null</dt>
+          <dd>
+            <p>
+              The <a>composition operation</a> used to combine the values
+              specified in this keyframe with the <a>underlying value</a>.
+            </p>
+            <p>
+              If <code>null</code>, the <a>composition operation</a>
+              specified on the <a>KeyframeEffect</a> will be used.
+            </p>
+          </dd>
+        </dl>
+        <div class="note">
+          <a title="Keyframe interface">Keyframe</a> objects returned by the
+          <code>getFrames</code> method of <a>KeyframeEffect</a> include an
+          additional Number property <code>computedOffset</code> representing
+          the <a title="positional offset of a keyframe">offset</a> as
+          calculated by <a href="#spacing-keyframes" class="sectionRef"></a>.
+        </div>
       </section>
       <section>
         <h3>The <code>OneOrMoreKeyframes</code> typedef</h3>
@@ -8965,6 +8999,7 @@ elem.animate({ left: '100px' }, 3);
             may be multiplied with zero.
         <li>Renamed the <em>target element</em> of an <a>animation</a> to the
             <a>animation target</a>.
+        <li>Added per-<a>keyframe</a> <a>timing functions</a>.
         <li>Removed custom effect priorities.
         <li>Added the following members to the <a
             title="Player interface">Player</a> interface:
@@ -9003,8 +9038,21 @@ elem.animate({ left: '100px' }, 3);
             <a>Animatable</a> interface in its place.
         <li>Renamed <code>KeyframeAnimationEffect</code> to
             <a>KeyframeEffect</a>.
-        <li>Added per-keyframe <a>timing functions</a> including adding the
-            <code>easing</code> member to the <a
+        <li>Made <code>getFrames</code> on <a>KeyframeEffect</a> return the
+            computed <a title="positional offset of a keyframe">positional
+            offset</a> as <code>computedOffset</code> and apply the
+            normalization of keyframes defined in <a
+            href="#normalizing-a-list-of-keyframes" class="sectionRef"></a>.
+        <li>Made the normalization of keyframes no longer fill in the
+            <a>positional offset of a keyframe</a>.
+            This is now incorporated in <a href="#spacing-keyframes"
+            class="sectionRef"></a> which is now a core part of the model.
+        <li>Made the normalization of keyframes sort keyframes if all
+            <a title="positional offset of a keyframe">positional offset</a> are
+            specified or otherwise throw an exception if the frames are not
+            <a>loosely sorted by offset</a> and not all offsets are specified
+            since the desired result in this case is ambiguous.
+        <li>Added the <code>easing</code> member to the <a
               title="Keyframe interface">Keyframe</a> dictionary.
         <li>Renamed path animation effects to <a>motion path animation
             effects</a> and likewise <code>PathAnimationEffect</code> to
