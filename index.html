@@ -4021,22 +4021,18 @@
         title="positional offset of a keyframe">positional offset of each
         keyframe</a>.
       </p>
-      <p class="note">
-        Unlike CSS syntax, <a>timing functions</a> are <em>not</em> directly
-        associated with a <a>keyframe</a>.
-      </p>
-      <p>
-        If, due to a <a>timing function</a> specified on the <a>timed
-        item</a> from which the <a>time fraction</a> is derived, the <a>time
-        fraction</a> lies outside the range [0, 1], the specified
-        <a>keyframe</a> property values are extrapolated to cover the extended
-        range.
-      </p>
       <p>
         The behavior when <a>keyframes</a> overlap or have unsupported values
         is defined in <a
         href="#the-unaccumulated-animation-value-of-a-keyframe-animation-effect"
         class="sectionRef"></a>.
+      </p>
+      <p>
+        Each keyframe also has a <a>timing function</a> associated with it
+        that is applied to the period of time between the keyframe on which it
+        is specified and the <em>next</em> keyframe in the series.
+        The <a>timing function</a> specified on the last keyframe in the
+        series is never applied.
       </p>
       <p>
         Each <a>keyframe animation effect</a> has an associated <a>composition
@@ -7537,6 +7533,18 @@ elem.animate({ left: '100px' }, 3);
               <code>timeOffset</code> or <code>keyTime</code>?
             </div>
           </dd>
+          <dt>DOMString easing = "linear"</dt>
+          <dd>
+            <p>
+              The <a>timing function</a> used to transform the progress of time
+              from this keyframe until the next in the series.
+            </p>
+            <p>
+              The syntax and error-handling associated with parsing this string
+              is identical to that defined for the <code>easing</code> attribute
+              of the <a title="Timing interface">Timing</a> interface.
+            </p>
+          </dd>
           <dt>CompositeOperation? composite = null</dt>
           <dd>
             <p>
@@ -8995,6 +9003,9 @@ elem.animate({ left: '100px' }, 3);
             <a>Animatable</a> interface in its place.
         <li>Renamed <code>KeyframeAnimationEffect</code> to
             <a>KeyframeEffect</a>.
+        <li>Added per-keyframe <a>timing functions</a> including adding the
+            <code>easing</code> member to the <a
+              title="Keyframe interface">Keyframe</a> dictionary.
         <li>Renamed path animation effects to <a>motion path animation
             effects</a> and likewise <code>PathAnimationEffect</code> to
             <a>MotionPathEffect</a>.
