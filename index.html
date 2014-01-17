@@ -4015,11 +4015,15 @@
       </p>
       <p>
         The <dfn>positional offset of a keyframe</dfn> is a value in the range
-        [0, 1].
+        [0, 1] or the special value null.
         The list of <a>keyframes</a> for a <a>keyframe animation effect</a> is
-        sorted in ascending order by the <a
-        title="positional offset of a keyframe">positional offset of each
-        keyframe</a>.
+        <dfn>loosely sorted by offset</dfn> which means that for each
+        <a>keyframe</a> in the list that has a <a
+        title="positional offset of a keyframe">positional offset</a> that is
+        not null, the offset is greater than or equal to the offset of the
+        previous <a>keyframe</a> in the list with a <a
+        title="positional offset of a keyframe">positional offset</a> that is
+        not null, if any.
       </p>
       <p>
         The behavior when <a>keyframes</a> overlap or have unsupported values
@@ -4030,9 +4034,9 @@
       <p>
         Each keyframe also has a <a>timing function</a> associated with it
         that is applied to the period of time between the keyframe on which it
-        is specified and the <em>next</em> keyframe in the series.
+        is specified and the <em>next</em> keyframe in the list.
         The <a>timing function</a> specified on the last keyframe in the
-        series is never applied.
+        list is never applied.
       </p>
       <p>
         Each <a>keyframe animation effect</a> has an associated <a>composition
@@ -4047,9 +4051,228 @@
         the <a>composition operation</a> specified for the <a>keyframe
         animation effect</a> is used.
       </p>
-      <section>              
+      <section> 
         <h3>Spacing keyframes</h3>
-        <p>TBD</p>
+        <p>
+          Before calculating animation values from a <a>keyframe animation
+          effect</a>, an absolute value must be computed for the <a
+          title="positional offset of a keyframe">positional offset</a> of each
+          <a>keyframe</a> with a null positional offset.
+          The values computed depend on the <dfn>spacing mode</dfn> specified
+          for the <a>keyframe animation effect</a>.
+          The <a>spacing modes</a> defined by this specification are:
+        </p>
+        <dl>
+          <dt><dfn title="distribute spacing mode">distribute</dfn></dt>
+          <dd>
+            Indicates that <a>keyframes</a> with a <a
+            title="positional offset of a keyframe">positional offset</a> of
+            null are positioned so that the difference between subsequent
+            <a title="positional offset of a keyframe">positional offsets</a>
+            are equal.
+          </dd>
+          <dt><dfn title="paced spacing mode">paced</dfn></dt>
+          <dd>
+            Indicates that <a>keyframes</a> with a <a
+            title="positional offset of a keyframe">positional offset</a> of
+            null are positioned so that the <em>distance</em> between subsequent
+            values of a specified <dfn>paced property</dfn> are equal.
+            The distance is calculated using the <a>distance computation</a>
+            procedure defined by the <a>animation behavior</a> associated
+            with the <a>paced property</a>.
+          </dd>
+        </dl>
+        <p>
+          Since many edge cases arise when some but not all <a
+          title="positional offset of a keyframe">positional offsets</a> or
+          <a>paced property</a> values are specified, the procedure for
+          applying <a>spacing modes</a> is defined below.
+        </p>
+        <p>
+          First, we define a generic procedure for <dfn>evenly spacing
+          a keyframe</dfn>, <var>keyframe</var>, between two reference
+          keyframes, <var>start</var> and <var>end</var>, whose <a
+          title="positional offset of a keyframe">positional offsets</a> are
+          <em>not</em> null, as follows:
+        </p>
+        <ol>
+          <li>Let <dfn>offset<sub><var>k</var></sub></dfn> be the
+              <a title="positional offset of a keyframe">positional offset</a>
+              of a <a>keyframe</a> <var>k</var>.
+          <li>Let <var>n</var> be the number of keyframes <em>between</em> and
+              including <var>start</var> and <var>end</var> minus 1.
+          <li>Let <var>index</var> refer to the position of <var>keyframe</var>
+              in the sequence of keyframes between <var>start</var> and
+              <var>end</var> such that the first keyframe after <var>start</var>
+              has an <var>index</var> of 1.
+          <li>Set the <a title="positional offset of a keyframe">positional
+              offset</a> of <var>keyframe</var> to
+              <a title="offsetk">offset</a><sub><var>start</var></sub> +
+              (<a title="offsetk">offset</a><sub><var>end</var></sub> &minus;
+               <a title="offsetk">offset</a><sub><var>start</var></sub>)
+              &times; <var>index</var> / <var>n</var>.
+        </ol>
+        <p>
+          The computed <a
+          title="positional offset of a keyframe">positional offset</a> values
+          of each <a>keyframe</a> with a null positional offset are determined
+          using the following procedure.
+        </p>
+        <ol>
+          <li>Let <var>keyframes</var> refer to the list of <a>keyframes</a>
+              associated with the <a>keyframe animation effect</a>.
+          <li>If <var>keyframes</var> contains more than one
+              <a>keyframe</a> and the <a
+              title="positional offset of a keyframe">positional offset</a> of
+              the first <a>keyframe</a> in <var>keyframes</var> is null,
+              set the <a
+              title="positional offset of a keyframe">positional offset</a> of
+              the first <a>keyframe</a> in <var>keyframes</var> to 0.
+          <li>If the <a title="positional offset of a keyframe">positional
+              offset</a> of the last <a>keyframe</a> in <var>distributed
+              keyframes</var> is unspecified, set its <a
+              title="positional offset of a keyframe">positional offset</a> to
+              1.
+          <li>For each pair of <a>keyframes</a> <var>A</var> and <var>B</var>
+              where:
+              <ul>
+                <li><var>A</var> appears before <var>B</var> in
+                    <var>keyframes</var>, and
+                <li>all <a>keyframes</a> between <var>A</var> and <var>B</var>
+                    have a null <a
+                    title="positional offset of a keyframe">positional
+                    offset,</a>
+              </ul>
+              <p>
+                calculate the <a
+                title="positional offset of a keyframe">positional offset</a> of
+                each <a>keyframe</a> between <var>A</var> and <var>B</var>
+                depending on the <a>spacing mode</a> as follows:
+              </p>
+              <dl class="switch">
+                <dt>If the <a>spacing mode</a> is <a
+                    title="paced spacing mode">paced</a>,</dt>
+                <dd>
+                  <ol>
+                    <li>Let <var>paced A</var> be the first keyframe in the
+                        range [<var>A</var>, <var>B</var>] that contains the
+                        <a>paced property</a>, if any.
+                    <li>Let <var>paced B</var> be the last keyframe in the
+                        range [<var>A</var>, <var>B</var>] that contains the
+                        <a>paced property</a>, if any.
+                    <li>If there is no <var>paced A</var> or <var>paced B</var>
+                        let both refer to <var>B</var>.
+                        <!-- I want to mark this up as an inline note but
+                             currently respec's CSS for notes doesn't play will
+                             with inlines. -->
+                        <span>Note that in this case, the spacing
+                        behavior degenerates to <a
+                        title="distribute spacing mode">distribute</a> spacing.
+                    <li>For each keyframe in the range
+                        (<var>A</var>, <var>paced A</var>] and
+                        [<var>paced B</var>, <var>B</var>),
+                        apply the procedure for <a>evenly spacing a keyframe</a>
+                        using <var>A</var> and <var>B</var> as the reference
+                        keyframes.
+                        <div class="annotation">
+                          Yes, this is correct.
+                          We want, <var>index</var> and <var>n</var> in that
+                          procedure to reflect <em>all</em> the keyframes
+                          between <var>A</var> and <var>B</var>, not just the
+                          keyframes between, for example <var>A</var> and
+                          <var>spaced A</var>.
+                        </div>
+                    <li>For each keyframe in the range
+                        (<var>paced A</var>, <var>paced B</var>] that contains
+                        the <a>paced property</a>, let
+                        <dfn>dist<sub><var>k</var></sub></dfn> represent the
+                        cumulative distance to keyframe <var>k</var> from
+                        <var>paced A</var> calculated as follows:
+                      <ol>
+                        <li>Define <a title="distk">dist</a><sub><var>paced
+                            A</var></sub> as zero.
+                        <li>Let <var>previous paced keyframe</var> be the
+                            previous keyframe in the range that contains the
+                            <a>paced property</a>.
+                            For the first keyframe in the range, the
+                            <var>previous paced keyframe</var> is <var>paced
+                            A</var>.
+                        <li>Let <var>distance from previous paced keyframe</var>
+                            be the result of performing the <a>distance
+                            computation</a> defined by the <a>animation
+                            behavior</a> for the <a>paced property</a> using the
+                            values of the <a>paced property</a> defined in
+                            <var>previous paced keyframe</var> and
+                            <var>k</var> as <var>V</var><sub>start</sub>
+                            and <var>V</var><sub>end</sub> respectively.
+                        <li>dist<sub><var>k</var></sub> is then
+                            dist<sub><var>previous paced keyframe</var></sub>
+                            +
+                            <var>distance from previous paced keyframe</var>.
+                      </ol>
+                      <li>For each keyframe, <var>keyframe</var>, in the range
+                          (<var>paced A</var>, <var>paced B</var>) that contains
+                          the <a>paced property</a>, let the <a
+                          title="positional offset of a keyframe">positional
+                          offset</a> be
+                          <a title="offsetk">offset</a><sub><var>paced
+                          A</var></sub>
+                          +
+                          (<a title="offsetk">offset</a><sub><var>paced
+                           A</var></sub>
+                           -
+                           <a title="offsetk">offset</a><sub><var>paced
+                           B</var></sub>
+                          )
+                          &times;
+                          <a
+                          title="distk">dist</a><sub><var>keyframe</var></sub>
+                          /
+                          <a title="distk">dist</a><sub><var>paced B</var></sub>
+                      <li>For each keyframe, <var>keyframe</var>, in the range
+                          (<var>paced A</var>, <var>paced B</var>) that has
+                          a null <a
+                          title="positional offset of a keyframe">positional
+                          offset</a> (because it does not contain the <a>paced
+                          property</a>), apply the procedure for <a>evenly
+                          spacing a keyframe</a> using the nearest keyframe on
+                          either side of <var>keyframe</var> that has a
+                          positional offset that is not null, as the reference
+                          keyframes.
+                  </ol>
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  Apply the procedure for <a>evenly spacing a keyframe</a> to
+                  each keyframe in the range (<var>A</var>, <var>B</var>) using
+                  <var>A</var> and <var>B</var> as the reference keyframes.
+                </dd>
+              </dl>
+        </ol>
+        <div class="note">
+          <p>
+            Note that although the above procedure defines computing positional
+            offsets in terms of overwriting null values, user agents that
+            implement the <a href="#programming-interface">programming
+            interface</a> are required to maintain the original null values as
+            well as calculating the computed offsets.
+            This is because the <code>getFrames</code> method of the
+            <a>Timing</a> interface returns positional offsets both before
+            and after applying spacing.
+          </p>
+        </div>
+        <div class="note">
+          <p>
+            The above algorithm is quite complex.
+            It attempts to cover all possible combinations of input where
+            positional offsets and or paced property values may be missing.
+            Furthermore, it attempts to do this in a way that degenerates
+            consistently and also allows the author to combine fixed offsets
+            with either pacing or distribute spacing.
+            We await implementation experience to determine if the complexity is
+            justified.
+          </p>
+        </div>
       </section>
       <section>              
         <h3>The unaccumulated animation value of a keyframe animation effect</h3>
@@ -4213,79 +4436,6 @@
               2013 F2F</a>.
           </p>
         </div>
-      </section>
-      <section>              
-        <h3>Procedure for evenly distributing keyframes</h3>
-        <p>
-          Whilst the Web Animations model assumes a sorted list of
-          <a>keyframes</a> with specified <a
-          title="positional offset of a keyframe">positional offsets</a> in the
-          range [0, 1] many users of the model require a facility for
-          automatically distributing keyframes when positional offsets are not
-          provided.
-          A procedure for evenly distributing keyframes with unspecified
-          positional offsets is provided below.
-        </p>
-        <p>
-          Given a list of <a>keyframes</a> whose <a
-          title="positional offset of a keyframe">positional offets</a> are
-          either a real number in the range [0, 1] or unspecified,
-          we define such as list as <dfn>loosely sorted by offset</dfn> if, for
-          each <a>keyframe</a> in the list that has a specified offset, the
-          offset is greater than or equal to the offset of the previous
-          <a>keyframe</a> in the list with a specified offset, if any.
-        </p>
-        <p>
-          Given a list of <a>keyframes</a>, <var>initial keyframe list</var>,
-          that is <a>loosely sorted by offset</a> we can evenly distribute the
-          <a>keyframes</a> with unspecified <a
-          title="positional offset of a keyframe">positional offsets</a> between
-          those frames with specified offsets using the following procedure:
-        </p>
-        <ol>
-          <li>Let <var>distributed keyframes</var> be a copy of <var>initial
-              keyframe list</var>.
-          <li>If <var>distributed keyframes</var> contains more than one
-              <a>keyframe</a> and the <a
-              title="positional offset of a keyframe">positional offset</a> of
-              the first <a>keyframe</a> in <var>distributed keyframes</var> is
-              unspecified, set the <a
-              title="positional offset of a keyframe">positional offset</a> of
-              the first <a>keyframe</a> in <var>distributed keyframes</var> to
-              0.
-          <li>If the <a title="positional offset of a keyframe">positional
-              offset</a> of the last <a>keyframe</a> in <var>distributed
-              keyframes</var> is unspecified, set its <a
-              title="positional offset of a keyframe">positional offset</a> to
-              1.
-          <li>Set the offset of all <a>keyframes</a> in <var>distributed
-              keyframes</var> without a specified <a
-              title="positional offset of a keyframe">positional offset</a> as
-              follows.
-              For a <a>keyframe</a>, <var>k</var>, without a specified offset,
-              if:
-              <ul>
-                <li><var>a</var> is the positional offset of the last
-                    <a>keyframe</a> with a specified offset appearing in
-                    <var>distributed keyframes</var> before <var>k</var>,
-                <li><var>b</var> is the positional offset of the first
-                    <a>keyframe</a> with a specified offset appearing in
-                    <var>distributed keyframes</var> after <var>k</var>,
-                <li><var>n</var> is the number of <a>keyframes</a> between
-                    <var>a</var> and <var>b</var>, and
-                <li><var>i</var> is the index of <var>k</var> among the
-                    <a>keyframes</a> between <var>a</var> and <var>b</var>
-                    such that the first <a>keyframe</a> has index 1 and the last
-                    <a>keyframe</a> has index <var>n</var>;
-              </ul>
-              <p>
-                then the offset of <var>k</var> is
-                <code><var>a</var> + (<var>b</var> - <var>a</var>)
-                &times; <var>i</var>
-                / (<var>n</var> + 1)</code>
-              </p>
-          <li>Return <var>distributed keyframes</var>.
-        </ol>
       </section>
     </section>
 
