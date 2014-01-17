@@ -7534,18 +7534,12 @@ elem.animate({ left: '100px' }, 3);
                 The constraints on this parameter and its processing are
                 identical to those for <code>setFrames</code>.
               </dd>
-              <dt>optional CompositeOperation composite = "replace"</dt>
+              <dt>optional KeyframeEffectOptions options</dt>
               <dd>
-                The <a>composition operation</a> used to composite this
-                animation with the <a>animation stack</a>, as specified by one
-                of the <a>CompositeOperation</a> enumeration values.
-                This is used for all keyframes that do not specify
-                a <a>composition operation</a>.
-              </dd>
-              <dt>optional AccumulateOperation accumulate = "none"</dt>
-              <dd>
-                The <a>accumulation operation</a> used to define the way
-                animation values build from iteration to iteration.
+                A <a>KeyframeEffectOptions</a> dictionary defining other aspects
+                of the <a>animation effect</a>'s behavior.
+                If this parameter is not provided, the default values of the
+                dictionary are used.
               </dd>
             </dl>
           </dd>
@@ -7559,6 +7553,72 @@ elem.animate({ left: '100px' }, 3);
             <p>
               This is used for all keyframes that do not specify
               a <a>composition operation</a>.
+            </p>
+          </dd>
+          <dt>attribute DOMString spacing</dt>
+          <dd>
+            <p>
+              The <a>spacing mode</a> to use for this <a>animation effect</a>.
+            </p>
+            <p>
+              Recognized values are defined by the following grammar:
+            </p>
+            <blockquote>
+              <div class="production">distribute | paced({ident}) | paced</div>
+            </blockquote>
+            <p>
+              <code>{ident}</code> here is an <a
+              href="http://www.w3.org/TR/css3-values/#identifier">identifier</a>
+              as defined by CSS3 Values [[!CSS3-VALUES]].
+            </p>
+            <p>
+              The meaning of each value is as follows:
+            </p>
+            <dl>
+              <dt>distribute</dt>
+              <dd>Use the <a>distribute spacing mode</a>.
+              <dt>paced({ident})</dt>
+              <dd>
+                <p>
+                  Use the <a>paced spacing mode</a> with the property name
+                  indicated by <code>{ident}</code> as the <a>paced
+                  property</a>.
+                </p>
+                <p>
+                  For example, <code>paced(transform)</code> would indicate that
+                  the keyframes should be spaced such that changes to the <span
+                  class="prop-name">transform</span> property occur at
+                  a constant rate.
+                </p>
+              </dd>
+              <dt>paced</dt>
+              <dd>
+                <p>
+                  Use the <a>paced spacing mode</a>.
+                </p>
+                <p>
+                  The <a>paced property</a> to use is the first property
+                  specified in the first keyframe in the list of keyframes
+                  associated with this <a>animation effect</a>
+                  when sorting the CSS property names in ascending order by
+                  Unicode codepoint.
+                </p>
+                <p>
+                  As a result, changes to the keyframes may cause the <a>paced
+                  property</a> to change.
+                </p>
+                <div class="note">
+                  Note that this behavior is generally not useful for
+                  keyframes specifying more than one property.
+                  It is provided for consistency with <a>MotionPathEffect</a>
+                  and as a convenience for <a>keyframe animation effects</a>
+                  that specify only one property.
+                </div>
+              </dd>
+            </dl>
+            <p>
+              All other values are treated as "distribute" for the purpose of
+              animation model calculations.
             </p>
           </dd>
           <dt>sequence&lt;Keyframe&gt; getFrames()</dt>
@@ -7599,6 +7659,45 @@ elem.animate({ left: '100px' }, 3);
             </p>
           </dd>
         </dl>
+        <section>
+          <h2>The <code>KeyframeEffectOptions</code> dictionary</h2>
+          <p>
+            Additional parameters may be passed to the <a>KeyframeEffect</a>
+            constructor by providing a <a>KeyframeEffectOptions</a> object.
+          </p>
+          <dl title="dictionary KeyframeEffectOptions" class="idl">
+            <dt>CompositeOperation composite = "replace"</dt>
+            <dd>
+              The <a>composition operation</a> used to composite this
+              animation with the <a>animation stack</a>, as specified by one
+              of the <a>CompositeOperation</a> enumeration values.
+              This is used for all keyframes that do not specify
+              a <a>composition operation</a>.
+            </dd>
+            <dt>AccumulateOperation accumulate = "none"</dt>
+            <dd>
+              The <a>accumulation operation</a> used to define the way
+              animation values build from iteration to iteration.
+            </dd>
+            <dt>DOMString spacing = "distribute"</dt>
+            <dd>
+              <p>
+                The <a>spacing mode</a> to apply to this <a>animation
+                effect</a>'s <a>keyframes</a>.
+              </p>
+              <p>
+                See the description of the <code>spacing</code> attribute of the
+                <a>KeyframeEffect</a> interface for the recognized values and
+                their meaning are described 
+              </p>
+              <p>
+                Unrecognized values are set on the created <a>KeyframeEffect</a>
+                object, but are treated as "distribute" for the purpose of
+                animation model calculations.
+              </p>
+            </dd>
+          </dl>
+        </section>
         <section>
           <h4>Normalizing a list of keyframes</h4>
           <p>
@@ -9150,6 +9249,10 @@ elem.animate({ left: '100px' }, 3);
         <li>Renamed the <em>target element</em> of an <a>animation</a> to the
             <a>animation target</a>.
         <li>Added per-<a>keyframe</a> <a>timing functions</a>.
+        <li>Replaced paced timing functions with <a
+            href="#spacing-keyframes">spacing</a> behavior that can either
+            evenly distribute values or space them to maintain an even rate of
+            change.
         <li>Removed custom effect priorities.
         <li>Added the following members to the <a
             title="Player interface">Player</a> interface:
@@ -9188,6 +9291,11 @@ elem.animate({ left: '100px' }, 3);
             <a>Animatable</a> interface in its place.
         <li>Renamed <code>KeyframeAnimationEffect</code> to
             <a>KeyframeEffect</a>.
+        <li>Changed the constructor for <a>KeyframeEffect</a> to take
+            a <a>KeyframeEffectOptions</a> dictionary object.
+        <li>Added a <code>spacing</code> member to both
+            <a>KeyframeEffect</a> and <a>KeyframeEffectOptions</a> to specify <a
+            href="#spacing-keyframes">spacing</a> behavior.
         <li>Made <code>getFrames</code> on <a>KeyframeEffect</a> return the
             computed <a title="positional offset of a keyframe">positional
             offset</a> as <code>computedOffset</code> and apply the
