@@ -2588,128 +2588,6 @@
         </dl>
       </section>
       <section>
-        <h3>Paced timing</h3>
-        <div class='todo'>
-          <p>Insert a nice diagram showing how this works</p>
-        </div>
-        <p>
-          A <dfn>paced timing function</dfn> scales the input time such that the
-          resulting time values cause a <dfn>referenced property</dfn> that is
-          animated by a specified <a>animation effect</a>, referred to as the
-          <dfn>paced effect</dfn>,
-          to change at a constant rate over the period of time for which the
-          paced timing function applies.
-        </p>
-        <p>
-          A <a>paced timing function</a> may be specified as a string
-          using the following syntax:
-        </p>
-        <blockquote>
-          <div class="production"><dfn>&lt;paced-timing-function&gt;</dfn>
-            = paced({ident})</div>
-        </blockquote>
-        <p>
-          The <code>{ident}</code> argument is an <a
-          href="http://www.w3.org/TR/css3-values/#identifier">identifier</a>
-          [[!CSS3-VALUES]] representing the property name of the <a>referenced
-          property</a> of the <a>paced timing function</a>.
-        </p>
-        <div class='informative'>
-          <p>
-            For example, <code>paced(transform)</code> would indicate that the
-            time should be scaled such that changes to the <span
-            class="prop-name">transform</span> property occur at a constant
-            rate.
-          </p>
-        </div>
-        <p>
-          The <a>paced effect</a> is the <a>animation effect</a> specified on
-          the same <a>timed item</a> where the <a>paced timing function</a> is
-          applied.
-          As a result, <a>paced timing functions</a> can only be used on
-          <a>animations</a> and not other types of <a>timed items</a>.
-        </p>
-        <p>
-          If <em>any</em> of the following conditions is true, the
-          <a>linear timing function</a> is used for the purpose of timing model
-          calculations:
-        </p>
-        <ul>
-          <li>there is no <a>paced effect</a> (because the <a>timed item</a> is
-              not an <a>animation</a> or does not specify an <a>animation
-              effect</a>), or
-          <li>the <a>referenced property</a> is not one of the <a
-              title="target property">target properties</a> of the <a>paced
-              effect</a>, or
-          <li>the <a>referenced property</a> is not <a>interpolable</a>, or
-          <li>the <a>referenced property</a> is not a valid property.
-        </ul>
-        <section>
-          <h2>Evaluating a paced timing function</h2>
-          <p>
-            The result of evaluating a <a>paced timing function</a> at
-            <var>input time</var> is calculated as follows:
-          </p>
-          <ol>
-            <li>
-              Let <var>length list</var> be a sequence of length values
-              calculated using the rules defined in <a
-              href="#calculating-the-length-between-two-property-values"
-              class="sectionRef"></a>
-              for the <a>referenced property</a> between each pair of keyframes
-              that refers to the <a>referenced property</a> in a <a>keyframe
-              animation effect</a>,
-              or between each path segment in a <a>motion path animation
-              effect</a>.
-              <p class="issue">
-                Need to confirm this approach is actually backwards-compatible
-                with SVG with regards to motion-path behavior.
-              </p>
-            <li>
-              If the number of items in <var>length list</var> is 1 or less let
-              the output of the timing function be <var>input time</var> and
-              terminate these steps.
-            <li>
-              Let <var>total length</var> be the sum of values in
-              <var>length list</var>.
-            <li>
-              If <var>total length</var> is zero let
-              the output of the timing function be <var>input time</var> and
-              terminate these steps.
-            <li>
-              Let <var>distance</var> be
-              <code><var>input time</var> &times; <var>total
-              length</var></code>.
-            <li>
-              Let <var>current position</var> be 0.
-            <li>
-              Let <var>current distance</var> be 0.
-            <li>
-              Let <var>current length</var> be the first value in <var>length
-              list</var>.
-            <li>While <var>distance</var> &gt; <code><var>current distance</var>
-              + <var>current length</var></code>, perform the following steps:
-              <ol>
-                <li>Increment <var>current position</var> by 1.
-                <li>Increase <var>current distance</var> by <var>current
-                    length</var>.
-                <li>Let <var>current length</var> be the value at
-                    position <var>current position</var> in <var>length
-                    list</var>.
-              </ol>
-            <li>
-              The output of the paced timing function is the result of
-              evaluating:
-              <code><var>current distance</var> / <var>total length</var> +
-                (<var>distance</var> - <var>current distance</var>) /
-                <var>current length</var></code>
-          </ol>
-          <p class="issue">
-            Is this algorithm necessary? Would a prose description suffice?
-          </p>
-        </section>
-      </section>
-      <section>
         <h3>Calculating the transformed time</h3>
         <p>
           The <dfn>transformed time</dfn> is calculated from the
@@ -6636,7 +6514,6 @@ interface Duration {
                 "linear"
                   | <a>&lt;cubic-bezier-timing-function&gt;</a>
                   | <a>&lt;step-timing-function&gt;</a>
-                  | <a>&lt;paced-timing-function&gt;</a>
               </div>
             </blockquote>
             <p>
