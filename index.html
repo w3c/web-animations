@@ -4270,30 +4270,25 @@ The slope of the graph is equal for the first two segments but changes for the l
         <p>
           The <a>unaccumulated animation value</a> of a single property
           referenced by a <a>keyframe animation effect</a> as one of its
-          <a>target properties</a>, for a given <a>time fraction</a> and
-          <a>underlying value</a> is calculated as follows.
+          <a title="target property">target properties</a>, for a given <a>time
+          fraction</a> and <a>underlying value</a> is calculated as follows.
         </p>
         <ol>
           <li>Let <var>target property</var> be the property for which the
               <a>unaccumulated animation value</a> is to be calculated.
-          <li>If <var>target property</var> is not <a>animatable</a> abort the
-              procedure since the effect cannot be applied.</li>
+          <li>If <a>animation behavior</a> of the <var>target property</var> is
+              <a>not animatable</a> abort this procedure since the effect cannot
+              be applied.
           <li>Let <var>time fraction</var> be the <a>time fraction</a> for which
-              the <a>unaccumulated animation value</a> is to be calculated.</li>
+              the <a>unaccumulated animation value</a> is to be calculated.
           <li>Let <var>underlying value</var> be the current <a>underlying
-              value</a>.
+              value</a> for <var>target property</var>.
           <li>Define the <dfn>neutral value for composition</dfn> as a value
               which, when combined with an <a>underlying value</a> using the <a
               title="composition operation add">add</a> <a>composition
               operation</a>, produces the <a>underlying value</a>.
-              <p class="note">
-                Note that this definition does not require determining
-                a suitable zero value for each possible <a>property type</a>.
-                This behavior could be realized, for example, by use of
-                a sentinel value.
-              </p>
           <li>Let <var>property-specific keyframes</var> be a copy of the list
-              of <a>keyframes</a> specified on the effect.</li>
+              of <a>keyframes</a> specified on the effect.
           <li>Remove any <a>keyframes</a> from <var>property-specific
               keyframes</var> that do not have a property value for
               <var>target property</var>.
@@ -4301,14 +4296,16 @@ The slope of the graph is equal for the first two segments but changes for the l
               <var>underlying value</var>.
           <li>If there is no <a>keyframe</a> with a <a
               title="positional offset of a keyframe">positional offset</a> of
-              0, create a new <a>keyframe</a> with a positional offset of 0,
+              0, create a new <a>keyframe</a> with a <a title="positional offset
+              of a keyframe">positional offset of 0,
               a property value set to the <a>neutral value for composition</a>,
               and a <a>composition operation</a> of <a title="composition
               operation add">add</a>, and add it to the beginning of
               <var>property-specific keyframes</var>.
           <li>Similarly, if there is no <a>keyframe</a> with a <a
               title="positional offset of a keyframe">positional offset</a> of
-              1, create a new <a>keyframe</a> with a positional offset of 1,
+              1, create a new <a>keyframe</a> with a <a
+              title="positional offset of a keyframe">positional offset of 1,
               a property value set to the <a>neutral value for composition</a>,
               and a <a>composition operation</a> of <a title="composition
               operation add">add</a>, and append it to the end of
@@ -4327,48 +4324,69 @@ The slope of the graph is equal for the first two segments but changes for the l
               <ol>
                 <li>Let <var>value to add</var> be the property value of
                     <var>target property</var> specified on <var>keyframe</var>.
-                <li>If the <a>property type</a> of <var>underlying value</var>
-                    and <var>value to add</var> is the same and is
-                    <a>additive</a>, set the property value of <var>target
-                    property</var> for <var>keyframe</var> to
-                    <code><var>underlying value</var> + <var>value to
-                    add</var></code>.
+                <li>Replace the property value of <var>target property</var> on
+                    <var>keyframe</var> with the sum of
+                    <var>underlying value</var> (<var>V</var><sub>a</sub>) and
+                    <var>value to add</var> (<var>V</var><sub>b</sub>)
+                    using the <a title="animation addition">addition
+                    procedure</a> defined by <var>target property</var>'s
+                    <a>animation behavior</a>.
               </ol>
           <li>If <var>time fraction</var> &lt; 0 and there is more
               than one <a>keyframe</a> in <var>property-specific
-              keyframes</var> with a positional offset of 0, return the property
-              value for <var>target property</var> of the first <a>keyframe</a>
-              in <var>property-specific keyframes</var>.</li>
+              keyframes</var> with a <a
+              title="positional offset of a keyframe">positional offset</a> of
+              0, return the property value for <var>target property</var> of the
+              first <a>keyframe</a> in <var>property-specific
+              keyframes</var>.
           <li>If <var>time fraction</var> &ge; 1 and there is more than one
               <a>keyframe</a> in <var>property-specific keyframes</var> with
-              a positional offset of 1, return the property value for
-              <var>target property</var> of the last <a>keyframe</a> in
-              <var>property-specific keyframes</var>.</li>
-          <li>Let <var>start keyframe</var> be the last <a>keyframe</a> in
-              <var>property-specific keyframes</var> whose positional offset is
+              a <a title="positional offset of a keyframe">positional offset</a>
+              of 1, return the property value for <var>target property</var> of
+              the last <a>keyframe</a> in <var>property-specific
+              keyframes</var>.
+          <li>Otherwise, let <var>start keyframe</var> be the last
+              <a>keyframe</a> in
+              <var>property-specific keyframes</var> whose <a
+              title="positional offset of a keyframe">positional offset</a> is
               less than or equal to <var>time fraction</var> and less than 1.
               If there is no such <a>keyframe</a> (because, for example, the
               <a>time fraction</a> is negative), let <var>start keyframe</var>
-              be the last <a>keyframe</a> whose positional offset is 0.</li>
+              be the last <a>keyframe</a> whose <a
+              title="positional offset of a keyframe">positional offset</a> is
+              0.
+              <p class="issue">
+                Does the condition beginning &ldquo;If there is no such
+                keyframe&hellip;&rdquo; ever happen?<br>
+                There is always at least one keyframe at zero because we
+                synthesize one earlier if there is not. And if <var>time
+                fraction</var> is less than zero then we deal with it above, so
+                there should always be a keyframe with offset &le; <var>time
+                fraction</var> by this point right?.
+              </p>
           <li>Let <var>end keyframe</var> be the next <a>keyframe</a> in
               <var>property-specific keyframes</var> after <var>start
-              keyframe</var>.</li>
-          <li>Let <var>start offset</var> be the positional offset of <var>start
-              keyframe</var>.</li>
-          <li>Let <var>end offset</var> be the offset of <var>end
-              keyframe</var>.</li>
+              keyframe</var>.
+          <li>Let <var>start offset</var> be the <a
+              title="positional offset of a keyframe">positional offset</a> of
+              <var>start keyframe</var>.
+          <li>Let <var>end offset</var> be the <a
+              title="positional offset of a keyframe">positional offset</a> of
+              <var>end keyframe</var>.
           <li>
             Let <var>interval distance</var> be the result of evaluating
             <code>(<var>time fraction</var> - <var>start offset</var>) /
                   (<var>end offset</var> - <var>start offset</var>)</code>
-          </li>
           <li>
-            Return the result of <a title="interpolation">interpolating</a>
-            between the property values defined for <var>start keyframe</var>
-            and <var>end keyframe</var> using the procedure defined for their
-            <a>property type</a> with <var>interval distance</var> as the
-            interpolation parameter.
-          </li>
+            Return the result of interpolating between <var>start keyframe</var>
+            and <var>end keyframe</var> by using the <a
+            title="animation interpolation">interpolation procedure</a> defined
+            by the <a>animation behavior</a> of the <var>target property</var>
+            using <var>interval distance</var> as the interpolation parameter
+            <var>p</var> and the property values of <var>target
+            property</var> specified on <var>start keyframe</var> and <var>end
+            keyframe</var> as <var>V</var><sub>start</sub> and
+            <var>V</var><sub>end</sub> repsectively.
         </ol>
         <div class="note">
           <p>Note that this procedure assumes the following about the list of
@@ -4389,11 +4407,20 @@ The slope of the graph is equal for the first two segments but changes for the l
             a declarative markup or programming interface) to ensure these
             conditions are met.
           </p>
+          <p>
+            For example, for the <a href="#script-interface">programming
+            interface</a> defined by this specification, these conditions are
+            met by applying the normalization defined in <a
+            href="#normalizing-a-list-of-keyframes" class="sectionRef"></a> and
+            resolving <code>null</code> <a
+            title="positional offset of a keyframe">positional offsets</a> by
+            applying <a href="#spacing-keyframes">spacing behavior</a>.
+          </p>
         </div>
         <p class="note">
           Note that this procedure permits overlapping <a>keyframes</a>.
           The behavior is that at the point of overlap the output value jumps to
-          the value of last defined <a>keyframe</a> at that offset.
+          the value of the last defined <a>keyframe</a> at that offset.
           For overlapping frames at 0 or 1, the output value for <a
           title="time fraction">time fractions</a> less than 0 or greater than
           or equal to 1 is the value of the first <a>keyframe</a> or the last
@@ -4403,22 +4430,30 @@ The slope of the graph is equal for the first two segments but changes for the l
           <p>
             In the presence of certain timing functions, the input time
             fraction to an animation effect is not limited to the range [0, 1].
-            Currently, however, keyframe offsets are limited to the range
-            [0, 1] and property values are simply extrapolated for input time
-            fractions outside this range. We are considering removing this
-            restriction for the following reasons.
+            Currently, however, keyframe offsets <em>are</em> limited to the
+            range [0, 1] and property values are simply extrapolated for input
+            time fractions outside this range.
           </p>
           <p>
-            We are considering removing the restriction since cases exist where
-            it is useful to be able to specify non-linear changes in property
-            values at time fractions outside the range [0, 1].
+            We have considered removing this restriction since some cases exist
+            where it is useful to be able to specify non-linear
+            changes in property values at time fractions outside the range
+            [0, 1].
+            One example is an animation that interpolates from green to yellow
+            but has an overshoot timing function that makes it temporarily
+            interpolate &lsquo;beyond&rsquo; yellow to red before settling back
+            to yellow.
           </p>
           <p>
-            While this effect could be achieved by careful modification of the
-            timing function, this approach is complex and breaks the model's
-            separation of timing concerns from animation effects. An example is
-            an animation which is subject to an 'overshoot' timing function and
-            which has an effect that sweeps through a non-linear color space.
+            While this effect could be achieved by modification of the keyframes
+            and timing function, this approach seems to break the model's
+            separation of timing concerns from animation effects.
+          </p>
+          <p>
+            It is not clear how this effect should be achieved but we note that
+            allowing keyframe offsets outside [0, 1] may make the currently
+            specified behavior where keyframes at offset 0 and 1 are synthesized
+            as necessary, inconsistent.
           </p>
           <p>
             See <a
