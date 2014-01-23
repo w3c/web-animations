@@ -3888,20 +3888,18 @@
         positioned at fractional offsets.
       </p>
       <p>
-        Each set of property values indexed by a positional offset is called
+        Each set of property values indexed by an offset is called
         a <dfn>keyframe</dfn>.
       </p>
       <p>
-        The <dfn>positional offset of a keyframe</dfn> is a value in the range
-        [0, 1] or the special value null.
+        The <dfn title="keyframe offset">offset of a keyframe</dfn> is a value
+        in the range [0, 1] or the special value null.
         The list of <a>keyframes</a> for a <a>keyframe animation effect</a> is
         <dfn>loosely sorted by offset</dfn> which means that for each
-        <a>keyframe</a> in the list that has a <a
-        title="positional offset of a keyframe">positional offset</a> that is
+        <a>keyframe</a> in the list that has a <a>keyframe offset</a> that is
         not null, the offset is greater than or equal to the offset of the
-        previous <a>keyframe</a> in the list with a <a
-        title="positional offset of a keyframe">positional offset</a> that is
-        not null, if any.
+        previous <a>keyframe</a> in the list with a <a>keyframe offset</a> that
+        is not null, if any.
       </p>
       <p>
         The behavior when <a>keyframes</a> overlap or have unsupported values
@@ -3934,8 +3932,8 @@
         <div class="informative">
           <p>
             It is often useful to be able to provide a series of property values
-            without having calculate the offset of each value in time but
-            instead to rely on some automatic spacing.
+            without having calculate the <a>keyframe offset</a> of each value in
+            time but instead to rely on some automatic spacing.
           </p>
           <p>
             For example, rather than typing:
@@ -3948,7 +3946,8 @@ elem.animate([ { color: 'blue', offset: 0 },
           </pre>
           <p>
             It should be possible to type the following and allow the user agent
-            to calculate the offset of each keyframe:
+            to calculate the <a title="keyframe offset">offset</a> of each
+            keyframe:
           </p>
           <pre class='example sh_javascript'>
 elem.animate([ { color: 'blue' },
@@ -4017,7 +4016,7 @@ The absolute value of the slope is graph is equal for all segments of the animat
             of the animation indicating a constant rate of change.
           </p>
           <p>
-            It is also possible to combine fixed keyframe offsets with
+            It is also possible to combine fixed <a>keyframe offsets</a> with
             <a>spacing modes</a> as follows:
           </p>
           <pre class='example sh_javascript'>
@@ -4037,8 +4036,8 @@ The slope of the graph is equal for the first two segments but changes for the l
           </div>
           <p class="caption">
             The animated value of the left property over time when applying the
-            <a>paced spacing mode</a> and a fixed offset that puts the 100px
-            value at 0.5.
+            <a>paced spacing mode</a> and a fixed <a>keyframe offset</a> that
+            puts the 100px value at 0.5.
             The slope of the graph is equal for the first two segments but
             changes for the last segment in order to accommodate the fixed
             offset.
@@ -4046,9 +4045,8 @@ The slope of the graph is equal for the first two segments but changes for the l
         </div>
         <p>
           Before calculating animation values from a <a>keyframe animation
-          effect</a>, an absolute value must be computed for the <a
-          title="positional offset of a keyframe">positional offset</a> of each
-          <a>keyframe</a> with a null positional offset.
+          effect</a>, an absolute value must be computed for the <a>keyframe
+          offset</a> of each <a>keyframe</a> with a null offset.
           The values computed depend on the <dfn>spacing mode</dfn> specified
           for the <a>keyframe animation effect</a>.
           The <a>spacing modes</a> defined by this specification are:
@@ -4056,16 +4054,13 @@ The slope of the graph is equal for the first two segments but changes for the l
         <dl>
           <dt><dfn title="distribute spacing mode">distribute</dfn></dt>
           <dd>
-            Indicates that <a>keyframes</a> with a <a
-            title="positional offset of a keyframe">positional offset</a> of
+            Indicates that <a>keyframes</a> with a <a>keyframe offset</a> of
             null are positioned so that the difference between subsequent
-            <a title="positional offset of a keyframe">positional offsets</a>
-            are equal.
+            <a>keyframe offsets</a> are equal.
           </dd>
           <dt><dfn title="paced spacing mode">paced</dfn></dt>
           <dd>
-            Indicates that <a>keyframes</a> with a <a
-            title="positional offset of a keyframe">positional offset</a> of
+            Indicates that <a>keyframes</a> with a <a>keyframe offset</a> of
             null are positioned so that the <em>distance</em> between subsequent
             values of a specified <dfn>paced property</dfn> are equal.
             The distance is calculated using the <a>distance computation</a>
@@ -4074,69 +4069,57 @@ The slope of the graph is equal for the first two segments but changes for the l
           </dd>
         </dl>
         <p>
-          Since many edge cases arise when some but not all <a
-          title="positional offset of a keyframe">positional offsets</a> or
-          <a>paced property</a> values are specified, the procedure for
-          applying <a>spacing modes</a> is defined below.
+          Since many edge cases arise when some but not all <a>keyframe
+          offsets</a> or <a>paced property</a> values are specified, the
+          procedure for applying <a>spacing modes</a> is defined below.
         </p>
         <p>
           First, we define a generic procedure for <dfn>evenly spacing
           a keyframe</dfn>, <var>keyframe</var>, between two reference
-          keyframes, <var>start</var> and <var>end</var>, whose <a
-          title="positional offset of a keyframe">positional offsets</a> are
-          <em>not</em> null, as follows:
+          keyframes, <var>start</var> and <var>end</var>, whose <a>keyframe
+          offsets</a> are <em>not</em> null, as follows:
         </p>
         <ol>
-          <li>Let <dfn>offset<sub><var>k</var></sub></dfn> be the
-              <a title="positional offset of a keyframe">positional offset</a>
-              of a <a>keyframe</a> <var>k</var>.
+          <li>Let <dfn>offset<sub><var>k</var></sub></dfn> be the <a>keyframe
+              offset</a> of a <a>keyframe</a> <var>k</var>.
           <li>Let <var>n</var> be the number of keyframes <em>between</em> and
               including <var>start</var> and <var>end</var> minus 1.
           <li>Let <var>index</var> refer to the position of <var>keyframe</var>
               in the sequence of keyframes between <var>start</var> and
               <var>end</var> such that the first keyframe after <var>start</var>
               has an <var>index</var> of 1.
-          <li>Set the <a title="positional offset of a keyframe">positional
-              offset</a> of <var>keyframe</var> to
+          <li>Set the <a>keyframe offset</a> of <var>keyframe</var> to
               <a title="offsetk">offset</a><sub><var>start</var></sub> +
               (<a title="offsetk">offset</a><sub><var>end</var></sub> &minus;
                <a title="offsetk">offset</a><sub><var>start</var></sub>)
               &times; <var>index</var> / <var>n</var>.
         </ol>
         <p>
-          The computed <a
-          title="positional offset of a keyframe">positional offset</a> values
-          of each <a>keyframe</a> with a null positional offset are determined
-          using the following procedure.
+          The computed <a>keyframe offset</a> values of each <a>keyframe</a>
+          with a null keyframe offset are determined using the following
+          procedure.
         </p>
         <ol>
           <li>Let <var>keyframes</var> refer to the list of <a>keyframes</a>
               associated with the <a>keyframe animation effect</a>.
           <li>If <var>keyframes</var> contains more than one
-              <a>keyframe</a> and the <a
-              title="positional offset of a keyframe">positional offset</a> of
+              <a>keyframe</a> and the <a>keyframe offset</a> of
               the first <a>keyframe</a> in <var>keyframes</var> is null,
-              set the <a
-              title="positional offset of a keyframe">positional offset</a> of
+              set the <a>keyframe offset</a> of
               the first <a>keyframe</a> in <var>keyframes</var> to 0.
-          <li>If the <a title="positional offset of a keyframe">positional
-              offset</a> of the last <a>keyframe</a> in <var>distributed
-              keyframes</var> is unspecified, set its <a
-              title="positional offset of a keyframe">positional offset</a> to
-              1.
+          <li>If the <a>keyframe offset</a> of the last <a>keyframe</a> in
+              <var>distributed keyframes</var> is unspecified, set its
+              <a>keyframe offset</a> to 1.
           <li>For each pair of <a>keyframes</a> <var>A</var> and <var>B</var>
               where:
               <ul>
                 <li><var>A</var> appears before <var>B</var> in
                     <var>keyframes</var>, and
                 <li>all <a>keyframes</a> between <var>A</var> and <var>B</var>
-                    have a null <a
-                    title="positional offset of a keyframe">positional
-                    offset,</a>
+                    have a null <a>keyframe offset</a>,
               </ul>
               <p>
-                calculate the <a
-                title="positional offset of a keyframe">positional offset</a> of
+                calculate the <a>keyframe offset</a> of
                 each <a>keyframe</a> between <var>A</var> and <var>B</var>
                 depending on the <a>spacing mode</a> as follows:
               </p>
@@ -4203,8 +4186,7 @@ The slope of the graph is equal for the first two segments but changes for the l
                       </ol>
                       <li>For each keyframe, <var>keyframe</var>, in the range
                           (<var>paced A</var>, <var>paced B</var>) that contains
-                          the <a>paced property</a>, let the <a
-                          title="positional offset of a keyframe">positional
+                          the <a>paced property</a>, let the <a>keyframe
                           offset</a> be
                           <a title="offsetk">offset</a><sub><var>paced
                           A</var></sub>
@@ -4222,14 +4204,13 @@ The slope of the graph is equal for the first two segments but changes for the l
                           <a title="distk">dist</a><sub><var>paced B</var></sub>
                       <li>For each keyframe, <var>keyframe</var>, in the range
                           (<var>paced A</var>, <var>paced B</var>) that has
-                          a null <a
-                          title="positional offset of a keyframe">positional
-                          offset</a> (because it does not contain the <a>paced
-                          property</a>), apply the procedure for <a>evenly
+                          a null <a>keyframe offset</a> (because it does not
+                          contain the <a>paced property</a>), apply the
+                          procedure for <a>evenly
                           spacing a keyframe</a> using the nearest keyframe on
                           either side of <var>keyframe</var> that has a
-                          positional offset that is not null, as the reference
-                          keyframes.
+                          <a>keyframe offset</a> that is not null, as the
+                          reference keyframes.
                   </ol>
                 </dd>
                 <dt>Otherwise,</dt>
@@ -4242,13 +4223,13 @@ The slope of the graph is equal for the first two segments but changes for the l
         </ol>
         <div class="note">
           <p>
-            Note that although the above procedure defines computing positional
+            Note that although the above procedure defines computing keyframe
             offsets in terms of overwriting null values, user agents that
             implement the <a href="#programming-interface">programming
             interface</a> are required to maintain the original null values as
             well as calculating the computed offsets.
             This is because the <code>getFrames</code> method of the
-            <a>Timing</a> interface returns positional offsets both before
+            <a>Timing</a> interface returns keyframe offsets both before
             and after applying spacing.
           </p>
         </div>
@@ -4256,7 +4237,7 @@ The slope of the graph is equal for the first two segments but changes for the l
           <p>
             The above algorithm is quite complex.
             It attempts to cover all possible combinations of input where
-            positional offsets and or paced property values may be missing.
+            keyframe offsets and or paced property values may be missing.
             Furthermore, it attempts to do this in a way that degenerates
             consistently and also allows the author to combine fixed offsets
             with either pacing or distribute spacing.
@@ -4294,22 +4275,19 @@ The slope of the graph is equal for the first two segments but changes for the l
               <var>target property</var>.
           <li>If <var>property-specific keyframes</var> is empty, return
               <var>underlying value</var>.
-          <li>If there is no <a>keyframe</a> with a <a
-              title="positional offset of a keyframe">positional offset</a> of
-              0, create a new <a>keyframe</a> with a <a title="positional offset
-              of a keyframe">positional offset of 0,
+          <li>If there is no <a>keyframe</a> with a <a>keyframe offset</a> of
+              0, create a new <a>keyframe</a> with a <a>keyframe offset</a> of
+              0, a property value set to the <a>neutral value for
+              composition</a>, and a <a>composition operation</a> of <a
+              title="composition operation add">add</a>, and add it to the
+              beginning of <var>property-specific keyframes</var>.
+          <li>Similarly, if there is no <a>keyframe</a> with a <a>keyframe
+              offset</a> of 1,
+              create a new <a>keyframe</a> with a <a>keyframe offset</a> of 1,
               a property value set to the <a>neutral value for composition</a>,
-              and a <a>composition operation</a> of <a title="composition
-              operation add">add</a>, and add it to the beginning of
-              <var>property-specific keyframes</var>.
-          <li>Similarly, if there is no <a>keyframe</a> with a <a
-              title="positional offset of a keyframe">positional offset</a> of
-              1, create a new <a>keyframe</a> with a <a
-              title="positional offset of a keyframe">positional offset of 1,
-              a property value set to the <a>neutral value for composition</a>,
-              and a <a>composition operation</a> of <a title="composition
-              operation add">add</a>, and append it to the end of
-              <var>property-specific keyframes</var>.
+              and a <a>composition operation</a> of <a
+              title="composition operation add">add</a>, and append it to the
+              end of <var>property-specific keyframes</var>.
           <li>Iterate over each <var>keyframe</var> in <var>property-specific
               keyframes</var> and for each <var>keyframe</var>, if:
               <ul>
@@ -4334,27 +4312,23 @@ The slope of the graph is equal for the first two segments but changes for the l
               </ol>
           <li>If <var>time fraction</var> &lt; 0 and there is more
               than one <a>keyframe</a> in <var>property-specific
-              keyframes</var> with a <a
-              title="positional offset of a keyframe">positional offset</a> of
+              keyframes</var> with a <a>keyframe offset</a> of
               0, return the property value for <var>target property</var> of the
               first <a>keyframe</a> in <var>property-specific
               keyframes</var>.
           <li>If <var>time fraction</var> &ge; 1 and there is more than one
               <a>keyframe</a> in <var>property-specific keyframes</var> with
-              a <a title="positional offset of a keyframe">positional offset</a>
-              of 1, return the property value for <var>target property</var> of
-              the last <a>keyframe</a> in <var>property-specific
-              keyframes</var>.
+              a <a>keyframe offset</a> of 1, return the property value for
+              <var>target property</var> of the last <a>keyframe</a> in
+              <var>property-specific keyframes</var>.
           <li>Otherwise, let <var>start keyframe</var> be the last
               <a>keyframe</a> in
-              <var>property-specific keyframes</var> whose <a
-              title="positional offset of a keyframe">positional offset</a> is
-              less than or equal to <var>time fraction</var> and less than 1.
+              <var>property-specific keyframes</var> whose <a>keyframe
+              offset</a> is less than or equal to <var>time fraction</var> and
+              less than 1.
               If there is no such <a>keyframe</a> (because, for example, the
               <a>time fraction</a> is negative), let <var>start keyframe</var>
-              be the last <a>keyframe</a> whose <a
-              title="positional offset of a keyframe">positional offset</a> is
-              0.
+              be the last <a>keyframe</a> whose <a>keyframe offset</a> is 0.
               <p class="issue">
                 Does the condition beginning &ldquo;If there is no such
                 keyframe&hellip;&rdquo; ever happen?<br>
@@ -4367,11 +4341,9 @@ The slope of the graph is equal for the first two segments but changes for the l
           <li>Let <var>end keyframe</var> be the next <a>keyframe</a> in
               <var>property-specific keyframes</var> after <var>start
               keyframe</var>.
-          <li>Let <var>start offset</var> be the <a
-              title="positional offset of a keyframe">positional offset</a> of
+          <li>Let <var>start offset</var> be the <a>keyframe offset</a> of
               <var>start keyframe</var>.
-          <li>Let <var>end offset</var> be the <a
-              title="positional offset of a keyframe">positional offset</a> of
+          <li>Let <var>end offset</var> be the <a>keyframe offset</a> of
               <var>end keyframe</var>.
           <li>
             Let <var>interval distance</var> be the result of evaluating
@@ -4392,12 +4364,10 @@ The slope of the graph is equal for the first two segments but changes for the l
           <p>Note that this procedure assumes the following about the list of
              <a>keyframes</a> specified on the effect:</p>
           <ul>
-            <li>Each <a>keyframe</a> has a specified <a
-                title="positional offset of a keyframe">positional offset</a> in
+            <li>Each <a>keyframe</a> has a specified <a>keyframe offset</a> in
                 the range [0, 1].
             <li>The list of <a>keyframes</a> is sorted in ascending order by
-                <a title="positional offset of a keyframe">positional
-                offset</a>.
+                <a>keyframe offset</a>.
             <li>Each specified property value is a valid and supported value.
             <li>For a given property, there is a most one specified property
                 value on each keyframe.
@@ -4412,8 +4382,7 @@ The slope of the graph is equal for the first two segments but changes for the l
             interface</a> defined by this specification, these conditions are
             met by applying the normalization defined in <a
             href="#normalizing-a-list-of-keyframes" class="sectionRef"></a> and
-            resolving <code>null</code> <a
-            title="positional offset of a keyframe">positional offsets</a> by
+            resolving <code>null</code> <a>keyframe offsets</a> by
             applying <a href="#spacing-keyframes">spacing behavior</a>.
           </p>
         </div>
@@ -7664,8 +7633,7 @@ elem.animate({ left: '100px' }, 3);
                   class="sectionRef"></a> is applied to <var>frames</var> which
                   may result in some frames being removed or re-ordered and some
                   properties being removed.
-              <li>The result of computing the <a
-                  title="positional offset of a keyframe">positional offset</a>
+              <li>The result of computing the <a>keyframe offset</a>
                   of each <a title="Keyframe interface">Keyframe</a>
                   as defined in <a href="#spacing-keyframes"
                   class="sectionRef"></a> is stored in the
@@ -7741,28 +7709,24 @@ elem.animate({ left: '100px' }, 3);
                 then,
                 <dl class="switch">
                   <dt>If each <a title="Keyframe interface">Keyframe</a> has
-                      a <a title="positional offset of a keyframe">specified
-                      offset</a>,</dt>
-                  <dd>Sort <var>frames</var> in ascending order by <a
-                      title="positional offset of a keyframe">specified
+                      a specified <a>keyframe offset</a>,</dt>
+                  <dd>Sort <var>frames</var> in ascending order by <a>keyframe
                       offset</a>.</dd>
                   <dt>Otherwise,</dt>
                   <dd>Throw a DOMException of type
                       <code>InvalidModificationError</code>.</dd>
                 </dl>
             <li>If there exist any <a title="Keyframe interface">Keyframe</a>
-                objects in <var>frames</var> whose <a
-                title="positional offset of a keyframe">specified positional
+                objects in <var>frames</var> whose specified <a>keyframe
                 offset</a> is less than zero, remove all keyframes
                 objects from the start of <var>frames</var> up to and including
-                the keyframe with the largest specified positional offset that
-                is still less than zero.
+                the keyframe with the largest specified <a>keyframe offset</a>
+                that is still less than zero.
             <li>Likewise, if there exist any <a
                 title="Keyframe interface">Keyframe</a> objects in
-                <var>frames</var> whose <a
-                title="positional offset of a keyframe">specified positional
-                offset</a> is greater than one, remove all <a>keyframes</a> from
-                keyframe with the smallest specified positional offset
+                <var>frames</var> whose specified <a>keyframe offset</a>
+                is greater than one, remove all <a>keyframes</a> from
+                keyframe with the smallest specified <a>keyframe offset</a>
                 that is still greater than one until the end of
                 <var>frames</var>.
             <li>Remove all property values in <var>frames</var> that are invalid
@@ -7793,8 +7757,7 @@ elem.animate({ left: '100px' }, 3);
             <var>keyframe result</var> using the following procedure:
           </p>
           <ol>
-            <li>Let the initial <a
-                title="positional offset of a keyframe">positional offset</a>
+            <li>Let the initial <a>keyframe offset</a>
                 of <var>keyframe result</var> be <code>null</code>.
             <li>Let the initial <a>composition operation</a>
                 of <var>keyframe result</var> be <code>null</code>.
@@ -7817,9 +7780,8 @@ elem.animate({ left: '100px' }, 3);
                 <dt>If <var>property</var> is a case-sensitive match for
                   the string 'offset',</dt>
                 <dd>
-                  Set the <a title="positional offset of a keyframe">positional
-                  offset</a> of <var>keyframe input</var> to the result of
-                  applying the <a
+                  Set the <a>keyframe offset</a> of <var>keyframe input</var> to
+                  the result of applying the <a
                   href="http://www.w3.org/TR/WebIDL/#es-double">procedure for
                   converting an ECMAScript value into an IDL double</a> defined
                   in WebIDL [[!WEBIDL]] to
@@ -7937,9 +7899,8 @@ elem.animate({ left: '100px' }, 3);
           <dt>double? offset = null</dt>
           <dd>
             <p>
-              The <a title="positional offset of a keyframe">positional
-              offset</a> of the <a>keyframe</a> specified as a number between
-              0.0 and 1.0 inclusive or <code>null</code>.
+              The <a>keyframe offset</a> of the <a>keyframe</a> specified as
+              a number between 0.0 and 1.0 inclusive or <code>null</code>.
             </p>
             <p>
               <a>Keyframes</a> with offsets outside the range [0.0, 1.0] are
@@ -7981,8 +7942,8 @@ elem.animate({ left: '100px' }, 3);
           <a title="Keyframe interface">Keyframe</a> objects returned by the
           <code>getFrames</code> method of <a>KeyframeEffect</a> include an
           additional Number property <code>computedOffset</code> representing
-          the <a title="positional offset of a keyframe">offset</a> as
-          calculated by <a href="#spacing-keyframes" class="sectionRef"></a>.
+          the <a>keyframe offset</a> as calculated by <a
+          href="#spacing-keyframes" class="sectionRef"></a>.
         </div>
       </section>
       <section>
@@ -9322,19 +9283,18 @@ elem.animate({ left: '100px' }, 3);
             <a>KeyframeEffect</a> and <a>KeyframeEffectOptions</a> to specify <a
             href="#spacing-keyframes">spacing</a> behavior.
         <li>Made <code>getFrames</code> on <a>KeyframeEffect</a> return the
-            computed <a title="positional offset of a keyframe">positional
-            offset</a> as <code>computedOffset</code> and apply the
-            normalization of keyframes defined in <a
+            computed <a>keyframe offset</a> as <code>computedOffset</code> and
+            apply the normalization of keyframes defined in <a
             href="#normalizing-a-list-of-keyframes" class="sectionRef"></a>.
         <li>Made the normalization of keyframes no longer fill in the
-            <a>positional offset of a keyframe</a>.
+            <a>keyframe offset</a> of a keyframe.
             This is now incorporated in <a href="#spacing-keyframes"
             class="sectionRef"></a> which is now a core part of the model.
         <li>Made the normalization of keyframes sort keyframes if all
-            <a title="positional offset of a keyframe">positional offset</a> are
-            specified or otherwise throw an exception if the frames are not
-            <a>loosely sorted by offset</a> and not all offsets are specified
-            since the desired result in this case is ambiguous.
+            <a>keyframe offset</a> are specified or otherwise throw an exception
+            if the frames are not <a>loosely sorted by offset</a> and not all
+            offsets are specified since the desired result in this case is
+            ambiguous.
         <li>Added the <code>easing</code> member to the <a
               title="Keyframe interface">Keyframe</a> dictionary.
         <li>Renamed path animation effects to <a>motion path animation
