@@ -3041,10 +3041,14 @@
                       <p class="annotation">
                         An implication of the above two conditions is that no
                         values outside the range [0, 1] are allowed.
-                        If we allow keyframe offsets outside [0, 1] we will need
-                        to allow timing function offsets outside that range too
-                        for consistency.
                       </p>
+                      <div class="issue">
+                        <p>
+                          We allow keyframe offsets outside [0, 1] so we
+                          should allow timing function offsets outside that
+                          range too for consistency.
+                        </p>
+                      </div>
                 </ul>
               <li>The normalized <a>timing function position list</a> is simply
                   <var>input positions</var>.
@@ -4117,8 +4121,10 @@
         a <dfn>keyframe</dfn>.
       </p>
       <p>
-        The <dfn>positional offset of a keyframe</dfn> is a value in the range
-        [0, 1].
+        The <dfn>positional offset of a keyframe</dfn> is the point in the
+        <a>time fraction</a> space of the <a>timed item</a> to which this
+        <a>keyframe animation effect</a> belongs at which the property values
+        apply.
         The list of <a>keyframes</a> for a <a>keyframe animation effect</a> is
         sorted in ascending order by the <a
         title="positional offset of a keyframe">positional offset of each
@@ -4128,13 +4134,6 @@
         Unlike CSS syntax, <a>timing functions</a> are <em>not</em> directly
         associated with a <a>keyframe</a>.
         Rather, this is achieved by setting a <a>timing function chain</a>.
-      </p>
-      <p>
-        If, due to a <a>timing function</a> specified on the <a>timed
-        item</a> from which the <a>time fraction</a> is derived, the <a>time
-        fraction</a> lies outside the range [0, 1], the specified
-        <a>keyframe</a> property values are extrapolated to cover the extended
-        range.
       </p>
       <p>
         The behavior when <a>keyframes</a> overlap or have unsupported values
@@ -4189,20 +4188,32 @@
               <var>target property</var>.
           <li>If <var>property-specific keyframes</var> is empty, return
               <var>underlying value</var>.
-          <li>If there is no <a>keyframe</a> with a <a
-              title="positional offset of a keyframe">positional offset</a> of
-              0, create a new <a>keyframe</a> with a positional offset of 0,
-              a property value set to the <a>neutral value for composition</a>,
-              and a <a>composition operation</a> of <a title="composition
-              operation add">add</a>, and add it to the beginning of
-              <var>property-specific keyframes</var>.
-          <li>Similarly, if there is no <a>keyframe</a> with a <a
-              title="positional offset of a keyframe">positional offset</a> of
-              1, create a new <a>keyframe</a> with a positional offset of 1,
-              a property value set to the <a>neutral value for composition</a>,
-              and a <a>composition operation</a> of <a title="composition
-              operation add">add</a>, and append it to the end of
-              <var>property-specific keyframes</var>.
+          <li>If all <a>keyframes</a> in <var>property-specific keyframes</var>
+              have the same <a>positional offset</a>, generate an additional
+              <a>keyframe</a> as follows.
+              <ol>
+                <li>Let <var>offset</var> be the <a>positional offset</a> of
+                    the last <a>keyframe</a> in <var>property-specific
+                    keyframes</var>.
+                <li>Create a new <a>keyframe</a>, <var>synthetic keyframe</var>,
+                    with a single target property equal to <var>target
+                    property</var>.
+                <li>If <var>offset</var> is 0, set the <a>positional
+                    offset</a> of <var>synthetic keyframe</var> to 1 and the
+                    value and <a>composition operation</a> of <var>synthetic
+                    keyframe</var> to those of the last <a>keyframe</a> in
+                    <var>property-specific keyframes</var>.
+                <li>Otherwise, set the <a>positional offset</a> of
+                    <var>synthetic keyframe</var> to 0, the value of
+                    <var>synthetic keyframe</var> to the <a>neutral value for
+                    composition</a> and the <a>composition operation</a> of
+                    <var>synthetic keyframe</var> to <a>composition operation
+                    add</a>.
+                <li>Insert <var>synthetic keyframe</var> into
+                    <var>property- specific keyframes</var> such that that it
+                    remains sorted by <a>positional offset</a>.
+              </ol>
+          </li>
           <li>Iterate over each <var>keyframe</var> in <var>property-specific
               keyframes</var> and for each <var>keyframe</var>, if:
               <ul>
@@ -4224,22 +4235,29 @@
                     <code><var>underlying value</var> + <var>value to
                     add</var></code>.
               </ol>
-          <li>If <var>time fraction</var> &lt; 0 and there is more
-              than one <a>keyframe</a> in <var>property-specific
-              keyframes</var> with a positional offset of 0, return the property
-              value for <var>target property</var> of the first <a>keyframe</a>
-              in <var>property-specific keyframes</var>.</li>
-          <li>If <var>time fraction</var> &ge; 1 and there is more than one
-              <a>keyframe</a> in <var>property-specific keyframes</var> with
-              a positional offset of 1, return the property value for
-              <var>target property</var> of the last <a>keyframe</a> in
+          </li>
+          <li>Let <var>minimum offset</var> be the offset of the first entry in
               <var>property-specific keyframes</var>.</li>
-          <li>Let <var>start keyframe</var> be the last <a>keyframe</a> in
-              <var>property-specific keyframes</var> whose positional offset is
-              less than or equal to <var>time fraction</var> and less than 1.
-              If there is no such <a>keyframe</a> (because, for example, the
-              <a>time fraction</a> is negative), let <var>start keyframe</var>
-              be the last <a>keyframe</a> whose positional offset is 0.</li>
+          <li>Let <var>maximum offset</var> be the offset of the last entry in
+              <var>property-specific keyframes</var>.</li>
+          <li>Assign <var>start keyframe</var> as follows.
+              <ol>
+                <li>If <var>time fraction</var> &lt; <var>minimum
+                    offset</var>, let <var>start keyframe</var> be the last
+                    <a>keyframe</a> in <var>property-specific keyframes</var>
+                    whose <a>positional offset</a> is equal to <var>minimum
+                    offset</var>.
+                <li>If <var>time fraction</var> &ge; <var>maximum
+                    offset</var>, let <var>start keyframe</var> be the last
+                    <a>keyframe</a> in <var>property-specific keyframes</var>
+                    whose <a>positional offset</a> is less than <var>maximum
+                    offset</var>.
+                <li>Otherwise let <var>start keyframe</var> be the last
+                    <a>keyframe</a> in <var>property-specific keyframes</var>
+                    whose <a>positional offset</a> is less than or equal to
+                    <var>time fraction</var>.
+              </ol>
+          </li>
           <li>Let <var>end keyframe</var> be the next <a>keyframe</a> in
               <var>property-specific keyframes</var> after <var>start
               keyframe</var>.</li>
@@ -4265,8 +4283,7 @@
              <a>keyframes</a> specified on the effect:</p>
           <ul>
             <li>Each <a>keyframe</a> has a specified <a
-                title="positional offset of a keyframe">positional offset</a> in
-                the range [0, 1].
+                title="positional offset of a keyframe">positional offset</a>.
             <li>The list of <a>keyframes</a> is sorted in ascending order by
                 <a title="positional offset of a keyframe">positional
                 offset</a>.
@@ -4281,70 +4298,31 @@
           </p>
         </div>
         <p class="note">
-          Note that this procedure permits overlapping <a>keyframes</a>.
-          The behavior is that at the point of overlap the output value jumps to
-          the value of last defined <a>keyframe</a> at that offset.
-          For overlapping frames at 0 or 1, the output value for <a
-          title="time fraction">time fractions</a> less than 0 or greater than
-          or equal to 1 is the value of the first <a>keyframe</a> or the last
-          <a>keyframe</a> in <var>keyframes</var> respectively.
+          Note that this procedure permits overlapping <a>keyframes</a>. The
+          behavior is that at the point of overlap the output value jumps to
+          the value of last defined <a>keyframe</a> at that offset. For
+          overlapping frames at the start or end of the list of
+          <a>keyframes</a>, all but the last and first <a>keyframe</a>
+          respectively in each overlapping group are ignored.
         </p>
-        <div class="issue">
-          <p>
-            In the presence of certain timing functions, the input time
-            fraction to an animation effect is not limited to the range [0, 1].
-            Currently, however, keyframe offsets are limited to the range
-            [0, 1] and property values are simply extrapolated for input time
-            fractions outside this range. We are considering removing this
-            restriction for the following reasons.
-          </p>
-          <p>
-            We are considering removing the restriction since cases exist where
-            it is useful to be able to specify non-linear changes in property
-            values at time fractions outside the range [0, 1].
-          </p>
-          <p>
-            While this effect could be achieved by careful modification of the
-            timing function, this approach is complex and breaks the model's
-            separation of timing concerns from animation effects. An example is
-            an animation which is subject to an 'overshoot' timing function and
-            which has an effect that sweeps through a non-linear color space.
-          </p>
-          <p>
-            See <a
-            href='http://lists.w3.org/Archives/Public/public-fx/2013AprJun/0184.html'>section
-            4 (Keyframe offsets outside [0, 1]) of minuted discussion from Tokyo
-              2013 F2F</a>.
-          </p>
-        </div>
       </section>
       <section>              
         <h3>Procedure for evenly distributing keyframes</h3>
         <p>
           Whilst the Web Animations model assumes a sorted list of
           <a>keyframes</a> with specified <a
-          title="positional offset of a keyframe">positional offsets</a> in the
-          range [0, 1] many users of the model require a facility for
-          automatically distributing keyframes when positional offsets are not
-          provided.
+          title="positional offset of a keyframe">positional offsets</a>, many
+          users of the model require a facility for automatically distributing
+          keyframes when positional offsets are not provided.
           A procedure for evenly distributing keyframes with unspecified
           positional offsets is provided below.
         </p>
         <p>
-          Given a list of <a>keyframes</a> whose <a
-          title="positional offset of a keyframe">positional offets</a> are
-          either a real number in the range [0, 1] or unspecified,
-          we define such as list as <dfn>loosely sorted by offset</dfn> if, for
-          each <a>keyframe</a> in the list that has a specified offset, the
-          offset is greater than or equal to the offset of the previous
-          <a>keyframe</a> in the list with a specified offset, if any.
-        </p>
-        <p>
           Given a list of <a>keyframes</a>, <var>initial keyframe list</var>,
-          that is <a>loosely sorted by offset</a> we can evenly distribute the
-          <a>keyframes</a> with unspecified <a
-          title="positional offset of a keyframe">positional offsets</a> between
-          those frames with specified offsets using the following procedure:
+          we can evenly distribute the <a>keyframes</a> with unspecified <a
+          title="positional offset of a keyframe">positional offsets</a>
+          between those frames with specified offsets using the following
+          procedure:
         </p>
         <ol>
           <li>Let <var>distributed keyframes</var> be a copy of <var>initial
@@ -4388,6 +4366,12 @@
                 &times; <var>i</var>
                 / (<var>n</var> + 1)</code>
               </p>
+          <li>Sort <var>distributed keyframes</var> by the <a
+              title="positional offset of a keyframe">positional offset</a> of
+              each <a>keyframe</a> such that the partial order of
+              <a>keyframes</a> with equal <a
+              title="positional offset of a keyframe">positional offsets</a>
+              remains constant.
           <li>Return <var>distributed keyframes</var>.
         </ol>
       </section>
@@ -7984,21 +7968,10 @@ elem.animate({ left: '100px' }, 3);
               defined in <a
               href="#normalizing-the-list-of-keyframes" class="sectionRef"></a>.
             </p>
-            <p>
-              As a result of the normalization of the list, if <var>frames</var>
-              is not <a>loosely sorted by offset</a> this effect will not
-              contribute to the final <a>composited value</a>.
-            </p>
-          </dd>
+<         </dd>
         </dl>
         <section>
           <h4>Normalizing the list of keyframes</h4>
-          <div class="issue">
-            This behavior is expected to be revised such that keyframe lists
-            that are not in sequence are accepted and keyframe offsets outside
-            the range [0, 1] are also allowed.
-            Doing so may make this procedure unnecessary.
-          </div>
           <p>
             Before passing the list of <a
             title="Keyframe interface">Keyframes</a> specified in the API to the
@@ -8010,18 +7983,6 @@ elem.animate({ left: '100px' }, 3);
           <ol>
             <li>Let <var>normalized keyframes</var> be a copy of the
                 <a>keyframe</a> list returned by <code>getFrames</code>.
-            <li>If <var>normalized keyframes</var> is not <a>loosely sorted by
-                offset</a>, return an empty list.
-            <li>If there exist any <a>keyframes</a> whose specified positional
-                offset is less than zero, remove all <a>keyframes</a> from the
-                start of <var>normalized keyframes</var> up to and including the
-                <a>keyframe</a> with the largest specified positional offset
-                that is still less than zero.
-            <li>Likewise, if there exist any <a>keyframes</a> whose specified
-                offset is greater than one, remove all <a>keyframes</a> from
-                <a>keyframe</a> with the smallest specified positional offset
-                that is still greater than one until the end of
-                <var>normalized keyframes</var>.
             <li>Set the <a title="positional offset of a keyframe">positional
                 offset</a> of any keyframes without a specified offset using the
                 procedure defined in <a
@@ -8058,14 +8019,8 @@ elem.animate({ left: '100px' }, 3);
           <dd>
             <p>
               The <a title="positional offset of a keyframe">positional
-              offset</a> of the <a>keyframe</a> specified as a number between
-              0.0 and 1.0 inclusive or <code>null</code>.
-            </p>
-            <p>
-              <a>Keyframes</a> with offsets outside the range [0.0, 1.0] are
-              ignored when calculating animation values as defined in
-              <a href="#normalizing-the-list-of-keyframes"
-              class="sectionRef"></a>.
+              offset</a> of the <a>keyframe</a> specified as a number or
+              <code>null</code>.
             </p>
             <p>
               A <code>null</code> value indicates that the <a>keyframe</a>
