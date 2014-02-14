@@ -6,6 +6,8 @@
     <meta charset='utf-8'>
     <script src="respec/respec.js" class="remove"></script>
     <script src="respec/js/sh_javascript.min.js" class="remove"></script>
+    <script src='MathJax/MathJax.js?config=MML_SVGorMML,local/local'
+      type='text/javascript'></script>
     <script class="remove">
       var respecConfig = {
         // specification status (e.g. WD, LCWD, NOTE, etc.). If in doubt use
@@ -4197,7 +4199,7 @@ The slope of the graph is equal for the first two segments but changes for the l
                             We want, <var>index</var> and <var>n</var> in that
                             procedure to reflect <em>all</em> the keyframes
                             between <var>A</var> and <var>B</var>, not just the
-                            keyframes between, for example <var>A</var> and
+                            keyframes between, for example, <var>A</var> and
                             <var>spaced A</var>.
                           </div>
                       <li>For each keyframe in the range
@@ -4460,9 +4462,23 @@ The slope of the graph is equal for the first two segments but changes for the l
       </p>
       <p>
         The <dfn>motion path</dfn> of a <a>motion path animation effect</a> is
-        defined by an SVG Path, as specified by SVG [[!SVG11]].
+        defined by an SVG Path, as specified by SVG [[!SVG2]].
         A <a>motion path</a> consists of a list of <dfn
-        title="path command">path commands</dfn>.
+        title="path command">path commands</dfn> (see <a
+        href="http://www.w3.org/TR/SVG2/paths.html#PathData">path data</a>
+        [[!SVG2]]).
+      </p>
+      <p>
+        Amongst the different types of path commands, we define
+        <dfn title="orientation path command">orientation path commands</dfn> as
+        <a
+        href="http://www.w3.org/TR/SVG2/paths.html#PathDataMovetoCommands">moveto</a>
+        commands and <a
+        href="http://www.w3.org/TR/SVG2/paths.html#PathDataBearingCommands">bearing</a>
+        commands.
+        All types of path commands that are <em>not</em> <a>orientation
+        path commands</a> are referred to as <dfn
+        title="drawing path command">drawing path commands</dfn>.
       </p>
       <p>
         The <dfn>automatic rotation flag</dfn> of a <a>motion path animation
@@ -4485,6 +4501,15 @@ The slope of the graph is equal for the first two segments but changes for the l
         or <a title="composition operation add">add</a> to it.
       </p>
       <section>
+        <h2>Distance along a path</h2>
+        <p>
+          The procedure used for calculating the length of a path or a section
+          of a path is provided by the definition of <a
+          href="http://www.w3.org/TR/SVG2/paths.html#DistanceAlongAPath"><dfn>distance
+          along a path</dfn></a> in SVG [[!SVG2]].
+        </p>
+      </section>
+      <section>
         <h2>Spacing motion paths</h2>
         <p>
           The following properties control the rate of progress of a <a>motion
@@ -4500,21 +4525,19 @@ The slope of the graph is equal for the first two segments but changes for the l
               The possible spacing modes are identical to those defined for
               <a>keyframe animation effects</a> (see <a
               href="#spacing-keyframes" class="sectionRef"></a>).
-              For <a>motion path animation effects</a> the <a>paced property</a>
-              refers to the <a>path commands</a> that make up the <a>motion
-              path</a>.
             </p>
             <p>
               Note that a <a>distribute spacing mode</a> has no effect if
-              <a>point offsets</a> is specified since timing between
-              <a>point offsets</a> uses <a>paced spacing mode</a>.
+              <a>point offsets</a> are specified.
+              This is because spacing <em>between</em> <a>point offsets</a> uses
+              <a>paced spacing mode</a>.
             </p>
           </dd>
           <dt><dfn title="spacing point">spacing points</dfn></dt>
           <dd>
             <p>
               An optional sequence of real numbers in the range [0.0, 1.0] that
-              correspond to fractions of the path length.
+              correspond to fractions of the total path length.
               The animation effect produces animation values such that the
               <a>animation target</a> moves backwards and forwards along the
               <a>motion path</a> following the sequence indicated by these
@@ -4536,32 +4559,184 @@ The slope of the graph is equal for the first two segments but changes for the l
               are not provided, <a>path command</a>, should be visited.
             </p>
             <p>
-              If specified, the first value in the list must be 0.0 and the last
-              1.0.
+              If specified, the first value in the list must be 0.0 and the
+              last value must be 1.0.
               There must be as many items in the sequence as in the sequence of
-              <a>spacing points</a> if it is provided.
-              Otherwise, if a sequence of <a>spacing points</a> is not provided,
-              there must be as many items in the sequence of <a>point
-              offsets</a> as there are <a>path commands</a> in <a>motion
-              path</a> not including any moveto <a>path commands</a>.
+              <a>spacing points</a>, if provided.
+              If a sequence of <a>spacing points</a> is not provided,
+              the number of items in <a>point offsets</a> must equal the number
+              of <a>drawing path commands</a> in the <a>motion path</a> plus
+              one.
           </dd>
         </dl>
+        <div class="issue">
+          Need a diagram here showing how the different combinations work.
+        </div>
         <section>
           <h2>Applying spacing to motion paths</h2>
           <p>
-            The <a>time fraction</a> at which each <a>path command</a> should be
-            visited is determined using the following procedure:
+            The end result of applying spacing is a sequence of <a>effective
+            spacing points</a> and a sequence of <a>effective point offsets</a>
+            calculated using the following procedure:
           </p>
           <p>
-            TBD
+            The sequence of <dfn>effective spacing points</dfn> is determined by
+            following the steps associated with the first matching condition
+            from below:
           </p>
+          <dl class="switch">
+            <dt>If <a>spacing points</a> is specified,</dt>
+            <dd>
+               Let <a>effective spacing points</a> refer to <a>spacing
+               points</a>.
+            </dd>
+            <dt>If the <a title="motion path spacing mode">spacing mode</a>
+              is <a title="paced spacing mode">paced</a> and <a>point
+              offsets</a> is not specified,</dt>
+            <dd>
+               Let <a>effective spacing points</a> be a sequence consisting
+               of the values [0, 1].
+            </dd>
+            <dt>Otherwise,</dt>
+            <dd>
+              Perform the following steps:
+              <ol>
+                <li>Let <a>effective spacing points</a> be a sequence
+                    consisting of the single element 0.
+                <li>For each <a>drawing path command</a> in <a>path
+                    commands</a>, append to <a>effective spacing points</a>
+                    a number equal to the <a>distance along a path</a> up to
+                    the point at the end of the given <a>path command</a>,
+                    divided by the total path length.
+              </ol>
+            </dd>
+          </dl>
+          <p>
+            Having determined the <a>effective spacing points</a>, the sequence
+            of <dfn>effective point offsets</dfn> is determined by following the
+            steps associated with the first matching condition from below:
+          </p>
+          <dl class="switch">
+            <dt>If point offsets is specified,</dt>
+            <dd>Let <a>effective point offsets</a> refer to point
+                offsets</a>.
+            <dt>If the <a title="motion path spacing mode">spacing mode</a>
+              is <a title="distribute spacing mode">distribute</a>,</dt>
+            <dd>
+              Perform the following steps:
+              <ol>
+                <li>Let <a>effective point offsets</a> be a sequence of
+                    equal length to <a>effective spacing points</a>.
+                <li>Let <var>n</var> be the number of elements in
+                   <a>effective point offsets</a> minus one.
+                <li>Let <var>k</var> represent an index in the range [0,
+                    <var>n</var>].
+                <li>Set the value of each point in <a>effective point
+                    offsets</a> so that the point at index <var>k</var>
+                    is equal to <var>k</var> / <var>n</var>.
+              </ol>
+            </dd>
+            <dt>Otherwise,</dt>
+            <dd>
+              Perform the following steps:
+              <ol>
+                <li>Let <a>effective point offsets</a> be a sequence of
+                    equal length to <a>effective spacing points</a>.
+                <li>Let <var>n</var> be the number of elements in
+                   <a>effective point offsets</a> minus one.
+                <li>Let <var>k</var> represent an index in the range [0,
+                    <var>n</var>].
+                <li>Let <dfn title="pointk">point(<var>k</var>)</dfn>
+                    represent the value of <a>effective spacing points</a>
+                    at index <var>k</var>.
+                <li>Set the value of each point in <var>effective point
+                    offsets</var> so that the value at index <var>k</var> is
+                    defined by the following formula:
+                  <ul>
+                    <li>For <var>k</var> = 0, <var>offset</var> = 0
+                    <li>For <var>k</var> = 1..<var>n</var>,
+                      <var>offset</var> =
+                      <div role="math"
+                        aria-describedby="math-pacing-points"
+                        style="display: inline">
+  <math xmlns="http://www.w3.org/1998/Math/MathML">
+  <mrow>
+    <mfrac>
+      <mrow>
+        <munderover>
+            <mo>&#x3A3;</mo>
+            <mrow>
+              <mi>i</mi>
+              <mo>=</mo>
+              <mn>1</mn>
+            </mrow>
+              <mi>k</mi>
+        </munderover>
+        <mi>point</mi><mo>&ApplyFunction;</mo>
+        <mfenced open="(" close=")" separators=",">
+          <mrow>
+            <mi>i</mi>
+          </mrow>
+        </mfenced>
+        <mo>-</mo>
+        <mi>point</mi><mo>&ApplyFunction;</mo>
+        <mfenced open="(" close=")" separators=",">
+          <mrow>
+            <mi>i</mi>
+            <mo>-</mo>
+            <mn>1</mn>
+          </mrow>
+        </mfenced>
+      </mrow>
+      <mrow>
+        <munderover>
+            <mo>&#x3A3;</mo>
+            <mrow>
+              <mi>i</mi>
+              <mo>=</mo>
+              <mn>1</mn>
+            </mrow>
+              <mi>n</mi>
+        </munderover>
+        <mi>point</mi><mo>&ApplyFunction;</mo>
+        <mfenced open="(" close=")" separators=",">
+          <mrow>
+            <mi>i</mi>
+          </mrow>
+        </mfenced>
+        <mo>-</mo>
+        <mi>point</mi><mo>&ApplyFunction;</mo>
+        <mfenced open="(" close=")" separators=",">
+          <mrow>
+            <mi>i</mi>
+            <mo>-</mo>
+            <mn>1</mn>
+          </mrow>
+        </mfenced>
+      </mrow>
+    </mfrac>
+  </mrow>
+  </math>
+  <div id="math-pacing-points">
+    [ \sum_{i=1}^k ( point(i)-point(i-1) ) ]
+    /
+    [ \sum_{i=1}^n ( point(i)-point(i-1) ) ]
+  </div>
+                  </div>
+                  </ul>
+              </ol>
+              <div class="note">
+                When <a>effective spacing points</a> is a sequence of
+                monotonically increasing points beginning with 0 and ending
+                with 1 (or, in fact, any time the sum of distances between
+                <a>effective spacing points</a> is equal to&nbsp;1),
+                <a>effective point offsets</a> will mirror <a>effective
+                spacing points</a>.
+              </div>
+            </dd>
+          </dl>
         </section>
       </section>
-      <!--
-      <section>
-          <dt>point timing functions</dt>
-      </section>
-      -->
       <section>
         <h3>The unaccumulated animation value of a motion path animation effect</h3>
         <p>
