@@ -4780,29 +4780,95 @@ The slope of the graph is equal for the first two segments but changes for the l
           value</a> is given by the following process:
           <ol>
             <li>
-              Determine the <a>current path command</a> and
-              <a>element fraction</a> for the given <a>time fraction</a> using
-              the procedure defined in 
-              <a href='#determining-the-current-path-element-and-element-fraction' class='sectionRef'>
-              </a>.
+              Let <var>distance</var> be the <a>path fraction</a> for the given
+              <a>time fraction</a>.
             <li>
-              Calculate the <a title="rotation value along a path">rotation
-              value</a> for the <var>current path command</var> and <var>element
-              fraction</var> using the process defined in 
-              <a
-              href='#calculating-the-rotation-value-of-a-motion-path-animation-effect' class='sectionRef'></a>.
+              Let <var>displacement</var> be the point located
+              <var>distance</var> along the <a>motion path</a> using the
+              definition for <a>distance along a path</a>.
+              <p>
+              If <var>distance</var> indicates a point on the path that is
+              coincidental with one or more <a>orientation path
+              commands</a>, <var>displacement</var> is the point
+              <em>after</em> all <a>orientation path commands</a> (this will
+              be the <em>start</em> of the next <a>drawing path command</a> if
+              there is one).
+              </p>
             <li>
-              Calculate the <a
-              title="translation value along a path">translation
-              value</a> for the <var>current path command</var> and <var>element
-              fraction</var> using the process defined in 
-              <a
-              href='#calculating-the-translation-value-of-a-motion-path-animation-effect' class='sectionRef'></a>.
+              Let the <var>translation component</var> be the translation
+              transform required to transform the point at the start of
+              <a>motion path</a> to <var>displacement</var>.
+            <li>Calculate the <var>rotation component</var> according to the
+               first match condition from the following:
+              <dl class="switch">
+                <dt>If the <a>automatic rotation flag</a> is set,</dt>
+                <dd>
+                  the <var>rotation component</var> is a transform representing
+                  the <a>rotation angle</a>.
+                </dd>
+                <dt>Otherwise,</dt>
+                <dd>
+                  the <var>rotation component</var> is a transform representing
+                  the sum of:
+                  <ul>
+                    <li>
+                      the angle of the tangent vector at
+                      <var>displacement</var>, and
+                    </li>
+                    <li>
+                      the <a>rotation angle</a>.
+                    </li>
+                  </ul>
+                </dd>
+              </dl>
+              <p>
+                When calculating the angle of the tangent vector, if there are
+                no <a>drawing path commands</a> in the <a>motion path</a>, the
+                the angle should be taken to be zero.
+              </p>
+              <div class="issue">
+                <p>
+                  The original text for this section contained the following
+                  qualifications but I'm not sure how meaningful they are:
+                </p>
+                <ul>
+                  <li>
+                    For continuous <a>path commands</a> (all elements except
+                    moveto), the angle of the tangent vector for the purpose of
+                    these calculations is defined to be an integer multiple of
+                    2&pi; different from the value given by <a
+                    href="http://en.wikipedia.org/wiki/Tangential_angle">standard
+                    mathematical formulae for tangents to curves in
+                    2 dimensional space</a>.
+                 <li>
+                   For moveto <a>path commands</a>, which are discontinuous, the
+                   angle of the tangent vector for the purpose of these
+                   calculations is always an integer multiple of 2&pi;.
+                 <li>
+                   The initial value of the angle of the tangent vector is
+                   computed using the first element of the curve, and is always
+                   in the range [0, 2&pi;).
+                 <li>
+                   Single continuous path commands must never produce tangent
+                   vector angles that are discontinuous over their defined
+                   region. This implies that a single unique solution is
+                   available for all points on continuous path commands.
+                 <li>
+                   When computing angles after discontinuous or non-smooth
+                   jumps, multiple possible solutions may be available.  These
+                   solutions will differ by integer multiples of 2&pi;.  In
+                   such cases the solution that lies closest to the previous
+                   tangent angle is used.
+              </div>
             <li>
-              Let the <var>transform value</var> be the result of combining
-              the <a>rotation value</a> and <a> translation value</a>
+              Let the <var>transform value</var> be the result of
               by constructing a transform list consisting of the
-              translation value followed by the rotation value.
+              <var>translation component</var> followed by the <var>rotation
+              component</var>.
+              <div class="issue">
+                What's the value in keeping these separate?
+                Shouldn't we collapse them?
+              </div>
             <li>
               The <a>unaccumulated animation value</a> of the <a>motion path
               animation effect</a> depends on the value of its <a>composition
@@ -4818,226 +4884,25 @@ The slope of the graph is equal for the first two segments but changes for the l
                 <dt>Otherwise,</dt>
                 <dd>
                   the <a>unaccumulated animation value</a> of the effect is the
-                  result of adding <var>transform value</var> to the
-                  <a>underlying value</a> according to the process defined in <a
-                  href='#the--transform-function--type' class='sectionRef'></a>.
+                  result of adding <var>transform</var> to the <a>underlying
+                  value</a> using the <a title="animation addition">procedure
+                  for addition</a> defined for by the <a>animation behavior</a>
+                  of the <a>underlying value</a>.
                 </dd>
               </dl>
           </ol>
         </p>
-      </section>
-      <section>
-        <h3>Determining the current path command and element fraction</h3>
-        <div class='informative'>
-          <p>
-            Each element in the path (excluding moveto elements) is allocated
-            an equally sized non-overlapping segment, with segments 
-            collectively partitioning the range [0, 1].
-          </p>
-          <p>
-            The <a>current path command</a> is the <a>path command</a>
-            corresponding to a given <a>time fraction</a>.
-          </p>
-          <p>
-            The <a>element fraction</a> represents the offset into the
-            <a>current path command</a> at the given <a>time fraction</a>.
-          </p>
+        <div class="issue">
+          Need to define the when accumulating we collapse the transforms so
+          that we don't end up with a list that grows in an unbounded fashion
+          over time.
         </div>
-        <p>
-          The <dfn>current path command</dfn> and <dfn>element fraction</dfn>
-          for a given <a>time fraction</a>, <var>progress</var>, are
-          determined by following the steps corresponding to the first matching
-          condition from below:
-        </p>
-        <dl class='switch'>
-          <dt>
-            If <var>progress</var> is greater than or equal to 1,
-          </dt>
-          <dd>
-            the <var>current path command</var> is the last element in the
-            <a>motion path</a>,
-            and the <var>element fraction</var> is 1.
-          </dd>
-          <dt>
-            If <var>progress</var> is less than 0,
-          </dt>
-          <dd>
-            the <var>current path command</var> is the first element in the
-            <a>motion path</a>,
-            and the <var>element fraction</var> is 0.
-          </dd>
-          <dt>
-            Otherwise,
-          </dt>
-          <dd>
-            <ol>
-              <li>
-                Let <var>effective element list</var> be a clone of the
-                list of <a>path commands</a> with all moveto elements removed.
-              </li>
-              <li>
-                Let <var>time index</var> be <var>progress</var>
-                multiplied by the number of elements in <var>effective
-                element list</var>.
-              </li>
-              <li>
-                Let <var>current element</var> be the element in the
-                <var>effective element list</var> at the index given by
-                <code>floor(<var>progress</var>)</code>.
-              </li>
-              <li>
-                Let <var>element fraction</var> be the value given by
-                <code><var>progress</var> - floor(<var>progress</var>)
-                </code>.
-              </li>
-            </ol>
-          </dd>
-        </dl>
-      </section>
-      <section>
-        <h3>Calculating the rotation value of a motion path animation effect</h3>
-        <p>
-          For a given <a>path command</a> and <a>element fraction</a>,
-          the <dfn title="rotation value along a path">rotation value</dfn> at
-          that point is calculated according to the steps corresponding to the
-          first matching condition from below:
-        </p>
-        <dl class='switch'>
-          <dt>If the <a>automatic rotation flag</a> is not set,</dt>
-          <dd>
-            the <a title="rotation value along a path">rotation value</a> of the
-            given <a>path command</a> is the <a>rotation angle</a>.
-          </dd>
-          <dt>Otherwise,</dt>
-          <dd>
-            the <a title="rotation value along a path">rotation value</a> of the
-            <a>current element</a> is the sum of:
-            <ul>
-              <li>
-                the angle of the tangent vector of the given <a>path command</a>
-                at the point selected in
-                <a
-                href='#calculating-the-translation-value-of-a-motion-path-animation-effect'
-                class='sectionRef'></a>
-                for the purpose of calculating the <a
-                title="translation value along a path">translation value</a>; 
-                and
-              </li>
-              <li>
-                the <a>rotation angle</a>.
-              </li>
-            </ul>
-          </dd>
-        </dl>
-        <p>
-          For continuous <a>path commands</a> (all elements except moveto),
-          the angle of the tangent vector for the purpose of these calculations
-          is defined to be an integer multiple of 2&pi; different from the value
-          given by <a
-          href="http://en.wikipedia.org/wiki/Tangential_angle">standard
-          mathematical formulae for tangents to curves in 2
-          dimensional space</a>.
-        </p>
-        <p class="todo">
-          What does &ldquo;different from&rdquo; mean here?
-        </p>
-        <p>
-          For moveto <a>path commands</a>, which are discontinuous,
-          the angle of the tangent vector for the purpose of these calculations
-          is always an integer multiple of 2&pi;.
-        </p>
-        <p class="todo">
-          Any multiple?
-        </p>
-        <p>
-          At non-smooth junction points, the angle of the tangent vector for
-          the purpose of these calculations is determined by the tangent to
-          the curve after the junction.
-        </p>
-        <p>
-          The initial value of the angle of the tangent vector is computed 
-          using the first element of the curve, and is always in the range
-          [0, 2&pi;).
-        </p>
-        <p>
-          Single continuous path commands must never produce tangent
-          vector angles that are discontinuous over their defined region. This
-          implies that a single unique solution is available for all points on
-          continuous path commands.
-        </p>
-        <p>
-          When computing angles after discontinuous or non-smooth jumps,
-          multiple possible solutions may be available.
-          These solutions will differ by integer multiples of 2&pi;.
-          In such cases the solution that lies closest to the previous tangent
-          angle is used.
-        </p>
-        <p>
-          Please see
-          <a href='#algorithms-for-motion-path-animation-effects' class='sectionRef'></a>
-          for a non-normative treatment of this topic.
-        </p>
-      </section>
-      <section>
-        <h3>Calculating the translation value of a motion path animation effect</h3>
-        <p>
-          For a given <a>path command</a> and <a>element fraction</a>,
-          the <dfn title="translation value along a path">translation
-          value</dfn> is determined using the following procedure:
-        </p>
-        <ol>
-          <li>
-            <p>
-              Let <var>length</var> be the length of the given
-              <a>path command</a>.
-            </p>
-            <p class="todo">
-              Need a reference to how this is calculated even if it's just
-              a pointer to SVG (which says pretty much nothing).
-            </p>
-          </li>
-          <li>
-            Let <var>element distance</var> be the result of evaluating
-            <code><var>element fraction</var> &times; <var>length</var></code>.
-          </li>
-          <li>
-            <p>
-              Let <var>point</var> be the unique point along the
-              <a>current element</a> which is <var>element distance</var>
-              along the path from the start of the path.
-            </p>
-            <p class="todo">
-              What is the significance of &ldquo;unique point&rdquo; here?
-            </p>
-          </li>
-          <li>
-            The <a>translation value</a> is the translation transform
-            that transforms the point at the start of the path to 
-            <var>point</var>.
-          </li>
-        </ol>
-        <p>
-          The length of a path command is determined, where possible, via 
-          closed-form solutions. For some path commands (e.g. beziers) a
-          closed-form solution is not generally possible, and approximations
-          should be used.
-        </p>
-        <p>
-          The length of a moveto element is always 0.
-        </p>
-        <p>
-          Please see
-          <a href='#algorithms-for-motion-path-animation-effects' class='sectionRef'></a>
-          for a full non-normative treatment of this topic.
-        </p>
-      </section>
-      <div class="todo">
-        <p>
+        <div class="issue">
           Need to describe how <a
           href="http://www.w3.org/TR/css3-transforms/#transform-origin">transform-origin</a>
           is applied.
-        </p>
-      </div>
+        </div>
+      </section>
     </section>
 
     <section>
