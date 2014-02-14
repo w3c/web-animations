@@ -8142,21 +8142,22 @@ elem.animate({ left: '100px' }, 3);
               <dt>(DOMString or SVGPathSegList) path</dt>
               <dd>
                 <p>
-                  The <a>motion path</a> which defines the motion.
+                  The <a>motion path</a> which defines the course the
+                  <a>animation target</a> follows.
                 </p>
                 <p>
                   A string may be provided specifying the path using the syntax
                   for <a
-                  href="http://www.w3.org/TR/SVG11/paths.html#PathData">SVG path
-                  data</a> [[SVG11]].
+                  href="http://www.w3.org/TR/SVG2/paths.html#PathData">SVG path
+                  data</a> [[!SVG2]].
                 </p>
                 <p>
                   If a string is provided, it is converted into an
-                  <code>SVGPathSegList</code> using the procedures defined for
+                  <code>SVGPathSegList</code> using the procedure defined for
                   parsing <a
-                  href="http://www.w3.org/TR/SVG11/paths.html#PathData">path
-                  data</a> in [[SVG11]].
-                  Any errors encountered in the path data causing parsing to
+                  href="http://www.w3.org/TR/SVG2/paths.html#PathData">path
+                  data</a> in [[!SVG2]].
+                  Any errors encountered in the path data cause parsing to
                   cease and the path data processed up to that point to be used.
                 </p>
                 <p>
@@ -8165,38 +8166,18 @@ elem.animate({ left: '100px' }, 3);
                   copying.
                 </p>
               </dd>
-              <dt>optional AutoRotationMode autoRotate = "none"</dt>
+              <dt>optional MotionPathEffectOptions options</dt>
               <dd>
-                The <a>automatic rotation flag</a> setting for the generated
-                effect.
-              </dd>
-              <dt>optional double angle = 0</dt>
-              <dd>
-                The <a>rotation angle</a> for the generated effect.
-              </dd>
-              <dt>optional CompositeOperation composite = "replace"</dt>
-              <dd>
-                The <a>composition operation</a> used to composite this
-                animation with the <a>animation stack</a>, as specified by one
-                of the <a>CompositeOperation</a> enumeration values.
-              </dd>
-              <dt>optional AccumulateOperation accumulate = "none"</dt>
-              <dd>
-                The <a>accumulation operation</a> used to define the way
-                animation values build from iteration to iteration.
+                A <a>MotionPathEffectOptions</a> dictionary defining other
+                aspects of the <a>animation effect</a>'s behavior.
+                If this parameter is not provided, the default values of the
+                dictionary are used.
               </dd>
             </dl>
           </dd>
           <dt>attribute SVGPathSegList segments</dt>
           <dd>
             The list of segments that make up the <a>motion path</a>.
-            <p class="issue">
-              Is this the correct data type here?
-            </p>
-            <p class="issue">
-              Is this sufficient to allow us to animate along an animated path?
-              Do we need to spell out how this works in more detail?
-            </p>
           </dd>
           <dt>attribute AutoRotationFlag autoRotate</dt>
           <dd>
@@ -8214,7 +8195,78 @@ elem.animate({ left: '100px' }, 3);
             with the <a>animation stack</a>, as specified by one of the
             <a>CompositeOperation</a> enumeration values.
           </dd>
+          <dt>attribute DOMString spacing</dt>
+          <dd>
+            <p>
+              The <a>spacing mode</a> to use for this <a>animation effect</a>.
+            </p>
+            <p>
+              Recognized values are defined by the following grammar:
+            </p>
+            <blockquote>
+              <div class="production">distribute | paced</div>
+            </blockquote>
+            <p>
+              The meaning of each value is as follows:
+            </p>
+            <dl>
+              <dt>distribute</dt>
+              <dd>Use the <a>distribute spacing mode</a>.</dd>
+              <dt>paced</dt>
+              <dd>Use the <a>paced spacing mode</a>.</dd>
+            </dl>
+            <p>
+              All other values are treated as "paced" for the purpose of
+              animation model calculations.
+            </p>
+          </dd>
         </dl>
+        <section>
+          <h2>The <code>MotionPathEffectOptions</code> dictionary</h2>
+          <p>
+            Additional parameters may be passed to the <a>MotionPathEffect</a>
+            constructor by providing a <a>MotionPathEffectOptions</a> object.
+          </p>
+          <dl title="dictionary MotionPathEffectOptions" class="idl">
+            <dt>AutoRotationMode autoRotate = "none"</dt>
+            <dd>
+              The <a>automatic rotation flag</a> setting for the generated
+              effect.
+            </dd>
+            <dt>double angle = 0</dt>
+            <dd>
+              The <a>rotation angle</a> for the generated effect.
+            </dd>
+            <dt>CompositeOperation composite = "replace"</dt>
+            <dd>
+              The <a>composition operation</a> used to composite this
+              animation with the <a>animation stack</a>, as specified by one
+              of the <a>CompositeOperation</a> enumeration values.
+            </dd>
+            <dt>AccumulateOperation accumulate = "none"</dt>
+            <dd>
+              The <a>accumulation operation</a> used to define the way
+              animation values build from iteration to iteration.
+            </dd>
+            <dt>DOMString spacing = "paced"</dt>
+            <dd>
+              <p>
+                The <a title="keyframe spacing mode">spacing mode</a> to apply
+                to this <a>motion path effect</a>.
+              </p>
+              <p>
+                See the description of the <code>spacing</code> attribute of the
+                <a>MotionPathEffect</a> interface for the recognized values and
+                their meaning are described 
+              </p>
+              <p>
+                Unrecognized values are set on the created
+                <a>MotionPathEffect</a> object, but are treated as "paced" for
+                the purpose of animation model calculations.
+              </p>
+            </dd>
+          </dl>
+        </section>
         <section>
           <h4>The <code>AutoRotationMode</code> enumeration</h4>
           <p>
