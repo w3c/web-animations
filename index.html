@@ -4052,21 +4052,21 @@ The slope of the graph is equal for the first two segments but changes for the l
           Before calculating animation values from a <a>keyframe animation
           effect</a>, an absolute value must be computed for the <a>keyframe
           offset</a> of each <a>keyframe</a> with a null offset.
-          The values computed depend on the <dfn
-          title="keyframe spacing mode">spacing mode</dfn> specified
-          for the <a>keyframe animation effect</a>.
-          The spacing modes defined by this specification are:
+          The values computed depend on the <dfn>keyframe spacing mode</dfn>
+          specified for the <a>keyframe animation effect</a>.
+          The keyframe spacing modes are:
         </p>
         <dl>
-          <dt><dfn title="distribute spacing mode">distribute</dfn></dt>
+          <dt><dfn
+            title="distribute keyframe spacing mode">distribute</dfn></dt>
           <dd>
-            Indicates that <a>keyframes</a> with a <a>keyframe offset</a> of
+            Indicates that <a>keyframes</a> with a null <a>keyframe offset</a>
             null are positioned so that the difference between subsequent
             <a>keyframe offsets</a> are equal.
           </dd>
-          <dt><dfn title="paced spacing mode">paced</dfn></dt>
+          <dt><dfn title="paced keyframe spacing mode">paced</dfn></dt>
           <dd>
-            Indicates that <a>keyframes</a> with a <a>keyframe offset</a> of
+            Indicates that <a>keyframes</a> with a null <a>keyframe offset</a>
             null are positioned so that the <em>distance</em> between subsequent
             values of a specified <dfn>paced property</dfn> are equal.
             The distance is calculated using the <a>distance computation</a>
@@ -4075,71 +4075,32 @@ The slope of the graph is equal for the first two segments but changes for the l
           </dd>
         </dl>
         <section>
-          <h2>Generic spacing procedures</h2>
+          <h2>Applying keyframe spacing</h2>
           <p>
-            Since spacing behavior is used by both <a>keyframe animation
-            effects</a> and <a>motion path animation effects</a>, the following
-            two procedures are defined in generic terms that can be applied in
-            either case.
-            The concept of a <dfn>handle</dfn> is introduced to refer to a type
-            of value within the effect which is under consideration.
-          </p>
-          <p>
-            A generic procedure for <dfn>evenly distributing a handle</dfn>,
-            <var>handle</var>, between two reference handles, <var>start</var>
-            and <var>end</var>, with specified offsets (be they <a>keyframe
-            offsets</a> or <a>point offsets</a>), is as follows:
+            We define a generic procedure for <dfn>evenly distributing
+            a keyframe</dfn>, <var>keyframe</var>, between two reference
+            keyframes, <var>start</var> and <var>end</var>, whose <a>keyframe
+            offsets</a> are <em>not</em> null, as follows:
           </p>
           <ol>
-            <li>Let <dfn>offset<sub><var>k</var></sub></dfn> be the offset of
-                a <a>handle</a> <var>k</var>.
-            <li>Let <var>n</var> be the number of handles <em>between</em> and
+            <li>Let <dfn>offset<sub><var>k</var></sub></dfn> be the <a>keyframe
+                offset</a> of a <a>keyframe</a> <var>k</var>.
+            <li>Let <var>n</var> be the number of keyframes <em>between</em> and
                 including <var>start</var> and <var>end</var> minus 1.
-            <li>Let <var>index</var> refer to the position of <var>handle</var>
-                in the sequence of handles between <var>start</var> and
-                <var>end</var> such that the first handle after <var>start</var>
-                has an <var>index</var> of 1.
-            <li>Set the offset of <var>handle</var> to
+            <li>Let <var>index</var> refer to the position of
+                <var>keyframe</var> in the sequence of keyframes between
+                <var>start</var> and <var>end</var> such that the first keyframe
+                after <var>start</var> has an <var>index</var> of 1.
+            <li>Set the <a>keyframe offset</a> of <var>keyframe</var> to
                 <a title="offsetk">offset</a><sub><var>start</var></sub> +
                 (<a title="offsetk">offset</a><sub><var>end</var></sub> &minus;
                  <a title="offsetk">offset</a><sub><var>start</var></sub>)
                 &times; <var>index</var> / <var>n</var>.
           </ol>
           <p>
-            A generic procedure for <dfn>pacing a handle</dfn>,
-            <var>handle</var>, between two reference handles, <var>start</var>
-            and <var>end</var>, with specified offsets, is as follows:
-          </p>
-          <ol>
-            <li>For each handle in the range
-                [<var>start</var>, <var>end</var>], let
-                <dfn>dist<sub><var>k</var></sub></dfn> represent the
-                cumulative distance to <a>handle</a> <var>k</var>
-                as calculated by applying the <a>distance computation</a>
-                defined by the <a>animation behavior</a> of the <a>paced
-                property</a> to the values of the <a>paced property</a> on each
-                pair of successive <a>handles</a> in the range
-                [<var>start</var>, <var>k</var>].
-            <li>Set the offset of <var>handle</var> to
-                <a title="offsetk">offset</a><sub><var>start</var></sub>
-                +
-                (<a title="offsetk">offset</a><sub><var>end</var></sub>
-                 &minus; 
-                 <a title="offsetk">offset</a><sub><var>start</var></sub>
-                )
-                &times;
-                <a
-                title="distk">dist</a><sub><var>handle</var></sub>
-                /
-                <a title="distk">dist</a><sub><var>end</var></sub>
-          </ol>
-        </section>
-        <section>
-          <h2>Specific spacing for keyframes</h2>
-          <p>
             The computed <a>keyframe offset</a> values of each <a>keyframe</a>
-            with a null keyframe offset in a <a>keyframe animation effect</a>
-            are determined using the following procedure.
+            with a null keyframe offset are determined using the following
+            procedure.
           </p>
           <ol>
             <li>Let <var>keyframes</var> refer to the list of <a>keyframes</a>
@@ -4148,55 +4109,54 @@ The slope of the graph is equal for the first two segments but changes for the l
                 <a>keyframe</a> and the <a>keyframe offset</a> of
                 the first <a>keyframe</a> in <var>keyframes</var> is null,
                 set the <a>keyframe offset</a> of
-                the first <a>keyframe</a> in <var>keyframes</var> to 0.
+                the first <a>keyframe</a> to 0.
             <li>If the <a>keyframe offset</a> of the last <a>keyframe</a> in
-                <var>distributed keyframes</var> is unspecified, set its
+                <var>distributed keyframes</var> is null, set its
                 <a>keyframe offset</a> to 1.
             <li>For each pair of <a>keyframes</a> <var>A</var> and <var>B</var>
                 where:
                 <ul>
-                  <li><var>A</var> and <var>B</var> have a <a>keyframe
-                      offset</a> that is not null, and
                   <li><var>A</var> appears before <var>B</var> in
                       <var>keyframes</var>, and
+                  <li><var>A</var> and <var>B</var> have a <a>keyframe
+                      offset</a> that is not null, and
                   <li>all <a>keyframes</a> between <var>A</var> and <var>B</var>
                       have a null <a>keyframe offset</a>,
                 </ul>
                 <p>
                   calculate the <a>keyframe offset</a> of
                   each <a>keyframe</a> between <var>A</var> and <var>B</var>
-                  depending on the <a title="keyframe spacing mode">spacing
-                  mode</a> as follows:
+                  depending on the <a>keyframe spacing mode</a> as follows:
                 </p>
                 <dl class="switch">
                   <dt>If the <a title="keyframe spacing mode">spacing mode</a>
-                      is <a title="paced spacing mode">paced</a>,</dt>
+                      is <a title="paced keyframe spacing mode">paced</a>,</dt>
                   <dd>
                     <ol>
-                      <li>Define a keyframe as <dfn>paceable</dfn> if it contains
-                          a value for the <a>paced property</a>.
+                      <li>Define a keyframe as <dfn>paceable</dfn> if it
+                          contains a value for the <a>paced property</a>.
                       <li>Let <var>paced A</var> be the first keyframe in the
                           range [<var>A</var>, <var>B</var>] that is
                           <a>paceable</a>, if any.
                       <li>Let <var>paced B</var> be the last keyframe in the
                           range [<var>A</var>, <var>B</var>] that is
                           <a>paceable</a>, if any.
-                      <li>If there is no <var>paced A</var> or <var>paced B</var>
-                          let both refer to <var>B</var>.
+                      <li>If there is no <var>paced A</var> or <var>paced
+                          B</var> let both refer to <var>B</var>.
                           <!-- I want to mark this up as an inline note but
-                               currently respec's CSS for notes doesn't play will
-                               with inlines. -->
+                               currently respec's CSS for notes doesn't play
+                               will with inlines. -->
                           <span>Note that in this case, the spacing
                           behavior degenerates to <a
-                          title="distribute spacing mode">distribute</a> spacing.
+                         title="distribute keyframe spacing mode">distribute</a>
+                          spacing.
                       <li>For each keyframe in the range
                           (<var>A</var>, <var>paced A</var>] and
                           [<var>paced B</var>, <var>B</var>),
                           apply the procedure for <a>evenly distributing
-                          a handle</a> using <var>A</var> and <var>B</var> as
-                          the <var>start</var> and <var>end</var> handles
-                          respectively, and treating all <a>keyframes</a> in
-                          [<var>A</var>, <var>B</var>] as <a>handles</a>.
+                          a keyframe</a> using <var>A</var> and <var>B</var> as
+                          the <var>start</var> and <var>end</var> keyframes
+                          respectively.
                           <div class="annotation">
                             Yes, this is correct.
                             We want, <var>index</var> and <var>n</var> in that
@@ -4207,37 +4167,51 @@ The slope of the graph is equal for the first two segments but changes for the l
                           </div>
                       <li>For each keyframe in the range
                           (<var>paced A</var>, <var>paced B</var>) that is
-                          <a>paceable</a>,
-                          apply the procedure for <a>pacing a handle</a>
-                          using <var>paced A</var> and <var>paced B</var> as the
-                          <var>start</var> and <var>end</var> handles
-                          respectively, and treating all <a>paceable</a>
-                          <a>keyframes</a> in [<var>paced A</var>, <var>paced
-                          B</var>] as <a>handles</a>.
+                          <a>paceable</a>:
+                        <ol>
+                          <li>Let
+                            <dfn title="distk">dist<sub><var>k</var></sub></dfn>
+                            represent the cumulative distance to a keyframe
+                            <var>k</var> from <var>paced A</var>
+                            as calculated by applying the <a>distance
+                            computation</a> defined by the <a>animation
+                            behavior</a> of the <a>paced property</a> to the
+                            values of the <a>paced property</a> on each pair of
+                            successive <a>paceable</a> keyframes in the range
+                            [<var>paced A</var>, <var>k</var>].
+                          <li>Set the offset of <var>k</var> to
+                            <a title="offsetk">offset</a><sub><var>paced
+                              A</var></sub>
+                            +
+                            (<a title="offsetk">offset</a><sub><var>paced
+                              B</var></sub>
+                            &minus; 
+                            <a title="offsetk">offset</a><sub><var>paced
+                              A</var></sub>)
+                            &times;
+                            <a title="distk">dist</a><sub><var>k</var></sub>
+                            /
+                            <a title="distk">dist</a><sub><var>paced
+                              B</var></sub>
+                        </ol>
                       <li>For each keyframe in the range (<var>paced A</var>,
                           <var>paced B</var>) that still has
                           a null <a>keyframe offset</a> (because it is not
                           <a>paceable</a>), apply the procedure
-                          for <a>evenly distributing  a handle</a> using:
-                          <ul>
-                            <li>the nearest <a>keyframe</a> before and after the
-                                keyframe in question in <var>keyframes</var>
-                                that has a <a>keyframe offset</a> that is not
-                                null, as the <var>start</var> and <var>end</var>
-                                handles respectively, and
-                            <li>treating all <a>keyframes</a> in
-                                [<var>start</var>, <var>end</var>] as
-                                <a>handles</a>.
-                          </ul>
+                          for <a>evenly distributing a keyframe</a> using
+                          the nearest <a>keyframe</a> before and after the
+                          keyframe in question in <var>keyframes</var> that has
+                          a <a>keyframe offset</a> that is not null, as the
+                          <var>start</var> and <var>end</var> keyframes
+                          respectively.
                     </ol>
                   </dd>
                   <dt>Otherwise,</dt>
                   <dd>
-                    Apply the procedure for <a>evenly distributing  a handle</a>
-                    to each keyframe in the range (<var>A</var>, <var>B</var>)
-                    using <var>A</var> and <var>B</var> as the <var>start</var>
-                    and <var>end</var> handles respectively and treating all
-                    <a>keyframes</a> in the range as <a>handles</a>.
+                    Apply the procedure for <a>evenly distributing
+                    a keyframe</a> to each keyframe in the range (<var>A</var>,
+                    <var>B</var>) using <var>A</var> and <var>B</var> as the
+                    <var>start</var> and <var>end</var> keyframes respectively.
                   </dd>
                 </dl>
           </ol>
