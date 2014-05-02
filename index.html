@@ -3579,14 +3579,16 @@
                 concatenating transform lists as 
                 &lsquo;<var>V</var><sub>a</sub> <var>V</var><sub>b</sub>&rsquo;.
             <li><a title="animation accumulation">accumulation</a>:
-                performed by finding the largest initial portion of each list
+                performed by finding the largest final portion of each list
                 such that the type of the transforms of each pair of elements at
                 the same index in the two sub-lists match.
                 The paired elements in these sub-lists are then accumulated by
                 adding matched numeric components together.
                 The non-matching remainders of the two lists are then <a
-                title="animation addition">added</a> to the result, in the order
-                <var>V</var><sub>a</sub>, then <var>V</var><sub>b</sub>.
+                title="animation addition">added</a> to the each other and the
+                intermediate result, in the order
+                <var>V</var><sub>a</sub>, then <var>V</var><sub>b</sub>, then
+                intermediate result.
             <li><a>distance computation</a>: <span class="todo">See issue
                 below</span>
           </ul>
@@ -3910,17 +3912,15 @@
           <dt><dfn title="iteration composite operation replace">replace</dfn>
           </dt>
           <dd>
-            The <a>composition operation</a> is honoured for all iterations
-            of the <a>animation effect</a>.
+            No special interaction between iterations of the animation occurs.
             <p class='issue'>This seems to be poorly named. Maybe 'none'?</p>
           </dd>
         <dt><dfn title="iteration composite operation accumulate">accumulate
         </dfn></dt>
         <dd>
-          The <a>composition operation</a> is ignored for all iterations of 
-          the <a>animation effect</a> except the first, and subsequent 
-          iterations are <a title="animation accumulation">accumulated</a>
-          on top of each other.
+          The <a>animation effect</a> acts as normal for the first iteration,
+          then subsequent iterations build on the final result of the
+          previous one.
         </dd>
       </dl>
       </section>
@@ -4384,17 +4384,6 @@ The slope of the graph is equal for the first two segments but changes for the l
               be applied.
           <li>Let <var>time fraction</var> be the <a>time fraction</a> for which
               the <a>intermediate animation value</a> is to be calculated.
-          <li>If the <a>current iteration</a> is larger than 0 and the 
-              <a>iteration-composite operation</a> of this <a>keyframe animation
-              effect</a> is <a title="iteration composite operation accumulate">
-              accumulate</a>, let <var>underlying value</var> be the
-              <a>intermediate animation value</a> of this <a>keyframe animation
-              effect</a> at a <a>time fraction</a> of 1 and <a>current 
-              iteration</a> of <a>current iteration</a> - 1, and let 
-              <var>accumulate mode</var> be true.
-          <li>Otherwise, let <var>underlying value</var> be the current 
-              <a>underlying value</a> for <var>target property</var>, and let
-              <var>accumulate mode</var> be false.
           <li>Define the <dfn>neutral value for composition</dfn> as a value
               which, when combined with an <a>underlying value</a> using the <a
               title="composition operation add">add</a> <a>composition
@@ -4405,7 +4394,7 @@ The slope of the graph is equal for the first two segments but changes for the l
               keyframes</var> that do not have a property value for
               <var>target property</var>.
           <li>If <var>property-specific keyframes</var> is empty, return
-              <var>underlying value</var>.
+              <a>underlying value</a>.
           <li>If there is no <a>keyframe</a> with a <a>keyframe offset</a> of
               0, create a new <a>keyframe</a> with a <a>keyframe offset</a> of
               0, a property value set to the <a>neutral value for
@@ -4439,10 +4428,7 @@ The slope of the graph is equal for the first two segments but changes for the l
               </ul>
               perform the following steps:
               <ol>
-                <li> If <var>accumulate mode</var> is true, let 
-                    <var>composition operation to use</var> be 
-                    <a title='composition operation accumulate'>accumulate</a>
-                <li>Otherwise, let <var>composite operation to use</var> be the
+                <li>Let <var>composite operation to use</var> be the
                     <a>composition operation</a> of <var>keyframe</var>, or if
                     it has none, the <a>composition operation</a> of this
                     <a>keyframe animation effect</a>.
@@ -4450,7 +4436,7 @@ The slope of the graph is equal for the first two segments but changes for the l
                     <var>target property</var> specified on <var>keyframe</var>.
                 <li>Replace the property value of <var>target property</var> on
                     <var>keyframe</var> with the result of combining
-                    <var>underlying value</var> (<var>V</var><sub>a</sub>) and
+                    <a>underlying value</a> (<var>V</var><sub>a</sub>) and
                     <var>value to combine</var> (<var>V</var><sub>b</sub>)
                     using the <var>composition operation to use</var>, applying
                     the <a>animation behavior</a> of <var>target property</var>.
@@ -4495,7 +4481,8 @@ The slope of the graph is equal for the first two segments but changes for the l
             <code>(<var>time fraction</var> - <var>start offset</var>) /
                   (<var>end offset</var> - <var>start offset</var>)</code>
           <li>
-            Return the result of interpolating between <var>start keyframe</var>
+            Let <var>unaccumulated result</var> be the result of interpolating
+            between <var>start keyframe</var>
             and <var>end keyframe</var> by using the <a
             title="animation interpolation">interpolation procedure</a> defined
             by the <a>animation behavior</a> of the <var>target property</var>
@@ -4504,6 +4491,23 @@ The slope of the graph is equal for the first two segments but changes for the l
             property</var> specified on <var>start keyframe</var> and <var>end
             keyframe</var> as <var>V</var><sub>start</sub> and
             <var>V</var><sub>end</sub> repsectively.
+          <li>
+            If the <a>current iteration</a> is larger than 0 and the
+            <a>iteration-composite operation</a> of this <a>keyframe animation effect</a>
+            is <a title='composition operation accumulate'>accumulate</a>:
+            <ol>
+              <li>
+                Let the <var>accumulating value</var> be the result of running
+                this process (i.e.
+                <a href="#the-intermediate-animation-value-of-a-keyframe-animation-effect" class="sectionRef"></a>)
+                with a <a>time fraction</a> of 1, a <a>current iteration</a>
+                one less than the current one, and a <a>neutral value for composition</a>
+                as the <a>underlying value</a>.
+              <li>
+                Return the result of acumulating the <var>unaccumulated result</var>
+                with the <var>accumulating value</var>
+            </ol>
+          <li>Otherwise, return the <var>unaccumulated result</var>
         </ol>
         <div class="note">
           <p>Note that this procedure assumes the following about the list of
