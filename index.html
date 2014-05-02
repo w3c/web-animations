@@ -1828,8 +1828,9 @@
           <p>
             Note that values of <a>iteration start</a> greater than or equal to
             one are generally not useful unless used in combination with an
-            <a>animation effect</a> that has an <a>accumulation operation</a>
-            property of <a title="accumulation operation sum">sum</a>.
+            <a>animation effect</a> that has an <a>iteration composite
+            operation</a> property of 
+            <a title="iteration composite operation accumulate">accumulate</a>.
           </p>
         </div>
       </section>
@@ -3578,14 +3579,16 @@
                 concatenating transform lists as 
                 &lsquo;<var>V</var><sub>a</sub> <var>V</var><sub>b</sub>&rsquo;.
             <li><a title="animation accumulation">accumulation</a>:
-                performed by finding the largest initial portion of each list
+                performed by finding the largest final portion of each list
                 such that the type of the transforms of each pair of elements at
                 the same index in the two sub-lists match.
                 The paired elements in these sub-lists are then accumulated by
                 adding matched numeric components together.
                 The non-matching remainders of the two lists are then <a
-                title="animation addition">added</a> to the result, in the order
-                <var>V</var><sub>a</sub>, then <var>V</var><sub>b</sub>.
+                title="animation addition">added</a> to the each other and the
+                intermediate result, in the order
+                <var>V</var><sub>a</sub>, then <var>V</var><sub>b</sub>, then
+                intermediate result.
             <li><a>distance computation</a>: <span class="todo">See issue
                 below</span>
           </ul>
@@ -3668,79 +3671,16 @@
           class="sectionRef"></a>.
         </p>
         <p>
-          An <a>intermediate animation value</a> is established by first
-          calculating an <a>unaccumulated animation value</a> and then applying
-          <a>accumulation</a> behavior.
-        </p>
-        <section>
-          <h3>Unaccumulated animation values</h3>
-          <p>
-            The <dfn>unaccumulated animation value</dfn> is the result of
+          An <a>intermediate animation value</a> is the result of
             evaluating an <a>animation effect</a> for a given <a>target
-            property</a>, <a>time fraction</a> and <a>underlying value</a>
-            <em>independent</em> of the <a>current iteration</a>.
+            property</a>, <a>time fraction</a>, <a>current iteration</a>,
+            and <a>underlying value</a>.
             The procedure for calculating this value depends on the specific
             type of <a>animation effect</a> and is defined subsequently (see <a
-            href="#the-unaccumulated-animation-value-of-a-keyframe-animation-effect"
+            href="#the-intermediate-animation-value-of-a-keyframe-animation-effect"
             class="sectionRef"></a> and <a
-            href="#the-unaccumulated-animation-value-of-a-motion-path-animation-effect"
+            href="#the-intermediate-animation-value-of-a-motion-path-animation-effect"
             class="sectionRef"></a>).
-          </p>
-        </section>
-        <section>
-          <h3>Accumulating animation values</h3>
-          <p>
-            <a>Animation effects</a> may be defined such that as the
-            <a>animation</a> that is applying them <a
-            href="#repeating">repeats</a>, the <a>intermediate animation
-            value</a> builds on the value produced by previous iterations.
-            This behavior is called <dfn>accumulation</dfn>.
-          </p>
-          <p>
-            The <a>accumulation</a> behavior of an <a>animation effect</a> is
-            specified by the <a>animation effect</a>'s <dfn>accumulation
-            operation</dfn> property.
-            The <a>accumulation operation</a> property takes one of the
-            following two values.
-          </p>
-          <dl>
-            <dt><dfn title="accumulation operation sum">sum</dfn></dt>
-            <dd>
-              <p>
-                The <a>intermediate animation value</a> produced by the
-                <a>animation effect</a> for a given property is the sum (as
-                calculated using the <a title="animation
-                accumulation">accumulation</a>
-                procedure of the <a>target property</a>) of the <a>unaccumulated
-                animation value</a> for the given <a>time fraction</a> and the
-                final <a>intermediate animation value</a> of the previous
-                iteration (i.e. the result of evaluating the <a>intermediate
-                animation value</a> with a <a>time fraction</a> of 1, and
-                a <a>current iteration</a> of <code><a>current iteration</a>
-                - 1</code>).
-              </p>
-              <p>
-                If the <a>current iteration</a> is zero, the <a>intermediate
-                animation value</a> is just the <a>unaccumulated animation
-                value</a>.
-              </p>
-            </dd>
-            <dt><dfn
-              title="accumulation operation none">none</dfn></dt>
-            <dd>
-              The <a>intermediate animation value</a> for the <a>animation
-              effect</a> is just the <a>unaccumulated animation value</a>.
-            </dd>
-          </dl>
-          <p>
-            <a>Accumulation</a> behavior is only applied for <a
-            title="keyframe animation effect">keyframe animation effects</a>
-            when the <a>composition operation</a> is uniform across all
-            <a>keyframes</a>.
-            For <a title="keyframe animation effect">keyframe
-            animation effects</a> where the <a>composition operation</a>
-            varies, an <a>accumulation operation</a> of <a
-            title="accumulation operation none">none</a> is used.
           </p>
         </section>
       </section>
@@ -3921,7 +3861,8 @@
         <p>
           The specific operation used to combine an <a>intermediate animation
           value</a> with an <a>underlying value</a> is determined by the
-          <dfn>composition operation</dfn> of the <a>animation effect</a> that
+          <dfn>composition operation</dfn> and the <dfn>iteration-composite
+          operation</dfn> of the <a>animation effect</a> that
           produced the <a>intermediate animation value</a>.
         </p>
         <p>
@@ -3963,6 +3904,25 @@
             </p>
           </dd>
         </dl>
+        <p>
+          This specification defines two <a>iteration-composite operations</a>
+          as follows:
+        </p>
+        <dl>
+          <dt><dfn title="iteration composite operation replace">replace</dfn>
+          </dt>
+          <dd>
+            No special interaction between iterations of the animation occurs.
+            <p class='issue'>This seems to be poorly named. Maybe 'none'?</p>
+          </dd>
+        <dt><dfn title="iteration composite operation accumulate">accumulate
+        </dfn></dt>
+        <dd>
+          The <a>animation effect</a> acts as normal for the first iteration,
+          then subsequent iterations build on the final result of the
+          previous one.
+        </dd>
+      </dl>
       </section>
       <section>
         <h3>Applying the composited result</h3>
@@ -4076,7 +4036,7 @@
       <p>
         The behavior when <a>keyframes</a> overlap or have unsupported values
         is defined in <a
-        href="#the-unaccumulated-animation-value-of-a-keyframe-animation-effect"
+        href="#the-intermediate-animation-value-of-a-keyframe-animation-effect"
         class="sectionRef"></a>.
       </p>
       <p>
@@ -4409,23 +4369,21 @@ The slope of the graph is equal for the first two segments but changes for the l
         </section>
       </section>
       <section>              
-        <h3>The unaccumulated animation value of a keyframe animation effect</h3>
+        <h3>The intermediate animation value of a keyframe animation effect</h3>
         <p>
-          The <a>unaccumulated animation value</a> of a single property
+          The <a>intermediate animation value</a> of a single property
           referenced by a <a>keyframe animation effect</a> as one of its
           <a title="target property">target properties</a>, for a given <a>time
-          fraction</a> and <a>underlying value</a> is calculated as follows.
+          fraction</a>, <a>current iteration</a> and <a>underlying value</a> is calculated as follows.
         </p>
         <ol>
           <li>Let <var>target property</var> be the property for which the
-              <a>unaccumulated animation value</a> is to be calculated.
+              <a>intermediate animation value</a> is to be calculated.
           <li>If <a>animation behavior</a> of the <var>target property</var> is
               <a>not animatable</a> abort this procedure since the effect cannot
               be applied.
           <li>Let <var>time fraction</var> be the <a>time fraction</a> for which
-              the <a>unaccumulated animation value</a> is to be calculated.
-          <li>Let <var>underlying value</var> be the current <a>underlying
-              value</a> for <var>target property</var>.
+              the <a>intermediate animation value</a> is to be calculated.
           <li>Define the <dfn>neutral value for composition</dfn> as a value
               which, when combined with an <a>underlying value</a> using the <a
               title="composition operation add">add</a> <a>composition
@@ -4436,7 +4394,7 @@ The slope of the graph is equal for the first two segments but changes for the l
               keyframes</var> that do not have a property value for
               <var>target property</var>.
           <li>If <var>property-specific keyframes</var> is empty, return
-              <var>underlying value</var>.
+              <a>underlying value</a>.
           <li>If there is no <a>keyframe</a> with a <a>keyframe offset</a> of
               0, create a new <a>keyframe</a> with a <a>keyframe offset</a> of
               0, a property value set to the <a>neutral value for
@@ -4450,9 +4408,16 @@ The slope of the graph is equal for the first two segments but changes for the l
               and a <a>composition operation</a> of <a
               title="composition operation add">add</a>, and append it to the
               end of <var>property-specific keyframes</var>.
+          <li>If the <a>current iteration</a> is larger than 0 and the 
+              <a>iteration-composite operation</a> of this <a>keyframe animation
+              effect</a> is <a title="iteration composite operation accumulate">
+              accumulate</a>, let <var>composition operation to use</var> be 
+              <a title='composition operation accumulate'>accumulate</a> for all
+              keyframes in <var>property-specific-keyframes</var>.
           <li>Iterate over each <var>keyframe</var> in <var>property-specific
               keyframes</var> and for each <var>keyframe</var>, if:
               <ul>
+                <li><var>accumulate mode</var> is true, or
                 <li><var>keyframe</var> has a <a>composition operation</a>
                     that is <em>not</em> <a
                     title="composition operation replace">replace</a>, or
@@ -4463,7 +4428,7 @@ The slope of the graph is equal for the first two segments but changes for the l
               </ul>
               perform the following steps:
               <ol>
-                <li>Let <var>composition operation to use</var> be the
+                <li>Let <var>composite operation to use</var> be the
                     <a>composition operation</a> of <var>keyframe</var>, or if
                     it has none, the <a>composition operation</a> of this
                     <a>keyframe animation effect</a>.
@@ -4471,7 +4436,7 @@ The slope of the graph is equal for the first two segments but changes for the l
                     <var>target property</var> specified on <var>keyframe</var>.
                 <li>Replace the property value of <var>target property</var> on
                     <var>keyframe</var> with the result of combining
-                    <var>underlying value</var> (<var>V</var><sub>a</sub>) and
+                    <a>underlying value</a> (<var>V</var><sub>a</sub>) and
                     <var>value to combine</var> (<var>V</var><sub>b</sub>)
                     using the <var>composition operation to use</var>, applying
                     the <a>animation behavior</a> of <var>target property</var>.
@@ -4516,7 +4481,8 @@ The slope of the graph is equal for the first two segments but changes for the l
             <code>(<var>time fraction</var> - <var>start offset</var>) /
                   (<var>end offset</var> - <var>start offset</var>)</code>
           <li>
-            Return the result of interpolating between <var>start keyframe</var>
+            Let <var>unaccumulated result</var> be the result of interpolating
+            between <var>start keyframe</var>
             and <var>end keyframe</var> by using the <a
             title="animation interpolation">interpolation procedure</a> defined
             by the <a>animation behavior</a> of the <var>target property</var>
@@ -4525,6 +4491,23 @@ The slope of the graph is equal for the first two segments but changes for the l
             property</var> specified on <var>start keyframe</var> and <var>end
             keyframe</var> as <var>V</var><sub>start</sub> and
             <var>V</var><sub>end</sub> repsectively.
+          <li>
+            If the <a>current iteration</a> is larger than 0 and the
+            <a>iteration-composite operation</a> of this <a>keyframe animation effect</a>
+            is <a title='composition operation accumulate'>accumulate</a>:
+            <ol>
+              <li>
+                Let the <var>accumulating value</var> be the result of running
+                this process (i.e.
+                <a href="#the-intermediate-animation-value-of-a-keyframe-animation-effect" class="sectionRef"></a>)
+                with a <a>time fraction</a> of 1, a <a>current iteration</a>
+                one less than the current one, and a <a>neutral value for composition</a>
+                as the <a>underlying value</a>.
+              <li>
+                Return the result of acumulating the <var>unaccumulated result</var>
+                with the <var>accumulating value</var>
+            </ol>
+          <li>Otherwise, return the <var>unaccumulated result</var>
         </ol>
         <div class="note">
           <p>Note that this procedure assumes the following about the list of
@@ -4630,7 +4613,7 @@ The slope of the graph is equal for the first two segments but changes for the l
       </p>
       <p>
         The <dfn>automatic rotation flag</dfn> of a <a>motion path animation
-        effect</a>, if set, specifies that the <a>unaccumulated animation
+        effect</a>, if set, specifies that the <a>intermediate animation
         value</a> generated by the <a>motion path animation effect</a> produces
         a rotation that matches the directional tangent vector of the
         <a>motion path</a>.
@@ -4973,9 +4956,9 @@ The slope of the graph is equal for the first two segments but changes for the l
         </ol>
       </section>
       <section>
-        <h3>The unaccumulated animation value of a motion path animation effect</h3>
+        <h3>The intermediate animation value of a motion path animation effect</h3>
         <p>
-          The <a>unaccumulated animation value</a> of a <a>motion path animation
+          The <a>intermediate animation value</a> of a <a>motion path animation
           effect</a> for a given <a>time fraction</a> and <a>underlying
           value</a> is given by the following process:
           <ol>
@@ -5070,7 +5053,7 @@ The slope of the graph is equal for the first two segments but changes for the l
                 Shouldn't we collapse them?
               </div>
             <li>
-              The <a>unaccumulated animation value</a> of the <a>motion path
+              The <a>intermediate animation value</a> of the <a>motion path
               animation effect</a> is the result of applying the <a>composition
               operation</a> of the effect, passing <var>transform</var> as the
               <a>intermediate animation value</a> and <var>underlying
@@ -6008,8 +5991,8 @@ interface Duration {
               <p>
                 Setting the <code>iterationStart</code> to a value greater than
                 or equal to one is typically only useful in combination with an
-                animation effect that has an <code>accumulate</code> property of
-                &lsquo;accumulate&rsquo;.
+                animation effect that has an <code>iteration-composite</code> 
+                property of &lsquo;accumulate&rsquo;.
               </p>
             </div>
           </dd>
@@ -6981,11 +6964,11 @@ elem.animate({ left: '100px' }, 3000);
           concrete subinterfaces are provided.
         </p>
         <dl title="interface AnimationEffect" class="idl">
-          <dt>attribute AccumulateOperation accumulate</dt>
+          <dt>attribute IterationCompositeOperation iterationComposite</dt>
           <dd>
             <p>
-              The <a>accumulation operation</a> property of this <a>animation
-              effect</a> as specified by one of the <a>AccumulateOperation</a>
+              The <a>iteration-composite operation</a> property of this <a>animation
+              effect</a> as specified by one of the <a>IterationCompositeOperation</a>
               constants.
             </p>
           </dd>
@@ -7019,27 +7002,28 @@ elem.animate({ left: '100px' }, 3000);
         </div>
       </section>
       <section>
-        <h3>The <code>AccumulateOperation</code> enumeration</h3>
+        <h3>The <code>IterationCompositeOperation</code> enumeration</h3>
         <p>
           The possible values of an <a>animation effect</a>'s
-          <a>accumulation</a> behavior are represented by the
-          <a>AccumulateOperation</a> enumeration.
+          <a>iteration-composite operation</a> are represented by the
+          <a>IterationCompositeOperation</a> enumeration.
         </p>
-        <dl title="enum AccumulateOperation" class="idl">
-          <dt>sum</dt>
+        <dl title="enum IterationCompositeOperation" class="idl">
+          <dt>accumulate</dt>
           <dd>
             Corresponds to the <a
-            title="accumulation operation sum">sum</a>
-            accumulation operation value such that
+            title="iteration composite operation accumulate">accumulate</a>
+            iteration composite operation value such that
             subsequent iterations of an <a>animation</a> build on the final
             value of the previous iteration.
           </dd>
-          <dt>none</dt>
+          <dt>replace</dt>
           <dd>
             Corresponds to the <a
-            title="accumulation operation none">none</a>
-            accumulation operation value such that the <a>intermediate animation
-            value</a> produced is independent of the <a>current iteration</a>.
+            title="iteration composite operation replace">replace</a>
+            iteration composite operation value such that the <a>intermediate 
+            animation value</a> produced is independent of the <a>current 
+            iteration</a>.
           </dd>
         </dl>
       </section>
@@ -7267,9 +7251,9 @@ elem.animate({ left: '100px' }, 3000);
             constructor by providing a <a>KeyframeEffectOptions</a> object.
           </p>
           <dl title="dictionary KeyframeEffectOptions" class="idl">
-            <dt>AccumulateOperation accumulate = "none"</dt>
+            <dt>IterationCompositeOperation iterationComposite = "replace"</dt>
             <dd>
-              The <a>accumulation operation</a> used to define the way
+              The <a>iteration-composite operation</a> used to define the way
               animation values build from iteration to iteration.
             </dd>
             <dt>CompositeOperation composite = "replace"</dt>
@@ -7681,9 +7665,9 @@ elem.animate({ left: '100px' }, 3000);
             <dd>
               The <a>rotation angle</a> for the generated effect.
             </dd>
-            <dt>AccumulateOperation accumulate = "none"</dt>
+            <dt>IterationCompositeOperation iterationComposite = "replace"</dt>
             <dd>
-              The <a>accumulation operation</a> used to define the way
+              The <a>iteration-composite operation</a> used to define the way
               animation values build from iteration to iteration.
             </dd>
             <dt>CompositeOperation composite = "replace"</dt>
@@ -8235,6 +8219,9 @@ elem.animate({ left: '100px' }, 3000);
             <a>animation effects</a>.
         <li>Added the <a title="composition operation accumulate">accumulate</a>
             <a>composition operation</a>.
+        <li>Replaced the accumulation operation with an 
+            <a title="iteration-composite operation">iteration-composite
+            operation</a> on <a>animation effects</a>.
         <li>Added per-<a>keyframe</a> <a>timing functions</a>.
         <li>Replaced paced timing functions with <a
             href="#spacing-keyframes">spacing</a> behavior that can either
