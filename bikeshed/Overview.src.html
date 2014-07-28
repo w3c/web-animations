@@ -9,11 +9,12 @@ Editor: Shane Stephens, Google Inc, shans@google.com
 Editor: Alex Danilo, Google Inc, adanilo@google.com
 Editor: Tab Atkins, Google Inc, jackalmage@gmail.com
 Group: fxtf
-Abstract: This specification defines a model for synchronization and timing of
-    changes to the presentation of a Web page.
-    This specification also defines an application programming interface for
-    interacting with this model and it is expected that further specifications
-    will define declarative means for exposing these features.
+Abstract: This specification defines a model for synchronization and
+    timing of changes to the presentation of a Web page.
+    This specification also defines an application programming interface
+    for interacting with this model and it is expected that further
+    specifications will define declarative means for exposing these
+    features.
 </pre>
 
 <link href='web-animations.css' rel='stylesheet' type='text/css'>
@@ -66,7 +67,7 @@ The Web Animations model aims at two broad areas of application:
     selecting one of two preset destinations in the scene.
 
     This scenario requires the following features:
-    
+
     *   animated effects for moving characters along a path as well as
         warping a path (the rainbow trail),
     *   synchronization that allows some actions to happen
@@ -85,23 +86,23 @@ The Web Animations model aims at two broad areas of application:
 
 <h3>Relationship to other specifications</h3>
 
-CSS Transitions [<cite><a class="bibref" href="#bib-CSS3-TRANSITIONS">CSS3-TRANSITIONS</a></cite>], CSS Animations                                                               
+CSS Transitions [<cite><a class="bibref" href="#bib-CSS3-TRANSITIONS">CSS3-TRANSITIONS</a></cite>], CSS Animations
 [<cite><a class="bibref" href="#bib-CSS3-ANIMATIONS">CSS3-ANIMATIONS</a></cite>], and SVG [<cite><a class="bibref" href="#bib-SVG112">SVG112</a></cite>] all provide mechanisms \
-that                                                                                                                                                                             
-generate animated content on a Web page.                                                                                                                                         
-Although the three specifications provide many similar features,                                                                                                                 
-they are described in different terms.                                                                                                                                           
-This specification proposes an abstract animation model that                                                                                                                     
-encompasses the common features of all three specifications.                                                                                                                     
-This model is backwards-compatible with the current behavior of these                                                                                                            
-specifications such that they can be defined in terms of this model                                                                                                              
+that
+generate animated content on a Web page.
+Although the three specifications provide many similar features,
+they are described in different terms.
+This specification proposes an abstract animation model that
+encompasses the common features of all three specifications.
+This model is backwards-compatible with the current behavior of these
+specifications such that they can be defined in terms of this model
 without any observable change.
 
-The animation features in SVG 1.1 are defined in terms of SMIL                                                                                                                   
-Animation [<cite><a class="bibref" href="#bib-SMIL-ANIMATION">SMIL-ANIMATION</a></cite>].                                                                                        
-It is intended that by defining SVG's animation features in terms of                                                                                                             
-the Web Animations model, the dependency between SVG and SMIL                                                                                                                    
-Animation can be removed.                                                                                                                                                        
+The animation features in SVG 1.1 are defined in terms of SMIL
+Animation [<cite><a class="bibref" href="#bib-SMIL-ANIMATION">SMIL-ANIMATION</a></cite>].
+It is intended that by defining SVG's animation features in terms of
+the Web Animations model, the dependency between SVG and SMIL
+Animation can be removed.
 
 As with Timing control for script-based animations (commonly referred
 to as &ldquo;requestAnimationFrame&rdquo;) [[RAF]],
@@ -119,15 +120,15 @@ correspond with those used in Timing control for script-based
 animations [[RAF]] and their execution order to defined such that the
 two interfaces can be used simultaneously without conflict.
 
-The programming interface component of this specification makes                                                                                                                  
+The programming interface component of this specification makes
 some additions to interfaces defined in HTML5 [<cite><a class="bibref" href="#bib-HTML5">HTML5</a></cite>].
 
 <h3>Overview of this specification</h3>
 
-This specification begins by defining an abstract model for animation.                                                                                                           
-This is followed by a programming interface defined in terms of the                                                                                                              
-abstract model.                                                                                                                                                                  
-The programming interface is defined in terms of the abstract model                                                                                                              
+This specification begins by defining an abstract model for animation.
+This is followed by a programming interface defined in terms of the
+abstract model.
+The programming interface is defined in terms of the abstract model
 and is only relevant to user agents that provide scripting support.
 
 </div>
@@ -140,42 +141,42 @@ At a glance, the Web Animations model consists of two largely
 independent pieces, a <em>timing model</em> and an <em>animation
 model</em>.  The role of these pieces is as follows:
 
-:   Timing model                                                                                                                                                            
-::  Takes a moment in time and converts it to a proportional distance                                                                                                                
-    within a single iteration of an animation called the <em>time                                                                                                                    
-    fraction</em>.                                                                                                                                                                   
-    An <em>iteration index</em> is also generated for animations                                                                                                                     
-    that vary as they repeat.                                                                                                                                                        
-:   Animation model                                                                                                                                                         
-::  Takes the <em>time fractions</em> and <em>iteration indices</em>                                                                                                                 
-    produced by the timing model and converts them into a series of values                                                                                                           
-    to apply to the target properties and attributes.                                                                                                                                
-                                                                                                                                                                              
-Graphically, this flow can be represented as follows:                                                                                                                            
-<div class="figure">                                                                                                                                                             
-<img src="img/timing-and-animation-models.svg" width="600" alt="Overview of the operation of the Web Animations model.">                                                         
-</div>                                                                                                                                                                           
-<p class="caption">                                                                                                                                                              
-Overview of the operation of the Web Animations model.<br>                                                                                                                       
-The current time is input to the timing model which produces a time                                                                                                              
-fraction and an iteration index.<br>                                                                                                                                             
-These parameters are used as input to the animation model which produces                                                                                                         
-the values to apply.<br>                                                                                                                                                         
-</p>                                                                                                                                                                             
+:   Timing model
+::  Takes a moment in time and converts it to a proportional distance
+    within a single iteration of an animation called the <em>time
+    fraction</em>.
+    An <em>iteration index</em> is also generated for animations
+    that vary as they repeat.
+:   Animation model
+::  Takes the <em>time fractions</em> and <em>iteration indices</em>
+    produced by the timing model and converts them into a series of values
+    to apply to the target properties and attributes.
 
-For example, consider an animation that:                                                                                                                                         
+Graphically, this flow can be represented as follows:
+<div class="figure">
+<img src="img/timing-and-animation-models.svg" width="600" alt="Overview of the operation of the Web Animations model.">
+</div>
+<p class="caption">
+Overview of the operation of the Web Animations model.<br>
+The current time is input to the timing model which produces a time
+fraction and an iteration index.<br>
+These parameters are used as input to the animation model which produces
+the values to apply.<br>
+</p>
+
+For example, consider an animation that:
 
 *   starts after 3 seconds
 *   runs twice,
 *   takes 2 seconds every time, and
 *   changes the width of a rectangle from 50 pixels to 100 pixels.
 
-The first three points apply to the timing model.                                                                                                                                
+The first three points apply to the timing model.
 At a time of 6 seconds, it will calculate that the animation should be
-half-way through its second iteration and produces the result 0.5.                                                                                                               
-The animation model then uses that information to calculate a width                                                                                                              
+half-way through its second iteration and produces the result 0.5.
+The animation model then uses that information to calculate a width
 
-This specification begins with the timing model and then proceeds to                                                                                                             
+This specification begins with the timing model and then proceeds to
 the animation model.
 
 </div>
@@ -193,7 +194,7 @@ timing model.
 
 Two features characterise the Web Animations timing model: it is
 <em>stateless</em> and it is <em>hierarchical</em>.
- 
+
 <h4>Stateless</h4>
 
 The Web Animations timing model operates by taking an input time and
@@ -300,8 +301,8 @@ weakened even further.
 
 Periodically, the user agent will trigger an update to the timing model
 in a process called <dfn>sampling</dfn>.
-On each <dfn>sample</dfn> the <a>time values</a> of each timing node are
-updated.
+On each <dfn title='single-sample'>sample</dfn> the 
+<a>time values</a> of each timing node are updated.
 
 Note: A more precise definition of when the model is updated when scripting is
     involved is provided in <a
@@ -454,8 +455,8 @@ Where:
 *   <var>playback rate</var> is the player's <a
     title="player playback rate">playback rate</a> value described in
     <a href="#speed-control" section></a>.
-*   <a>hold time</a> is the value described in 
-    <a href="#seeking--pausing-and-limiting-properties" section></a>.
+*   <a>hold time</a> is the value described in
+    <a href="#seeking-pausing-and-limiting-properties" section></a>.
 
 The procedure for performing manual updates to the <a>current time</a>
 is defined in <a href="#performing-a-seek" section></a>.
@@ -700,7 +701,7 @@ performed:
     condition from below:
 
     <div class='switch'>
-    
+
     :   If the <a>player playback rate</a> &lt; 0 and
         the <a>unlimited current time</a> &le; 0,
     ::  Let the <a>hold time</a> be zero.
@@ -715,14 +716,14 @@ performed:
         let the <a>hold time</a> be <a>source content end</a>.
     :   Otherwise,
     ::
-    
+
         1.  If the <a>hold time</a> is not null,
             set the stored value of the <a>player start time</a>
             to the result of evaluating <code><var>timeline
             time</var> - <a>hold time</a>
             / <a>player playback rate</a></code>.
         2.  Let the <a>hold time</a> be null.
-    
+
     </div>
 
 <h5>Updating the paused state</h5>
@@ -735,16 +736,16 @@ follows:
     abort this procedure.
 3.  The next step depends on the current <a>paused state</a> as
     follows,
-    
+
     <div class='switch'>
-    
+
     :   If <a>paused state</a> is true and the <a>player</a> is not
         <a>limited</a>,
     ::
-    
+
         1.  Set the <em>stored</em> value of <a>player start
             time</a> to the <em>current calculated</em> value of
-            <a>player start time</a> as defined in 
+            <a>player start time</a> as defined in
             <a href="#calculating-the-player-start-time" section></a>
         2.  Set the <a>hold time</a> to null.
 
@@ -768,9 +769,9 @@ It is achieved using the following procedure:
 
     *   the <a>paused state</a> is true, or
     *   the <a>player playback rate</a> &gt; 0 and <var>seek
-        time</var> &ge; <a>source content end</a> (as defined in 
+        time</var> &ge; <a>source content end</a> (as defined in
         <a href="#automatically-updating-the-hold-time" section></a>), or
-    *   the <a>player playback rate</a> &lt; 0 and <var>seek 
+    *   the <a>player playback rate</a> &lt; 0 and <var>seek
         time</var> &le; zero, or
     *   the <a>player playback rate</a> = 0
 
@@ -781,7 +782,7 @@ It is achieved using the following procedure:
     *   the <a>player playback rate</a> is not zero
 
     then:
-    
+
     1.  Reset the <a>hold time</a> to null.
     2.  Set the stored value of <a>player start time</a>
         to the result of evaluating <code><var>effective timeline
@@ -880,7 +881,8 @@ To assist dispatching <a title="finish player event">finish
 events</a>, <a>players</a> maintain a <dfn>finished flag</dfn> that
 is initially false when the player is created.
 
-During each <a>sample</a>, the <a>finished flag</a> is updated such
+During each <a title='single-sample'>sample</a>, the 
+<a>finished flag</a> is updated such
 that it is set to true if the player is <a>limited</a> and false
 otherwise.
 
@@ -1015,18 +1017,18 @@ the <a>active interval</a> are coincident.<br>
 An <a>end delay</a> may also be specified but is primarily only of
 use when sequencing animations such as by using a <a>sequence
 animation group</a>.
-        
+
 </div>
-        
+
 <a>Animation nodes</a> define an <dfn>active interval</dfn> which is
 the period of time during which the node is scheduled to produce its
 effect with the exception of <a>fill modes</a> which apply outside the
 <a>active interval</a>.
 
 The lower bound of the <a>active interval</a> is defined by the
-combination of the animation node's 
+combination of the animation node's
 <a title="animation node start time">start time</a> and <a>start delay</a>.
-An <a>animation node</a>'s 
+An <a>animation node</a>'s
 <dfn title="animation node start time">start time</dfn> is the moment at
 which the <a>parent animation group</a>,
 if any, has scheduled the <a>animation node</a> to begin.
@@ -1054,7 +1056,7 @@ title="animation node start time">start time</a> and the <a>start
 delay</a>.
 
 These definitions are incorporated in the calculation of the <a>local
-time</a> (see <a href="#local-time-and-inherited-time" section></a>) 
+time</a> (see <a href="#local-time-and-inherited-time" section></a>)
 and <a>active time</a>.
 
 The length of the <a>active interval</a> is called the <dfn>active
@@ -1197,7 +1199,7 @@ follows:
     same <a>fill mode</a>, the child <a>animation node</a> may be
     effectively be snapshotted within the <a>active phase</a>
     despite no longer being <a>in play</a>.
-    
+
 :   <a>current</a>
 ::  Corresponds to an <a>animation node</a> that is either <a>in
     play</a> or may become <a>in play</a> in the future.
@@ -1347,7 +1349,7 @@ Some examples of the these fill modes are illustrated below.
       a fill value until the start of the active interval.<br>
   (d) fill mode &lsquo;both&rsquo;. Both before and after the active
       interval the animation node produces a fill value.
-</p> 
+</p>
 
 Note: setting a fill mode has no bearing on the endpoints of the
     <a>active interval</a>.
@@ -1484,7 +1486,7 @@ duration</a>.
 Note that values of <a>iteration start</a> greater than or equal to
 one are generally not useful unless used in combination with an
 <a>animation effect</a> that has an <a>iteration composite
-operation</a> of 
+operation</a> of
 <a title="iteration composite operation accumulate">accumulate</a>.
 
 </div>
@@ -1770,7 +1772,7 @@ any, as follows,
     following,
 
     <div class="switch">
-    
+
     :   If the animation node has a <a>parent animation group</a>
         and that parent animation group is in the <a>after
         phase</a>,
@@ -1781,15 +1783,15 @@ any, as follows,
     ::  Return zero.
     :   Otherwise,
     ::  Return <code>null</code>.
-    
+
     </div>
 
 :   If the animation node is in the <a>active phase</a>,
 ::  The result depends on the first matching condition from the
     following,
-    
+
     <div class="switch">
-    
+
     :   If the animation node has a <a>parent animation group</a>
         and that parent animation group is in the <a>before
         phase</a>, and the <a>fill mode</a> of this animation node
@@ -1804,15 +1806,15 @@ any, as follows,
     ::  Return <code>null</code>.
     :   Otherwise,
     ::  Return <code><a>local time</a> - <a>start delay</a></code>.
-    
+
     </div>
 
 :   If the animation node is in the <a>after phase</a>,
 ::  The result depends on the first matching condition from the
     following,
-    
+
     <div class="switch">
-    
+
     :   If the animation node has a <a>parent animation group</a>
         and that parent animation group is in the <a>before
         phase</a>,
@@ -1823,9 +1825,9 @@ any, as follows,
     ::  Return the <a>active duration</a>.
     :   Otherwise,
     ::  Return <code>null</code>.
-    
+
     </div>
-    
+
 :   Otherwise (the <a>local time</a> is <code>null</code>),
 ::  Return <code>null</code>.
 
@@ -1906,7 +1908,7 @@ following steps:
 
 4.  Otherwise, return <code><a>scaled active time</a>
     % <a>iteration duration</a></code>.
-    
+
 <h4>Calculating the current iteration</h4>
 
 The <dfn>current iteration</dfn> can be calculated using the
@@ -1932,7 +1934,7 @@ following steps:
       result of <code>floor(<a>scaled active time</a> /
       <a>iteration duration</a>)</code> will be zero as defined by
       IEEE 754-2008.
-    
+
 <h3>Direction control</h3>
 
 <a>Animation nodes</a> may also be configured to run iterations in
@@ -2247,7 +2249,7 @@ The value of the <a>before flag</a> is determined as follows:
     <a>before phase</a> and <var>going forwards</var> is true;
     or if the animation node is in the <a>after phase</a> and
     <var>going forwards</var> is false.
-    
+
 When a step timing function is evaluated at a transition point, if
 the <a>before flag</a> is set the result is the value <em>before</em>
 applying the increase.
@@ -2492,20 +2494,22 @@ the following procedure.
 
 2.  The <a>intrinsic iteration duration</a> depends on the number of
     <a>child animation nodes</a> as follows,
+
     <div class="switch">
 
-      :   If the group has no <a>child animation nodes</a>,
-      ::  the <a>intrinsic iteration duration</a> is zero.
+    :   If the group has no <a>child animation nodes</a>,
+    ::  the <a>intrinsic iteration duration</a> is zero.
 
-      :   Otherwise,</dt>
-      ::
+    :   Otherwise,
+    ::
 
-          1.  Let <var>maximum end time</var> be the maximum value
-              after calculating the <a>end time</a> of each <a>child
-              animation node</a> in the group.</li>
-          2.  The <a>intrinsic iteration duration</a> is the result of
-              evaluating <code>max(0, <var>maximum end
-              time</var>)</code>.</li>
+        1.  Let <var>maximum end time</var> be the maximum value
+            after calculating the <a>end time</a> of each <a>child
+            animation node</a> in the group.
+        2.  The <a>intrinsic iteration duration</a> is the result of
+            evaluating <code>max(0, <var>maximum end
+            time</var>)</code>.
+
     </div>
 
 This definition of the <a>intrinsic iteration duration</a> may be
@@ -2690,14 +2694,14 @@ Note: Since <a>timing functions</a> are allowed to produce output times
 
 <div class='informative-bg'><em>This section is non-normative</em>
 
-The Web Animations <em>animation model</em> takes the <a>time                                                                                                                    
-fractions</a> and <a>current iteration</a> values produced by the                                                                                                                
-<em>timing model</em> for a given <a>animation</a> and applies it as                                                                                                             
+The Web Animations <em>animation model</em> takes the <a>time
+fractions</a> and <a>current iteration</a> values produced by the
+<em>timing model</em> for a given <a>animation</a> and applies it as
 the input to the <a>animation</a>'s <a>animation effect</a>.
 
-The output of each <a>animation effect</a> is then combined with other                                                                                                           
-<a>animation effects</a> using an <a>animation stack</a> before being                                                                                                            
-applied to the target properties (see <a href="#combining-animations"                                                                                                            
+The output of each <a>animation effect</a> is then combined with other
+<a>animation effects</a> using an <a>animation stack</a> before being
+applied to the target properties (see <a href="#combining-animations"
 section></a>).
 
 </div>
@@ -2768,7 +2772,7 @@ must be defined.
     For example, interpolation of transform matrices involves
     decomposing and interpolating the matrix components whilst
     addition relies on matrix multiplication.
-    
+
     </div>
 
 *   <dfn title="animation accumulation">accumulation</dfn> &mdash;
@@ -2787,7 +2791,7 @@ must be defined.
     For many types of animation such as numbers or lengths, <a
     title="animation accumulation">accumulation</a> is defined to
     be identical to <a title="animation addition">addition</a>.
-    
+
     </div>
 
     A common case where the definitions differ is for list-based
@@ -2805,7 +2809,7 @@ must be defined.
     values <var>V</var><sub>start</sub> and
     <var>V</var><sub>end</sub>, calculates some notion of scalar
     distance between the values, <var>distance</var>.
-    
+
 <h4>Specific animation behaviors</h4>
 
 The specific procedures used for animating a given <a>target
@@ -3020,7 +3024,7 @@ the following <a>animation behavior</a>:
     respectively.
     Each value is normalized to the [0.0, 1.0] range and expressed
     in premultiplied color space.
-    
+
 Issue: Should we call this &ldquo;animatable as premultiplied RGBA additive
 color in sRGB color space&rdquo; instead?
 
@@ -3035,7 +3039,7 @@ list</dfn> has the following <a>animation behavior</a>:
     of Transforms</a> [[CSS3-TRANSFORMS]].
 
 *   <a title="animation addition">addition</a>: performed by
-    concatenating transform lists as 
+    concatenating transform lists as
     &lsquo;<var>V</var><sub>a</sub> <var>V</var><sub>b</sub>&rsquo;.
 
 *   <a title="animation accumulation">accumulation</a>:
@@ -3070,7 +3074,7 @@ list</dfn> has the following <a>animation behavior</a>:
     3.  The result of accumulation is a transform list created by <a
         title="animation addition">adding</a> the combined result
         with the non-matching portions of the two lists as follows:
-        &lsquo;<var>V</var><sub>remainder-a</sub> 
+        &lsquo;<var>V</var><sub>remainder-a</sub>
         <var>V</var><sub>remainder-b</sub>
         <var>V</var><sub>combined</sub>&rsquo;.
 
@@ -3080,7 +3084,7 @@ list</dfn> has the following <a>animation behavior</a>:
 <div class="issue">
 
     For <a>distance computation</a> we previously defined it as follows:
-    
+
     1.  Look only at the first component of the two lists
     2.  If both are translate &rarr; euclidean distance
     3.  If both are scale &rarr; absolute difference
@@ -3088,9 +3092,9 @@ list</dfn> has the following <a>animation behavior</a>:
     5.  If both match but are something else &rarr; use linear
     6.  If they don't match &rarr; use matrix decomposition and
         euclidean distance between translate components
-    
+
     This seems really arbitrary, especially part 5.
-    
+
     Also, looking at only the first component seems odd.
     Going through each component, working out the distance and then
     getting the square of the distance also seems much more consistent
@@ -3113,9 +3117,9 @@ Values and Replaced Content</a>
     There are a bunch of CSS properties for which distance (and in
     some cases addition) is not defined or which need special
     handling.
-    
+
     For example,
-    
+
     *   font-stretch (an enum but handled like an integer)
     *   visibility (0 or 1 depending on if endpoints match or not)
     *   flex-grow and flex-shrink which allow animation only if one of
@@ -3128,7 +3132,7 @@ Values and Replaced Content</a>
     *   filters (undefined)
     *   background-position (special list handling needed)
     *   pair lists
-    
+
     Should we define these here or in the CSS Animation 4 spec?
 
 </div>
@@ -3230,7 +3234,7 @@ stack</a> is established by comparing the properties of the
     associated.
 2.  Sort <var>A</var> and <var>B</var> by applying the following
     conditions in turn until the order is resolved,
-    
+
     1.  Sort <var>A</var> and <var>B</var> using any <a>custom
         player priority</a> specified for the <a
         title="associated player of an animation effect">associated
@@ -3255,6 +3259,7 @@ Animations.
 The initial value of the <a>custom player priority</a> is zero.
 
 <div class="note">
+
 Note: the <a>custom player priority</a> is primarily
     intended to be used to prioritize animations at
     a high-level, such as to prioritize animations <em>by type</em>.
@@ -3267,6 +3272,7 @@ Note: the <a>custom player priority</a> is primarily
     delay</a> of the <a>source content</a>) or influencing the
     <a>player sequence number</a> by controlling when <a>players</a>
     are created.
+
 </div>
 
 <h4>Calculating the result of an animation stack</h4>
@@ -3638,17 +3644,17 @@ procedure.
         offset</a> that is not null, and
     3.  all <a>keyframes</a> between <var>A</var> and <var>B</var>
         have a null <a>keyframe offset</a>,
-          
+
     calculate the <a>keyframe offset</a> of
     each <a>keyframe</a> between <var>A</var> and <var>B</var>
     depending on the <a>keyframe spacing mode</a> as follows:
 
     <div class="switch">
-    
+
     :   If the <a title="keyframe spacing mode">spacing mode</a>
         is <a title="paced keyframe spacing mode">paced</a>,</dt>
     ::
-        
+
         1.  Define a keyframe as <dfn>paceable</dfn> if it
             contains a value for the <a>paced property</a>.
         2.  Let <var>paced A</var> be the first keyframe in the
@@ -3673,14 +3679,16 @@ procedure.
             a keyframe</a> using <var>A</var> and <var>B</var> as
             the <var>start</var> and <var>end</var> keyframes
             respectively.
-            
+
             <div class="annotation">
+
             Yes, this is correct.
             We want, <var>index</var> and <var>n</var> in that
             procedure to reflect <em>all</em> the keyframes
             between <var>A</var> and <var>B</var>, not just the
             keyframes between, for example, <var>A</var> and
             <var>spaced A</var>.
+
             </div>
 
         6.  For each keyframe in the range
@@ -3703,7 +3711,7 @@ procedure.
                 +
                 (<a title="offsetk">offset</a><sub><var>paced
                   B</var></sub>
-                &minus; 
+                &minus;
                 <a title="offsetk">offset</a><sub><var>paced
                   A</var></sub>)
                 &times;
@@ -3726,7 +3734,7 @@ procedure.
         a keyframe</a> to each keyframe in the range (<var>A</var>,
         <var>B</var>) using <var>A</var> and <var>B</var> as the
         <var>start</var> and <var>end</var> keyframes respectively.
-    
+
     </div>
 
 Note: although the above procedure defines computing keyframe
@@ -3792,7 +3800,7 @@ referenced by a <a>keyframe animation effect</a> as one of its
     the first matching condition from below:
 
     <div class="switch">
-    
+
     :   If <var>time fraction</var> &lt; 0 and there is more
         than one <a>keyframe</a> in <var>property-specific
         keyframes</var> with a <a>keyframe offset</a> of
@@ -3807,7 +3815,7 @@ referenced by a <a>keyframe animation effect</a> as one of its
         keyframes</var> to <var>interval endpoints</var>.
     :   Otherwise,
     ::
-    
+
         1.  Append to <var>interval endpoints</var> the last
             <a>keyframe</a> in <var>property-specific
             keyframes</var> whose <a>keyframe offset</a> is less than
@@ -3818,7 +3826,7 @@ referenced by a <a>keyframe animation effect</a> as one of its
         2.  Append to <var>interval endpoints</var> the next
             <a>keyframe</a> in <var>property-specific keyframes</var>
             after the one added in the previous step.
-            
+
     </div>
 
 11. For each <var>keyframe</var> in <var>interval endpoints</var>:
@@ -3831,7 +3839,7 @@ referenced by a <a>keyframe animation effect</a> as one of its
         animation effect</a> is <em>not</em> <a
         title="composite operation replace">replace</a>, then
         perform the following steps:
-        
+
         1.  Let <var>composite operation to use</var> be the
             <a>composite operation</a> of <var>keyframe</var>, or if
             it has none, the <a>composite operation</a> of this
@@ -3846,12 +3854,12 @@ referenced by a <a>keyframe animation effect</a> as one of its
             using the <var>composite operation to use</var>
             procedure defined by the <var>target property</var>'s
             <a>animation behavior</a>.
-            
+
     2.  If this <a>keyframe animation effect</a> has an <a>iteration
         composite operation</a> of <a
         title="iteration composite operation accumulate">accumulate</a>,
         apply the following step <var>current iteration</var> times:
-        
+
         *   replace the property value of <var>target property</var>
             on <var>keyframe</var> with the result of combining the
             property value (<var>V</var><sub>a</sub>) with the
@@ -3860,10 +3868,10 @@ referenced by a <a>keyframe animation effect</a> as one of its
             (<var>V</var><sub>b</sub>) using the <a
             title="animation accumulation">accumulation procedure</a>
             defined for <var>target property</var>.
-            
+
         Issue: It seems like this could be done as a separate step at the end
             and applied to all types of animation effects consistently.
-            
+
 12. If there is only one keyframe in <var>interval endpoints</var>
     return the property value of <var>target property</var> on that
     keyframe.
@@ -3874,7 +3882,7 @@ referenced by a <a>keyframe animation effect</a> as one of its
 15. Let <var>interval distance</var> be the result of evaluating
     <code>(<var>time fraction</var> - <var>start offset</var>) /
     (<var>end offset</var> - <var>start offset</var>)</code>
-16. Return the result of applying the <a 
+16. Return the result of applying the <a
     title="animation interpolation">interpolation procedure</a> defined
     by the <a>animation behavior</a> of the <var>target property</var>,
     to the values of the <var>target property</var> specified on the
@@ -3884,6 +3892,7 @@ referenced by a <a>keyframe animation effect</a> as one of its
     distance</var> as the interpolation parameter <var>p</var>.
 
 <div class="note">
+
     Note that this procedure assumes the following about the list of
     <a>keyframes</a> specified on the effect:</p>
 
@@ -3905,6 +3914,7 @@ referenced by a <a>keyframe animation effect</a> as one of its
     href="#normalizing-a-sequence-of-keyframes" section></a>
     and resolving <code>null</code> <a>keyframe offsets</a> by
     applying <a href="#spacing-keyframes">spacing behavior</a>.
+
 </div>
 
 Note: this procedure permits overlapping <a>keyframes</a>.
@@ -4112,7 +4122,7 @@ steps associated with the first matching condition from below:
     4.  Set the value of each point in <a>effective point
         offsets</a> so that the point at index <var>k</var>
         is equal to <var>k</var> / <var>n</var>.
-        
+
 :   Otherwise,
 ::  Perform the following steps:
 
@@ -4122,13 +4132,13 @@ steps associated with the first matching condition from below:
         <a>effective point offsets</a> minus one.
     3.  Let <var>k</var> represent an index in the range [0,
         <var>n</var>].
-    4.  Let <dfn title="pointk">point(<var>k</var>)</dfn>
+    4.  Let <dfn title="point()">point(<var>k</var>)</dfn>
         represent the value of <a>effective spacing points</a>
         at index <var>k</var>.
     5.  Set the value of each point in <var>effective point
         offsets</var> so that the value at index <var>k</var> is
         defined by the following formula:
-        
+
         *   For <var>k</var> = 0, <var>offset</var> = 0
         *   For <var>k</var> = 1..<var>n</var>,
             <var>offset</var> =
@@ -4167,7 +4177,7 @@ steps associated with the first matching condition from below:
                         </mfenced>
                       </mrow>
                     </mfenced>
-                  </mrow> 
+                  </mrow>
                   <mrow>
                     <munderover>
                         <mo>&#x3A3;</mo>
@@ -4291,13 +4301,13 @@ following process:
     <a>motion path</a> to <var>displacement</var>.
 4.  Calculate the <var>rotation component</var> according to the
     first match condition from the following:
-    
+
     <div class="switch">
-    
+
     :   If the <a>automatic rotation flag</a> is set,
     ::  the <var>rotation component</var> is a transform representing
         the sum of:
-        
+
         *   the angle of the tangent vector at
             <var>displacement</var>, and
         *   the <a>rotation angle</a>.
@@ -4305,7 +4315,7 @@ following process:
     :  Otherwise,
     ::  the <var>rotation component</var> is a transform representing
         the <a>rotation angle</a>.
-      
+
     </div>
 
     When calculating the angle of the tangent vector, if there are
@@ -4339,14 +4349,14 @@ following process:
             solutions will differ by integer multiples of 2&pi;.  In
             such cases the solution that lies closest to the previous
             tangent angle is used.
-            
+
     </div>
-    
+
 5.  Let the <var>transform value</var> be the result of
     by constructing a transform list consisting of the
     <var>translation component</var> followed by the <var>rotation
     component</var>.
-    
+
     Issue: What's the value in keeping these separate?
         Shouldn't we collapse them?
 
@@ -4366,7 +4376,7 @@ following process:
         the first five steps of this procedure using a <var>time
         fraction</var> of 1.
     2.  Perform the following step <var>current iteration</var> times:
-    
+
         *   Set the <var>intermediate animation value</var> to the
             result of combining the current value of
             <var>intermediate animation value</var>
@@ -4383,7 +4393,7 @@ following process:
 Issue: Need to describe how <a
     href="http://www.w3.org/TR/css3-transforms/#transform-origin-property">transform-origin</a>
     is applied.
-    
+
 <h3>Custom effects</h3>
 
 <div class='informative-bg'><em>This section is non-normative</em>
@@ -4432,21 +4442,22 @@ that is passed timing information when <a>sampling</a> is performed.
 <h4>Sampling custom effects</h4>
 
 <a>Custom effects</a> are called for each referencing <a>animation</a>
-when a <a>sample</a> is performed based on the following criteria.
+when a <a title='single-sample'>sample</a> is performed based on the 
+following criteria.
 
 1.  If, on the previous sample, the <a>animation</a> referencing the
     <a>custom effect</a>:
-    
+
     *   was <a>in effect</a>, and
     *   referenced this same <a>custom effect</a>, and
     *   had a different <a>animation target</a>
-    
+
     Call the callback passing a null <a>time fraction</a> and the
     <a>animation target</a> from the previous sample as parameters to
     the callback.
 2.  Call the callback for the current <a>animation target</a> based on
     the first matching condition from the following:
-    
+
     <div class="switch">
 
     :   If the <a>animation</a> referencing the custom effect is not
@@ -4459,7 +4470,8 @@ when a <a>sample</a> is performed based on the following criteria.
     ::
 
         *   <strong>is <a>in effect</a>, and</strong>
-        *   <strong>was not <a>in effect</a> in the previous <a>sample</a>, or
+        *   <strong>was not <a>in effect</a> in the previous 
+            <a title='single-sample'>sample</a>, or
               was <a>in effect</a> but with a different <a>time
               fraction</a> or <a>current iteration</a>,</strong>
 
@@ -4537,7 +4549,7 @@ a procedural approach is more suitable.
 <a>Timelines</a>, including the <a>document
 timeline</a> are represented in the Web Animations API by the
 <a>AnimationTimeline</a> interface.
-        
+
 <pre class="idl">
 interface AnimationTimeline {
     readonly attribute double? currentTime;
@@ -4594,7 +4606,7 @@ interface AnimationTimeline {
         <a>AnimationPlayer</a> object.
 
     </div>
-    
+
 :   <dfn method for=AnimationTimeline title='getAnimationPlayers()'>
     sequence&lt;AnimationPlayer&gt; getAnimationPlayers()</dfn>
 ::  Returns the set of <a>AnimationPlayer</a> objects
@@ -4669,12 +4681,12 @@ interface AnimationPlayer : EventTarget {
     6.	Associate <var>new value</var> with this player.
     7.	Set the <code>source</code> attribute to <var>new
         value</var>.
-        
+
 :	<dfn attribute for=AnimationPlayer>timeline</dfn>
-	<span attribute-info for=timeline></span>
+	<span attribute-info for=AnimationPlayer/timeline></span>
 ::	The <a>timeline</a> associated with this player.
 :	<dfn attribute for=AnimationPlayer>startTime</dfn>
-	<span attribute-info for=startTime></span>
+	<span attribute-info for=AnimationPlayer/startTime></span>
 ::  Returns the <a title="player start time">start time</a> of this
 	player.
 	Setting this attribute updates the <a>player start time</a> using
@@ -4682,10 +4694,10 @@ interface AnimationPlayer : EventTarget {
 :	<dfn attribute for=AnimationPlayer>currentTime</dfn>
 	<span attribute-info for=AnimationPlayer/currentTime></span>
 ::  The <a>effective current time</a> of this player.
-	Setting this attribute follows the procedure defined in 
-	<a href="#performing-a-seek" section></a>.   
+	Setting this attribute follows the procedure defined in
+	<a href="#performing-a-seek" section></a>.
 :   <dfn attribute for=AnimationPlayer>playbackRate</dfn>
-	<span attribute-info for=playbackRate></span>
+	<span attribute-info for=AnimationPlayer/playbackRate></span>
 ::  The <a title="player playback rate">playback rate</a> of this
 	player.
 	Setting this attribute follows the procedure defined in <a
@@ -4701,7 +4713,7 @@ interface AnimationPlayer : EventTarget {
 :	<dfn attribute for=AnimationPlayer>onfinish</dfn>
 	<span attribute-info for=onfinish></span>
 ::	The event handler for the <a title="finish player event">finish</a> event.
-            
+
     Note: the <a
 		href="http://www.w3.org/TR/html5/webappapis.html#eventhandler">EventHandler</a>
         callback interface type is defined in [[!HTML5]].
@@ -4718,8 +4730,8 @@ interface AnimationPlayer : EventTarget {
 		called with a null sample time so they can remove their effects.
         This applies to manually setting <code>source</code> to null as
         well so we should define this behavior there.
-          
-:   <dfn method for=AnimationPlayer title='finish()'>void finish()</dfn>    
+
+:   <dfn method for=AnimationPlayer title='finish()'>void finish()</dfn>
 ::  Seeks the player to the end of the <a>source content</a> in the
 	current direction as follows:
 	
@@ -4735,9 +4747,9 @@ interface AnimationPlayer : EventTarget {
         <a>current time</a> is equal to the <a>end time</a> of the
 		<a>source content</a> or zero if there is no <a>source
 		content</a> associated with this player..
-    
+
     </div>
-           
+
 	<div class='exceptions'>
 
 	:	DOMException of type <code>InvalidStateError</code>
@@ -4756,9 +4768,9 @@ interface AnimationPlayer : EventTarget {
     2.	If <a>source content</a> is associated with the player,
 		<a href="#performing-a-seek">adjust the current time</a> of
         the player as follows:
-        
+
 		<div class="switch">
-        
+
         :	If <a>player playback rate</a> &gt; 0; and
             either <a>current time</a> &lt; zero or
             <a>current time</a> &ge; <a>source
@@ -4809,7 +4821,7 @@ interface AnimationPlayer : EventTarget {
             playback rate</a></code> following the steps in <a
             href="#updating-the-playback-rate" section></a>.
     4.	Set the <a>paused state</a> of the <a>player</a> to false.
-        
+
 		Issue: Is this unpausing behavior correct?
 
         Note: unlike <code>play()</code>, the player's <a>finished
@@ -4858,7 +4870,7 @@ interface AnimationNode {
     node</a>.
     This is comparable to the computed style of an Element,
     <code>window.getComputedStyle(elem)</code>.
-              
+
 	Although several of the attributes of the this object are common
     to the <code>timing</code> <a>AnimationTiming</a> object they
     have the following differences:
@@ -4896,7 +4908,7 @@ interface AnimationNode {
     This object can be used to perform play control such as pausing or
     rewinding on this <a>animation node</a> <em>and all other
     animation nodes in the same hierarchy</em>.
-    
+
 	This will be <code>null</code> if this <a>animation node</a> is
     not <a>associated with a player</a>.
 
@@ -4919,16 +4931,16 @@ interface AnimationNode {
 	2.	If any of the <a>animation nodes</a> in <var>nodes</var> is an
         <a>inclusive ancestor</a> of this <a>animation node</a>
         throw a <code>HierarchyRequestError</code> exception and
-        terminate these steps. 
+        terminate these steps.
     3.	<a title="insert children">Insert</a> <var>nodes</var> before
         this <a>animation node</a>.
 
     <div class='note'>
         Note that this definition precludes the following usage since
         <code>node</code> is an <a>inclusive ancestor</a> of itself:
-        
+
         FIXME: pre needs to work in lists.
-        
+
 	    <div class="example sh_javascript">
             node.before(node); // throws HierarchyRequestError
         </div>
@@ -4943,7 +4955,7 @@ interface AnimationNode {
     2.	If any of the <a>animation nodes</a> in <var>nodes</var> is an
         <a>inclusive ancestor</a> of this <a>animation node</a>
         throw a <code>HierarchyRequestError</code> exception and
-        terminate these steps. 
+        terminate these steps.
     3.	Let <var>reference child</var> be the <a
         title="next sibling not included">next sibling of
         this animation node not in <var>nodes</var></a>.
@@ -4960,7 +4972,7 @@ interface AnimationNode {
     2.	If any of the <a>animation nodes</a> in <var>nodes</var> is an
         <a>inclusive ancestor</a> of the <a>parent animation group</a>
         throw a <code>HierarchyRequestError</code> exception and
-        terminate these steps. 
+        terminate these steps.
     3.	Let <var>reference child</var> be the <a
         title="next sibling not included">next sibling of
         this animation node not in <var>nodes</var></a>.
@@ -4974,3 +4986,2316 @@ interface AnimationNode {
     node</a> from its <a>parent animation group</a> or <a>player</a>.
 
 </div>
+
+
+<h3>The <code>AnimationTimingReadOnly</code> interface</h3>
+
+<pre class="idl">interface AnimationTimingReadOnly {
+    readonly attribute double                             delay;
+    readonly attribute double                             endDelay;
+    readonly attribute FillMode                           fill;
+    readonly attribute double                             iterationStart;
+    readonly attribute unrestricted double                iterations;
+    readonly attribute (unrestricted double or DOMString) duration;
+    readonly attribute double                             playbackRate;
+    readonly attribute PlaybackDirection                  direction;
+    readonly attribute DOMString                          easing;
+};
+</pre>
+
+<div class="attributes">
+
+:   <dfn attribute for=AnimationTimingReadOnly>delay</dfn>
+    <span attribute-info for=AnimationTimingReadOnly/delay></span>
+::  The <a>start delay</a> which represents the number of milliseconds
+    from an <a>animation node</a>'s <a title="start time">start
+    time</a> to the start of the <a>active interval</a>.
+
+    Issue: Now that we have <code>endDelay</code>, should we change this back
+        to <code>startDelay</code>?
+
+:   <dfn attribute for=AnimationTimingReadOnly>endDelay</dfn>
+    <span attribute-info for=AnimationTimingReadOnly/endDelay></span>
+::  The <a>end delay</a> which represents the number of milliseconds
+    from the end of an <a>animation node</a>'s <a>active interval</a>
+    until the <a>start time</a> of any <a>animation node</a> that may
+    follow, for example, in an <a>animation sequence</a>.
+
+:   <dfn attribute for=AnimationTimingReadOnly>fill</dfn>
+    <span attribute-info for=AnimationTimingReadOnly/fill></span>
+::  The <a>fill mode</a> as specified by one of the <a>FillMode</a>
+    enumeration values.
+
+    When performing timing calculations the special value <span
+    class="prop-value">auto</span> is expanded
+    to one of the <a>fill modes</a> recognized by the timing model as
+    follows,
+
+    <div class="switch">
+
+    :   If the <a>animation node</a> to which the fill mode is being is
+        applied is an <a>animation</a>,
+    ::  Use <span class="prop-value">none</span> as the <a>fill
+        mode</a>.
+    :   Otherwise,
+    ::  Use <span class="prop-value">both</span> as the <a>fill
+        mode</a>.
+
+    </div>
+
+:   <dfn attribute for=AnimationTimingReadOnly>iterationStart</dfn>
+    <span attribute-info for=AnimationTimingReadOnly/iterationStart></span>
+::  The <a>animation node</a>'s <a>iteration start</a> property.
+
+    A finite real number greater than or equal to zero representing
+    the number of iterations into the animation node at which to
+    begin.
+
+:   <dfn attribute for=AnimationTimingReadOnly>iterations</dfn>
+    <span attribute-info for=AnimationTimingReadOnly/iterations></span>
+::  The <a>animation node</a>'s <a>iteration count</a> property.
+
+    A real number greater than or equal to zero (including positive
+    infinity) representing the number of times to repeat the
+    animation node.
+
+:   <dfn attribute for=AnimationTimingReadOnly>duration</dfn>
+    <span attribute-info for=AnimationTimingReadOnly/duration></span>
+::  The <a>iteration duration</a> which is a real number greater than
+    or equal to zero (including positive infinity) representing the
+    time taken to complete a single iteration of the <a>animation
+    node</a>.
+
+    The string value <code>auto</code> is used to indicate that the
+    <a>iteration duration</a> reflects the animation node's
+    <a>intrinsic iteration duration</a>.
+
+:   <dfn attribute for=AnimationTimingReadOnly>playbackRate</dfn>
+    <span attribute-info for=AnimationTimingReadOnly/playbackRate></span>
+::  The <a>animation node</a>'s <a
+    title="animation node playback rate">playback rate</a> property.
+
+    This is a multiplier applied to the <a>local time</a> potentially
+    causing the node to run at a different rate to its natural speed.
+
+:   <dfn attribute for=AnimationTimingReadOnly>direction</dfn>
+    <span attribute-info for=AnimationTimingReadOnly/direction></span>
+::  The <a>playback direction</a> of the <a>animation node</a> as
+    specified by one of the <a>PlaybackDirection</a> enumeration
+    values.
+
+:   <dfn attribute for=AnimationTimingReadOnly>easing</dfn>
+    <span attribute-info for=AnimationTimingReadOnly/easing></span>
+::  The <a>timing function</a> used to scale the time to
+    produce easing effects.
+
+    The syntax of the string is defined by the following production:
+    <blockquote>
+      <div class="production">
+        "linear"
+          | <a>&lt;cubic-bezier-timing-function&gt;</a>
+          | <a>&lt;step-timing-function&gt;</a>
+      </div>
+    </blockquote>
+
+    <div class="annotation">
+      In future we may extend this so that it is possible to query the
+      individual functions in the string.
+      It may be possible to do this by extending this attribute using
+      some stringifier magic, or else we could just add
+      <code>easingList</code> similar to HTML's <code>classList</code>.
+    </div>
+
+</div>
+
+<h3>The <code>AnimationTiming</code> interface</h3>
+
+The <a>AnimationTiming</a> interface is a writeable subclass of
+<a>AnimationTimingReadOnly</a> used for an <a>AnimationNode</a>'s
+<code>timing</code> attribute.
+
+<pre class='idl'>
+interface AnimationTiming : AnimationTimingReadOnly {
+    inherit attribute double                             delay;
+    inherit attribute double                             endDelay;
+    inherit attribute FillMode                           fill;
+    inherit attribute double                             iterationStart;
+    inherit attribute unrestricted double                iterations;
+    inherit attribute (unrestricted double or DOMString) duration;
+    inherit attribute double                             playbackRate;
+    inherit attribute PlaybackDirection                  direction;
+    inherit attribute DOMString                          easing;
+};
+</pre>
+
+<div class='attributes'>
+
+:   <dfn attribute for=AnimationTiming>delay</dfn>
+    <span attribute-info for=AnimationTiming/delay></span>
+::  See the <code>delay</code> member of the <a>AnimationTimingReadonly</a>
+    interface.
+:   <dfn attribute for=AnimationTiming>endDelay</dfn>
+    <span attribute-info for=AnimationTiming/endDelay></span>
+::  See the <code>endDelay</code> member of the <a>AnimationTimingReadonly</a>
+    interface.
+:   <dfn attribute for=AnimationTiming>fill</dfn>
+    <span attribute-info for=AnimationTiming/fill></span>
+::  See the <code>fill</code> member of the <a>AnimationTimingReadonly</a>
+    interface.
+:   <dfn attribute for=AnimationTiming>iterationStart</dfn>
+    <span attribute-info for=AnimationTiming/iterationStart></span>
+::	See the <code>iterationStart</code> member of the
+	<a>AnimationTimingReadonly</a> interface.
+
+    Values less than zero are clamped to zero for the purpose of timing model
+	calculations.
+
+	<div class="note">
+        Note that the value of <code>iterations</code> is effectively
+        <em>added</em> to the <code>iterationStart</code> such that
+        an animation node with an <code>iterationStart</code> of
+        &lsquo;0.5&rsquo; and <code>iterations</code> of
+        &lsquo;2&rsquo; would still repeat twice however it would begin
+        and end half-way through the animation node's <a>iteration
+        interval</a>.
+
+        Setting the <code>iterationStart</code> to a value greater than
+        or equal to one is typically only useful in combination with an
+        animation effect that has an <a>iteration composite
+        operation</a> of &lsquo;accumulate&rsquo;.
+	</div>
+
+
+:   <dfn attribute for=AnimationTiming>iterations</dfn>
+    <span attribute-info for=AnimationTiming/iterations></span>
+::  See the <code>iterations</code> member of the
+    <a>AnimationTimingReadonly</a> interface.
+
+    Values less than zero and <code>NaN</code> values are treated as
+    the value 1.0 for the purpose of timing model calculations.
+:   <dfn attribute for=AnimationTiming>duration</dfn>
+    <span attribute-info for=AnimationTiming/duration></span>
+::  See the <code>duration</code> member of the <a>AnimationTimingReadonly</a>
+    interface.
+
+    Real numbers less than zero, <code>NaN</code> values, and strings
+    other than the lowercase value <code>auto</code> are treated
+    the same as <code>auto</code> for the purpose of timing model
+    calculations.
+:   <dfn attribute for=AnimationTiming>playbackRate</dfn>
+    <span attribute-info for=AnimationTiming/playbackRate></span>
+::  See the <code>playbackRate</code> member of the
+    <a>AnimationTimingReadonly</a> interface.
+:   <dfn attribute for=AnimationTiming>direction</dfn>
+    <span attribute-info for=AnimationTiming/direction></span>
+::  See the <code>direction</code> member of the
+    <a>AnimationTimingReadonly</a> interface.
+:   <dfn attribute for=AnimationTiming>easing</dfn>
+    <span attribute-info for=AnimationTiming/easing></span>
+::  See the <code>easing</code> member of the <a>AnimationTimingReadonly</a>
+    interface.
+
+    Unrecognized string values or values that correspond to
+    a <a>timing function</a> that is not supported for the type of
+    <a>animation node</a> to which this property is applied
+    are treated as if the <code>linear</code> keyword was specified
+    for the purpose of timing model calculations.
+
+</div>
+
+<h3>The <code>ComputedAnimationTiming</code> interface</h3>
+
+Timing parameters calculated by the timing model are exposed using the
+<a>ComputedAnimationTiming</a> interface.
+
+<pre class='idl'>interface ComputedAnimationTiming : AnimationTimingReadOnly {
+    readonly attribute double              startTime;
+    readonly attribute unrestricted double endTime;
+    readonly attribute unrestricted double activeDuration;
+    readonly attribute double?             localTime;
+    readonly attribute unrestricted double timeFraction;
+    readonly attribute unsigned long?      currentIteration;
+};</pre>
+
+<div class='attributes'>
+
+:   <dfn attribute for=ComputedAnimationTiming>startTime</dfn>
+    <span attribute-info for=ComputedAnimationTiming/startTime></span>
+::  The <a>start time</a> of this <a>animation node</a> in
+    milliseconds.
+    This is the time at which the <a>parent animation group</a>, if
+    any, has scheduled this child to run within its <a
+    title="transformed time">transformed time space</a>, that is, the
+    <a>animation node</a>'s <a title="inherited time">inherited time
+    space</a>.
+
+    The start of the <a>active interval</a> is based on the sum of
+    the <a title="animation node start time">start time</a> and
+    <a>start delay</a>.
+
+:   <dfn attribute for=ComputedAnimationTiming>endTime</dfn>
+    <span attribute-info for=ComputedAnimationTiming/endTime></span>
+::  The <a>end time</a> of the <a>animation node</a> expressed in
+    milliseconds in <a title="inherited time">inherited time
+    space</a>.
+    This corresponds to the end of the <a>animation node</a>'s active
+    interval plus any <a>end delay</a>.
+
+:   <dfn attribute for=ComputedAnimationTiming>activeDuration</dfn>
+    <span attribute-info for=ComputedAnimationTiming/activeDuration></span>
+::  The <a>active duration</a> of this <a>animation node</a>.
+
+:   <dfn attribute for=ComputedAnimationTiming>localTime</dfn>
+    <span attribute-info for=ComputedAnimationTiming/localTime></span>
+::  The <a>local time</a> of this <a>animation node</a>.
+
+    <code>localTime</code> will be <code>null</code> if this
+    <a>animation node</a> is not <a>associated with a player</a> or if
+    it has a <a>parent animation group</a> that is not <a>in
+    effect</a>.
+
+:   <dfn attribute for=ComputedAnimationTiming>timeFraction</dfn>
+    <span attribute-info for=ComputedAnimationTiming/timeFraction></span>
+::  The current <a>time fraction</a> of this <a>animation node.
+
+:   <dfn attribute for=ComputedAnimationTiming>currentIteration</dfn>
+    <span attribute-info for=ComputedAnimationTiming/currentIteration></span>
+::  The <a>current iteration</a> index beginning with zero for the first
+    iteration.
+
+</div>
+
+<h3>The <code>AnimationTimingInput</code> dictionary</h3>
+
+The <dfn>AnimationTimingInput</dfn> dictionary is used as a convenience
+for specifying the timing properties of an <a>AnimationNode</a> in
+bulk.
+
+<pre class='idl'>
+dictionary AnimationTimingInput {
+    double                             delay = 0;
+    double                             endDelay = 0;
+    FillMode                           fill = "auto";
+    double                             iterationStart = 0.0;
+    unrestricted double                iterations = 1.0;
+    (unrestricted double or DOMString) duration = "auto";
+    double                             playbackRate = 1.0;
+    PlaybackDirection                  direction = "normal";
+    DOMString                          easing = "linear";
+};
+</pre>
+
+<div class='attributes'>
+
+:   <dfn attribute for=AnimationTimingInput>delay</dfn>
+    <span attribute-info for=AnimationTimingInput/delay></span>
+::  The specified <a>start delay</a>.
+
+    See the description of the <code>delay</code> attribute on
+    the <a>AnimationTiming</a> interface.
+
+:   <dfn attribute for=AnimationTimingInput>endDelay</dfn>
+    <span attribute-info for=AnimationTimingInput/endDelay></span>
+::  The specified <a>end delay</a>.
+
+    See the description of the <code>endDelay</code> attribute on
+    the <a>AnimationTiming</a> interface.
+
+:   <dfn attribute for=AnimationTimingInput>fill</dfn>
+    <span attribute-info for=AnimationTimingInput/fill></span>
+::  The <a>fill mode</a> as specified by one of the <a>FillMode</a>
+    enumeration values.
+
+:   <dfn attribute for=AnimationTimingInput>iterationStart</dfn>
+    <span attribute-info for=AnimationTimingInput/iterationStart></span>
+::  The <a>animation node</a>'s <a>iteration start</a> property.
+
+    See the description of the <code>iterationStart</code> attribute
+    on the <a>AnimationTiming</a> interface.
+
+:   <dfn attribute for=AnimationTimingInput>iterations</dfn>
+    <span attribute-info for=AnimationTimingInput/iterations></span>
+::  The <a>animation node</a>'s <a>iteration count</a> property.
+
+    See the description of the <code>iterations</code> attribute
+    on the <a>AnimationTiming</a> interface.
+
+:   <dfn attribute for=AnimationTimingInput>duration</dfn>
+    <span attribute-info for=AnimationTimingInput/duration></span>
+::  The <a>iteration duration</a> of the <a>animation node</a>.
+
+    See the description of the <code>duration</code>
+    attribute on the <a>AnimationTiming</a> interface.
+
+:   <dfn attribute for=AnimationTimingInput>playbackRate</dfn>
+    <span attribute-info for=AnimationTimingInput/playbackRate></span>
+::  The <a>animation node</a>'s <a
+    title="animation node playback rate">playback rate</a> property.
+
+    See the description of the <code>playbackRate</code> attribute
+    on the <a>AnimationTiming</a> interface.
+
+:   <dfn attribute for=AnimationTimingInput>direction</dfn>
+    <span attribute-info for=AnimationTimingInput/direction></span>
+::  The <a>playback direction</a> of the <a>animation node</a>.
+
+    See the description of the <code>direction</code> attribute
+    on the <a>AnimationTiming</a> interface.
+
+:   <dfn attribute for=AnimationTimingInput>easing</dfn>
+    <span attribute-info for=AnimationTimingInput/easing></span>
+::  The <a>timing function</a> used to scale the time to produce
+    easing effects.
+
+    See the description of the <code>easing</code> attribute
+    on the <a>AnimationTiming</a> interface.
+
+</div>
+
+<h4>The <code>FillMode</code> enumeration</h4>
+
+<pre class='idl'>enum FillMode { "none", "forwards", "backwards", "both", "auto" };</pre>
+
+:   <code>none</code>
+::  No fill.
+
+:   <code>forwards</code>
+::  Fill forwards.
+
+:   <code>backwards</code>
+::  Fill backwards.
+
+:   <code>both</code>
+::  Fill backwards and forwards.
+
+:   <code>auto</code>
+::  Fill backwards and forwards when applied to an
+    <a>AnimationGroup</a> and no fill when applied to an
+    <a title="Animation interface">Animation</a>.
+
+
+<h4>The <code>PlaybackDirection</code> enumeration</h4>
+
+<pre class='idl'>enum PlaybackDirection { "normal", "reverse", "alternate", "alternate-reverse" };</pre>
+
+:   <code>normal</code>
+::  All iterations are played as specified.
+
+:   <code>reverse</code>
+::  All iterations are played in the reverse direction from the way
+    they are specified.
+
+:   <code>alternate</code>
+::  Even iterations are played as specified, odd iterations are played
+    in the reverse direction from the way they are specified.
+
+:   <code>alternate-reverse</code>
+::  Even iterations are played in the reverse direction from the way
+    they are specified, odd iterations are played as specified.
+
+<h3>The <code>AnimationGroup</code> interface</h3>
+
+<a>Animation groups</a> are represented by the <a>AnimationGroup</a>
+interface.
+
+<pre class='idl'>[Constructor (sequence<AnimationNode>? children,
+              optional (unrestricted double or AnimationTimingInput) timing)]
+interface AnimationGroup : AnimationNode {
+    readonly attribute AnimationNodeList children;
+    readonly attribute AnimationNode?    firstChild;
+    readonly attribute AnimationNode?    lastChild;
+    void           prepend (AnimationNode... nodes);
+    void           append (AnimationNode... nodes);
+    AnimationGroup clone ();
+};</pre>
+
+<div class="constructors">
+
+:   Constructor ()
+::  Creates a new <a>AnimationGroup</a> object using the following
+    procedure:
+
+    1.  Create a new <a>AnimationGroup</a> object, <var>group</var>.
+    2.  Set <var>timing input</var> as follows,
+
+        <div class="switch">
+
+        :   If <var>timing</var> is an <a>AnimationTimingInput</a>
+            object,
+        ::  Let <var>timing input</var> refer to <var>timing</var>.
+
+        :   If <var>timing</var> is a <code>double</code>,
+        ::  Let <var>timing input</var> be a new
+            <a>AnimationTimingInput</a> object with all members set to
+            their default values and <code>duration</code> set to
+            <var>timing</var>.
+
+        :   Otherwise (<var>timing</var> is undefined),
+        ::  Let <var>timing input</var> be a new
+            <a>AnimationTimingInput</a> object with all members set to
+            their default values.
+
+        </div>
+
+    3.  Set <code><var>group</var>.timing</code> to a new
+        <a>AnimationTiming</a> object whose attributes are assigned the
+        value of the member of the same name on <var>timing input</var>.
+
+        <div class="todo">
+
+        The above two steps are identical with the constructor for <a
+        title="Animation interface">Animation</a> and should be
+        factored out somewhere.
+
+        </div>
+
+    4.  <a title="insert children">Insert</a> <var>children</var>
+        before <code>null</code>.
+
+    <div class="note">
+
+    Note that since <a>AnimationTiming</a> objects have the same
+    member names as <a>AnimationTimingInput</a> dictionaries, it is
+    also possible to pass the <code>timing</code> member of another
+    <a>AnimationNode</a> as the <var>timing</var> parameter.
+
+    Doing so will cause the <a>AnimationTiming</a> object to be
+    treated as an <a>AnimationTimingInput</a> dictionary and thus it
+    will effectively be cloned, not shared.
+
+    </div>
+
+    <div class="parameters">
+
+    :   children
+    ::  A sequence of animation nodes to add as children of this group.
+
+        These children are appended in sequence using the same
+        semantics as the <code><a>AnimationGroup</a>.append</code>
+        method.
+
+    :   timing
+    ::  The timing properties or <a>iteration duration</a> of the new
+        animation group.
+
+    </div>
+
+</div>
+
+<div class="attributes">
+
+:   <dfn attribute for=AnimationGroup>children</dfn>
+    <span attribute-info for=AnimationGroup/children></span>
+::  The list of <a>child animation nodes</a> in the group.
+
+:   <dfn attribute for=AnimationGroup>firstChild</dfn>
+    <span attribute-info for=AnimationGroup/firstChild></span>
+::  The <a>first child</a> of this <a>animation group</a>.
+
+:   <dfn attribute for=AnimationGroup>lastChild</dfn>
+    <span attribute-info for=AnimationGroup/lastChild></span>
+::  The <a>last child</a> of this <a>animation group</a>.
+
+</div>
+
+<div class="methods">
+
+:   <dfn method for=AnimationTimeline title="prepend()">
+:   void prepend (AnimationNode... nodes)</dfn>
+::
+
+    1.  If any of the <a>animation nodes</a> in <var>nodes</var> is an
+        <a>inclusive ancestor</a> of this <a>animation node</a>
+        throw a <code>HierarchyRequestError</code> exception and
+        terminate these steps.
+    2.  <a title="insert children">Insert</a> <var>nodes</var> before
+        the <a>first child</a>.
+
+:   <dfn method for=AnimationTimeline title="append()">
+    void append (AnimationNode... nodes)</dfn>
+::
+
+    1.  If any of the <a>animation nodes</a> in <var>nodes</var> is an
+        <a>inclusive ancestor</a> of this <a>animation node</a>
+        throw a <code>HierarchyRequestError</code> exception and
+        terminate these steps.
+    2.  <a title="insert children">Insert</a> <var>nodes</var> before
+        <code>null</code>.
+
+:   <dfn method for=AnimationTimeline title="clone()">
+    AnimationGroup clone ()</dfn>
+::  Creates a deep copy of this <a>AnimationGroup</a> object using the
+    following procedure.
+
+    1.  Let <var>source</var> be this <a>AnimationGroup</a> object,
+        the object to be cloned.
+    2.  Let <var>cloned timing</var> be a new
+        <a>AnimationTimingInput</a> object whose members are assigned
+        the value of the attribute with the same name on
+        <code><var>source</var>.timing</code>.
+    3.  Let <var>cloned children</var> be an empty sequence of
+        <a>AnimationNode</a> objects.
+    4.  For each <var>child</var> in
+        <code><var>source</var>.children</code>, append the result
+        of calling <code><var>child</var>.clone()</code>
+        to <var>cloned children</var>.
+    5.  Return a new <a>AnimationGroup</a> object created by
+        calling the <a>AnimationGroup</a> constructor with parameters
+        <code>AnimationGroup(<var>cloned children</var>,
+        <var>cloned timing</var>)</code>.
+
+</div>
+
+<h4>Definitions for manipulating hierarchies</h4>
+
+The <dfn title="next sibling not included">next sibling of
+<var>node</var> not included</dfn> in a set of <a>animation
+odes</a>, <var>nodes</var> is determined using the following
+teps:</p>
+
+1.  Let <var>context node</var> be <var>node</var>.
+2.  While the <a>next sibling</a> of <var>context node</var> is not
+    <code>null</code> perform the following steps:
+
+    1.  Let <var>context node</var> be the <a>next sibling</a> of
+        <var>context node</var>.
+    2.  If <var>context node</var> is not in <var>nodes</var> return
+        <var>context node</var> and terminate these steps.
+
+3.  Return <code>null</code>.
+
+To <dfn title="remove an animation node">remove</dfn> a
+<var>node</var> from its <a>parent animation group</a> or
+<a>player</a>, perform the steps corresponding to the first
+matching condition from below, if any:
+
+<div class="switch">
+
+:   If <var>node</var> has a <a>parent animation group</a>,
+::  Remove <var>node</var> from the <a>parent animation group</a>'s
+    list of <a>child animation nodes</a>.
+
+:   If <var>node</var> is <a>directly associated with
+    a player</a>,
+::  Disassociate <var>node</var> from the <a>player</a>.
+
+</div>
+
+
+To <dfn title="insert children">insert</dfn> a series of zero or
+more <a>animation nodes</a>, <var>nodes</var>, to
+<var>parent</var>'s list of <a>child animation nodes</a> before
+<var>reference child</var> perform the following steps for each
+<var>node</var> in <var>nodes</var>:</p>
+
+1.  <a title="remove an animation node">Remove</a> <var>node</var>
+    from its parent.
+2.  Insert <var>node</var> to <var>parent</var>'s list of <a>child
+    animation nodes</a> before <var>reference child</var>
+
+<h3>The <code>AnimationNodeList</code> interface</h3>
+
+A list of <a>animation nodes</a> may be represented by
+an <a>AnimationNodeList</a>.
+
+The <code>AnimationNodeList</code> interface supports indexed
+properties with indices in the range 0 &le; <var>index</var> &lt;
+<code>length</code>.
+
+<p class="annotation">
+The only reason this interface exists is to provide a familiar
+experience for authors familiar with DOM interfaces where child nodes
+are accessed via a <code>children</code> member.
+</p>
+
+<pre class='idl'>interface AnimationNodeList {
+    readonly attribute unsigned long length;
+    getter AnimationNode? item (unsigned long index);
+};</pre>
+
+<div class="attributes">
+
+:   <dfn attribute for=AnimationNodeList>length</dfn>
+    <span attribute-info for=AnimationNodeList/length></span>
+::  The number of <a>animation nodes</a> in the list.
+
+</div>
+
+<div class="methods">
+
+:   <dfn method for=AnimationNodeList title="item()">
+    getter AnimationNode? item(unsigned long index)</dfn>
+::  Returns the <a>animation node</a> at <code>index</code>.
+    If <code>index</code> is greater than or equal to
+    <code>length</code> returns <code>null</code>.
+
+</div>
+
+<h3>The <code>AnimationSequence</code> interface</h3>
+
+<a>Animation sequences</a> are represented by the
+<code>AnimationSequence</code> interface.
+
+<pre class='idl'>[Constructor (sequence<AnimationNode>? children,
+              optional (unrestricted double or AnimationTimingInput) timing)]
+interface AnimationSequence : AnimationGroup {
+    AnimationSequence clone ();
+};</pre>
+
+<div class="contructors">
+
+:   <dfn constructor for=AnimationSequence title="AnimationSequence()">
+    Constructor (sequence&lt;AnimationNode&gt;? children,
+    optional (unrestricted double or AnimationTimingInput) timing)</dfn>
+::  The meaning and handling of each of the parameters in this
+    constructor is identical to the constructor for
+    <a>AnimationGroup</a>.
+
+</div>
+
+<div class="methods">
+
+:   <dfn method for=AnimationSequence title="clone()">
+    AnimationSequence clone ()</dfn>
+::  Creates a deep copy of this <a>AnimationSequence</a> object using
+    the same procedure as defined for <a
+    href="#widl-AnimationGroup-clone-AnimationGroup">AnimationGroup.clone</a>
+    except that a new <a>AnimationSequence</a> object is created.
+
+</div>
+
+<h3>The <code>Animation</code> interface</h3>
+
+<a>Animations</a> are represented by the
+<code>Animation</code> interface.
+
+<pre class='idl'>[Constructor (Animatable? target, object? effect,
+              optional (unrestricted double or AnimationTimingInput)
+                timing)]
+interface Animation : AnimationNode {
+    attribute (AnimationEffect or EffectCallback)? effect;
+    attribute Animatable?                          target;
+    Animation clone ();
+};</pre>
+
+<div class="contructors">
+
+:   Constructor ()
+::  Creates a new <a title="Animation interface">Animation</a> object
+    using the following procedure:
+
+    1.  Create a new <a title="Animation interface">Animation</a>
+        object, <var>animation</var>.</li>
+    2.  Set <var>timing input</var> as follows,
+
+        <div class="switch">
+
+        :   If <var>timing</var> is an <a>AnimationTimingInput</a>
+            object,
+        ::  Let <var>timing input</var> refer to <var>timing</var>.
+
+        :   If <var>timing</var> is a <code>double</code>,
+        ::  Let <var>timing input</var> be a new
+            <a>AnimationTimingInput</a> object with all members set to
+            their default values and <code>duration</code> set to
+            <var>timing</var>.
+
+        :   Otherwise (<var>timing</var> is undefined),
+        ::  Let <var>timing input</var> be a new
+            <a>AnimationTimingInput</a> object with all members set to
+            their default values.
+
+        </div>
+
+    3.  Set <code><var>animation</var>.timing</code> to a new
+        <a>AnimationTiming</a> object whose attributes are assigned the
+        value of the member of the same name on <var>timing input</var>.
+    4.  Set <code><var>animation</var>.effect</code> to
+        the result of applying the <a>procedure for converting an effect
+        to an IDL value</a> to <var>effect</var>.
+
+    Examples of the usage of this constructor are given in <a
+    href="#creating-a-new-animation-object" section></a>.
+
+    Note: as with <a
+    href="#widl-ctor-AnimationGroup-sequence-AnimationNode--children--unrestricted-double-or-AnimationTimingInput--timing">the
+    constructor for <a>AnimationGroup</a></a>s
+    it is possible to pass in an <a>AnimationTiming</a> object here
+    (e.g. the <code>timing</code> member of another
+    <a>AnimationNode</a>) in which case it will be cloned.
+
+    <div class="parameters">
+
+    :   Animatable? target
+    ::  The <a>animation target</a> or target pseudo-element.
+        This may be <code>null</code> for animations that do not target
+        a specific element.
+
+    :   object? effect
+    ::  The animation effect used to set the <code>effect</code>
+        attribute of the newly-created <a title="Animation
+        interface">Animation</a> object.
+
+        The processing of this parameter is defined normatively in <a
+        href="#processing-the-effect-parameter"
+        section></a>.
+        Following is a non-normative summary of this handing.
+
+        <var>effect</var> may be one of the following:
+
+        *   An <a>AnimationEffect</a> object,
+        *   An <a>EffectCallback</a> function,
+        *   A single <a title="Keyframe interface">Keyframe</a>
+            object,
+        *   A sequence of <a title="Keyframe interface">Keyframe</a>
+            objects, or
+        *   null
+
+        If this parameter is an <a>AnimationEffect</a> object or
+        <a>EffectCallback</a> object, it will be shared with any
+        other <a title="Animation interface">Animation</a> objects
+        referring to the same <a>AnimationEffect</a> or
+        <a>EffectCallback</a> object.
+        It will <em>not</em> be copied.
+
+        If this parameter is of type <a
+        title="Keyframe interface">Keyframe</a> or
+        <code>sequence&lt;<a
+        title="Keyframe interface">Keyframe</a>&gt;</code>,
+        the <a>animation effect</a> of the newly-created
+        <a title="Animation interface">Animation</a> will be
+        a newly-created <a>KeyframeEffect</a> object
+        initialized by using this object as the list of
+        <a>keyframes</a> and with all other parameters set to their
+        default values.
+
+        If this parameter is <code>null</code>, the newly-created
+        <a title="Animation interface">Animation</a> will also have
+        a <code>null</code> animation effect.
+    :   optional (unrestricted double or AnimationTimingInput)
+        timing
+    ::  The timing properties or <a>iteration duration</a> of the new
+        animation.
+
+    </div>
+
+</div>
+
+<div class="attributes">
+
+:   <dfn attribute for=Animation>effect</dfn>
+    <span attribute-info for=Animation/effect></span>
+::  The <a>animation effect</a> or <a>custom effect</a> to apply.
+    May be <code>null</code> in which case the animation will produce
+    no observable effect.
+
+    Issue: On setting, if the previous value was an <a>EffectCallback</a>, we
+        should call the old callback with a null time fraction so it can
+        clear its result.
+
+:   <dfn attribute for=Animation>target</dfn>
+    <span attribute-info for=Animation/target></span>
+::  The element or pseudo-element being animated by this object.
+    This may be <code>null</code> for animations that do not target
+    a specific element such as an animation that produces a sound
+    using an audio API.
+
+</div>
+
+<div class="methods">
+
+:   <dfn method for=Animation title="clone()">
+    Animation clone ()</dfn>
+::  Creates a copy of this <a title="Animation
+    interface">Animation</a> object using the following procedure.
+
+    1.  Let <var>source</var> be the <a
+        title="Animation interface">Animation</a> object to
+        clone, that is, this object.</li>
+    2.  Let <var>cloned timing</var> be a new
+        <a>AnimationTimingInput</a> object whose members are assigned
+        the value of the attribute with the same name on
+        <code><var>source</var>.timing</code>.</li>
+    3.  The <a>AnimationEffect</a> is cloned depending on the type of
+        <code><var>source</var>.effect</code> as follows,
+
+        <div class="switch">
+
+        :   If <code><var>source</var>.effect</code> is an
+            <a>Animation</a> object,
+        ::  Let <var>cloned effect</var> be the result of calling
+            <code><var>source</var>.effect.clone()</code>.
+        :   If <code><var>source</var>.effect</code> is an
+            <a>EffectCallback</a> object,
+        ::  Let <var>cloned effect</var> be
+            <code><var>source</var>.effect</code>.
+        :   Otherwise,
+        ::  Let <var>cloned effect</var> be <code>null</code>.
+
+        </div>
+
+    4.  Return a new <a>Animation</a> object created by
+        calling the <a
+        href="#widl-ctor-Animation-Animatable-target-object-effect--unrestricted-double-or-AnimationTimingInput--timing">Animation
+        constructor</a> with parameters
+        <code>Animation(<var>source</var>.target, <var>cloned
+        effect</var>, <var>cloned timing</var>)</code>.</li>
+
+</div>
+
+<h4>Processing the <var>effect</var> parameter</h4>
+
+The <var>effect</var> parameter, an ECMAScript value passed to the
+<a title="Animation interface">Animation</a> constructor or to the
+<code>animate</code> operation of the <a>Animatable</a> interface,
+may specify an <a>EffectCallback</a>, an <a>AnimationEffect</a>,
+a <a>Keyframe</a> a sequence of <a>Keyframes</a>, or <span
+class="esvalue">null</span>.
+However, since callback functions and dictionaries are not
+distinguishable in WebIDL, we define the processing of this
+parameter for ECMAScript here in prose.
+
+The <dfn>procedure for converting an effect to an IDL value</dfn>
+with parameter <var>effect</var> is as follows:
+
+<div class="switch">
+
+:   If <var>effect</var> is <span class="esvalue">null</span>,
+::  Return <span class="idlvalue">null</span>.
+
+:   If <var>effect</var> is a <a
+    href="http://www.w3.org/TR/WebIDL/#dfn-platform-object">platform
+    object</a> that implements <a>AnimationEffect</a>,
+::  return the IDL value that is a reference to the that platform
+    object.
+
+:   If IsCallable(<var>effect</var>) is true,
+::  Return the result of applying the <a
+    href="http://www.w3.org/TR/WebIDL/#es-callback-function">procedure
+    for converting an ECMAScript value to an IDL callback function
+    type</a> to <var>effect</var> using <a>EffectCallback</a> as the
+    callback function type.
+
+:   Otherwise,
+::  Return a new <a>KeyframeEffect</a> object constructed passing
+    <var>effect</var> as the <var>frames</var> parameter.
+
+</div>
+
+<h4>Creating a new <code>Animation</code> object</h4>
+
+<div class='informative-bg'><em>This section is non-normative</em>
+
+The <a>Animation</a> constructor offers a number of approaches to
+creating a new <a>Animation</a> object.
+At its simplest, an <a>Animation</a> object that changes the
+&lsquo;left&rsquo; property of <var>elem</var> to 100px over three
+seconds can be achieved as follows:
+
+<pre class='example sh_javascript'>
+var anim = new Animation(elem, { left: '100px' }, 3000);
+</pre>
+
+The second parameter, representing the <a>animation effect</a>, may
+specify multiple properties, an <a>AnimationEffect</a> object, or
+even a callback function.
+
+<pre class='example sh_javascript'>
+// Specify multiple properties at once
+var animA = new Animation(elem, { left: '100px', top: '300px' }, 3000);
+
+// Specify multiple frames
+var animB = new Animation(elem, [ { left: '100px' }, { left: '300px' } ], 3000);
+
+// Share the animation effect of another animation
+var animC = new Animation(elem, animB.effect, 3000);
+
+// Supply a specialized animation effect
+var animD = new Animation(elem,
+                          new MotionPathEffect("M100 250C100 50 400 50 400 250"),
+                          3000);
+
+// Supply a custom script-based animation effect
+var animE = new Animation(elem, function(time) {
+    // (Normally we should check for time===null, but in this case it produces
+    //  the correct result anyway)
+    document.documentElement.currentScale = 1.0 + time * 2.0;
+  }, 3000);
+</pre>
+
+The third parameter representing the animation's timing, may
+simply be a number representing the <a>iteration duration</a> in
+milliseconds as above, or, to specify further timing properties such
+as the <a title="animation node playback rate">playback rate</a>,
+an <a>AnimationTimingInput</a> object can be used as follows:
+
+<pre class='example sh_javascript'>
+var anim =
+  new Animation(elem, { left: '100px' }, { duration: 3000, playbackRate: 2 });
+</pre>
+
+            If the duration is not specified, the <a>intrinsic iteration
+            duration</a> is used which, for an <a>animation</a> is zero.
+            It is possible to create an animation that simply sets a property
+            without any interpolation as follows:
+
+<pre class='example sh_javascript'>
+new Animation(elem, { display: 'none' }, { fill: 'forwards' });
+</pre>
+
+This is particularly useful in combination with other <a
+title="animation">animations</a> or <a>animation nodes</a>.
+For example, fading an element before switching
+&lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
+follows,
+
+<pre class='example sh_javascript'>
+new AnimationSequence(
+  [
+    new Animation(elem, { opacity: 0 }, 1000),
+    new Animation(elem, { display: 'none' }, { fill: 'forwards' })
+  ]
+);
+</pre>
+
+Having created an <a title="Animation interface">Animation</a>, it
+can be played using
+<code>document.timeline.play(<var>anim</var>)</code>.
+For simple effects, however, the <a
+href="#extensions-to-the-element-interface"><code>Element.animate</code></a>
+shortcut is more convenient since it performs this last step
+automatically. For example,
+
+<pre class='example sh_javascript'>
+elem.animate({ left: '100px' }, 3000);
+</pre>
+
+</div>
+
+<h3>The <code>Animatable</code> interface</h3>
+
+Objects that may be the target of an <a
+title="Animation interface">Animation</a> implement the
+<a>Animatable</a> interface.
+
+<div class="methods">
+
+:   <dfn method for=Animatable title="animate()">
+    AnimationPlayer animate(object? effect,
+        optional (double or AnimationTimingInput) timing)</dfn>
+::  Creates a new <a title="Animation interface">Animation</a> object
+    whose <a>animation target</a> is the object on which the method is
+    called, and calls
+    the <a
+    href="#widl-AnimationTimeline-play-AnimationPlayer-AnimationNode-source"><code>play</code></a>
+    method of the <a>AnimationTimeline</a> object of
+    the <a>document timeline</a> of the <a
+    href="http://www.w3.org/TR/dom/#concept-node-document">node
+    document</a> [[!DOM4]] of the element passing the newly created
+    <a title="Animation interface">Animation</a> as the argument to
+    the method.
+
+    The following code fragment:
+
+    FIXME: <div class="example sh_javascript">
+    var anim = elem.animate({ opacity: 0 }, 2000);
+    </div>
+
+    is equivalent to:
+
+    FIXME: <div class="example sh_javascript">
+    var anim = new Animation(elem, { opacity: 0 }, 2000);
+    elem.ownerDocument.timeline.play(anim);
+    </div>
+
+    Returns the <a>AnimationPlayer</a> object returned by the
+    <code>play</code> method of the <a>AnimationTimeline</a>.
+
+    <div class="parameters">
+
+    :   object? effect
+    ::  The effect to apply.
+        This value is passed to the <a
+        href="#widl-ctor-Animation-Animatable-target-object-effect--unrestricted-double-or-AnimationTimingInput--timing">Animation
+        constructor</a> as the <var>effect</var> parameter and has the
+        same interpretation as defined for that constructor.
+    :   optional (double or AnimationTimingInput) timing
+    ::  The timing parameters of the animation.
+        This value is passed to the <a
+        href="#widl-ctor-Animation-Animatable-target-object-effect--unrestricted-double-or-AnimationTimingInput--timing">Animation
+        constructor</a> as the <var>timing</var> parameter and has the
+        same interpretation as defined for that constructor.
+
+    </div>
+
+:   <dfn method for=Animatable title="getCurrentAnimations()">
+    sequence&lt;Animation&gt; getCurrentAnimations()</dfn>
+::  Returns the set of <a>current</a> <a title="Animation
+    interface">Animation</a> objects that have an <a>animation
+    effect</a> whose <a>animation target</a> is this object.
+
+    The returned list of <a title="Animation interface">Animation</a>
+    objects is sorted by their associated <a>animation effect</a>
+    using the procedure defined for sorting <a>animation effects</a>
+    in <a href="#the-animation-stack" section></a>.
+
+    <div class="note">
+
+    Note that the definition of a <a>current</a> <a>animation</a>
+    does not include those <a>animations</a> whose
+    <a>local time</a> falls <em>after</em> the <a>active
+    interval</a> but which are still <a>in effect</a> due to
+    a <a>fill mode</a>.
+    As a result such <a>animations</a> are <em>not</em> returned by
+    this method.
+
+    This is because in order to return such <a
+    title="animation">animations</a>, user agents
+    would be required to maintain all <a
+    title="animation">animations</a> with a forwards
+    <a title="fill mode">fill</a> indefinitely.
+    As a result the resources consumed by an animated document would
+    steadily accumulate over time.
+
+    </div>
+
+    Note: that when called on <code>Element</code> objects, the list of
+        returned <a title="Animation interface">Animation</a>s will
+        <em>not</em> include those animations whose target is
+        a <code>PseudoElement</code> associated with the
+        <code>Element</code> since <code>PseudoElement</code> and
+        <code>Element</code> are treated as independent <a>Animatable</a>
+        objects.
+
+    Issue: Feedback has been provided that suggests direct references from
+        AnimationNode objects to AnimationPlayers generate circular
+        reference and confuse the model. Without this reference,
+        getCurrentAnimations is not very useful, as the returned
+        AnimationNodes can't be used to effect play control. In the
+        absence of a strong use case for a reference from AnimationNode
+        to AnimationPlayer, this feature should be considered <strong>at
+        risk</strong>.
+
+:   <dfn method for=Animatable title="getAnimationPlayers()">
+    sequence&lt;AnimationPlayer&gt; getAnimationPlayers()</dfn>
+::  Returns the set of <a>AnimationPlayer</a> objects
+    whose <a>source content</a> is <a>current</a> and contains at
+    least one <a>animation</a> whose <a>animation target</a> is this
+    object.
+
+    If this object is the <a>animation target</a> of two or more <a
+    title="animation">animations</a> which are associated with the
+    same <a>player</a>, the corresponding <a>AnimationPlayer</a>
+    object will still only appear in the returned list once.
+
+    The returned list is sorted in increasing order by <a>player
+    sequence number</a>.
+
+<h3>The <code>AnimationEffect</code> interface</h3>
+
+<a>Animation effects</a> are represented by
+the <code>AnimationEffect</code> interface.
+<a>AnimationEffect</a> is an abstract interface of which several
+concrete subinterfaces are provided.
+
+<pre class='idl'>interface AnimationEffect {
+    attribute IterationCompositeOperation iterationComposite;
+    attribute CompositeOperation          composite;
+    AnimationEffect clone ();
+};</pre>
+
+<div class="attributes">
+
+:   <dfn attribute for=AnimationEffect>iterationComposite</dfn>
+    <span attribute-info for=AnimationEffect/iterationComposite></span>
+::  The <a>iteration composite operation</a> property of this
+    <a>animation effect</a> as specified by one of the
+    <a>IterationCompositeOperation</a> enumeration values.
+
+:   <dfn attribute for=AnimationEffect>composite</dfn>
+    <span attribute-info for=AnimationEffect/composite></span>
+::  The <a>composite operation</a> used to composite this
+    <a>animation effect</a> with the <a>animation stack</a>, as
+    specified by one of the <a>CompositeOperation</a> enumeration
+    values.
+
+</div>
+
+<div class="methods">
+
+:   <dfn method for=AnimationEffect title="clone()">
+:   AnimationEffect clone ()</dfn>
+::  Creates and returns a new object of the same type as this object's
+    most-derived interface such that it will produce the same output
+    as this object.
+
+    <p class="todo">
+    We either need a more rigorous definition here or (probably
+    better) a sets of steps on a per-subclass basis.
+    </p>
+
+</div>
+
+<div class="annotation">
+In future, we may expose <code>any sample (double?  timeFraction,
+double currentIteration, Animatable? target, any
+underlyingValue)</code> so that the animation effects can be driven
+apart from the timing model.
+</div>
+
+<h3>The <code>IterationCompositeOperation</code> enumeration</h3>
+
+The possible values of an <a>animation effect</a>'s
+<a>iteration composite operation</a> are represented by the
+<dfn>IterationCompositeOperation</dfn> enumeration.
+
+<pre class='idl'>
+enum IterationCompositeOperation {"replace", "accumulate"};
+</pre>
+
+:   <code>replace</code>
+::  Corresponds to the <a
+    title="iteration composite operation replace">replace</a>
+    <a>iteration composite operation</a> value such that the
+    <a>intermediate animation value</a> produced is independent of the
+    <a>current iteration</a>.
+:   <code>accumulate</code>
+::  Corresponds to the <a
+    title="iteration composite operation accumulate">accumulate</a>
+    iteration composite operation value such that
+    subsequent iterations of an <a>animation</a> build on the final
+    value of the previous iteration.
+
+<h3>The <code>CompositeOperation</code> enumeration</h3>
+
+The possible values of an <a>animation effect</a>'s
+composition behavior are represented by the
+<dfn>CompositeOperation</dfn> enumeration.
+
+<pre class='idl'>
+enum CompositeOperation {"replace", "add", "accumulate"};
+</pre>
+
+:   <code>replace</code>
+::  Corresponds to the <a
+    title="composite operation replace">replace</a>
+    <a>composite operation</a> value such that
+    the <a>animation effect</a> overrides the <a>underlying value</a> it
+    is combined with.
+
+:   <code>add</code>
+::  Corresponds to the <a
+    title="composite operation add">add</a>
+    <a>composite operation</a> value such that
+    the <a>animation effect</a> is <a
+    title="animation addition">added</a> to the <a>underlying value</a>
+    with which it is combined.
+
+:   <code>accumulate</code>
+::  Corresponds to the <a
+    title="composite operation accumulate">accumulate</a>
+    <a>composite operation</a> value such that
+    the <a>animation effect</a> is <a
+    title="animation accumulation">accumulated</a> on to the
+    <a>underlying value</a>.
+
+<h3>The <code>KeyframeEffect</code> interface</h3>
+
+<a>Keyframe animation effects</a> are represented by the
+<a>KeyframeEffect</a> interface.
+
+<pre class='idl'>[Constructor (object frames, optional KeyframeEffectOptions options)]
+interface KeyframeEffect : AnimationEffect {
+    attribute DOMString spacing;
+    sequence&lt;ComputedKeyframe&gt; getFrames ();
+    void                       setFrames (object frames);
+};</pre>
+
+<div class="constructors">
+
+:   <dfn constructor for=KeyframeEffect title="KeyframeEffect()">
+:   Constructor ()</dfn>
+::  Creates a new <a>KeyframeEffect</a> object for the
+    given set of keyframes.
+
+    <div class="parameters">
+
+    :   object frames
+    ::  A <a title="Keyframe interface">Keyframe</a> object or sequence
+        of <a title="Keyframe interface">Keyframe</a> objects used for
+        calculating animation values for this <a>animation effect</a>.
+        The constraints on this parameter and its processing are
+        identical to those for <code>setFrames</code>.
+
+    :   optional KeyframeEffectOptions options
+    ::  A <a>KeyframeEffectOptions</a> dictionary defining other aspects
+        of the <a>animation effect</a>'s behavior.
+        If this parameter is not provided, the default values of the
+        dictionary are used.
+
+    </div>
+
+</div>
+
+<div class="attributes">
+
+:   <dfn attribute for=KeyframeEffect>spacing</dfn>
+    <span attribute-info for=KeyframeEffect/spacing></span>
+::  The <a title="keyframe spacing mode">spacing mode</a> to use for
+    this <a>animation effect</a>.
+
+    Recognized values are defined by the following grammar:
+
+    <blockquote>
+      <div class="production">distribute | paced({ident}) | paced</div>
+    </blockquote>
+
+    <code>{ident}</code> here is an <a
+    href="http://www.w3.org/TR/css3-values/#identifier">identifier</a>
+    as defined by CSS3 Values [[!CSS3-VALUES]].
+
+    The meaning of each value is as follows:
+
+    :   distribute
+    ::  Use the <a>distribute keyframe spacing mode</a>.
+    :   paced({ident})
+    ::  Use the <a>paced keyframe spacing mode</a> with the property
+        name indicated by <code>{ident}</code> as the <a>paced
+        property</a>.
+
+        For example, <code>paced(transform)</code> would indicate that
+        the keyframes should be spaced such that changes to the <span
+        class="prop-name">transform</span> property occur at
+        a constant rate.
+
+    :   paced
+    ::  Use the <a>paced keyframe spacing mode</a>.
+
+
+        The <a>paced property</a> to use is the first property
+        specified in the first keyframe in the list of keyframes
+        associated with this <a>animation effect</a>
+        when sorting the CSS property names in ascending order by
+        Unicode codepoint.
+
+        As a result, changes to the keyframes may cause the <a>paced
+        property</a> to change.
+
+        Note: this behavior is generally not useful for
+            keyframes specifying more than one property.
+            It is provided for consistency with <a>MotionPathEffect</a>
+            and as a convenience for <a>keyframe animation effects</a>
+            that specify only one property.
+
+    All other values are treated as "distribute" for the purpose of
+    animation model calculations.
+
+</div>
+
+<div class="methods">
+
+:   <dfn method for=KeyframeEffect title="getFrames()">
+    sequence&lt;ComputedKeyframe&gt; getFrames()</dfn>
+::  Returns the <a>keyframes</a> that make up this effect as
+    a sequence of <a>ComputedKeyframe</a> objects.
+
+    The value returned differs from the <var>frames</var> parameter
+    passed into <code>setFrames</code> or the constructor for this
+    interface in the following ways:
+
+    *   The normalization defined in <a
+        href="#normalizing-a-sequence-of-keyframes"
+        section></a> is applied to <var>frames</var> which
+        may result in some frames being removed or re-ordered and some
+        properties being removed.
+        This normalization will also cause a single <a
+        title="Keyframe interface">Keyframe</a> object to be replaced
+        with a sequence.
+    *   The result of computing the <a>keyframe offset</a>
+        of each <a>keyframe</a> as defined in <a
+        href="#spacing-keyframes" section></a> is stored in
+        the <code>computedOffset</code> member of each frame.
+
+:   <dfn method for=KeyframeEffect title="setFrames()">
+    void setFrames(object frames)</dfn>
+::  A <a title="Keyframe interface">Keyframe</a> object or sequence
+    of <a title="Keyframe interface">Keyframe</a> objects used to
+    replace the set of <a>keyframes</a> that make up this effect.
+
+    The processing of the <var>frames</var> parameter is defined in <a
+    href="#processing-a-sequence-of-keyframe-objects-or-a-single-item"
+    section></a>.
+    Subsequently, the resulting sequence of <a
+    title="Keyframe interface">Keyframe</a> objects is normalized
+    using the procedure in <a
+    href="#normalizing-a-sequence-of-keyframes"
+    section></a> before storing.
+
+</div>
+
+<h4>Processing a sequence of <code>Keyframe</code> objects or a single item</h4>
+
+WebIDL does not currently make a dictionary and a sequence
+distinguishable but it was felt that allowing both was important
+for useability of the <code>animate</code> operation on
+<a>Animatable</a>.
+Therefore, we define the processing for handling a parameter
+that may be either a single <a
+title="Keyframe interface">Keyframe</a> dictionary object, or
+a sequence of such objects.
+
+The <dfn>procedure for converting an ECMAScript value into
+an IDL keyframe or sequence of keyframes</dfn> with parameter
+<var>keyframeOrKeyframeList</var> is as follows:
+
+<div class='switch'>
+
+:   If, using the canonical definition of
+    <code>Array.isArray</code> [[!ECMA-262]],
+    Array.isArray(<var>keyframeOrKeyframeList</var>) is
+    true,
+::  Return the result of following the steps for <a
+    href="http://www.w3.org/TR/WebIDL/#es-sequence">converting an
+    ECMAScript value into an IDL sequence</a> using the <a>procedure
+    for converting an ECMAScript value to an IDL Keyframe object</a>
+    as the procedure for converting <var>E</var> to an IDL value of
+    type <var>T</var>.
+:   Otherwise,
+::  Return the result of applying the <a>procedure for converting
+    an ECMAScript value to an IDL Keyframe object</a> to
+    <var>keyframeOrKeyframeList</a>.<dd>
+
+</div>
+
+Issue: Should this be defined in terms of <code>IsIterable</code> instead?
+
+
+<h4>The <code>KeyframeEffectOptions</code> dictionary</h4>
+
+Additional parameters may be passed to the <a>KeyframeEffect</a>
+constructor by providing a <a>KeyframeEffectOptions</a> object.
+
+<pre class='idl'>dictionary KeyframeEffectOptions {
+    IterationCompositeOperation iterationComposite = "replace";
+    CompositeOperation          composite = "replace";
+    DOMString                   spacing = "distribute";
+};</pre>
+
+<div class="attributes">
+
+:   <dfn attribute for=KeyframeEffectOptions>iterationComposite</dfn>
+    <span attribute-info for=KeyframeEffectOptions/iterationComposite></span>
+::  The <a>iteration composite operation</a> used to define the way
+    animation values build from iteration to iteration.
+
+:   <dfn attribute for=KeyframeEffectOptions>composite</dfn>
+    <span attribute-info for=KeyframeEffectOptions/composite></span>
+::  The <a>composite operation</a> used to composite this
+    animation with the <a>animation stack</a>, as specified by one
+    of the <a>CompositeOperation</a> enumeration values.
+    This is used for all <a>keyframes</a> that do not specify
+    a <a>composite operation</a>.
+
+:   <dfn attribute for=KeyframeEffectOptions>spacing</dfn>
+    <span attribute-info for=KeyframeEffectOptions/spacing></span>
+::  The <a title="keyframe spacing mode">spacing mode</a> to apply
+    to this <a>animation effect</a>'s <a>keyframes</a>.
+
+    See the description of the <code>spacing</code> attribute of the
+    <a>KeyframeEffect</a> interface for the recognized values and
+    their meaning are described
+
+    Unrecognized values are set on the created <a>KeyframeEffect</a>
+    object, but are treated as "distribute" for the purpose of
+    animation model calculations.
+
+</div>
+
+
+<h4>Normalizing a sequence of keyframes</h4>
+
+For each call to <code>setFrames</code> or the <a>KeyframeEffect</a>
+constructor, the following normalization is performed on the passed
+in <var>frames</var> parameter before storing its value.
+
+Note: the processing of the ECMAScript value into a suitable IDL
+value defined in <a href="#processing-a-keyframe-object"
+section></a> is performed before this operation is
+initiated.
+
+1.  If <var>frames</var> is a single <a title="Keyframe
+    interface">Keyframe</a> object, replaces <var>frames</var> with
+    a new sequence with a single item that is the previous value of
+    <var>frames</var>.
+2.  If <var>frames</var> is not <a>loosely sorted by offset</a>,
+    then,
+
+    <div class='switch'>
+
+    :   If each <a title="Keyframe interface">Keyframe</a> has
+        a non-null <code>offset</code>,
+    ::  Sort <var>frames</var> in ascending order by
+        <code>offset</code>.
+    :   Otherwise,</dt>
+    ::  Throw a DOMException of type
+        <code>InvalidModificationError</code>.</dd>
+
+    </div>
+
+3.  If there exist any <a title="Keyframe interface">Keyframe</a>
+    objects in <var>frames</var> whose <code>offset</code> member is
+    non-null and less than zero, remove all keyframes
+    objects from the start of <var>frames</var> up to and including
+    the keyframe with the largest non-null <code>offset</code>
+    that is still less than zero.
+4.  Likewise, if there exist any <a
+    title="Keyframe interface">Keyframe</a> objects in
+    <var>frames</var> whose <code>offset</code> member is non-null
+    and greater than one, remove all <a>keyframes</a> from
+    the keyframe with the smallest non-null <code>offset</code>
+    that is still greater than one until the end of
+    <var>frames</var>.
+5.  Remove all property values in <var>frames</var> that are invalid
+    or not supported by the implementation.
+
+    Issue: Need to define what invalid means here.
+
+<h3>The <code>Keyframe</code> dictionary</h3>
+
+Individual <a>keyframes</a> are represented by a special kind of
+<a title="Keyframe interface">Keyframe</a> dictionary type whose
+members map to the properties to be animated.
+At the time of writing, this kind of open-ended dictionary cannot
+be represented using WebIDL and hence special
+ECMAScript-specific handling for this type is defined in
+<a href="#processing-a-keyframe-object" section></a>.
+No handling is defined for other languages.
+
+<pre class='idl'>
+dictionary Keyframe {
+    // ... property-value pairs ...
+    double?             offset = null;
+    DOMString           easing = "linear";
+    CompositeOperation? composite = null;
+};
+</pre>
+
+<div class='attributes'>
+
+:   <dfn attribute for=Keyframe>offset</dfn>
+    <span attribute-info for=Keyframe/offset></span>
+::  The <a>keyframe offset</a> of the <a>keyframe</a> specified as
+    a number between 0.0 and 1.0 inclusive or <code>null</code>.
+
+    <a>Keyframes</a> with offsets outside the range [0.0, 1.0] are
+    ignored when calculating animation values as defined in
+    <a href="#normalizing-a-sequence-of-keyframes" section></a>.
+
+    A <code>null</code> value indicates that the <a>keyframe</a>
+    should be positioned using the <a>keyframe animation effect</a>'s
+    <a>keyframe spacing mode</a>.
+
+:   <dfn attribute for=Keyframe>easing</dfn>
+    <span attribute-info for=Keyframe/easing></span>
+
+::  The <a>timing function</a> used to transform the progress of time
+    from this keyframe until the next keyframe in the series.
+
+    The syntax and error-handling associated with parsing this string
+    is identical to that defined for the <code>easing</code> attribute
+    of the <a>AnimationTiming</a> interface.
+
+:   <dfn attribute for=Keyframe>composite</dfn>
+    <span attribute-info for=Keyframe/composite></span>
+
+::  The <a>composite operation</a> used to combine the values
+    specified in this keyframe with the <a>underlying value</a>.
+
+    If <code>null</code>, the <a>composite operation</a>
+    specified on the <a>AnimationEffect</a> will be used.
+
+</div>
+
+
+<h4>Processing a <code>Keyframe</code> object</h4>
+
+<div class="note">
+
+Since accessing the properties of an ECMAScript user object can
+have side effects, the manner in which these properties is
+accessed is important.
+In light of this consideration the procedure for converting an
+ECMAScript object into an IDL <a
+title="Keyframe interface">Keyframe</a> object has the following
+properties:
+
+*   Each property that is read, is read only once.
+*   Properties are read in a well-defined order.
+*   Properties corresponding to unsupported target properties or
+    attributes are not read.
+
+</div>
+
+The <dfn>procedure for converting an ECMAScript value to an IDL
+Keyframe object</dfn> with parameter <var>keyframe input</var>
+is as follows:
+
+1.  Let <var>keyframe result</var> be a <a
+    title="Keyframe interface">Keyframe</a> object with the
+    <code>offset</code>, <code>easing</code> and
+    <code>composite</code> attributes set to the default dictionary
+    values.
+2.  Create a list, <var>supported properties</var>, of property
+    names and attribute names that can be animated by the
+    implementation.
+3.  Convert each property name in <var>supported properties</var>
+    to the equivalent IDL attribute by applying the <a
+    href="http://dev.w3.org/csswg/cssom/#css-property-to-idl-attribute">CSS
+    property to IDL attribute</a> algorithm [[!CSSOM]].
+4.  If the user agent supports animation of the <span
+    class="prop-name">float</a> CSS property, replace 'float' in
+    <var>supported properties</var> with 'cssFloat'.
+5.  Let <var>animation properties</var> be an empty sequence.
+6.  Use the internal [&zwnj;[Enumerate]] operation on <var>keyframe
+    input</var> to iterate over its properties.
+    For each <var>property</var> perform the step corresponding to
+    the first matching condition from below, if any.
+
+    <div class="switch">
+
+    :   If <var>property</var> is a case-sensitive match for
+        the string 'offset',</dt>
+    ::  Set the <code>offset</code> member of <var>keyframe
+        result</var> to the result of applying the <a
+        href="http://www.w3.org/TR/WebIDL/#es-double">procedure for
+        converting an ECMAScript value into an IDL double</a>
+        [[!WEBIDL]] to the result of calling the [&zwnj;[Get]]
+        internal method on <var>keyframe input</var> with property
+        name 'offset'.
+
+    :   If <var>property</var> is a case-sensitive match for
+        the string 'easing',</dt>
+    ::  Set the <code>easing</code> member of <var>keyframe
+        result</var> to the result of applying the <a
+        href="http://www.w3.org/TR/WebIDL/#es-DOMString">procedure
+        for converting an ECMAScript value to an IDL
+        DOMString value</a> [[!WEBIDL]] with the <a
+        href="http://www.w3.org/TR/WebIDL/#TreatNullAs">[TreatNullAs=EmptyString]</a>
+        annotation in effect, to the result of calling
+        the [&zwnj;[Get]] internal method of <var>keyframe
+        input</var> with property name 'easing'.
+
+        If the resulting string does not conform to the
+        grammar defined for the <a
+        href="#widl-AnimationTiming-easing"><code>easing</code></a>
+        attribute of the <a>AnimationTiming</a> interface or
+        is not supported by the implementation, then
+        set the <code>easing</code> of <var>keyframe result</var>
+        to the string &ldquo;linear&rdquo;.
+
+    :   If <var>property</var> is a case-sensitive match for
+        the string 'composite',</dt>
+    ::  Set the <code>composite</code> member of <var>keyframe
+        result</var> to the result applying <a
+        href="http://www.w3.org/TR/WebIDL/#es-enumeration">the
+        procedure for converting an ECMAScript value to an IDL
+        enumeration type</a> [[!WEBIDL]] with
+        <a>CompositeOperation</a> as the enumeration type, to
+        the result of calling the [&zwnj;[Get]] internal method on
+        <var>keyframe input</var> with property name 'composite'.
+
+    :   Otherwise, if <var>property</var> also exists in
+        <var>supported properties</var> based on a case-sensitive
+        comparison,</dt>
+    ::  append <var>property</var> to <var>animation
+        properties</var>.</dd>
+
+    </div>
+
+7.  For user agents that support both a prefixed and an
+    unprefixed version of some CSS properties, remove all
+    prefixed properties from <var>animation properties</var>
+    where the corresponding unprefixed version is also
+    present in <var>animation properties</var>.
+
+    Note: I'd like to remove this step. Prefixes are history.
+
+8.  Sort <var>animation properties</var> lexicographically by
+    the Unicode codepoints that define each element.
+9.  Iterate over <var>animation properties</var> from beginning to
+    end and for each <var>name</var> in <var>animation
+    properties</var> add a new member pair to <var>keyframe
+    result</var> as follows:
+
+    *   <em>member name</em>: the result of applying the
+        the <a
+        href="http://dev.w3.org/csswg/cssom/#idl-attribute-to-css-property">IDL
+        attribute to CSS property</a> algorithm [[!CSSOM]] to
+        <var>name</var> unless <var>name</var> is
+        a case-sensitive match for the string 'cssFloat' in
+        which case use the string 'float'.
+    *   <em>member value</em>: the result of calling
+        <code>ToString</code> on the value returned from the
+        [&zwnj;[Get]] method of <a>keyframe input</a> with property
+        name, <var>name</var>.
+        If [&zwnj;[Get]] returns null or undefined, let the member
+        value be an empty string.
+
+10. Return <var>keyframe result</var>.
+
+<div class="issue">
+
+The above algorithm gives special meaning to the property names
+'offset', 'computedOffset', 'easing', and 'composite'.
+If a CSS property called 'offset' or 'composite' is ever
+introduced it will clash with the meaning here.
+
+We have a few options:
+
+*   Add special handling at that time to allow addressing the
+    property of the same name, e.g. <code>cssOffset</code>.
+*   Rename these keywords now to reduce risk of a later clash,
+    e.g. 'keyframeOffset'.
+
+</div>
+
+
+
+<h3>The <code>ComputedKeyframe</code> dictionary</h3>
+
+<a>Keyframes</a> returned by
+<code><a>KeyframeEffect</a>.getFrames</code> are represented using
+<a>ComputedKeyframe</a> dictionary objects.
+
+<pre class='idl'>
+dictionary ComputedKeyframe : Keyframe {
+    double computedOffset;
+};
+</pre>
+
+<div class='attributes'>
+
+:   <dfn attribute for=ComputedKeyframe>computedOffset</dfn>
+    <span attribute-info for=ComputedKeyframe/computedOffset></span>
+::  The <a>keyframe offset</a> calculated for this <a>keyframe</a> as
+    a result of applying the spacing procedure defined in
+    <a href="#spacing-keyframes" section></a>.
+
+</div>
+
+<h3>The <code>MotionPathEffect</code> interface</h3>
+
+<a>Motion path animation effects</a> are
+represented by the <dfn>MotionPathEffect</dfn> interface.
+
+<pre class='idl'>
+[Constructor ((DOMString or SVGPathSegList) path, optional MotionPathEffectOptions options)]
+interface MotionPathEffect : AnimationEffect {
+    attribute SVGPathSegList   segments;
+    attribute AutoRotationMode autoRotate;
+    attribute double           angle;
+    attribute DOMString        spacing;
+};
+</pre>
+
+<div class='constructors'>
+
+:   <dfn constructor for=MotionPathEffect title='MotionPathEffect()'>Constructor()</dfn>
+::  Creates a new <a>MotionPathEffect</a> object with the specified
+    parameters.
+
+    <div class='parameters'>
+
+    :   (DOMString or SVGPathSegList) path
+    ::  The <a>motion path</a> which defines the course the
+        <a>animation target</a> follows.
+
+        A string may be provided specifying the path using the syntax
+        for <a href="http://www.w3.org/TR/SVG2/paths.html#PathData">SVG path
+        data</a> [[!SVG2]].
+
+        If a string is provided, it is converted into an
+        <code>SVGPathSegList</code> using the procedure defined for
+        parsing <a href="http://www.w3.org/TR/SVG2/paths.html#PathData">path
+        data</a> in [[!SVG2]].
+        Any errors encountered in the path data cause parsing to
+        cease and the path data processed up to that point to be used.
+
+        The resulting <a>SVGPathSegList</a> is assigned to the
+        <code>path</code> attribute of the generated object without
+        copying.
+
+    :   optional MotionPathEffectOptions options
+    ::  A <a>MotionPathEffectOptions</a> dictionary defining other
+        aspects of the <a>animation effect</a>'s behavior.
+        If this parameter is not provided, the default values of the
+        dictionary are used.
+
+    </div>
+
+</div>
+
+<div class='attributes'>
+
+:   <dfn attribute for=MotionPathEffect>segments</dfn>
+    <span attribute-info for=MotionPathEffect/segments></span<
+::  The list of segments that make up the <a>motion path</a>.
+
+
+:   <dfn attribute for=MotionPathEffect>autoRotate</dfn>
+    <span attribute-info for=MotionPathEffect/autoRotate></span<
+::  The <a>automatic rotation flag</a> of the <a>motion path animation
+    effect</a>.
+
+:   <dfn attribute for=MotionPathEffect>angle</dfn>
+    <span attribute-info for=MotionPathEffect/angle></span<
+::  The <a>rotation angle</a> of the <a>motion path animation
+    effect</a>.
+
+:   <dfn attribute for=MotionPathEffect>spacing</dfn>
+    <span attribute-info for=MotionPathEffect/spacing></span<
+::  The <a>motion path spacing mode</a> to use for this <a>animation
+    effect</a>.
+
+    Recognized values are defined by the following grammar:
+
+    <blockquote>
+        <div class="production">distribute | paced</div>
+    </blockquote>
+
+    The meaning of each value is as follows:
+
+    :   distribute
+    ::  Use the <a title="distribute keyframe spacing mode">distribute</a>
+        spacing mode.
+    :   paced
+    ::  Use the <a title="paced keyframe spacing mode">paced</a> spacing mode.
+
+    All other values are treated as "paced" for the purpose of
+    animation model calculations.
+
+</div>
+
+<h4>The <code>MotionPathEffectOptions</code> dictionary</h4>
+
+Additional parameters may be passed to the <a>MotionPathEffect</a>
+constructor by providing a <dfn>MotionPathEffectOptions</dfn> object.
+
+<pre class='idl'>
+dictionary MotionPathEffectOptions {
+    AutoRotationMode            autoRotate = "none";
+    double                      angle = 0;
+    IterationCompositeOperation iterationComposite = "replace";
+    CompositeOperation          composite = "replace";
+    DOMString                   spacing = "paced";
+};
+</pre>
+
+:   <dfn attribute for='MotionPathEffectOptions'>autoRotate</dfn>
+    <span attribute-info for='MotionPathEffectOptions/autoRotate'></span>
+::  The <a>automatic rotation flag</a> setting for the generated
+    effect.
+
+:   <dfn attribute for='MotionPathEffectOptions'>angle</dfn>
+    <span attribute-info for='MotionPathEffectOptions/angle'></span>
+::  The <a>rotation angle</a> for the generated effect.
+
+:   <dfn attribute for='MotionPathEffectOptions'>iterationComposite</dfn>
+    <span attribute-info for='MotionPathEffectOptions/iterationComposite'></span>
+::  The <a>iteration composite operation</a> used to define the way
+    animation values build from iteration to iteration.
+
+:   <dfn attribute for='MotionPathEffectOptions'>composite</dfn>
+    <span attribute-info for='MotionPathEffectOptions/composite'></span>
+::  The <a>composite operation</a> used to composite this
+    <a>animation effect</a> with the <a>animation stack</a>, as
+    specified by one of the <a>CompositeOperation</a> enumeration
+    values.
+
+:   <dfn attribute for='MotionPathEffectOptions'>spacing</dfn>
+    <span attribute-info for='MotionPathEffectOptions/spacing'></span>
+::  The <a title="keyframe spacing mode">spacing mode</a> to apply
+    to this <a>motion path animation effect</a>.
+
+    See the description of the <code>spacing</code> attribute of the
+    <a>MotionPathEffect</a> interface for the recognized values and
+    their meaning are described
+
+    Unrecognized values are set on the created
+    <a>MotionPathEffect</a> object, but are treated as "paced" for
+    the purpose of animation model calculations.
+
+<h4>The <code>AutoRotationMode</code> enumeration</h4>
+
+The values of the <a>automatic rotation flag</a> of a <a>motion path
+animation effect</a> are represented by the <dfn>AutoRotationMode</dfn>
+enumeration.
+
+<pre class='idl'>
+enum AutoRotationMode { "auto-rotate", "none" };
+</pre>
+
+:   auto-rotate
+::  Corresponds to setting the <a>automatic rotation flag</a>.
+
+:   none
+::  Corresponds to clearing the <a>automatic rotation flag</a>.
+
+<h3>The <code>EffectCallback</code> callback function</h3>
+
+<a>Custom effects</a> can be defined in script by providing an
+<a>EffectCallback</a> callback function.
+
+<pre class='idl'>
+callback EffectCallback = void (double? timeFraction, Animatable currentTarget,
+                                Animation animation);
+</pre>
+
+An <a>EffectCallback</a> is called each time an <a
+title="Animation interface">Animation</a> with which it is
+associated is <a title="sampling">sampled</a>.
+
+<div class="parameters">
+
+:   double? timeFraction
+::  The <a>time fraction</a> for which to produce an effect.
+    When this is <code>null</code>, the function SHOULD
+    remove the effect.
+
+:   Animatable currentTarget
+::  The <a>animation target</a> on which this callback is expected
+    to operate.
+
+    <div class="note">
+
+    Note that <var>currentTarget</var> may differ from
+    <code><var>animation</var>.target</code>.
+
+    If the <a>animation target</a> of <var>animation</var>
+    is changed between samples, this method will be
+    called once with a null <var>timeFraction</var> and the
+    previous <a>animation target</a> as the
+    <var>currentTarget</var>, then again with the current
+    <var>timeFraction</var> and the updated <a>animation
+    target</a> as the <var>currentTarget</var>.
+    This allows the animation effect to be removed from the old
+    <a>animation target</a>.
+
+    </div>
+
+:   Animation animation
+::  The <a title="Animation interface">Animation</a> object that is
+    being sampled.
+
+</div>
+
+<h3>The <code>AnimationPlayerEvent</code> interface</h3>
+
+<a>Player events</a> are represented in the API by the
+<a>AnimationPlayerEvent</a> interface.
+
+<pre class="idl">[Constructor (DOMString type, optional AnimationPlayerEventInit eventInit)]
+interface AnimationPlayerEvent : Event {
+    attribute double? currentTime;
+    attribute double? timelineTime;
+};</pre>
+
+<div class="constructors">
+
+:   <dfn constructor for=AnimationPlayerEvent title='AnimationPlayerEvent()'>
+:   Constructor ()</dfn>
+::  Constructs a new <a>AnimationPlayerEvent</a> object as described in
+    <a href="http://www.w3.org/TR/dom/#constructing-events">Constructing
+    events</a> in [[!DOM4]].
+
+    <div class="parameters">
+
+    :   DOMString type
+    ::  The type of <a>player event</a> corresponding to one of the
+        types defined in <a href="#types-of-player-events" section></a>.
+    :   optional AnimationPlayerEventInit eventInit
+    ::  The parameters of the new <a>AnimationPlayerEvent</a>.
+
+    </div>
+
+</div>
+
+<div class="attributes">
+
+:   <dfn attribute for=AnimationPlayerEvent>currentTime</dfn>
+    <span attribute-info for=AnimationPlayerEvent/currentTime></span>
+::  The <a>event current time</a>.
+:   <dfn attribute for=AnimationPlayerEvent>timelineTime</dfn>
+    <span attribute-info for=AnimationPlayerEvent/timelineTime></span>
+::  The <a>event timeline time</a>.
+
+</div>
+
+<h4>The <code>AnimationPlayerEventInit</code> dictionary</h4>
+
+The <a>AnimationPlayerEventInit</a> dictionary type is used to specify
+the parameters when constructing an <a>AnimationPlayerEvent</a>
+object.
+
+<pre class="idl">dictionary AnimationPlayerEventInit {
+    double? currentTime = null;
+    double? timelineTime = null;
+};</pre>
+
+<div class="attributes">
+
+:   <dfn attribute for=AnimationPlayerEventInit>currentTime</dfn>
+    <span attribute-info for=AnimationPlayerEventInit/currentTime></span>
+
+:   <dfn attribute for=AnimationPlayerEventInit>timelineTime</dfn>
+    <span attribute-info for=AnimationPlayerEventInit/timelineTime></span>
+
+</div>
+
+
+<h3>Extensions to the <code>Document</code> interface</h3>
+
+The following extensions are made to the <a class="externalDFN"
+href="http://www.w3.org/TR/dom/#interface-document">Document
+interface</a> defined in [[!DOM4]].
+
+<pre class='idl'>partial interface Document {
+    readonly attribute AnimationTimeline timeline;
+};</pre>
+
+<div class="attributes">
+
+:   <dfn attribute for=Document>timeline</dfn>
+    <span attribute-info for=Document/timeline></span>
+::  The <a>AnimationTimeline</a> object representing
+    the <a>document timeline</a>.
+
+</div>
+
+<h3>Extensions to the <code>Element</code> interface</h3>
+
+Since DOM Elements may be the target of an animation,
+the <a class="externalDFN"
+href="http://www.w3.org/TR/dom/#interface-element">Element</a>
+interface [[!DOM4]] is extended as follows:
+
+<pre class="idl">Element implements Animatable</pre>
+
+This allows the following kind of usage.
+
+FIXME: <div class="example sh_javascript">
+elem.animate({ color: 'red' }, 2000);
+</div>
+
+
+<h3>Extensions to the <code>PseudoElement</code> interface</h3>
+
+Since <a>animations</a> may also target
+pseudo-elements, the <a class="externalDFN"
+href="http://www.w3.org/TR/cssom/#the-pseudoelement-interface"><code>PseudoElement</code></a>
+interface [[!CSSOM]] is also defined to be animatable.
+
+<div class="idl">PseudoElement implements Animatable</div>
+
+Issue: This interface is marked at-risk in the <a class="externalDFN"
+    href="http://www.w3.org/TR/2013/WD-cssom-20131205/">5 December 2013 WD
+    of CSSOM</a>.
+    If it is removed, we will need to provide an equivalent definition
+    here.
+
+<h3>Script execution and live updates to the model</h3>
+
+The interaction between script execution and the state and effects of
+the Web Animations model is as follows:
+
+*   Changes made to the Web Animations model via the programming
+    interface are reflected immediately in the values returned by the
+    interfaces defined in this specification.
+
+    Similarly, methods that operate on the current state of the model
+    such as pausing or reversing are applied to a fully-updated timing
+    model, that is, after all previous modifications have been
+    incorporated.
+
+    <div class="informative-bg"><em>This section is non-normative</em>
+
+    For example, if the <a>AnimationPlayer</a>
+    associated with an
+    <a title="Animation interface">Animation</a> is <a
+    title="seeking">seeked</a> via the programming interface,
+    the value returned when querying the
+    animation's <code>startTime</code> will reflect updated state of
+    the model immediately.
+
+    FIXME: <div class="example sh_javascript">
+      // Initially player.src.localTime is 3000
+      player.currentTime += 2000;
+      alert(player.src.localTime); // Displays '5000'
+
+    </div>
+
+    The same concept applies to more complex modifications of the
+    Web Animations model such as adding and removing children from
+    an <a>AnimationGroup</a>.
+
+    </div>
+
+*   Querying the computed style of a property affected by
+    animation, or the value of an attribute affected by animation,
+    returns the value based the <em>current state</em> of the
+    model, that is, after incorporating any modifications made using
+    the programming interface.
+
+    <div class="informative-bg"><em>This section is non-normative</em>
+
+    For example, if the used style of an element is queried
+    immediately after applying a new <a>Animation</a> to that
+    element, the result of the new animation will be
+    incorporated in the value returned.
+
+    FIXME: <div class="example sh_javascript">
+      // Set opacity to 0 immediately
+      elem.animate({ opacity: 0 }, { fill: 'forwards' });
+      alert(window.getComputedStyle(elem).opacity); // Displays '0'
+
+    </div>
+
+    The means of querying the animated value of an attribute depends
+    on the interface defined for the attribute.
+    SVG 1.1 [[!SVG11]] defines an additional interface for querying
+    animated values.
+
+    FIXME: <div class="example sh_javascript">
+      // Set width to 0 immediately
+      rect.animate({ width: '100px' }, { fill: 'forwards' });
+      alert(rect.width.animVal.value); // Displays '100'
+
+    </div>
+
+    </div>
+
+*   Changes made to the model using the programming interface do
+    <em>not</em> cause any <a>EffectCallback</a> functions to be
+    called.
+
+    <div class="informative-bg"><em>This section is non-normative</em>
+
+    For example, in the following code, the callback function will
+    not be called until <em>after</em> the script block has
+    completed during regular sampling.
+
+    FIXME: <div class="example sh_javascript">
+      var timesCalled = 0;
+      elem.animate(function() {
+        timesCalled++;
+      }, 10000);
+      alert(timesCalled); // Displays '0'
+
+    </div>
+
+    </div>
+
+
+*   Changes to specified style, specified attribute values, and the
+    state of the Web Animations model made within the same execution
+    block must be synchronized when rendering such that the whole set
+    of changes is rendered together.
+
+    <div class="informative-bg"><em>This section is non-normative</em>
+
+    For example, a user agent must not render only the changes to
+    specified style made in a script execution block whilst ignoring
+    changes to animations.
+    This guarantees that the following usage will never produce
+    a situation where <em>only</em> the change to specified style is
+    rendered without the animation.
+
+    FIXME: <div class="example sh_javascript">
+      // Fade the opacity with fallback for browsers that don't
+      // support Element.animate
+      elem.style.opacity = '0';
+      elem.animate([ { opacity: 1 }, { opacity: 0 } ], 500);
+
+    </div>
+
+    Note that a user agent may render a frame with <em>none</em> of
+    the changes made in a script execution block.
+    This might happen, for example, if rendering occurs in
+    a separate process that is scheduled to run shortly after
+    a script execution block completes but before changes made via
+    script can be communicated to the process.
+
+    </div>
+
+*   The value returned by the <code>currentTime</code> attribute of
+    a <a>document timeline</a> will not change within a script block.
+
+    <div class="informative-bg"><em>This section is non-normative</em>
+
+    For example, querying the <code>currentTime</code> twice within
+    a long block of code that is executed in the same script block
+    will return the same value as shown in the following example.
+
+    FIXME: <div class="example sh_javascript">
+      var a = document.timeline.currentTime;
+      // ... many lines of code ...
+      var b = document.timeline.currentTime;
+      alert(b - a); // Displays 0
+
+    </div>
+
+    </div>
+
+*   User agents that support Timing control for script-based
+    animations [[RAF]], prior to <a
+    href="http://www.w3.org/TR/animation-timing/#dfn-sample-all-animations"
+    class="externalDFN">sampling animation frame request
+    callbacks</a> for a given <a
+    href="http://www.w3.org/TR/html5/browsers.html#top-level-browsing-context"
+    class="externalDFN">top-level browsing context</a>,
+    must perform a <a title='single-sample'>sample</a> including 
+    executing any eligible
+    <a>custom effects</a> (see <a href="#sampling-custom-effects"
+    section></a>) for all <a>animation nodes</a>
+    <a>associated with a timeline</a> that is the <a>document
+    timeline</a> of the
+    <a href="http://www.w3.org/TR/html5/browsers.html#active-document"
+    class="externalDFN">active document</a> of the <a
+    href="http://www.w3.org/TR/html5/browsers.html#top-level-browsing-context"
+    class="externalDFN">top-level browsing context</a> or
+    of any of its <a
+    href="http://www.w3.org/TR/html5/browsers.html#list-of-the-descendant-browsing-contexts"
+    class="externalDFN">descendant browsing contexts</a>.
+    When performing this <a title='single-sample'>sample</a>, the 
+    <a>time value</a> of
+    each <a>document timeline</a> must be equal to the <var>time</var>
+    passed to animation frame request callbacks for that browsing
+    context.
+
+    <div class="informative-bg"><em>This section is non-normative</em>
+
+    As a result of this definition, the time passed to
+    a <code>requestAnimationFrame</code> callback acts as
+    an alias for <code>document.timeline.currentTime</code>.
+
+    FIXME: <div class="example sh_javascript">
+      window.requestAnimationFrame(function(sampleTime) {
+        // Displays '0'
+        alert(sampleTime - document.timeline.currentTime);
+      });
+
+    </div>
+
+    </div>
+
+
+<h2>Integration with Media Fragments</h2>
+
+The Media Fragments specification [[!MEDIA-FRAGS]] defines a means
+for addressing a temporal range of a media resource.
+The application of media fragments depends on the MIME type of the
+resource on which they are specified.
+For resources with the <a class="externalDFN"
+href="http://www.w3.org/TR/SVG/intro.html#MIMEType">SVG MIME type</a>
+[[!SVG11]], the application of temporal parameters is defined in the <a
+href="http://dev.w3.org/fxtf/web-animations/animation-elements.html">
+Animation elements</a> specification.
+
+Note: media fragments are defined to operate on resources based on
+    their MIME type.
+    As a result, temporal addressing may not be supported in all situations
+    where Web Animations content is used.
+
+<h2>Interaction with page display</h2>
+
+HTML permits user agents to store <a class="externalDFN"
+  href="http://www.w3.org/TR/html51/browsers.html#an-entry-with-persisted-user-state">user-agent
+  defined state</a> along with a
+<a class="externalDFN"
+  href="http://www.w3.org/TR/html51/browsers.html#session-history-entry">session
+history entry</a> so that as a user navigates between pages, the
+previous state of the page can be restored including state such as
+scroll position [[HTML5]].
+
+
+User agents that pause and resume <a class="externalDFN"
+  href="http://www.w3.org/TR/html51/embedded-content-0.html#media-element">media
+elements</a> when the referencing document is
+unloaded and traversed,
+are encouraged to apply consistent handling to documents containing Web
+Animations content.
+If provided, this behavior SHOULD be achieved by adjusting the <a>time
+values</a> of any <a>timelines</a> bound to the <a>global clock</a>.
+
+Issue: Is this at odds with those <a>time values</a> being relative to
+    <code>navigationStart</code> and with <code>requestAnimationFrame</code>
+    using the same time as <code>document.timeline.currentTime</code>?
+
+
+<h2>Implementation requirements</h2>
+
+<h3>Precision of time values</h3>
+
+The internal representation of time values is implementation dependant
+however, it is RECOMMENDED that user agents be able to represent input
+time values with microsecond precision so that 0.000001 is
+distinguishable from 0.0.
+
+<h3>Conformance criteria</h3>
+
+This specification defines an abstract model for animation and, as
+such, for user agents that do not support scripting, there are no
+conformance criteria since there is no testable surface area.
+
+User agents that do not support scripting, however, may implement
+additional technologies defined in terms of this specification in
+which case the definitions provided in this specification will form
+part of the conformance criteria of the additional technology.
+
+A <dfn>conforming scripted Web Animations user agent</dfn> is a user
+agent that implements the <abbr
+title="Application Programming Interface">API</abbr> defined in <a
+href="#programming-interface" section></a> including
+dispatching events as defined in <a href="#player-events"
+section></a>.
+
+
+<h2>Interface summary</h2>
+
+<h2>Acknowledgements</h2>
+
+Thank you to Michiel &ldquo;Pomax&rdquo; Kamermans for help with the
+equations for a proposed smooth timing function although this feature
+has been deferred to a subsequent specification.
+
+Our deep gratitude goes out to <a
+href="http://www.southernstarentertainment.com.au/">Southern Star
+Animation</a> for their kind generosity and patience in introducing the
+editors to the processes and techniques used producing broadcast
+animations.
+
+<h2>Changes since last publication</h2>
+
+The following changes have been made since the <a
+  href="http://www.w3.org/TR/2013/WD-web-animations-20140605/">5 June
+2014 Working Draft</a>:
+
+*   Fixed the grammar for <a>&lt;cubic-bezier-timing-function&gt;</a> to
+    match CSS Transitions.
+*   Introduced the <a>ComputedAnimationTiming</a> interface and
+    <a>AnimationTimingReadOnly</a> interface.
+*   Moved computed timing from <a>AnimationNode</a> to a
+    <code>computedTiming</code> attribute of type
+    <a>ComputedAnimationTiming</a>.
+*   Exposed the <a>time fraction</a> to script as
+    <code>node.computedTiming.timeFraction</code>.
+
+Changes since the <a
+  href="http://www.w3.org/TR/2013/WD-web-animations-20130625/">25 June
+2013 Working Draft</a> are included in <a
+  href="http://www.w3.org/TR/2014/WD-web-animations-20140605/#changes-since-last-publication">Appendix
+C of the 5 June 2014 Working Draft</a>.
+
+The <a
+  href="https://dvcs.w3.org/hg/FXTF/log/default/web-animations/index.html">changelog</a>
+provides a more detailed history.
