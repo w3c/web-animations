@@ -1028,6 +1028,7 @@ effect with the exception of <a>fill modes</a> which apply outside the
 The lower bound of the <a>active interval</a> is defined by the
 combination of the animation node's
 <a title="animation node start time">start time</a> and <a>start delay</a>.
+
 An <a>animation node</a>'s
 <dfn title="animation node start time">start time</dfn> is the moment at
 which the <a>parent animation group</a>,
@@ -1164,6 +1165,7 @@ an <a>animation node</a>.
 </p>
 
 The phases are as follows:
+
 :   <a>before phase</a>
 ::  The <a>animation node</a>'s <a>local time</a> falls before the
     node's <a>active interval</a>.
@@ -3209,6 +3211,7 @@ their relative <em>priority</em>.
 The matter of <em>how</em> <a>intermediate animation values</a> are
 combined is governed by the <a>composite operation</a> of
 the corresponding <a>animation effects</a>.
+
 The relative <em>priority</em> of <a>intermediate animation values</a>
 is determined by an <a>animation stack</a> established for each
 animated property.
@@ -3260,18 +3263,18 @@ The initial value of the <a>custom player priority</a> is zero.
 
 <div class="note">
 
-Note: the <a>custom player priority</a> is primarily
-    intended to be used to prioritize animations at
-    a high-level, such as to prioritize animations <em>by type</em>.
-    For example, it can be used to ensure that CSS Animations always
-    override CSS Transitions.
+Note that the <a>custom player priority</a> is primarily
+intended to be used to prioritize animations at
+a high-level, such as to prioritize animations <em>by type</em>.
+For example, it can be used to ensure that CSS Animations always
+override CSS Transitions.
 
-    It is possible to control animation priority at a lower-level by
-    setting the <a>player start time</a> appropriately,
-    (possibly after making compensatory adjustments to the <a>start
-    delay</a> of the <a>source content</a>) or influencing the
-    <a>player sequence number</a> by controlling when <a>players</a>
-    are created.
+It is possible to control animation priority at a lower-level by
+setting the <a>player start time</a> appropriately,
+(possibly after making compensatory adjustments to the <a>start
+delay</a> of the <a>source content</a>) or influencing the
+<a>player sequence number</a> by controlling when <a>players</a>
+are created.
 
 </div>
 
@@ -3465,7 +3468,7 @@ the <a>composite operation</a> specified for the <a>animation
 effect</a> is used.
 
 <h4>Spacing keyframes</h4>
-<div class="informative">
+<div class="informative-bg"><em>This section is non-normative.</em>
 
 It is often useful to be able to provide a series of property values
 without having calculate the <a>keyframe offset</a> of each value in
@@ -4824,10 +4827,10 @@ interface AnimationPlayer : EventTarget {
 
         Issue: Is this unpausing behavior correct?
 
-        Note: unlike <code>play()</code>, the player's <a>finished
-            flag</a> is not explicitly reset here since that behavior is
-            performed by the procedure for updating the <a>player playback
-            rate</a> defined in <a href="#updating-the-playback-rate" section></a>.
+    Note: unlike <code>play()</code>, the player's <a>finished
+        flag</a> is not explicitly reset here since that behavior is
+        performed by the procedure for updating the <a>player playback
+        rate</a> defined in <a href="#updating-the-playback-rate" section></a>.
 
 </div>
 
@@ -5882,6 +5885,10 @@ with parameter <var>effect</var> is as follows:
 
 </div>
 
+Note: since the processing of this parameter is defined in prose, the
+    above steps will take place after any coercion is applied to other
+    parameters passed to the same operation.
+
 <h4>Creating a new <code>Animation</code> object</h4>
 
 <div class='informative-bg'><em>This section is non-normative</em>
@@ -5977,6 +5984,14 @@ elem.animate({ left: '100px' }, 3000);
 Objects that may be the target of an <a
 title="Animation interface">Animation</a> implement the
 <a>Animatable</a> interface.
+
+<pre class='idl'>[NoInterfaceObject]
+interface Animatable {
+    AnimationPlayer           animate (object? effect,
+                                       optional (double or AnimationTimingInput) timing);
+    sequence&lt;Animation&gt;       getCurrentAnimations ();
+    sequence&lt;AnimationPlayer&gt; getAnimationPlayers ();
+};</pre>
 
 <div class="methods">
 
@@ -6270,7 +6285,6 @@ interface KeyframeEffect : AnimationEffect {
 
     :   paced
     ::  Use the <a>paced keyframe spacing mode</a>.
-
 
         The <a>paced property</a> to use is the first property
         specified in the first keyframe in the list of keyframes
@@ -6995,7 +7009,7 @@ pseudo-elements, the <a class="externalDFN"
 href="http://www.w3.org/TR/cssom/#the-pseudoelement-interface"><code>PseudoElement</code></a>
 interface [[!CSSOM]] is also defined to be animatable.
 
-<div class="idl">PseudoElement implements Animatable</div>
+<pre class="idl">PseudoElement implements Animatable</pre>
 
 Issue: This interface is marked at-risk in the <a class="externalDFN"
     href="http://www.w3.org/TR/2013/WD-cssom-20131205/">5 December 2013 WD
