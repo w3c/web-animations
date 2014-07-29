@@ -15,6 +15,7 @@ Abstract: This specification defines a model for synchronization and
     for interacting with this model and it is expected that further
     specifications will define declarative means for exposing these
     features.
+Ignored Terms: double, boolean, DOMString, unsigned long, unrestricted double, (animationeffect or effectcallback), svgpathseglist
 </pre>
 
 <link href='web-animations.css' rel='stylesheet' type='text/css'>
@@ -616,14 +617,14 @@ pausing and is accomplished using the same machinery as pausing.
 pausing and limiting.
 
 
-:   paused state
+:   <dfn>paused state</dfn>
 ::  A boolean value that is true if the player is currently paused.
     The <a>paused state</a> is initially false.
-:   hold time
+:   <dfn>hold time</dfn>
 ::  The <a>effective current time</a> to maintain while the player is
     paused or effectively paused either because it has reached the end
     of its <a>source content</a> and is <a>limited</a>, or because it
-    has a zero <a>playback rate</a>.
+    has a zero <a title="player playback rate">playback rate</a>.
     When none of these conditions apply, the <a>hold time</a> is
     null.
     The <a>hold time</a> is initially null.
@@ -914,7 +915,7 @@ is simply <var>player</var> itself.
 
 The sequence in which <a>player events</a> are queued is in
 ascending order by <a>event timeline time</a>.
-If two <a>player events</a> have the same <a>event document
+If two <a>player events</a> have the same <a>event timeline
 time</a>, the <a>player events</a> are queued in ascending order by
 <a>player sequence number</a> of the <a>players</a> that generated
 the events.
@@ -1015,8 +1016,8 @@ the <a>active interval</a> are coincident.<br>
 </p>
 
 An <a>end delay</a> may also be specified but is primarily only of
-use when sequencing animations such as by using a <a>sequence
-animation group</a>.
+use when sequencing animations such as by using an
+<a>animation sequence</a>.
 
 </div>
 
@@ -1037,7 +1038,7 @@ It is expressed in <a>inherited time</a>.
 In most cases, including the case when the <a>animation node</a> has
 no <a>parent animation group</a>,
 the <a title="animation node start time">start time</a> is zero.
-The singular exception is <a>sequence animation groups</a> which set
+The singular exception is <a>animation sequence</a> which set
 the <a title="animation node start time">start times</a> of their
 children as described in <a
 href="#the-start-time-of-children-of-an-animation-sequence" section></a>.
@@ -1067,7 +1068,7 @@ href="#calculating-the-active-duration" section></a>.
 Similar to the <a>start delay</a>, an <a>animation node</a> also has
 an <dfn>end delay</dfn> which may be used to delay the <a
 title="animation node start time">start time</a> of the <a>next
-sibling</a> in a <a>sequence animation group</a>.
+sibling</a> in a <a>animation sequence</a>.
 
 <h4>Local time and inherited time</h4>
 
@@ -1644,7 +1645,7 @@ rate">playback rate</a> of an <a>animation node</a> is as follows:
 
     Furthermore, if other <a>animation nodes</a> depend on the
     <a>animation node</a>'s <a>active duration</a>, such as sibling
-    <a>animation node</a> in a <a>sequence animation group</a>, they
+    <a>animation node</a> in a <a>animation sequence</a>, they
     too may jump as a result of setting the <a>animation node</a>'s <a
     title="animation node playback rate">playback rate</a>.
 
@@ -1706,7 +1707,8 @@ This process is illustrated below.
   time</a>.<br>
   (2) The <a>local time</a> is converted into an <a>active time</a> by
   incorporating the <a>start delay</a>.<br>
-  (3) The <a>playback rate</a> and <a>iteration start</a> properties are
+  (3) The <a title="animation node playback rate">playback rate</a>
+  and <a>iteration start</a> properties are
   applied to the <a>active time</a> to produce the <a>scaled active
   time</a>.<br>
   (4) The <a>scaled active time</a> is then converted to an offset
@@ -2092,11 +2094,11 @@ href="http://lists.w3.org/Archives/Public/public-fx/2013JulSep/0076.html">sectio
 2 of the discussion from August 2013</a>.
 </div>
 
-<h4>Scaling using a cubic BXXXzier curve</h4>
+<h4>Scaling using a cubic B&eacute;zier curve</h4>
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
-A common method of producing easing effects is to use a cubic BXXXier
+A common method of producing easing effects is to use a cubic B&eacute;zier
 curve to scale the time.
 The endpoints of the curve are fixed at (0, 0) and (1, 1) while two
 control points <var>P1</var> and <var>P2</var> define the shape of
@@ -2112,14 +2114,14 @@ This arrangement is illustrated below.
       alt="A cubic Bezier curve used as a timing function.">
 </div>
 <p class="caption">
-  A cubic BXXXier curve used as a timing function.<br>
+  A cubic B&eacute;zier curve used as a timing function.<br>
   The shape of the curve is determined by the location of the control
   points <var>P1</var> and <var>P2</var>.<br>
   Input time fractions serve as <var>x</var> values of the curve,
   whilst the <var>y</var> values are the output time fractions.
 </p>
 
-Some example cubic BXXXzier timing functions are illustrated below.
+Some example cubic B&eacute;zier timing functions are illustrated below.
 
 <div class="figure">
   <img src="img/curve-keywords.svg" width="500"
@@ -2127,7 +2129,7 @@ Some example cubic BXXXzier timing functions are illustrated below.
 </div>
 <p class="caption">
   The timing functions produced by each of the keyword values
-  associated with cubic BXXXier timing functions accepted by the
+  associated with cubic B&eacute;ier timing functions accepted by the
   <a href="#widl-AnimationTiming-easing"
   class="idlType"><code>AnimationTiming.easing</code></a>
   member from the <a href="#programming-interface">programming
@@ -2135,9 +2137,9 @@ Some example cubic BXXXzier timing functions are illustrated below.
 </p>
 </div>
 
-A <dfn>cubic BXXXzier timing function</dfn> is a type of <a>timing
+A <dfn>cubic B&eacute;zier timing function</dfn> is a type of <a>timing
 function</a> defined by four real numbers that specify the two control
-points, <var>P1</var> and <var>P2</var>, of a cubic BXXXier curve whose
+points, <var>P1</var> and <var>P2</var>, of a cubic B&eacute;zier curve whose
 end points are fixed at (0, 0) and (1, 1).
 The x coordinates of <var>P1</var> and <var>P2</var> are
 restricted to the range [0, 1].
@@ -2145,8 +2147,8 @@ restricted to the range [0, 1].
 The evaluation of this curve is covered in many sources such as
 [[FUND-COMP-GRAPHICS]].
 
-A <a>cubic BXXXier timing function</a> may be specified as a string
-using the following syntax (using notation from [[!CSS3-VALUES]]):
+A <a>cubic B&eacute;zier timing function</a> may be specified as a string
+using the following syntax (using notation from [[!CSS3VAL]]):
 <blockquote>
   <div
     class="production"><dfn>&lt;cubic-bezier-timing-function&gt;</dfn> =
@@ -2166,7 +2168,7 @@ The meaning of each value is as follows:
 :   ease-in-out
 ::  Equivalent to cubic-bezier(0.42, 0, 0.58, 1).
 :   cubic-bezier(&lt;number&gt; &lt;number&gt; &lt;number&gt; &lt;number&gt;)
-::  Specifies a <a>cubic BXXXier timing function</a>.
+::  Specifies a <a>cubic B&eacute;zier timing function</a>.
     The four numbers specify points <var>P1</var> and <var>P2</var> of
     the curve as (x1, y1, x2, y2).
     Both x values must be in the range [0, 1] or the definition is
@@ -2740,6 +2742,8 @@ Note: If there ever exists a situation where we need to animate an attribute
 
 <h4>Procedures for animating properties</h4>
 
+Unless specifically defined not to be, all properties are considered
+<dfn>animatable</dfn>.
 In order to animate a <a>target property</a>, the following procedures
 must be defined.
 
@@ -2943,7 +2947,7 @@ behavior</a>:
     (Nested <code>calc()</code> functions are expanded when
     determining the computed value as defined in <a
     href="http://www.w3.org/TR/css3-values/#calc-computed-value">CSS
-    Values and Units</a> [[!CSS3-VALUES]].)
+    Values and Units</a> [[!CSS3VAL]].)
 *   <a>distance computation</a>: as with <a>animatable as real
     number</a> but using the <a
     href="http://www.w3.org/TR/CSS2/cascade.html#used-value">used
@@ -3168,9 +3172,9 @@ Since it is possible for multiple <a>in effect</a> <a
 title="animation">animations</a> to target the same property it is
 often necessary to combine the results of several <a>animation
 effects</a> together.
-This process is called <em>compositing</em> and is based on
-establishing an <a>animation stack</a> for each property targetted by
-an <a>in effect</a> <a>animation effect</a>.
+This process is called <dfn title='composition'>compositing</dfn> and is
+based on establishing an <a>animation stack</a> for each property
+targetted by an <a>in effect</a> <a>animation effect</a>.
 
 After compositing the results of <a>animation
 effects</a> together, the composited result is combined with other
@@ -3327,7 +3331,7 @@ follows:
 ::  The <a>intermediate animation value</a> is <a
     title="animation accumulation">accumulated</a>
     onto the <a>underlying value</a>.
-    For <a>animation behaviours</a> where the
+    For <a>animation behaviors</a> where the
     <a title="animation accumulation">accumulation operation</a> is
     defined such that it is not commutative, the order of the operands
     is <a>underlying value</a> followed by <a>intermediate animation
@@ -3349,7 +3353,7 @@ and acts with a higher priority than all other stylesheets.
 However, <code>!important</code> rules from all other stylesheets
 act with a higher priority than the <a>animation stylesheet</a>.
 The <a>animation stylesheet</a> is regenerated each time the
-<a>animation model</a> is updated (see <a href="#animation-effects"
+animation model is updated (see <a href="#animation-effects"
 section></a>).
 
 The <a>composited value</a> calculated for a CSS <a>target
@@ -3962,7 +3966,7 @@ Note: this procedure permits overlapping <a>keyframes</a>.
 <h3>Motion path animation effects</h3>
 
 A <dfn>motion path animation effect</dfn> is an <a>animation effect</a>
-that produces <a>animation values</a> for the transform <a>target
+that produces animation values for the transform <a>target
 property</a> of an <a>animation target</a> such that it follows
 a geometric curve commonly referred to as a &ldquo;motion path&rdquo;.
 
@@ -4113,7 +4117,7 @@ steps associated with the first matching condition from below:
 ::  Let <a>effective point offsets</a> refer to <a>point
     offsets</a>.
 :   If the <a title="motion path spacing mode">spacing mode</a>
-    is <a title="distribute spacing mode">distribute</a>,
+    is <a title="distribute keyframe spacing mode">distribute</a>,
 ::  Perform the following steps:
 
     1.  Let <a>effective point offsets</a> be a sequence of
@@ -4250,7 +4254,7 @@ The <dfn>path fraction</dfn> for a given <a>time fraction</a>,
 
     Note: <a>Effective point offsets</a> can only have one item if
         <a>spacing points</a> has exactly one item. In this case, the
-        <a>effective points offsets</a> will always be a list containing
+        <a>effective point offsets</a> will always be a list containing
         just the value 0.
 
 3.  If <var>progress</var> &ge; 1, let the <a>path fraction</a> equal
@@ -4551,7 +4555,7 @@ a procedural approach is more suitable.
 
 <a>Timelines</a>, including the <a>document
 timeline</a> are represented in the Web Animations API by the
-<a>AnimationTimeline</a> interface.
+<dfn interface>AnimationTimeline</dfn> interface.
 
 <pre class="idl">
 interface AnimationTimeline {
@@ -4578,7 +4582,7 @@ interface AnimationTimeline {
     this <a>timeline</a> that is scheduled to start at <code>currentTime</code>.
 
     The <code>timeline</code> attribute of the newly-created
-    <a>AnimationPlayer</a> object will be set to this object.
+    {{AnimationPlayer}} object will be set to this object.
 
     Similarly, the <code>startTime</code> attribute will be set to the
     value of this object's <code>currentTime</code> attribute at the
@@ -4586,7 +4590,7 @@ interface AnimationTimeline {
     <code>null</code>, zero.</li>
 
     The <code>currentTime</code> attribute of the
-    <a>AnimationPlayer</a> object is a calculated value described in
+    {{AnimationPlayer}} object is a calculated value described in
     <a href="#the-current-time-of-a-player" section></a>.
 
     The <code>playbackRate</code> and <code>paused</code> attributes
@@ -4594,25 +4598,25 @@ interface AnimationTimeline {
     the <a title="player playback rate">playback rate</a> and
     <a>paused state</a> properties of <a>player</a> objects.
 
-    The <a for=AnimationPlayer>source</a>
-    attribute of the created <a>AnimationPlayer</a>
+    The {{AnimationPlayer/source}}
+    attribute of the created {{AnimationPlayer}}
     is set from the <em>source</em> parameter by following the
     procedure defined for updating that attribute.
     As a result, if <em>source</em> is already associated with
     a <code>player</code>, it will be disassociated first before
-    being associated with the new <a>AnimationPlayer</a>.
+    being associated with the new {{AnimationPlayer}}.
 
     <div class='parameters'>
 
     :   source
     ::  the <a>source content</a> to assign to the newly-created
-        <a>AnimationPlayer</a> object.
+        {{AnimationPlayer}} object.
 
     </div>
 
 :   <dfn method for=AnimationTimeline title='getAnimationPlayers()'>
     sequence&lt;AnimationPlayer&gt; getAnimationPlayers()</dfn>
-::  Returns the set of <a>AnimationPlayer</a> objects
+::  Returns the set of {{AnimationPlayer}} objects
     associated with this <a>timeline</a> that have associated
     <a>source content</a> which is <a>current</a>.
 
@@ -4622,7 +4626,7 @@ interface AnimationTimeline {
 <h3>The <code>AnimationPlayer</code> interface</h3>
 
 <a>Players</a> are represented in the Web Animations
-API by the <a>AnimationPlayer</a> interface.
+API by the <dfn interface>AnimationPlayer</dfn> interface.
 
 <pre class='idl'>
 interface AnimationPlayer : EventTarget {
@@ -4717,9 +4721,7 @@ interface AnimationPlayer : EventTarget {
     <span attribute-info for=onfinish></span>
 ::  The event handler for the <a title="finish player event">finish</a> event.
 
-    Note: the <a
-        href="http://www.w3.org/TR/html5/webappapis.html#eventhandler">EventHandler</a>
-        callback interface type is defined in [[!HTML5]].
+    Note: the {{EventHandler}} callback interface type is defined in [[!HTML5]].
 
 </div>
 
@@ -4837,7 +4839,7 @@ interface AnimationPlayer : EventTarget {
 <h3>The <code>AnimationNode</code> interface</h3>
 
 <a>Animation nodes</a> are represented in the Web
-Animations API by the <a>AnimationNode</a> interface.
+Animations API by the <dfn interface>AnimationNode</dfn> interface.
 
 <pre class='idl'>
 interface AnimationNode {
@@ -4875,7 +4877,7 @@ interface AnimationNode {
     <code>window.getComputedStyle(elem)</code>.
 
     Although several of the attributes of the this object are common
-    to the <code>timing</code> <a>AnimationTiming</a> object they
+    to the <code>timing</code> {{AnimationTiming}} object they
     have the following differences:
 
     *   <code>duration</code> &ndash; returns the calculated value of
@@ -4884,7 +4886,7 @@ interface AnimationNode {
         attribute will return the current calculated value of the
         <a>intrinsic iteration duration</a>.
     *   <code>fill</code> &ndash; the <code>auto</code> value is
-        replaced with the specific <a>FillMode</a> depending on the type
+        replaced with the specific <a enum>FillMode</a> depending on the type
         of <a>animation node</a> (see <a
         href="#the-fillmode-enumeration" section></a>).
     *   <code>easing</code> &ndash; unrecognised or unsupported values
@@ -4967,7 +4969,7 @@ interface AnimationNode {
 
 :   <dfn method for=AnimationNode title='replace()'>
     void replace(AnimationNode... nodes)</dfn>
-::  Replaces this <a>AnimationNode</a> with the passed in
+::  Replaces this {{AnimationNode}} with the passed in
     <var>nodes</var>.
 
     1.  If there is no <a>parent animation group</a>, terminate these
@@ -5011,7 +5013,7 @@ interface AnimationNode {
 :   <dfn attribute for=AnimationTimingReadOnly>delay</dfn>
     <span attribute-info for=AnimationTimingReadOnly/delay></span>
 ::  The <a>start delay</a> which represents the number of milliseconds
-    from an <a>animation node</a>'s <a title="start time">start
+    from an <a>animation node</a>'s <a title="animation node start time">start
     time</a> to the start of the <a>active interval</a>.
 
     Issue: Now that we have <code>endDelay</code>, should we change this back
@@ -5021,12 +5023,13 @@ interface AnimationNode {
     <span attribute-info for=AnimationTimingReadOnly/endDelay></span>
 ::  The <a>end delay</a> which represents the number of milliseconds
     from the end of an <a>animation node</a>'s <a>active interval</a>
-    until the <a>start time</a> of any <a>animation node</a> that may
+    until the <a title='animation node start time'>start time</a> of any
+    <a>animation node</a> that may
     follow, for example, in an <a>animation sequence</a>.
 
 :   <dfn attribute for=AnimationTimingReadOnly>fill</dfn>
     <span attribute-info for=AnimationTimingReadOnly/fill></span>
-::  The <a>fill mode</a> as specified by one of the <a>FillMode</a>
+::  The <a>fill mode</a> as specified by one of the <a enum>FillMode</a>
     enumeration values.
 
     When performing timing calculations the special value <span
@@ -5084,7 +5087,7 @@ interface AnimationNode {
 :   <dfn attribute for=AnimationTimingReadOnly>direction</dfn>
     <span attribute-info for=AnimationTimingReadOnly/direction></span>
 ::  The <a>playback direction</a> of the <a>animation node</a> as
-    specified by one of the <a>PlaybackDirection</a> enumeration
+    specified by one of the <a enum>PlaybackDirection</a> enumeration
     values.
 
 :   <dfn attribute for=AnimationTimingReadOnly>easing</dfn>
@@ -5113,8 +5116,8 @@ interface AnimationNode {
 
 <h3>The <code>AnimationTiming</code> interface</h3>
 
-The <a>AnimationTiming</a> interface is a writeable subclass of
-<a>AnimationTimingReadOnly</a> used for an <a>AnimationNode</a>'s
+The <dfn interface>AnimationTiming</dfn> interface is a writeable subclass of
+{{AnimationTimingReadOnly}} used for an {{AnimationNode}}'s
 <code>timing</code> attribute.
 
 <pre class='idl'>
@@ -5135,20 +5138,20 @@ interface AnimationTiming : AnimationTimingReadOnly {
 
 :   <dfn attribute for=AnimationTiming>delay</dfn>
     <span attribute-info for=AnimationTiming/delay></span>
-::  See the <code>delay</code> member of the <a>AnimationTimingReadonly</a>
+::  See the <code>delay</code> member of the {{AnimationTimingReadOnly}}
     interface.
 :   <dfn attribute for=AnimationTiming>endDelay</dfn>
     <span attribute-info for=AnimationTiming/endDelay></span>
-::  See the <code>endDelay</code> member of the <a>AnimationTimingReadonly</a>
+::  See the <code>endDelay</code> member of the {{AnimationTimingReadOnly}}
     interface.
 :   <dfn attribute for=AnimationTiming>fill</dfn>
     <span attribute-info for=AnimationTiming/fill></span>
-::  See the <code>fill</code> member of the <a>AnimationTimingReadonly</a>
+::  See the <code>fill</code> member of the {{AnimationTimingReadOnly}}
     interface.
 :   <dfn attribute for=AnimationTiming>iterationStart</dfn>
     <span attribute-info for=AnimationTiming/iterationStart></span>
 ::  See the <code>iterationStart</code> member of the
-    <a>AnimationTimingReadonly</a> interface.
+    {{AnimationTimingReadOnly}} interface.
 
     Values less than zero are clamped to zero for the purpose of timing model
     calculations.
@@ -5172,13 +5175,13 @@ interface AnimationTiming : AnimationTimingReadOnly {
 :   <dfn attribute for=AnimationTiming>iterations</dfn>
     <span attribute-info for=AnimationTiming/iterations></span>
 ::  See the <code>iterations</code> member of the
-    <a>AnimationTimingReadonly</a> interface.
+    {{AnimationTimingReadOnly}} interface.
 
     Values less than zero and <code>NaN</code> values are treated as
     the value 1.0 for the purpose of timing model calculations.
 :   <dfn attribute for=AnimationTiming>duration</dfn>
     <span attribute-info for=AnimationTiming/duration></span>
-::  See the <code>duration</code> member of the <a>AnimationTimingReadonly</a>
+::  See the <code>duration</code> member of the {{AnimationTimingReadOnly}}
     interface.
 
     Real numbers less than zero, <code>NaN</code> values, and strings
@@ -5188,14 +5191,14 @@ interface AnimationTiming : AnimationTimingReadOnly {
 :   <dfn attribute for=AnimationTiming>playbackRate</dfn>
     <span attribute-info for=AnimationTiming/playbackRate></span>
 ::  See the <code>playbackRate</code> member of the
-    <a>AnimationTimingReadonly</a> interface.
+    {{AnimationTimingReadOnly}} interface.
 :   <dfn attribute for=AnimationTiming>direction</dfn>
     <span attribute-info for=AnimationTiming/direction></span>
 ::  See the <code>direction</code> member of the
-    <a>AnimationTimingReadonly</a> interface.
+    {{AnimationTimingReadOnly}} interface.
 :   <dfn attribute for=AnimationTiming>easing</dfn>
     <span attribute-info for=AnimationTiming/easing></span>
-::  See the <code>easing</code> member of the <a>AnimationTimingReadonly</a>
+::  See the <code>easing</code> member of the {{AnimationTimingReadOnly}}
     interface.
 
     Unrecognized string values or values that correspond to
@@ -5209,7 +5212,7 @@ interface AnimationTiming : AnimationTimingReadOnly {
 <h3>The <code>ComputedAnimationTiming</code> interface</h3>
 
 Timing parameters calculated by the timing model are exposed using the
-<a>ComputedAnimationTiming</a> interface.
+<dfn interface>ComputedAnimationTiming</dfn> interface.
 
 <pre class='idl'>interface ComputedAnimationTiming : AnimationTimingReadOnly {
     readonly attribute double              startTime;
@@ -5224,8 +5227,8 @@ Timing parameters calculated by the timing model are exposed using the
 
 :   <dfn attribute for=ComputedAnimationTiming>startTime</dfn>
     <span attribute-info for=ComputedAnimationTiming/startTime></span>
-::  The <a>start time</a> of this <a>animation node</a> in
-    milliseconds.
+::  The <a title='animation node start time'>start time</a> of this
+    <a>animation node</a> in milliseconds.
     This is the time at which the <a>parent animation group</a>, if
     any, has scheduled this child to run within its <a
     title="transformed time">transformed time space</a>, that is, the
@@ -5259,7 +5262,7 @@ Timing parameters calculated by the timing model are exposed using the
 
 :   <dfn attribute for=ComputedAnimationTiming>timeFraction</dfn>
     <span attribute-info for=ComputedAnimationTiming/timeFraction></span>
-::  The current <a>time fraction</a> of this <a>animation node.
+::  The current <a>time fraction</a> of this <a>animation node</a>.
 
 :   <dfn attribute for=ComputedAnimationTiming>currentIteration</dfn>
     <span attribute-info for=ComputedAnimationTiming/currentIteration></span>
@@ -5270,8 +5273,8 @@ Timing parameters calculated by the timing model are exposed using the
 
 <h3>The <code>AnimationTimingInput</code> dictionary</h3>
 
-The <dfn>AnimationTimingInput</dfn> dictionary is used as a convenience
-for specifying the timing properties of an <a>AnimationNode</a> in
+The <dfn interface>AnimationTimingInput</dfn> dictionary is used as a convenience
+for specifying the timing properties of an {{AnimationNode}} in
 bulk.
 
 <pre class='idl'>
@@ -5295,18 +5298,18 @@ dictionary AnimationTimingInput {
 ::  The specified <a>start delay</a>.
 
     See the description of the <code>delay</code> attribute on
-    the <a>AnimationTiming</a> interface.
+    the {{AnimationTiming}} interface.
 
 :   <dfn attribute for=AnimationTimingInput>endDelay</dfn>
     <span attribute-info for=AnimationTimingInput/endDelay></span>
 ::  The specified <a>end delay</a>.
 
     See the description of the <code>endDelay</code> attribute on
-    the <a>AnimationTiming</a> interface.
+    the {{AnimationTiming}} interface.
 
 :   <dfn attribute for=AnimationTimingInput>fill</dfn>
     <span attribute-info for=AnimationTimingInput/fill></span>
-::  The <a>fill mode</a> as specified by one of the <a>FillMode</a>
+::  The <a>fill mode</a> as specified by one of the <a enum>FillMode</a>
     enumeration values.
 
 :   <dfn attribute for=AnimationTimingInput>iterationStart</dfn>
@@ -5314,21 +5317,21 @@ dictionary AnimationTimingInput {
 ::  The <a>animation node</a>'s <a>iteration start</a> property.
 
     See the description of the <code>iterationStart</code> attribute
-    on the <a>AnimationTiming</a> interface.
+    on the {{AnimationTiming}} interface.
 
 :   <dfn attribute for=AnimationTimingInput>iterations</dfn>
     <span attribute-info for=AnimationTimingInput/iterations></span>
 ::  The <a>animation node</a>'s <a>iteration count</a> property.
 
     See the description of the <code>iterations</code> attribute
-    on the <a>AnimationTiming</a> interface.
+    on the {{AnimationTiming}} interface.
 
 :   <dfn attribute for=AnimationTimingInput>duration</dfn>
     <span attribute-info for=AnimationTimingInput/duration></span>
 ::  The <a>iteration duration</a> of the <a>animation node</a>.
 
     See the description of the <code>duration</code>
-    attribute on the <a>AnimationTiming</a> interface.
+    attribute on the {{AnimationTiming}} interface.
 
 :   <dfn attribute for=AnimationTimingInput>playbackRate</dfn>
     <span attribute-info for=AnimationTimingInput/playbackRate></span>
@@ -5336,14 +5339,14 @@ dictionary AnimationTimingInput {
     title="animation node playback rate">playback rate</a> property.
 
     See the description of the <code>playbackRate</code> attribute
-    on the <a>AnimationTiming</a> interface.
+    on the {{AnimationTiming}} interface.
 
 :   <dfn attribute for=AnimationTimingInput>direction</dfn>
     <span attribute-info for=AnimationTimingInput/direction></span>
 ::  The <a>playback direction</a> of the <a>animation node</a>.
 
     See the description of the <code>direction</code> attribute
-    on the <a>AnimationTiming</a> interface.
+    on the {{AnimationTiming}} interface.
 
 :   <dfn attribute for=AnimationTimingInput>easing</dfn>
     <span attribute-info for=AnimationTimingInput/easing></span>
@@ -5351,7 +5354,7 @@ dictionary AnimationTimingInput {
     easing effects.
 
     See the description of the <code>easing</code> attribute
-    on the <a>AnimationTiming</a> interface.
+    on the {{AnimationTiming}} interface.
 
 </div>
 
@@ -5373,8 +5376,8 @@ dictionary AnimationTimingInput {
 
 :   <code>auto</code>
 ::  Fill backwards and forwards when applied to an
-    <a>AnimationGroup</a> and no fill when applied to an
-    <a title="Animation interface">Animation</a>.
+    {{AnimationGroup}} and no fill when applied to an
+    {{Animation}}.
 
 
 <h4>The <code>PlaybackDirection</code> enumeration</h4>
@@ -5398,7 +5401,7 @@ dictionary AnimationTimingInput {
 
 <h3>The <code>AnimationGroup</code> interface</h3>
 
-<a>Animation groups</a> are represented by the <a>AnimationGroup</a>
+<a>Animation groups</a> are represented by the <dfn interface>AnimationGroup</dfn>
 interface.
 
 <pre class='idl'>[Constructor (sequence<AnimationNode>? children,
@@ -5415,40 +5418,39 @@ interface AnimationGroup : AnimationNode {
 <div class="constructors">
 
 :   Constructor ()
-::  Creates a new <a>AnimationGroup</a> object using the following
+::  Creates a new {{AnimationGroup}} object using the following
     procedure:
 
-    1.  Create a new <a>AnimationGroup</a> object, <var>group</var>.
+    1.  Create a new {{AnimationGroup}} object, <var>group</var>.
     2.  Set <var>timing input</var> as follows,
 
         <div class="switch">
 
-        :   If <var>timing</var> is an <a>AnimationTimingInput</a>
+        :   If <var>timing</var> is an {{AnimationTimingInput}}
             object,
         ::  Let <var>timing input</var> refer to <var>timing</var>.
 
         :   If <var>timing</var> is a <code>double</code>,
         ::  Let <var>timing input</var> be a new
-            <a>AnimationTimingInput</a> object with all members set to
+            {{AnimationTimingInput}} object with all members set to
             their default values and <code>duration</code> set to
             <var>timing</var>.
 
         :   Otherwise (<var>timing</var> is undefined),
         ::  Let <var>timing input</var> be a new
-            <a>AnimationTimingInput</a> object with all members set to
+            {{AnimationTimingInput}} object with all members set to
             their default values.
 
         </div>
 
     3.  Set <code><var>group</var>.timing</code> to a new
-        <a>AnimationTiming</a> object whose attributes are assigned the
+        {{AnimationTiming}} object whose attributes are assigned the
         value of the member of the same name on <var>timing input</var>.
 
         <div class="todo">
 
-        The above two steps are identical with the constructor for <a
-        title="Animation interface">Animation</a> and should be
-        factored out somewhere.
+        The above two steps are identical with the constructor for
+        {{Animation}} and should be factored out somewhere.
 
         </div>
 
@@ -5457,13 +5459,13 @@ interface AnimationGroup : AnimationNode {
 
     <div class="note">
 
-    Note that since <a>AnimationTiming</a> objects have the same
-    member names as <a>AnimationTimingInput</a> dictionaries, it is
+    Note that since {{AnimationTiming}} objects have the same
+    member names as {{AnimationTimingInput}} dictionaries, it is
     also possible to pass the <code>timing</code> member of another
-    <a>AnimationNode</a> as the <var>timing</var> parameter.
+    {{AnimationNode}} as the <var>timing</var> parameter.
 
-    Doing so will cause the <a>AnimationTiming</a> object to be
-    treated as an <a>AnimationTimingInput</a> dictionary and thus it
+    Doing so will cause the {{AnimationTiming}} object to be
+    treated as an {{AnimationTimingInput}} dictionary and thus it
     will effectively be cloned, not shared.
 
     </div>
@@ -5474,7 +5476,7 @@ interface AnimationGroup : AnimationNode {
     ::  A sequence of animation nodes to add as children of this group.
 
         These children are appended in sequence using the same
-        semantics as the <code><a>AnimationGroup</a>.append</code>
+        semantics as the <code>{{AnimationGroup}}.append</code>
         method.
 
     :   timing
@@ -5527,23 +5529,23 @@ interface AnimationGroup : AnimationNode {
 
 :   <dfn method for=AnimationTimeline title="clone()">
     AnimationGroup clone ()</dfn>
-::  Creates a deep copy of this <a>AnimationGroup</a> object using the
+::  Creates a deep copy of this {{AnimationGroup}} object using the
     following procedure.
 
-    1.  Let <var>source</var> be this <a>AnimationGroup</a> object,
+    1.  Let <var>source</var> be this {{AnimationGroup}} object,
         the object to be cloned.
     2.  Let <var>cloned timing</var> be a new
-        <a>AnimationTimingInput</a> object whose members are assigned
+        {{AnimationTimingInput}} object whose members are assigned
         the value of the attribute with the same name on
         <code><var>source</var>.timing</code>.
     3.  Let <var>cloned children</var> be an empty sequence of
-        <a>AnimationNode</a> objects.
+        {{AnimationNode}} objects.
     4.  For each <var>child</var> in
         <code><var>source</var>.children</code>, append the result
         of calling <code><var>child</var>.clone()</code>
         to <var>cloned children</var>.
-    5.  Return a new <a>AnimationGroup</a> object created by
-        calling the <a>AnimationGroup</a> constructor with parameters
+    5.  Return a new {{AnimationGroup}} object created by
+        calling the {{AnimationGroup}} constructor with parameters
         <code>AnimationGroup(<var>cloned children</var>,
         <var>cloned timing</var>)</code>.
 
@@ -5553,7 +5555,7 @@ interface AnimationGroup : AnimationNode {
 
 The <dfn title="next sibling not included">next sibling of
 <var>node</var> not included</dfn> in a set of <a>animation
-odes</a>, <var>nodes</var> is determined using the following
+nodes</a>, <var>nodes</var> is determined using the following
 teps:</p>
 
 1.  Let <var>context node</var> be <var>node</var>.
@@ -5599,7 +5601,7 @@ more <a>animation nodes</a>, <var>nodes</var>, to
 <h3>The <code>AnimationNodeList</code> interface</h3>
 
 A list of <a>animation nodes</a> may be represented by
-an <a>AnimationNodeList</a>.
+an {{AnimationNodeList}}.
 
 The <code>AnimationNodeList</code> interface supports indexed
 properties with indices in the range 0 &le; <var>index</var> &lt;
@@ -5652,7 +5654,7 @@ interface AnimationSequence : AnimationGroup {
     optional (unrestricted double or AnimationTimingInput) timing)</dfn>
 ::  The meaning and handling of each of the parameters in this
     constructor is identical to the constructor for
-    <a>AnimationGroup</a>.
+    {{AnimationGroup}}.
 
 </div>
 
@@ -5660,17 +5662,17 @@ interface AnimationSequence : AnimationGroup {
 
 :   <dfn method for=AnimationSequence title="clone()">
     AnimationSequence clone ()</dfn>
-::  Creates a deep copy of this <a>AnimationSequence</a> object using
+::  Creates a deep copy of this {{AnimationSequence}} object using
     the same procedure as defined for <a
     href="#widl-AnimationGroup-clone-AnimationGroup">AnimationGroup.clone</a>
-    except that a new <a>AnimationSequence</a> object is created.
+    except that a new {{AnimationSequence}} object is created.
 
 </div>
 
 <h3>The <code>Animation</code> interface</h3>
 
 <a>Animations</a> are represented by the
-<code>Animation</code> interface.
+<dfn interface>Animation</dfn> interface.
 
 <pre class='idl'>[Constructor (Animatable? target, object? effect,
               optional (unrestricted double or AnimationTimingInput)
@@ -5684,34 +5686,33 @@ interface Animation : AnimationNode {
 <div class="contructors">
 
 :   Constructor ()
-::  Creates a new <a title="Animation interface">Animation</a> object
+::  Creates a new {{Animation}} object
     using the following procedure:
 
-    1.  Create a new <a title="Animation interface">Animation</a>
-        object, <var>animation</var>.</li>
+    1.  Create a new {{Animation}} object, <var>animation</var>.</li>
     2.  Set <var>timing input</var> as follows,
 
         <div class="switch">
 
-        :   If <var>timing</var> is an <a>AnimationTimingInput</a>
+        :   If <var>timing</var> is an {{AnimationTimingInput}}
             object,
         ::  Let <var>timing input</var> refer to <var>timing</var>.
 
         :   If <var>timing</var> is a <code>double</code>,
         ::  Let <var>timing input</var> be a new
-            <a>AnimationTimingInput</a> object with all members set to
+            {{AnimationTimingInput}} object with all members set to
             their default values and <code>duration</code> set to
             <var>timing</var>.
 
         :   Otherwise (<var>timing</var> is undefined),
         ::  Let <var>timing input</var> be a new
-            <a>AnimationTimingInput</a> object with all members set to
+            {{AnimationTimingInput}} object with all members set to
             their default values.
 
         </div>
 
     3.  Set <code><var>animation</var>.timing</code> to a new
-        <a>AnimationTiming</a> object whose attributes are assigned the
+        {{AnimationTiming}} object whose attributes are assigned the
         value of the member of the same name on <var>timing input</var>.
     4.  Set <code><var>animation</var>.effect</code> to
         the result of applying the <a>procedure for converting an effect
@@ -5722,10 +5723,10 @@ interface Animation : AnimationNode {
 
     Note: as with <a
     href="#widl-ctor-AnimationGroup-sequence-AnimationNode--children--unrestricted-double-or-AnimationTimingInput--timing">the
-    constructor for <a>AnimationGroup</a></a>s
-    it is possible to pass in an <a>AnimationTiming</a> object here
+    constructor for {{AnimationGroup}}</a>s
+    it is possible to pass in an {{AnimationTiming}} object here
     (e.g. the <code>timing</code> member of another
-    <a>AnimationNode</a>) in which case it will be cloned.
+    {{AnimationNode}}) in which case it will be cloned.
 
     <div class="parameters">
 
@@ -5736,8 +5737,7 @@ interface Animation : AnimationNode {
 
     :   object? effect
     ::  The animation effect used to set the <code>effect</code>
-        attribute of the newly-created <a title="Animation
-        interface">Animation</a> object.
+        attribute of the newly-created {{Animation}} object.
 
         The processing of this parameter is defined normatively in <a
         href="#processing-the-effect-parameter"
@@ -5746,35 +5746,28 @@ interface Animation : AnimationNode {
 
         <var>effect</var> may be one of the following:
 
-        *   An <a>AnimationEffect</a> object,
-        *   An <a>EffectCallback</a> function,
-        *   A single <a title="Keyframe interface">Keyframe</a>
-            object,
-        *   A sequence of <a title="Keyframe interface">Keyframe</a>
-            objects, or
+        *   An {{AnimationEffect}} object,
+        *   An {{EffectCallback}} function,
+        *   A single {{Keyframe}} object,
+        *   A sequence of {{Keyframe}} objects, or
         *   null
 
-        If this parameter is an <a>AnimationEffect</a> object or
-        <a>EffectCallback</a> object, it will be shared with any
-        other <a title="Animation interface">Animation</a> objects
-        referring to the same <a>AnimationEffect</a> or
-        <a>EffectCallback</a> object.
+        If this parameter is an {{AnimationEffect}} object or
+        {{EffectCallback}} object, it will be shared with any
+        other {{Animation}} objects referring to the same
+        {{AnimationEffect}} or {{EffectCallback}} object.
         It will <em>not</em> be copied.
 
-        If this parameter is of type <a
-        title="Keyframe interface">Keyframe</a> or
-        <code>sequence&lt;<a
-        title="Keyframe interface">Keyframe</a>&gt;</code>,
-        the <a>animation effect</a> of the newly-created
-        <a title="Animation interface">Animation</a> will be
+        If this parameter is of type {{Keyframe}} or
+        <code>sequence&lt;<a dictionary>Keyframe</a>&gt;</code>,
+        the <a>animation effect</a> of the newly-created {{Animation}} will be
         a newly-created <a>KeyframeEffect</a> object
         initialized by using this object as the list of
         <a>keyframes</a> and with all other parameters set to their
         default values.
 
         If this parameter is <code>null</code>, the newly-created
-        <a title="Animation interface">Animation</a> will also have
-        a <code>null</code> animation effect.
+        {{Animation}} will also have a <code>null</code> animation effect.
     :   optional (unrestricted double or AnimationTimingInput)
         timing
     ::  The timing properties or <a>iteration duration</a> of the new
@@ -5792,7 +5785,7 @@ interface Animation : AnimationNode {
     May be <code>null</code> in which case the animation will produce
     no observable effect.
 
-    Issue: On setting, if the previous value was an <a>EffectCallback</a>, we
+    Issue: On setting, if the previous value was an {{EffectCallback}}, we
         should call the old callback with a null time fraction so it can
         clear its result.
 
@@ -5809,17 +5802,15 @@ interface Animation : AnimationNode {
 
 :   <dfn method for=Animation title="clone()">
     Animation clone ()</dfn>
-::  Creates a copy of this <a title="Animation
-    interface">Animation</a> object using the following procedure.
+::  Creates a copy of this {{Animation}} object using the following procedure.
 
-    1.  Let <var>source</var> be the <a
-        title="Animation interface">Animation</a> object to
+    1.  Let <var>source</var> be the {{Animation}} object to
         clone, that is, this object.</li>
     2.  Let <var>cloned timing</var> be a new
-        <a>AnimationTimingInput</a> object whose members are assigned
+        {{AnimationTimingInput}} object whose members are assigned
         the value of the attribute with the same name on
         <code><var>source</var>.timing</code>.</li>
-    3.  The <a>AnimationEffect</a> is cloned depending on the type of
+    3.  The {{AnimationEffect}} is cloned depending on the type of
         <code><var>source</var>.effect</code> as follows,
 
         <div class="switch">
@@ -5829,7 +5820,7 @@ interface Animation : AnimationNode {
         ::  Let <var>cloned effect</var> be the result of calling
             <code><var>source</var>.effect.clone()</code>.
         :   If <code><var>source</var>.effect</code> is an
-            <a>EffectCallback</a> object,
+            {{EffectCallback}} object,
         ::  Let <var>cloned effect</var> be
             <code><var>source</var>.effect</code>.
         :   Otherwise,
@@ -5849,9 +5840,9 @@ interface Animation : AnimationNode {
 <h4>Processing the <var>effect</var> parameter</h4>
 
 The <var>effect</var> parameter, an ECMAScript value passed to the
-<a title="Animation interface">Animation</a> constructor or to the
-<code>animate</code> operation of the <a>Animatable</a> interface,
-may specify an <a>EffectCallback</a>, an <a>AnimationEffect</a>,
+{{Animation}} constructor or to the
+<code>animate</code> operation of the {{Animatable}} interface,
+may specify an {{EffectCallback}}, an {{AnimationEffect}},
 a <a>Keyframe</a> a sequence of <a>Keyframes</a>, or <span
 class="esvalue">null</span>.
 However, since callback functions and dictionaries are not
@@ -5868,7 +5859,7 @@ with parameter <var>effect</var> is as follows:
 
 :   If <var>effect</var> is a <a
     href="http://www.w3.org/TR/WebIDL/#dfn-platform-object">platform
-    object</a> that implements <a>AnimationEffect</a>,
+    object</a> that implements {{AnimationEffect}},
 ::  return the IDL value that is a reference to the that platform
     object.
 
@@ -5876,7 +5867,7 @@ with parameter <var>effect</var> is as follows:
 ::  Return the result of applying the <a
     href="http://www.w3.org/TR/WebIDL/#es-callback-function">procedure
     for converting an ECMAScript value to an IDL callback function
-    type</a> to <var>effect</var> using <a>EffectCallback</a> as the
+    type</a> to <var>effect</var> using {{EffectCallback}} as the
     callback function type.
 
 :   Otherwise,
@@ -5904,7 +5895,7 @@ var anim = new Animation(elem, { left: '100px' }, 3000);
 </pre>
 
 The second parameter, representing the <a>animation effect</a>, may
-specify multiple properties, an <a>AnimationEffect</a> object, or
+specify multiple properties, an {{AnimationEffect}} object, or
 even a callback function.
 
 <pre class='example sh_javascript'>
@@ -5934,7 +5925,7 @@ The third parameter representing the animation's timing, may
 simply be a number representing the <a>iteration duration</a> in
 milliseconds as above, or, to specify further timing properties such
 as the <a title="animation node playback rate">playback rate</a>,
-an <a>AnimationTimingInput</a> object can be used as follows:
+an {{AnimationTimingInput}} object can be used as follows:
 
 <pre class='example sh_javascript'>
 var anim =
@@ -5965,8 +5956,7 @@ new AnimationSequence(
 );
 </pre>
 
-Having created an <a title="Animation interface">Animation</a>, it
-can be played using
+Having created an {{Animation}}, it can be played using
 <code>document.timeline.play(<var>anim</var>)</code>.
 For simple effects, however, the <a
 href="#extensions-to-the-element-interface"><code>Element.animate</code></a>
@@ -5981,9 +5971,18 @@ elem.animate({ left: '100px' }, 3000);
 
 <h3>The <code>Animatable</code> interface</h3>
 
-Objects that may be the target of an <a
-title="Animation interface">Animation</a> implement the
-<a>Animatable</a> interface.
+Objects that may be the target of an {{Animation}} implement the
+{{Animatable}} interface.
+
+<pre class='idl'>
+[NoInterfaceObject]
+interface Animatable {
+    AnimationPlayer           animate (object? effect,
+                                       optional (double or AnimationTimingInput) timing);
+    sequence&lt;Animation&gt;       getCurrentAnimations ();
+    sequence&lt;AnimationPlayer&gt; getAnimationPlayers ();
+};
+</pre>
 
 <pre class='idl'>[NoInterfaceObject]
 interface Animatable {
@@ -5998,17 +5997,16 @@ interface Animatable {
 :   <dfn method for=Animatable title="animate()">
     AnimationPlayer animate(object? effect,
         optional (double or AnimationTimingInput) timing)</dfn>
-::  Creates a new <a title="Animation interface">Animation</a> object
+::  Creates a new {{Animation}} object
     whose <a>animation target</a> is the object on which the method is
     called, and calls
     the <a
     href="#widl-AnimationTimeline-play-AnimationPlayer-AnimationNode-source"><code>play</code></a>
-    method of the <a>AnimationTimeline</a> object of
+    method of the {{AnimationTimeline}} object of
     the <a>document timeline</a> of the <a
     href="http://www.w3.org/TR/dom/#concept-node-document">node
     document</a> [[!DOM4]] of the element passing the newly created
-    <a title="Animation interface">Animation</a> as the argument to
-    the method.
+    {{Animation}} as the argument to the method.
 
     The following code fragment:
 
@@ -6023,8 +6021,8 @@ interface Animatable {
     elem.ownerDocument.timeline.play(anim);
     </div>
 
-    Returns the <a>AnimationPlayer</a> object returned by the
-    <code>play</code> method of the <a>AnimationTimeline</a>.
+    Returns the {{AnimationPlayer}} object returned by the
+    <code>play</code> method of the {{AnimationTimeline}}.
 
     <div class="parameters">
 
@@ -6045,11 +6043,11 @@ interface Animatable {
 
 :   <dfn method for=Animatable title="getCurrentAnimations()">
     sequence&lt;Animation&gt; getCurrentAnimations()</dfn>
-::  Returns the set of <a>current</a> <a title="Animation
-    interface">Animation</a> objects that have an <a>animation
+::  Returns the set of <a>current</a> {{Animation}}
+    objects that have an <a>animation
     effect</a> whose <a>animation target</a> is this object.
 
-    The returned list of <a title="Animation interface">Animation</a>
+    The returned list of {{Animation}}
     objects is sorted by their associated <a>animation effect</a>
     using the procedure defined for sorting <a>animation effects</a>
     in <a href="#the-animation-stack" section></a>.
@@ -6075,11 +6073,11 @@ interface Animatable {
     </div>
 
     Note: that when called on <code>Element</code> objects, the list of
-        returned <a title="Animation interface">Animation</a>s will
+        returned {{Animation}}s will
         <em>not</em> include those animations whose target is
         a <code>PseudoElement</code> associated with the
         <code>Element</code> since <code>PseudoElement</code> and
-        <code>Element</code> are treated as independent <a>Animatable</a>
+        <code>Element</code> are treated as independent {{Animatable}}
         objects.
 
     Issue: Feedback has been provided that suggests direct references from
@@ -6093,14 +6091,14 @@ interface Animatable {
 
 :   <dfn method for=Animatable title="getAnimationPlayers()">
     sequence&lt;AnimationPlayer&gt; getAnimationPlayers()</dfn>
-::  Returns the set of <a>AnimationPlayer</a> objects
+::  Returns the set of {{AnimationPlayer}} objects
     whose <a>source content</a> is <a>current</a> and contains at
     least one <a>animation</a> whose <a>animation target</a> is this
     object.
 
     If this object is the <a>animation target</a> of two or more <a
     title="animation">animations</a> which are associated with the
-    same <a>player</a>, the corresponding <a>AnimationPlayer</a>
+    same <a>player</a>, the corresponding {{AnimationPlayer}}
     object will still only appear in the returned list once.
 
     The returned list is sorted in increasing order by <a>player
@@ -6110,7 +6108,7 @@ interface Animatable {
 
 <a>Animation effects</a> are represented by
 the <code>AnimationEffect</code> interface.
-<a>AnimationEffect</a> is an abstract interface of which several
+{{AnimationEffect}} is an abstract interface of which several
 concrete subinterfaces are provided.
 
 <pre class='idl'>interface AnimationEffect {
@@ -6217,7 +6215,7 @@ enum CompositeOperation {"replace", "add", "accumulate"};
 <h3>The <code>KeyframeEffect</code> interface</h3>
 
 <a>Keyframe animation effects</a> are represented by the
-<a>KeyframeEffect</a> interface.
+<dfn>KeyframeEffect</dfn> interface.
 
 <pre class='idl'>[Constructor (object frames, optional KeyframeEffectOptions options)]
 interface KeyframeEffect : AnimationEffect {
@@ -6236,14 +6234,13 @@ interface KeyframeEffect : AnimationEffect {
     <div class="parameters">
 
     :   object frames
-    ::  A <a title="Keyframe interface">Keyframe</a> object or sequence
-        of <a title="Keyframe interface">Keyframe</a> objects used for
+    ::  A {{Keyframe}} object or sequence of {{Keyframe}} objects used for
         calculating animation values for this <a>animation effect</a>.
         The constraints on this parameter and its processing are
         identical to those for <code>setFrames</code>.
 
     :   optional KeyframeEffectOptions options
-    ::  A <a>KeyframeEffectOptions</a> dictionary defining other aspects
+    ::  A {{KeyframeEffectOptions}} dictionary defining other aspects
         of the <a>animation effect</a>'s behavior.
         If this parameter is not provided, the default values of the
         dictionary are used.
@@ -6267,7 +6264,7 @@ interface KeyframeEffect : AnimationEffect {
 
     <code>{ident}</code> here is an <a
     href="http://www.w3.org/TR/css3-values/#identifier">identifier</a>
-    as defined by CSS3 Values [[!CSS3-VALUES]].
+    as defined by CSS3 Values [[!CSS3VAL]].
 
     The meaning of each value is as follows:
 
@@ -6311,7 +6308,7 @@ interface KeyframeEffect : AnimationEffect {
 :   <dfn method for=KeyframeEffect title="getFrames()">
     sequence&lt;ComputedKeyframe&gt; getFrames()</dfn>
 ::  Returns the <a>keyframes</a> that make up this effect as
-    a sequence of <a>ComputedKeyframe</a> objects.
+    a sequence of {{ComputedKeyframe}} objects.
 
     The value returned differs from the <var>frames</var> parameter
     passed into <code>setFrames</code> or the constructor for this
@@ -6322,9 +6319,8 @@ interface KeyframeEffect : AnimationEffect {
         section></a> is applied to <var>frames</var> which
         may result in some frames being removed or re-ordered and some
         properties being removed.
-        This normalization will also cause a single <a
-        title="Keyframe interface">Keyframe</a> object to be replaced
-        with a sequence.
+        This normalization will also cause a single {{Keyframe}}
+        object to be replaced with a sequence.
     *   The result of computing the <a>keyframe offset</a>
         of each <a>keyframe</a> as defined in <a
         href="#spacing-keyframes" section></a> is stored in
@@ -6332,15 +6328,13 @@ interface KeyframeEffect : AnimationEffect {
 
 :   <dfn method for=KeyframeEffect title="setFrames()">
     void setFrames(object frames)</dfn>
-::  A <a title="Keyframe interface">Keyframe</a> object or sequence
-    of <a title="Keyframe interface">Keyframe</a> objects used to
+::  A {{Keyframe}} object or sequence of {{Keyframe}} objects used to
     replace the set of <a>keyframes</a> that make up this effect.
 
     The processing of the <var>frames</var> parameter is defined in <a
     href="#processing-a-sequence-of-keyframe-objects-or-a-single-item"
     section></a>.
-    Subsequently, the resulting sequence of <a
-    title="Keyframe interface">Keyframe</a> objects is normalized
+    Subsequently, the resulting sequence of {{Keyframe}} objects is normalized
     using the procedure in <a
     href="#normalizing-a-sequence-of-keyframes"
     section></a> before storing.
@@ -6354,8 +6348,7 @@ distinguishable but it was felt that allowing both was important
 for useability of the <code>animate</code> operation on
 <a>Animatable</a>.
 Therefore, we define the processing for handling a parameter
-that may be either a single <a
-title="Keyframe interface">Keyframe</a> dictionary object, or
+that may be either a single {{Keyframe}} dictionary object, or
 a sequence of such objects.
 
 The <dfn>procedure for converting an ECMAScript value into
@@ -6387,7 +6380,7 @@ Issue: Should this be defined in terms of <code>IsIterable</code> instead?
 <h4>The <code>KeyframeEffectOptions</code> dictionary</h4>
 
 Additional parameters may be passed to the <a>KeyframeEffect</a>
-constructor by providing a <a>KeyframeEffectOptions</a> object.
+constructor by providing a {{KeyframeEffectOptions}} object.
 
 <pre class='idl'>dictionary KeyframeEffectOptions {
     IterationCompositeOperation iterationComposite = "replace";
@@ -6437,8 +6430,8 @@ value defined in <a href="#processing-a-keyframe-object"
 section></a> is performed before this operation is
 initiated.
 
-1.  If <var>frames</var> is a single <a title="Keyframe
-    interface">Keyframe</a> object, replaces <var>frames</var> with
+1.  If <var>frames</var> is a single {{Keyframe}} object, replaces
+    <var>frames</var> with
     a new sequence with a single item that is the previous value of
     <var>frames</var>.
 2.  If <var>frames</var> is not <a>loosely sorted by offset</a>,
@@ -6446,8 +6439,7 @@ initiated.
 
     <div class='switch'>
 
-    :   If each <a title="Keyframe interface">Keyframe</a> has
-        a non-null <code>offset</code>,
+    :   If each {{Keyframe}} has a non-null <code>offset</code>,
     ::  Sort <var>frames</var> in ascending order by
         <code>offset</code>.
     :   Otherwise,</dt>
@@ -6456,14 +6448,13 @@ initiated.
 
     </div>
 
-3.  If there exist any <a title="Keyframe interface">Keyframe</a>
+3.  If there exist any {{Keyframe}}
     objects in <var>frames</var> whose <code>offset</code> member is
     non-null and less than zero, remove all keyframes
     objects from the start of <var>frames</var> up to and including
     the keyframe with the largest non-null <code>offset</code>
     that is still less than zero.
-4.  Likewise, if there exist any <a
-    title="Keyframe interface">Keyframe</a> objects in
+4.  Likewise, if there exist any {{Keyframe}} objects in
     <var>frames</var> whose <code>offset</code> member is non-null
     and greater than one, remove all <a>keyframes</a> from
     the keyframe with the smallest non-null <code>offset</code>
@@ -6477,7 +6468,7 @@ initiated.
 <h3>The <code>Keyframe</code> dictionary</h3>
 
 Individual <a>keyframes</a> are represented by a special kind of
-<a title="Keyframe interface">Keyframe</a> dictionary type whose
+{{Keyframe}} dictionary type whose
 members map to the properties to be animated.
 At the time of writing, this kind of open-ended dictionary cannot
 be represented using WebIDL and hence special
@@ -6517,7 +6508,7 @@ dictionary Keyframe {
 
     The syntax and error-handling associated with parsing this string
     is identical to that defined for the <code>easing</code> attribute
-    of the <a>AnimationTiming</a> interface.
+    of the {{AnimationTiming}} interface.
 
 :   <dfn attribute for=Keyframe>composite</dfn>
     <span attribute-info for=Keyframe/composite></span>
@@ -6526,7 +6517,7 @@ dictionary Keyframe {
     specified in this keyframe with the <a>underlying value</a>.
 
     If <code>null</code>, the <a>composite operation</a>
-    specified on the <a>AnimationEffect</a> will be used.
+    specified on the {{AnimationEffect}} will be used.
 
 </div>
 
@@ -6539,8 +6530,7 @@ Since accessing the properties of an ECMAScript user object can
 have side effects, the manner in which these properties is
 accessed is important.
 In light of this consideration the procedure for converting an
-ECMAScript object into an IDL <a
-title="Keyframe interface">Keyframe</a> object has the following
+ECMAScript object into an IDL {{Keyframe}} object has the following
 properties:
 
 *   Each property that is read, is read only once.
@@ -6554,8 +6544,7 @@ The <dfn>procedure for converting an ECMAScript value to an IDL
 Keyframe object</dfn> with parameter <var>keyframe input</var>
 is as follows:
 
-1.  Let <var>keyframe result</var> be a <a
-    title="Keyframe interface">Keyframe</a> object with the
+1.  Let <var>keyframe result</var> be a {{Keyframe}} object with the
     <code>offset</code>, <code>easing</code> and
     <code>composite</code> attributes set to the default dictionary
     values.
@@ -6566,9 +6555,9 @@ is as follows:
     to the equivalent IDL attribute by applying the <a
     href="http://dev.w3.org/csswg/cssom/#css-property-to-idl-attribute">CSS
     property to IDL attribute</a> algorithm [[!CSSOM]].
-4.  If the user agent supports animation of the <span
-    class="prop-name">float</a> CSS property, replace 'float' in
-    <var>supported properties</var> with 'cssFloat'.
+4.  If the user agent supports animation of the 'float'
+    CSS property, replace "float" in
+    <var>supported properties</var> with "cssFloat".
 5.  Let <var>animation properties</var> be an empty sequence.
 6.  Use the internal [&zwnj;[Enumerate]] operation on <var>keyframe
     input</var> to iterate over its properties.
@@ -6578,17 +6567,17 @@ is as follows:
     <div class="switch">
 
     :   If <var>property</var> is a case-sensitive match for
-        the string 'offset',</dt>
+        the string "offset",</dt>
     ::  Set the <code>offset</code> member of <var>keyframe
         result</var> to the result of applying the <a
         href="http://www.w3.org/TR/WebIDL/#es-double">procedure for
         converting an ECMAScript value into an IDL double</a>
         [[!WEBIDL]] to the result of calling the [&zwnj;[Get]]
         internal method on <var>keyframe input</var> with property
-        name 'offset'.
+        name "offset".
 
     :   If <var>property</var> is a case-sensitive match for
-        the string 'easing',</dt>
+        the string "easing",</dt>
     ::  Set the <code>easing</code> member of <var>keyframe
         result</var> to the result of applying the <a
         href="http://www.w3.org/TR/WebIDL/#es-DOMString">procedure
@@ -6597,18 +6586,18 @@ is as follows:
         href="http://www.w3.org/TR/WebIDL/#TreatNullAs">[TreatNullAs=EmptyString]</a>
         annotation in effect, to the result of calling
         the [&zwnj;[Get]] internal method of <var>keyframe
-        input</var> with property name 'easing'.
+        input</var> with property name "easing".
 
         If the resulting string does not conform to the
         grammar defined for the <a
         href="#widl-AnimationTiming-easing"><code>easing</code></a>
-        attribute of the <a>AnimationTiming</a> interface or
+        attribute of the {{AnimationTiming}} interface or
         is not supported by the implementation, then
         set the <code>easing</code> of <var>keyframe result</var>
         to the string &ldquo;linear&rdquo;.
 
     :   If <var>property</var> is a case-sensitive match for
-        the string 'composite',</dt>
+        the string "composite",</dt>
     ::  Set the <code>composite</code> member of <var>keyframe
         result</var> to the result applying <a
         href="http://www.w3.org/TR/WebIDL/#es-enumeration">the
@@ -6616,7 +6605,7 @@ is as follows:
         enumeration type</a> [[!WEBIDL]] with
         <a>CompositeOperation</a> as the enumeration type, to
         the result of calling the [&zwnj;[Get]] internal method on
-        <var>keyframe input</var> with property name 'composite'.
+        <var>keyframe input</var> with property name "composite".
 
     :   Otherwise, if <var>property</var> also exists in
         <var>supported properties</var> based on a case-sensitive
@@ -6646,11 +6635,11 @@ is as follows:
         href="http://dev.w3.org/csswg/cssom/#idl-attribute-to-css-property">IDL
         attribute to CSS property</a> algorithm [[!CSSOM]] to
         <var>name</var> unless <var>name</var> is
-        a case-sensitive match for the string 'cssFloat' in
-        which case use the string 'float'.
+        a case-sensitive match for the string "cssFloat" in
+        which case use the string "float".
     *   <em>member value</em>: the result of calling
         <code>ToString</code> on the value returned from the
-        [&zwnj;[Get]] method of <a>keyframe input</a> with property
+        [&zwnj;[Get]] method of <var>keyframe input</var> with property
         name, <var>name</var>.
         If [&zwnj;[Get]] returns null or undefined, let the member
         value be an empty string.
@@ -6660,8 +6649,8 @@ is as follows:
 <div class="issue">
 
 The above algorithm gives special meaning to the property names
-'offset', 'computedOffset', 'easing', and 'composite'.
-If a CSS property called 'offset' or 'composite' is ever
+"offset", "computedOffset", "easing", and "composite".
+If a CSS property called "offset" or "composite" is ever
 introduced it will clash with the meaning here.
 
 We have a few options:
@@ -6669,7 +6658,7 @@ We have a few options:
 *   Add special handling at that time to allow addressing the
     property of the same name, e.g. <code>cssOffset</code>.
 *   Rename these keywords now to reduce risk of a later clash,
-    e.g. 'keyframeOffset'.
+    e.g. "keyframeOffset".
 
 </div>
 
@@ -6679,7 +6668,7 @@ We have a few options:
 
 <a>Keyframes</a> returned by
 <code><a>KeyframeEffect</a>.getFrames</code> are represented using
-<a>ComputedKeyframe</a> dictionary objects.
+{{ComputedKeyframe}} dictionary objects.
 
 <pre class='idl'>
 dictionary ComputedKeyframe : Keyframe {
@@ -6735,7 +6724,7 @@ interface MotionPathEffect : AnimationEffect {
         Any errors encountered in the path data cause parsing to
         cease and the path data processed up to that point to be used.
 
-        The resulting <a>SVGPathSegList</a> is assigned to the
+        The resulting <code>SVGPathSegList</code> is assigned to the
         <code>path</code> attribute of the generated object without
         copying.
 
@@ -6858,15 +6847,15 @@ enum AutoRotationMode { "auto-rotate", "none" };
 <h3>The <code>EffectCallback</code> callback function</h3>
 
 <a>Custom effects</a> can be defined in script by providing an
-<a>EffectCallback</a> callback function.
+{{EffectCallback}} callback function.
 
 <pre class='idl'>
 callback EffectCallback = void (double? timeFraction, Animatable currentTarget,
                                 Animation animation);
 </pre>
 
-An <a>EffectCallback</a> is called each time an <a
-title="Animation interface">Animation</a> with which it is
+An {{EffectCallback}} is called each time an {{Animation}}
+with which it is
 associated is <a title="sampling">sampled</a>.
 
 <div class="parameters">
@@ -6898,15 +6887,14 @@ associated is <a title="sampling">sampled</a>.
     </div>
 
 :   Animation animation
-::  The <a title="Animation interface">Animation</a> object that is
-    being sampled.
+::  The {{Animation}} object that is being sampled.
 
 </div>
 
 <h3>The <code>AnimationPlayerEvent</code> interface</h3>
 
 <a>Player events</a> are represented in the API by the
-<a>AnimationPlayerEvent</a> interface.
+{{AnimationPlayerEvent}} interface.
 
 <pre class="idl">[Constructor (DOMString type, optional AnimationPlayerEventInit eventInit)]
 interface AnimationPlayerEvent : Event {
@@ -6918,7 +6906,7 @@ interface AnimationPlayerEvent : Event {
 
 :   <dfn constructor for=AnimationPlayerEvent title='AnimationPlayerEvent()'>
 :   Constructor ()</dfn>
-::  Constructs a new <a>AnimationPlayerEvent</a> object as described in
+::  Constructs a new {{AnimationPlayerEvent}} object as described in
     <a href="http://www.w3.org/TR/dom/#constructing-events">Constructing
     events</a> in [[!DOM4]].
 
@@ -6928,7 +6916,7 @@ interface AnimationPlayerEvent : Event {
     ::  The type of <a>player event</a> corresponding to one of the
         types defined in <a href="#types-of-player-events" section></a>.
     :   optional AnimationPlayerEventInit eventInit
-    ::  The parameters of the new <a>AnimationPlayerEvent</a>.
+    ::  The parameters of the new {{AnimationPlayerEvent}}.
 
     </div>
 
@@ -6947,8 +6935,8 @@ interface AnimationPlayerEvent : Event {
 
 <h4>The <code>AnimationPlayerEventInit</code> dictionary</h4>
 
-The <a>AnimationPlayerEventInit</a> dictionary type is used to specify
-the parameters when constructing an <a>AnimationPlayerEvent</a>
+The {{AnimationPlayerEventInit}} dictionary type is used to specify
+the parameters when constructing an {{AnimationPlayerEvent}}
 object.
 
 <pre class="idl">dictionary AnimationPlayerEventInit {
@@ -6981,7 +6969,7 @@ interface</a> defined in [[!DOM4]].
 
 :   <dfn attribute for=Document>timeline</dfn>
     <span attribute-info for=Document/timeline></span>
-::  The <a>AnimationTimeline</a> object representing
+::  The {{AnimationTimeline}} object representing
     the <a>document timeline</a>.
 
 </div>
@@ -6997,9 +6985,9 @@ interface [[!DOM4]] is extended as follows:
 
 This allows the following kind of usage.
 
-FIXME: <div class="example sh_javascript">
+<pre class="example sh_javascript">
 elem.animate({ color: 'red' }, 2000);
-</div>
+</pre>
 
 
 <h3>Extensions to the <code>PseudoElement</code> interface</h3>
@@ -7033,9 +7021,8 @@ the Web Animations model is as follows:
 
     <div class="informative-bg"><em>This section is non-normative</em>
 
-    For example, if the <a>AnimationPlayer</a>
-    associated with an
-    <a title="Animation interface">Animation</a> is <a
+    For example, if the {{AnimationPlayer}}
+    associated with an {{Animation}} is <a
     title="seeking">seeked</a> via the programming interface,
     the value returned when querying the
     animation's <code>startTime</code> will reflect updated state of
@@ -7044,13 +7031,13 @@ the Web Animations model is as follows:
     FIXME: <div class="example sh_javascript">
       // Initially player.src.localTime is 3000
       player.currentTime += 2000;
-      alert(player.src.localTime); // Displays '5000'
+      alert(player.src.localTime); // Displays &lsquo;5000&rsquo;
 
     </div>
 
     The same concept applies to more complex modifications of the
     Web Animations model such as adding and removing children from
-    an <a>AnimationGroup</a>.
+    an {{AnimationGroup}}.
 
     </div>
 
@@ -7069,8 +7056,8 @@ the Web Animations model is as follows:
 
     FIXME: <div class="example sh_javascript">
       // Set opacity to 0 immediately
-      elem.animate({ opacity: 0 }, { fill: 'forwards' });
-      alert(window.getComputedStyle(elem).opacity); // Displays '0'
+      elem.animate({ opacity: 0 }, { fill: &lsquo;forwards&rsquo; });
+      alert(window.getComputedStyle(elem).opacity); // Displays &lsquo;0&rsquo;
 
     </div>
 
@@ -7081,15 +7068,15 @@ the Web Animations model is as follows:
 
     FIXME: <div class="example sh_javascript">
       // Set width to 0 immediately
-      rect.animate({ width: '100px' }, { fill: 'forwards' });
-      alert(rect.width.animVal.value); // Displays '100'
+      rect.animate({ width: &lsquo;100px&rsquo; }, { fill: &lsquo;forwards&rsquo; });
+      alert(rect.width.animVal.value); // Displays &lsquo;100&rsquo;
 
     </div>
 
     </div>
 
 *   Changes made to the model using the programming interface do
-    <em>not</em> cause any <a>EffectCallback</a> functions to be
+    <em>not</em> cause any {{EffectCallback}} functions to be
     called.
 
     <div class="informative-bg"><em>This section is non-normative</em>
@@ -7103,7 +7090,7 @@ the Web Animations model is as follows:
       elem.animate(function() {
         timesCalled++;
       }, 10000);
-      alert(timesCalled); // Displays '0'
+      alert(timesCalled); // Displays &lsquo;0&rsquo;
 
     </div>
 
@@ -7127,7 +7114,7 @@ the Web Animations model is as follows:
     FIXME: <div class="example sh_javascript">
       // Fade the opacity with fallback for browsers that don't
       // support Element.animate
-      elem.style.opacity = '0';
+      elem.style.opacity = &lsquo;0&rqsuo;
       elem.animate([ { opacity: 1 }, { opacity: 0 } ], 500);
 
     </div>
@@ -7194,7 +7181,7 @@ the Web Animations model is as follows:
 
     FIXME: <div class="example sh_javascript">
       window.requestAnimationFrame(function(sampleTime) {
-        // Displays '0'
+        // Displays &lsquo;0&rsquo;
         alert(sampleTime - document.timeline.currentTime);
       });
 
@@ -7296,11 +7283,11 @@ The following changes have been made since the <a
 
 *   Fixed the grammar for <a>&lt;cubic-bezier-timing-function&gt;</a> to
     match CSS Transitions.
-*   Introduced the <a>ComputedAnimationTiming</a> interface and
-    <a>AnimationTimingReadOnly</a> interface.
-*   Moved computed timing from <a>AnimationNode</a> to a
+*   Introduced the {{ComputedAnimationTiming}} interface and
+    {{AnimationTimingReadOnly}} interface.
+*   Moved computed timing from {{AnimationNode}} to a
     <code>computedTiming</code> attribute of type
-    <a>ComputedAnimationTiming</a>.
+    {{ComputedAnimationTiming}}.
 *   Exposed the <a>time fraction</a> to script as
     <code>node.computedTiming.timeFraction</code>.
 
