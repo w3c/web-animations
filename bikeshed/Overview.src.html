@@ -16,7 +16,7 @@ Abstract: This specification defines a model for synchronization and
     specifications will define declarative means for exposing these
     features.
 Ignored Terms: double, boolean, DOMString, unsigned long, unrestricted double, (animationeffect or effectcallback), SVGPathSegList, (unrestricted double or DOMString)
-Link Defaults: dom-core-ls (interface) event, html5 (interface) document, cssom-1 (interface) pseudoelement
+Link Defaults: dom-core-ls (interface) event, dom-core-ls (interface) document, cssom-1 (interface) pseudoelement
 </pre>
 
 <link href='web-animations.css' rel='stylesheet' type='text/css'>
@@ -4556,7 +4556,7 @@ a procedural approach is more suitable.
 
 <a>Timelines</a>, including the <a>document
 timeline</a> are represented in the Web Animations API by the
-<dfn interface>AnimationTimeline</dfn> interface.
+{{AnimationTimeline}} interface.
 
 <pre class="idl">
 interface AnimationTimeline {
@@ -4627,7 +4627,7 @@ interface AnimationTimeline {
 <h3 id="the-animationplayer-interface">The <code>AnimationPlayer</code> interface</h3>
 
 <a>Players</a> are represented in the Web Animations
-API by the <dfn interface>AnimationPlayer</dfn> interface.
+API by the {{AnimationPlayer}} interface.
 
 <pre class='idl'>
 interface AnimationPlayer : EventTarget {
@@ -4840,7 +4840,7 @@ interface AnimationPlayer : EventTarget {
 <h3 id="the-animationnode-interface">The <code>AnimationNode</code> interface</h3>
 
 <a>Animation nodes</a> are represented in the Web
-Animations API by the <dfn interface>AnimationNode</dfn> interface.
+Animations API by the {{AnimationNode}} interface.
 
 <pre class='idl'>
 interface AnimationNode {
@@ -5117,7 +5117,7 @@ interface AnimationNode {
 
 <h3 id="the-animationtiming-interface">The <code>AnimationTiming</code> interface</h3>
 
-The <dfn interface>AnimationTiming</dfn> interface is a writeable subclass of
+The {{AnimationTiming}} interface is a writeable subclass of
 {{AnimationTimingReadOnly}} used for an {{AnimationNode}}'s
 <code>timing</code> attribute.
 
@@ -5213,7 +5213,7 @@ interface AnimationTiming : AnimationTimingReadOnly {
 <h3 id="the-computedanimationtiming-interface">The <code>ComputedAnimationTiming</code> interface</h3>
 
 Timing parameters calculated by the timing model are exposed using the
-<dfn interface>ComputedAnimationTiming</dfn> interface.
+{{ComputedAnimationTiming}} interface.
 
 <pre class='idl'>interface ComputedAnimationTiming : AnimationTimingReadOnly {
     readonly attribute double              startTime;
@@ -5274,7 +5274,7 @@ Timing parameters calculated by the timing model are exposed using the
 
 <h3 id="the-animationtiminginput-dictionary">The <code>AnimationTimingInput</code> dictionary</h3>
 
-The <dfn interface>AnimationTimingInput</dfn> dictionary is used as a convenience
+The {{AnimationTimingInput}} dictionary is used as a convenience
 for specifying the timing properties of an {{AnimationNode}} in
 bulk.
 
@@ -5402,7 +5402,7 @@ dictionary AnimationTimingInput {
 
 <h3 id="the-animationgroup-interface">The <code>AnimationGroup</code> interface</h3>
 
-<a>Animation groups</a> are represented by the <dfn interface>AnimationGroup</dfn>
+<a>Animation groups</a> are represented by the {{AnimationGroup}}
 interface.
 
 <pre class='idl'>[Constructor (sequence<AnimationNode>? children,
@@ -5672,8 +5672,7 @@ interface AnimationSequence : AnimationGroup {
 
 <h3 id="the-animation-interface">The <code>Animation</code> interface</h3>
 
-<a>Animations</a> are represented by the
-<dfn interface>Animation</dfn> interface.
+<a>Animations</a> are represented by the {{Animation}} interface.
 
 <pre class='idl'>[Constructor (Animatable? target, object? effect,
               optional (unrestricted double or AnimationTimingInput)
@@ -5686,7 +5685,7 @@ interface Animation : AnimationNode {
 
 <div class="contructors">
 
-:   Constructor ()
+:   <dfn title='animation-constructor'>Constructor ()</dfn>
 ::  Creates a new {{Animation}} object
     using the following procedure:
 
@@ -5817,7 +5816,7 @@ interface Animation : AnimationNode {
         <div class="switch">
 
         :   If <code><var>source</var>.effect</code> is an
-            <a>Animation</a> object,
+            {{Animation}} object,
         ::  Let <var>cloned effect</var> be the result of calling
             <code><var>source</var>.effect.clone()</code>.
         :   If <code><var>source</var>.effect</code> is an
@@ -5829,9 +5828,8 @@ interface Animation : AnimationNode {
 
         </div>
 
-    4.  Return a new <a>Animation</a> object created by
-        calling the <a
-        href="#widl-ctor-Animation-Animatable-target-object-effect--unrestricted-double-or-AnimationTimingInput--timing">Animation
+    4.  Return a new {{Animation}} object created by
+        calling the <a title='animation-constructor'>Animation
         constructor</a> with parameters
         <code>Animation(<var>source</var>.target, <var>cloned
         effect</var>, <var>cloned timing</var>)</code>.</li>
@@ -5858,8 +5856,7 @@ with parameter <var>effect</var> is as follows:
 :   If <var>effect</var> is <span class="esvalue">null</span>,
 ::  Return <span class="idlvalue">null</span>.
 
-:   If <var>effect</var> is a <a
-    href="http://www.w3.org/TR/WebIDL/#dfn-platform-object">platform
+:   If <var>effect</var> is a <a spec='webidl' status='TR'>platform
     object</a> that implements {{AnimationEffect}},
 ::  return the IDL value that is a reference to the that platform
     object.
@@ -6950,9 +6947,8 @@ object.
 
 <h3 id="extensions-to-the-document-interface">Extensions to the <code>Document</code> interface</h3>
 
-The following extensions are made to the <a class="externalDFN"
-href="http://www.w3.org/TR/dom/#interface-document">Document
-interface</a> defined in [[!DOM4]].
+The following extensions are made to the <a title='Document' interface>Document
+interface</a> defined in [[!DOM]].
 
 <pre class='idl'>partial interface Document {
     readonly attribute AnimationTimeline timeline;
