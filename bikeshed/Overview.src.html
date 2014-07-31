@@ -362,12 +362,9 @@ the <a>global clock</a> and the value recorded at the <a>zero time</a>.
 Since a <a>timeline</a> may be defined relative to a moment that has yet
 to occur, it may not always be able to return a meaningful <a>time
 value</a>.
-A <a>timeline</a> is considered to be <dfn>not started</dfn> when it is
-in such a state that it cannot produce a <a>time value</a>.
-
-Issue: Should this be renamed to something like &ldquo;inactive&rdquo; so we
-    can accommodate possible future timelines that may, after starting,
-    become unable to return a meaningful <a>time value</a>?
+A <a>timeline</a> is considered to be
+<dfn title="inactive timeline">inactive</dfn>
+when it is in such a state that it cannot produce a <a>time value</a>.
 
 <h4 id="the-document-timeline">The document timeline</h4>
 
@@ -378,8 +375,8 @@ as a fixed offset from the <a>global clock</a> such that the <a>zero
 time</a> corresponds to the <a
 href="http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart">
 <code>navigationStart</code></a> moment [[!NAVIGATION-TIMING]].
-Prior to this moment, the <a>document timeline</a> is <a>not
-started</a>.
+Prior to this moment, the <a>document timeline</a> is
+<a title="inactive timeline">inactive</a>.
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
@@ -464,7 +461,8 @@ The procedure for performing manual updates to the <a>current time</a>
 is defined in <a href="#performing-a-seek" section></a>.
 
 If the <a>timeline</a> with which the <a>player</a> is associated is
-<a>not started</a>, then the <a>current time</a> is null.
+<a title="inactive timeline">inactive</a>, then the
+<a>current time</a> is null.
 
 <!--
   Delayed start:
@@ -482,13 +480,15 @@ If the <a>timeline</a> with which the <a>player</a> is associated is
 -->
 
 It is often useful to manipulate the <a>current time</a> of a player
-even when its associated <a>timeline</a> is <a>not started</a>.
+even when its associated <a>timeline</a> is
+<a title="inactive timeline">inactive</a>.
 For example, this is useful for pre-seeking a player.
 For this purpose, we have the following additional definitions:
 
 :   <dfn>effective timeline time</dfn>
 ::  The current <a>time value</a> of the <a>timeline</a> associated
-    with a <a>player</a> unless the timeline is <a>not started</a>, in
+    with a <a>player</a> unless the timeline is
+    <a title="inactive timeline">inactive</a>, in
     which case the <var>effective timeline time</var> is zero.
 :   <dfn>effective current time</dfn>
 ::  <!--
@@ -528,7 +528,7 @@ At time <var>t</var>, a seek is performed on the player changing its
 </p>
 
 It is possible to seek a player even if its <a>timeline</a> is
-<a>not started</a>.
+<a title="inactive timeline">inactive</a>.
 Once the timeline begins, the player will begin playback from the
 seeked time.
 
@@ -687,7 +687,7 @@ are true:
 
 *   the <a>paused state</a> is false, and
 *   the <a>player playback rate</a> is not zero, and
-*   the <a>timeline</a> is <a title="not started">started</a>.
+*   the <a>timeline</a> is not <a title="inactive timeline">inactive</a>.
 
 When all the above conditions are satisfied, the following steps are
 performed:
@@ -4571,7 +4571,7 @@ interface AnimationTimeline {
 :   <dfn attribute for=AnimationTimeline>currentTime</dfn>
     <span attribute-info for=AnimationTimeline/currentTime></span>
 ::  Returns the <a>time value</a> for this timeline or <code>null</code>
-    if this timeline is <a>not started</a>.
+    if this timeline is <a title="inactive timeline">inactive</a>.
 
 </div>
 
@@ -7270,6 +7270,7 @@ The following changes have been made since the <a
   href="http://www.w3.org/TR/2013/WD-web-animations-20140605/">5 June
 2014 Working Draft</a>:
 
+*   Renamed &ldquo;not started&rdquo; timelines as <a>inactive timelines</a>.
 *   Fixed the grammar for <a>&lt;cubic-bezier-timing-function&gt;</a> to
     match CSS Transitions.
 *   Introduced the {{ComputedAnimationTiming}} interface and

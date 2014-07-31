@@ -16,7 +16,7 @@
 </p>
   <h1 class="p-name no-ref" id=title>Web Animations</h1>
   <h2 class="no-num no-toc no-ref heading settled heading" id=subtitle><span class=content>Editor’s Draft,
-    <span class=dt-updated><span class=value-title title=20140730>30 July 2014</span></span></span></h2>
+    <span class=dt-updated><span class=value-title title=20140731>31 July 2014</span></span></span></h2>
   <div data-fill-with=spec-metadata><dl>
 	<dt>This version:
 	<dd><a class=u-url href=http://dev.w3.org/fxtf/web-animations/>http://dev.w3.org/fxtf/web-animations/</a>
@@ -629,12 +629,9 @@ the <a data-link-type=dfn href=#global-clock title="global clock">global clock</
 <p>Since a <a data-link-type=dfn href=#timeline title=timeline>timeline</a> may be defined relative to a moment that has yet
 to occur, it may not always be able to return a meaningful <a data-link-type=dfn href=#time-value title="time value">time
 value</a>.
-A <a data-link-type=dfn href=#timeline title=timeline>timeline</a> is considered to be <dfn data-dfn-type=dfn data-noexport="" id=not-started>not started<a class=self-link href=#not-started></a></dfn> when it is
-in such a state that it cannot produce a <a data-link-type=dfn href=#time-value title="time value">time value</a>.</p>
-
-<p class=issue id=issue-855f2d0f><a class=self-link href=#issue-855f2d0f></a>Should this be renamed to something like “inactive” so we
-    can accommodate possible future timelines that may, after starting,
-    become unable to return a meaningful <a data-link-type=dfn href=#time-value title="time value">time value</a>?</p>
+A <a data-link-type=dfn href=#timeline title=timeline>timeline</a> is considered to be
+<dfn data-dfn-type=dfn data-noexport="" id=inactive-timeline title="inactive timeline">inactive<a class=self-link href=#inactive-timeline></a></dfn>
+when it is in such a state that it cannot produce a <a data-link-type=dfn href=#time-value title="time value">time value</a>.</p>
 
 <h4 class="heading settled heading" data-level=3.4.1 id=the-document-timeline><span class=secno>3.4.1 </span><span class=content>The document timeline</span><a class=self-link href=#the-document-timeline></a></h4>
 
@@ -644,8 +641,8 @@ The <a data-link-type=dfn href=#time-value title="time values">time values</a> o
 as a fixed offset from the <a data-link-type=dfn href=#global-clock title="global clock">global clock</a> such that the <a data-link-type=dfn href=#zero-time title="zero time">zero
 time</a> corresponds to the <a href=http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart>
 <code>navigationStart</code></a> moment <a data-biblio-type=normative data-link-type=biblio href=#biblio-navigation-timing title=biblio-NAVIGATION-TIMING>[NAVIGATION-TIMING]</a>.
-Prior to this moment, the <a data-link-type=dfn href=#document-timeline title="document timeline">document timeline</a> is <a data-link-type=dfn href=#not-started title="not started">not
-started</a>.</p>
+Prior to this moment, the <a data-link-type=dfn href=#document-timeline title="document timeline">document timeline</a> is
+<a data-link-type=dfn href=#inactive-timeline title="inactive timeline">inactive</a>.</p>
 
 <div class=informative-bg><em>This section is non-normative</em>
 
@@ -726,20 +723,23 @@ content</a> called the player’s <dfn data-dfn-type=dfn data-noexport="" id=cur
 is defined in <a data-section="" href=#performing-a-seek>§3.5.2.9 Performing a seek</a>.</p>
 
 <p>If the <a data-link-type=dfn href=#timeline title=timeline>timeline</a> with which the <a data-link-type=dfn href=#player title=player>player</a> is associated is
-<a data-link-type=dfn href=#not-started title="not started">not started</a>, then the <a data-link-type=dfn href=#current-time title="current time">current time</a> is null.</p>
+<a data-link-type=dfn href=#inactive-timeline title="inactive timeline">inactive</a>, then the
+<a data-link-type=dfn href=#current-time title="current time">current time</a> is null.</p>
 
 <p></p>
 
 <p></p>
 
 <p>It is often useful to manipulate the <a data-link-type=dfn href=#current-time title="current time">current time</a> of a player
-even when its associated <a data-link-type=dfn href=#timeline title=timeline>timeline</a> is <a data-link-type=dfn href=#not-started title="not started">not started</a>.
+even when its associated <a data-link-type=dfn href=#timeline title=timeline>timeline</a> is
+<a data-link-type=dfn href=#inactive-timeline title="inactive timeline">inactive</a>.
 For example, this is useful for pre-seeking a player.
 For this purpose, we have the following additional definitions:</p>
 
 <dl><dt data-md=""><p><dfn data-dfn-type=dfn data-noexport="" id=effective-timeline-time>effective timeline time<a class=self-link href=#effective-timeline-time></a></dfn></p>
 <dd data-md=""><p>The current <a data-link-type=dfn href=#time-value title="time value">time value</a> of the <a data-link-type=dfn href=#timeline title=timeline>timeline</a> associated
-with a <a data-link-type=dfn href=#player title=player>player</a> unless the timeline is <a data-link-type=dfn href=#not-started title="not started">not started</a>, in
+with a <a data-link-type=dfn href=#player title=player>player</a> unless the timeline is
+<a data-link-type=dfn href=#inactive-timeline title="inactive timeline">inactive</a>, in
 which case the <var>effective timeline time</var> is zero.</p>
 <dt data-md=""><p><dfn data-dfn-type=dfn data-noexport="" id=effective-current-time>effective current time<a class=self-link href=#effective-current-time></a></dfn></p>
 <dd data-md="">
@@ -774,7 +774,7 @@ At time <var>t</var>, a seek is performed on the player changing its
 </p>
 
 <p>It is possible to seek a player even if its <a data-link-type=dfn href=#timeline title=timeline>timeline</a> is
-<a data-link-type=dfn href=#not-started title="not started">not started</a>.
+<a data-link-type=dfn href=#inactive-timeline title="inactive timeline">inactive</a>.
 Once the timeline begins, the player will begin playback from the
 seeked time.</p>
 
@@ -927,7 +927,7 @@ are true:</p>
 
 <ul><li data-md=""><p>the <a data-link-type=dfn href=#paused-state title="paused state">paused state</a> is false, and</p>
 <li data-md=""><p>the <a data-link-type=dfn href=#player-playback-rate title="player playback rate">player playback rate</a> is not zero, and</p>
-<li data-md=""><p>the <a data-link-type=dfn href=#timeline title=timeline>timeline</a> is <a data-link-type=dfn href=#not-started title="not started">started</a>.</p>
+<li data-md=""><p>the <a data-link-type=dfn href=#timeline title=timeline>timeline</a> is not <a data-link-type=dfn href=#inactive-timeline title="inactive timeline">inactive</a>.</p>
 </ul>
 <p>When all the above conditions are satisfied, the following steps are
 performed:</p>
@@ -4633,7 +4633,7 @@ timeline</a> are represented in the Web Animations API by the
 <dl><dt data-md=""><p><dfn class=idl-code data-dfn-for=AnimationTimeline data-dfn-type=attribute data-export="" id=dom-animationtimeline-currenttime>currentTime<a class=self-link href=#dom-animationtimeline-currenttime></a></dfn>
 <span data-attribute-info="" for=AnimationTimeline/currentTime> of type <a data-link-type=idl-name title=double>double</a>, readonly, nullable</span></p>
 <dd data-md=""><p>Returns the <a data-link-type=dfn href=#time-value title="time value">time value</a> for this timeline or <code>null</code>
-if this timeline is <a data-link-type=dfn href=#not-started title="not started">not started</a>.</p>
+if this timeline is <a data-link-type=dfn href=#inactive-timeline title="inactive timeline">inactive</a>.</p>
 </dl>
 </div>
 
@@ -7233,7 +7233,8 @@ animations.</p>
 <p>The following changes have been made since the <a href=http://www.w3.org/TR/2013/WD-web-animations-20140605/>5 June
 2014 Working Draft</a>:</p>
 
-<ul><li data-md=""><p>Fixed the grammar for <a class=css-code data-link-type=type href=#typedef-cubic-bezier-timing-function title="<cubic-bezier-timing-function>">&lt;cubic-bezier-timing-function&gt;</a> to
+<ul><li data-md=""><p>Renamed “not started” timelines as <a data-link-type=dfn href=#inactive-timeline title="inactive timelines">inactive timelines</a>.</p>
+<li data-md=""><p>Fixed the grammar for <a class=css-code data-link-type=type href=#typedef-cubic-bezier-timing-function title="<cubic-bezier-timing-function>">&lt;cubic-bezier-timing-function&gt;</a> to
 match CSS Transitions.</p>
 <li data-md=""><p>Introduced the <code class=idl><a data-link-type=idl href=#dom-computedanimationtiming title=ComputedAnimationTiming>ComputedAnimationTiming</a></code> interface and
 <code class=idl><a data-link-type=idl href=#dom-animationtimingreadonly title=AnimationTimingReadOnly>AnimationTimingReadOnly</a></code> interface.</p>
@@ -7457,8 +7458,8 @@ behavior, <a href=#animation-behavior title="section 4.1.3">4.1.3</a>
 <li>animation node playback rate, <a href=#animation-node-playback-rate title="section 3.9">3.9</a>
 <li>animation node start time, <a href=#animation-node-start-time title="section 3.6.3">3.6.3</a>
 <li>AnimationPlayer, <a href=#dom-animationplayer title="section 5.2">5.2</a>
-<li>AnimationPlayerEvent(), <a href=#dom-animationplayerevent-animationplayerevent title="section 5.21">5.21</a>
 <li>AnimationPlayerEvent, <a href=#dom-animationplayerevent title="section 5.21">5.21</a>
+<li>AnimationPlayerEvent(), <a href=#dom-animationplayerevent-animationplayerevent title="section 5.21">5.21</a>
 <li>AnimationPlayerEventInit, <a href=#dictdef-animationplayereventinit title="section 5.21.1">5.21.1</a>
 <li>AnimationSequence(), <a href=#dom-animationsequence-animationsequence title="section 5.10">5.10</a>
 <li>AnimationSequence, <a href=#dom-animationsequence title="section 5.10">5.10</a>
@@ -7589,6 +7590,7 @@ a keyframe, <a href=#evenly-distributing-a-keyframe title="section 4.3.1.1">4.3.
 <li>getFrames(), <a href=#dom-keyframeeffect-getframes title="section 5.16">5.16</a>
 <li>global clock, <a href=#global-clock title="section 3.3">3.3</a>
 <li>hold time, <a href=#hold-time title="section 3.5.2.4">3.5.2.4</a>
+<li>inactive timeline, <a href=#inactive-timeline title="section 3.4">3.4</a>
 <li>inclusive ancestor, <a href=#inclusive-ancestor title="section 3.13">3.13</a>
 <li>inclusive descendant, <a href=#inclusive-descendant title="section 3.13">3.13</a>
 <li>index, <a href=#dom-animationnodelistitem-index title="section 5.9">5.9</a>
@@ -7660,7 +7662,6 @@ function, <a href=#linear-timing-function title="section 3.12.2">3.12.2</a>
 animatable, <a href=#not-animatable title="section 4.1.3.1">4.1.3.1</a>
 <li>not
 paceable, <a href=#not-paceable title="section 4.1.3">4.1.3</a>
-<li>not started, <a href=#not-started title="section 3.4">3.4</a>
 <li>offset, <a href=#dom-keyframe-offset title="section 5.17">5.17</a>
 <li>offsetk, <a href=#offsetk title="section 4.3.1.1">4.3.1.1</a>
 <li>onfinish, <a href=#dom-animationplayer-onfinish title="section 5.2">5.2</a>
@@ -7764,11 +7765,7 @@ Property index</span><a class=self-link href=#property-index></a></h2>
 <div data-fill-with=property-index><p>No properties defined.</div>
 
 
-</div></div><h2 class="no-num heading settled" id=issues-index><span class=content>Issues Index</span><a class=self-link href=#issues-index></a></h2><div style="counter-reset: issue"><div class=issue>Should this be renamed to something like “inactive” so we
-    can accommodate possible future timelines that may, after starting,
-    become unable to return a meaningful <a data-link-type=dfn href=#time-value title="time value">time value</a>?<a href=#issue-855f2d0f> ↵ </a></div>
-
-<div class=issue>
+</div></div><h2 class="no-num heading settled" id=issues-index><span class=content>Issues Index</span><a class=self-link href=#issues-index></a></h2><div style="counter-reset: issue"><div class=issue>
 Currently <a data-link-type=dfn href=#timing-function title="timing functions">timing functions</a> that generate results outside the
 range [0, 1] will behave unexpectedly when applied to animation
 groups, as children will increase iterations or enter into fill mode
