@@ -671,9 +671,16 @@ The procedure for <dfn>playing a player</dfn> is as follows:
     4.  Update the player's <a title="player start time">start
         time</a> to <var>new start time</var> using the procedure
         defined in <a href="#setting-the-start-time-of-a-player" section></a>.
-    5.  Fulfill the player's <a>current ready promise</a> with this
+
+    5.
+
+        <div class="todo">Queue a task here for sampling custom effects.
+        (This should happen before we resolve the ready promise.)
+        </div>
+
+    6.  Fulfill the player's <a>current ready promise</a> with this
         player object.
-    6.  Run the procedure for <a>updating the finished state</a> of
+    7.  Run the procedure for <a>updating the finished state</a> of
         this player.
 
         <div class="annotation">
@@ -686,10 +693,10 @@ The procedure for <dfn>playing a player</dfn> is as follows:
         So long as the above task is scheduled but has yet to run, the
         player is described as having a <dfn>pending play task</dfn>.
 
-    7.  If the <a>player start time</a> is <a
+    8.  If the <a>player start time</a> is <a
         title="unresolved">resolved</a>, make the player's <a>hold
         time</a> <a>unresolved</a>.
-    8.  Run the procedure for <a>updating the finished state</a> of
+    9.  Run the procedure for <a>updating the finished state</a> of
         this player.
 
 <h4 id='pausing-a-player-section'>Pausing a player</h4>
@@ -743,9 +750,16 @@ The procedure for <dfn>pausing a player</dfn> is as follows:
             additional state in order to determine the appropriate
             value of the <a>current time</a>.
 
-    2.  Fulfill the player's <a>current ready promise</a> with this
+    2.
+
+        <div class="todo">Queue a task here for sampling custom effects
+            with the final current time.  (This should happen before we
+            resolve the ready promise).
+        </div>
+
+    3.  Fulfill the player's <a>current ready promise</a> with this
         player object.
-    3.  Run the procedure for <a>updating the finished state</a> of
+    4.  Run the procedure for <a>updating the finished state</a> of
         this player.
 
     So long as the above task is scheduled but has yet to run, the
@@ -817,6 +831,33 @@ The procedure for <dfn>updating the finished state</dfn> of
     <var>current finished state</var>.
 *   Set the <a>previous current time</a> of <var>player</var> be the
     result of calculating its <a>current time</a>.
+
+<h4 id='cancelling-a-player-section'>Cancelling a player</h4>
+
+ A player can be cancelled which causes the <a>current time</a> to
+become <a>unresolved</a> hence removing any effects caused by the
+<a>source content</a>.
+
+The procedure for <dfn>cancelling a player</dfn> is as follows:
+
+1.  If there is a <a>pending play task</a>, cancel that task.
+2.  If there is a <a>pending pause task</a>, cancel that task.
+3.  Reject the <a>current ready promise</a> with a DOMException
+      named "AbortError".
+4.
+
+  <div class="todo">Need to work out when the ready promise gets created.</div>
+
+5.  Reject the <a>current finished promise</a> with a DOMException
+      named "AbortError".
+6.  Let <a>current finished promise</a> be a new pending Promise
+      object.
+7.  Make the player's <a>hold time</a> <a>unresolved</a>.
+8.  Make the player's <a>start time</a> <a>unresolved</a>.
+9.  Set the player's <a>pause state</a> to false.
+10. Queue a task to call any <a>custom effects</a> associated with
+    <a>inclusive descendants</a> of the player's <a>source content</a>
+    with an <a>unresolved</a> time fraction.
 
 <h4 id="speed-control">Speed control</h4>
 
@@ -5028,14 +5069,8 @@ interface AnimationPlayer : EventTarget {
 <div class='methods'>
 
 :   <dfn method for=AnimationPlayer title='cancel()'>void cancel()</dfn>
-::  Sets <code>source</code> to null and clears all effects associated
-    with the previous <a>source content</a>.
-
-    Issue: We need to make sure, for example, that any custom effects get
-        called with a null sample time so they can remove their effects.
-        This applies to manually setting <code>source</code> to null as
-        well so we should define this behavior there.
-
+::  Clears all effects caused by this player and aborts its playback
+    using the <a>cancelling a player</a> procedure.
 :   <dfn method for=AnimationPlayer title='finish()'>void finish()</dfn>
 ::  Seeks the player to the end of the <a>source content</a> in the
     current direction as follows:
