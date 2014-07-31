@@ -364,10 +364,10 @@ the <a>global clock</a> and the value recorded at the <a>zero time</a>.
 
 Since a <a>timeline</a> may be defined relative to a moment that has yet
 to occur, it may not always be able to return a meaningful <a>time
-value</a>.
+value</a>, but only an <a>unresolved</a> time value.
 A <a>timeline</a> is considered to be
 <dfn title="inactive timeline">inactive</dfn>
-when it is in such a state that it cannot produce a <a>time value</a>.
+when its <a>time value</a> is <a>unresolved</a>.
 
 <h4 id="the-document-timeline">The document timeline</h4>
 
@@ -419,10 +419,20 @@ analogous to that of a DVD player and a DVD.
 A <dfn>player</dfn> connects a single <a>animation node</a>, called
 its <dfn>source content</dfn>, to a <a>timeline</a> and provides
 playback control.
+Both of these associations are optional and configurable such that
+a <a>player</a> may have no associated <a>source content</a> or
+<a>timeline</a> at a given moment.
 
 A <a>player</a>'s <dfn title="player start time">start time</dfn> is the
 <a>time value</a> of its <a>timeline</a> when its <a>source content</a>
-is scheduled to begin playback.
+is scheduled to begin playback. A players's <a
+title="player start time">start time</a> is initially
+<a>unresolved</a>.
+
+A <a>player</a> also maintains a <dfn>hold time</dfn> <a>time value</a>
+which is used to fix the player's output <a>time value</a>, called its
+<a>current time</a>, in circumstances such as pausing</a>.
+The <a>hold time</a> is initially <a>unresolved</a>.
 
 When a <a>player</a> is created, it is assigned a globally unique
 sequence number called the <dfn>player sequence number</dfn>.
@@ -438,107 +448,83 @@ Issue: Should this actually be based on when the player is attached to
 <a>Players</a> provide a <a>time value</a> to their <a>source
 content</a> called the player's <dfn>current time</dfn>.
 
-The calculation of the <a>current time</a> is as follows:
+The <a>current time</a> is calculated from the first
+matching condition from below:
 
-<blockquote>
-  <code><a>current time</a> =
-  (<var>timeline time</var> - <a
-   title="player start time">start time</a>)
-  &times; <a title="player playback rate">playback rate</a></code>
-  <p>
-    <em>unless</em> the <a>hold time</a> is <em>not</em> null, in which
-    case the <a>current time</a> is equal to the <a>hold time</a>.
-  </p>
-</blockquote>
+<div class="switch">
 
-Where:
+:   If the player's <a>hold time</a> is not <a>unresolved</a>,
+::  The <a>current time</a> is the player's <a>hold time</a>.
 
-*   <var>timeline time</var> is the current <a>time value</a> of the
-    <a>timeline</a> with which this <a>player</a> is associated.
-*   <var>start time</var> is the player's <a
-    title="player start time">start time</a>.
-*   <var>playback rate</var> is the player's <a
-    title="player playback rate">playback rate</a> value described in
-    <a href="#speed-control" section></a>.
-*   <a>hold time</a> is the value described in
-    <a href="#seeking-pausing-and-limiting-properties" section></a>.
+:   If <em>any</em> of the following are true:
 
-The procedure for performing manual updates to the <a>current time</a>
-is defined in <a href="#performing-a-seek" section></a>.
+    1.  the player has no associated <a>timeline</a>, or
+    2.  the <a>time value</a> of the associated <a>timeline</a> is
+        <a>unresolved</a>, or
+    3.  the player's <a title="player start time">start time</a> is
+        <a>unresolved</a>.
 
-If the <a>timeline</a> with which the <a>player</a> is associated is
-<a title="inactive timeline">inactive</a>, then the
-<a>current time</a> is null.
+::  The <a>current time</a> is an <a>unresolved</a> time value.
 
-<!--
-  Delayed start:
+:   Otherwise,
+::
 
-  Likewise, if the player's <a title="player start time">start time</a>
-  is <a>not resolved</a>, then the <a>current time</a> is
-  <code>null</code>.
--->
+    <blockquote>
+      <code><a>current time</a> =
+      (<var>timeline time</var> - <a
+       title="player start time">start time</a>)
+      &times; <a title="player playback rate">playback rate</a></code>
+    </blockquote>
 
-<!--
-  Delayed start:
+    Where <var>timeline time</var> is the current <a>time value</a> of
+    the associated <a>timeline</a>.
+    The <a title="player playback rate">playback rate</a> value is
+    defined in <a href="#speed-control" section></a>.
 
-  qualify the following with "or when the start time has not been
-  resolved"?
--->
+<h4 id="setting-the-current-time-of-a-player">Setting the current time of a player</h4>
 
-It is often useful to manipulate the <a>current time</a> of a player
-even when its associated <a>timeline</a> is
-<a title="inactive timeline">inactive</a>.
-For example, this is useful for pre-seeking a player.
-For this purpose, we have the following additional definitions:
+The <a>current time</a> of a player can be set to a new value to
+<em>seek</em> the player.
+The procedure for setting the current time to <var>seek time</var> is
+as follows:
 
-:   <dfn>effective timeline time</dfn>
-::  The current <a>time value</a> of the <a>timeline</a> associated
-    with a <a>player</a> unless the timeline is
-    <a title="inactive timeline">inactive</a>, in
-    which case the <var>effective timeline time</var> is zero.
-:   <dfn>effective current time</dfn>
-::  <!--
-    Delayed start:
-    Or if the start time is <a>not resolved</a> use the current timeline
-    time
-    -->
-    The result of evaluating the <a>current time</a> as above
-    but substituting the <a>effective timeline time</a> for the
-    <var>timeline time</var>.
+1.  If <var>seek time</var> is an <a>unresolved</a> time value,
+    <a href="http://dom.spec.whatwg.org/#concept-throw">throw</a>
+    a "<a
+    href="http://dom.spec.whatwg.org/#dom-domexception-invalid_state_err">NotSupportedError</a>".
+2.  Update either the player's <a>hold time</a> or <a
+    title="player start time">start time</a> as follows:
+
+    <div class="switch">
+
+    :   If <em>any</em> of the following conditions are true:
+
+        *   the player's <a>hold time</a> is <em>not</em>
+            <a>unresolved</a>, or
+        *   the player's <a>current time</a> is <a>unresolved</a>, or
+        *   the player's <a title="player playback rate">playback rate</a> is 0
+
+    ::  Set the player's <a>hold time</a> to <var>seek time</var>.
+
+    :   Otherwise,
+    ::  Set the player's <a title="player start time">start time</a> to
+        the result of evaluating
+        <code><var>timeline time</var> - (<var>seek time</var> / <a
+            title="player playback rate">playback rate</a>)</code>
+        where <var>timeline time</var> is the same value defined in <a
+        href="#the-current-time-of-a-player" section></a>.
+
+3.
+
+    <div class="todo">
+    TODO: Resolve finished promise &ndash; depends if
+    there are pending tasks?
+    </div>
 
 <h4 id="seeking-pausing-and-limiting">Seeking, pausing and limiting</h4>
 
 Seeking, pausing and limiting a player are closely related and are
 described here together.
-
-<h5 id="introduction-to-seeking">Introduction to seeking</h5>
-
-<div class="informative-bg"><em>This section is non-normative</em>
-
-Changing the current playback position of a player, that is, its
-<a>current time</a>, can be used to rewind its <a>source content</a>
-to its start point, fast-forward to a point in the future, or to
-provide ad-hoc synchronization between players.
-
-Changing the <a>current time</a> of a player has the side effect of
-shifting its <a title="player start time">start time</a> as
-illustrated below.
-
-<div class="figure">
-<img src="img/seeking.svg" width="600"
-    alt="The effect of seeking a player.">
-</div>
-<p class="caption">
-At time <var>t</var>, a seek is performed on the player changing its
-<a>current time</a> from 1.5s to 2s.<br>
-</p>
-
-It is possible to seek a player even if its <a>timeline</a> is
-<a title="inactive timeline">inactive</a>.
-Once the timeline begins, the player will begin playback from the
-seeked time.
-
-</div>
 
 <h5 id="introduction-to-pausing">Introduction to pausing</h5>
 
@@ -617,30 +603,6 @@ Limiting the <a>current time</a> acts like a sort of automatic
 pausing and is accomplished using the same machinery as pausing.
 
 </div>
-
-<h5 id="seeking-pausing-and-limiting-properties">Seeking, pausing and limiting properties</h5>
-
-<a>Players</a> track two properties related to seeking,
-pausing and limiting.
-
-
-:   <dfn>paused state</dfn>
-::  A boolean value that is true if the player is currently paused.
-    The <a>paused state</a> is initially false.
-:   <dfn>hold time</dfn>
-::  The <a>effective current time</a> to maintain while the player is
-    paused or effectively paused either because it has reached the end
-    of its <a>source content</a> and is <a>limited</a>, or because it
-    has a zero <a title="player playback rate">playback rate</a>.
-    When none of these conditions apply, the <a>hold time</a> is
-    null.
-    The <a>hold time</a> is initially null.
-
-In addition to these properties, implementations are required to
-keep track of the last calculated value of the <a>current time</a>
-in order to produce correct limiting behavior (see <a
-href="#automatically-updating-the-hold-time"
-section></a>).
 
 <h5 id="calculating-the-player-start-time">Calculating the player start time</h5>
 
@@ -758,7 +720,7 @@ follows:
         2.  Set the <a>hold time</a> to null.
 
     :   Otherwise if the <a>paused state</a> is false,
-    ::  Record the current value of the <a>effective current time</a>
+    ::  Record the current value of the <a>current time</a>
         as <a>hold time</a>.
     :   Otherwise,
     ::  Do nothing.
@@ -4640,7 +4602,7 @@ interface AnimationPlayer : EventTarget {
              attribute AnimationNode?    source;
     readonly attribute AnimationTimeline timeline;
              attribute double            startTime;
-             attribute double            currentTime;
+             attribute double?           currentTime;
              attribute double            playbackRate;
     readonly attribute boolean           paused;
     readonly attribute boolean           finished;
@@ -4707,9 +4669,9 @@ interface AnimationPlayer : EventTarget {
     the procedure defined in <a href="#updating-the-player-start-time" section></a>
 :   <dfn attribute for=AnimationPlayer>currentTime</dfn>
     <span attribute-info for=AnimationPlayer/currentTime></span>
-::  The <a>effective current time</a> of this player.
+::  The <a>current time</a> of this player.
     Setting this attribute follows the procedure defined in
-    <a href="#performing-a-seek" section></a>.
+    <a href="#setting-the-current-time-of-a-player" section></a>.
 :   <dfn attribute for=AnimationPlayer>playbackRate</dfn>
     <span attribute-info for=AnimationPlayer/playbackRate></span>
 ::  The <a title="player playback rate">playback rate</a> of this
@@ -7278,6 +7240,11 @@ The following changes have been made since the <a
 
 *   Added definition of <a>unresolved</a> <a>time values</a>.
 *   Renamed &ldquo;not started&rdquo; timelines as <a>inactive timelines</a>.
+*   Made the association between a <a>player</a> and a <a>timeline</a>
+    optional.
+*   Removed the concepts of effective timeline time and effective
+    current time.
+*   Removed the non-normative description of seeking behavior.
 *   Fixed the grammar for <a>&lt;cubic-bezier-timing-function&gt;</a> to
     match CSS Transitions.
 *   Introduced the {{ComputedAnimationTiming}} interface and
