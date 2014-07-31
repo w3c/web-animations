@@ -453,7 +453,7 @@ matching condition from below:
 
 <div class="switch">
 
-:   If the player's <a>hold time</a> is not <a>unresolved</a>,
+:   If the player's <a>hold time</a> is <a title='unsresolved'>resolved</a>,
 ::  The <a>current time</a> is the player's <a>hold time</a>.
 
 :   If <em>any</em> of the following are true:
@@ -491,7 +491,7 @@ as follows:
 1.  If <var>seek time</var> is an <a>unresolved</a> time value,
     <a href="http://dom.spec.whatwg.org/#concept-throw">throw</a>
     a "<a
-    href="http://dom.spec.whatwg.org/#dom-domexception-invalid_state_err">NotSupportedError</a>".
+    href="http://dom.spec.whatwg.org/#notsupportederror">NotSupportedError</a>".
 2.  Update either the player's <a>hold time</a> or <a
     title="player start time">start time</a> as follows:
 
@@ -499,10 +499,14 @@ as follows:
 
     :   If <em>any</em> of the following conditions are true:
 
-        *   the player's <a>hold time</a> is <em>not</em>
-            <a>unresolved</a>, or
-        *   the player's <a>current time</a> is <a>unresolved</a>, or
-        *   the player's <a title="player playback rate">playback rate</a> is 0
+        *   the player's <a>hold time</a> is
+            <a title='unresolved'>resolved</a>, or
+        *   the player has no associated <a>timeline</a> or the
+            associated <a>timeline</a> is
+            <a title="inactive timeline">inactive</a>, or
+        *   the player's <a title="player playback rate">playback rate</a>
+            is 0, or
+        *   the player has a <a>pending pause task</a>
 
     ::  Set the player's <a>hold time</a> to <var>seek time</var>.
 
@@ -514,12 +518,305 @@ as follows:
         where <var>timeline time</var> is the same value defined in <a
         href="#the-current-time-of-a-player" section></a>.
 
-3.
+3.  If this player has a <a>pending pause task</a>, cancel the
+    task and fulfill the player's <a>current ready promise</a> with
+    this player.
+4.  Run the procedure for <a>updating the finished state</a> of
+    this player.
 
-    <div class="todo">
-    TODO: Resolve finished promise &ndash; depends if
-    there are pending tasks?
+<h4 id='setting-the-start-time-of-a-player'>Setting the start time of a player</h4>
+
+The <a title="player start time">start time</a> of a <a>player</a>
+is updated to a new time, <var>new start time</var>, as follows:
+
+1.  If the <a>hold time</a> is <a title="unresolved">resolved</a>,
+
+    1.  Let <var>effective start time</var> be the result of
+        evaluation <code><var>timeline time</var> - <a>hold time</a>
+        / <a title="player playback rate">playback rate</a></code>
+        where <var>timeline time</var> is the same value defined in <a
+        href="#the-current-time-of-a-player" class="sectionRef"></a>.
+    2.  Let <var>start time offset</var> be <code><var>new start
+        time</var> &minus; <var>effective start time</var></code>.
+    3.  Set the <a>player</a>'s <a>hold time</a> to
+        <code><a>hold time</a> + <a>start time offset</a></code>.
+
+2.  Unless this player has a <a>pending pause task</a>,
+    set the player's <a title="player start time">start time</a>
+    to <var>new start time</var>.
+3.  If this player has a <a>pending play task</a>, cancel the
+    task and fulfill the player's <a>current ready promise</a> with
+    this player.
+4.  Run the procedure for <a>updating the finished state</a> of
+    this player.
+
+<h4 id='waiting-for-source-content'>Waiting for source content</h4>
+
+Some operations performed by a <a>player</a> may not occur
+instantaneously.
+For example, some user agents may delegate the playback of an
+animation to a separate process or to specialized graphics hardware
+each of which may incur some setup overhead.
+
+If such an animation is timed from the moment when the animation was
+triggered there may be a significant jump between the first and second
+frames of the animation corresponding to the setup time involved.
+
+To avoid this problem, Web Animations typically begins timing
+animations from the moment when the first frame of the animation is
+complete.
+This is represented by an <a>unresolved</a> <a>start time</a> on the
+<a>player</a> which becomes resolved when the animation is
+<a>ready</a>.
+Content may opt out of this behavior by setting the <a>start time</a>
+to a <a title="unresolved">resolved</a> <a>time value</a>.
+
+A player's <a>source content</a> is <dfn>ready</dfn> when the user
+agent has completed any setup required to begin the playback of each
+<a>inclusive descendant</a> of the <a>source content</a> including
+rendering the first frame of any <a>animation</a> with an associated
+<a>animation effect</a> or executing any <a>custom
+effects</a> associated with such an <a>animation</a>.
+
+<div class="todo">
+    Define the <dfn>current ready promise</dfn> and when it becomes a new
+    object.
+</div>
+
+<h4 id='playing-a-player-section'>Playing a player</h4>
+
+The procedure for <dfn>playing a player</dfn> is as follows:
+
+1.  If there is no <a>timeline</a> associated with the player, or the
+    associated <a>timeline</a> is <a title="inactive timeline">inactive</a>
+    <a href="http://dom.spec.whatwg.org/#concept-throw">throw</a>
+    an "<a
+    href="http://dom.spec.whatwg.org/#invalidstateerror">InvalidStateError</a>"
+    and abort these steps.
+2.  If this player has a <a>pending play task</a> abort these steps.
+3.  If this player has a <a>pending pause task</a>,
+
+    1.  Cancel that task
+    2.  Restore the value of the player's <a
+        title="player start time">start time</a> that was set before
+        the <a>pausing a player</a> procedure was last run to
+        completion including if the time was <a>unresolved</a>.
+    3.  Fulfill this player's <a>current ready promise</a> with this
+        player.
+
+        Issue: Perhaps this should reject the promise?
+
+        Note: The <a>pause flag</a> is restored below.
+
+4.  Perform the steps corresponding to the <em>first</em> matching
+    condition from the following, if any:
+
+    <div class="switch">
+
+    :   If the player's <a>pause flag</a> is true,
+    ::  Set the <a>pause flag</a> to false.
+    :   If <a>player playback rate</a> &gt; 0 and <em>either</em>:
+
+        *   the player's <a>current time</a> is <a>unresolved</a>, or
+        *   <a>current time</a> &lt; zero, or
+        *   <a>current time</a> &ge; <a>source content end</a>,
+
+    ::  Set the player's <a>hold time</a> to zero using the
+        procedure defined in <a
+        href="#setting-the-current-time-of-a-player" section></a>.
+    :   If <a>player playback rate</a> &lt; 0 and <em>either</em>:
+
+        *   the player's <a>current time</a> is <a>unresolved</a>, or
+        *   <a>current time</a> &le; zero, or
+        *   <a>current time</a> &gt; <a>source content end</a>,
+
+    ::  set the player's <a>hold time</a> to <a>source content
+        end</a> using the procedure defined in <a
+        href="#setting-the-current-time-of-a-player" section></a>.
+    :   If <a>player playback rate</a> = 0 and the player's <a>current
+        time</a> is <a>unresolved</a>,
+    ::  Set the player's <a>hold time</a> to zero using the
+        procedure defined in <a
+        href="#setting-the-current-time-of-a-player" section></a>.
+    :   Otherwise,
+    ::  Abort these steps.
+
     </div>
+
+    <div class="annotation">
+        By this point the <a>hold time</a> should be resolved since in the
+        above we either set it, or we know it is set because the <a>pause
+        flag</a> is true, or we abort.
+        Furthermore, this condition should continue to hold until the task
+        below is run (if it runs) since the only place where we make the
+        <a>hold time</a> <a>unresolved</a> is here.
+    </div>
+
+5.  If the <a>player start time</a> is <a>unresolved</a>,
+    schedule a task to run as soon as the player's <a>source
+    content</a> is <a>ready</a>.
+    If the <a>player</a> has no <a>source content</a>, queue the task
+    immediately.
+    The task shall perform the following steps:
+
+    1.  Let <var>ready time</var> be the <a>time value</a> of
+        the <a>timeline</a> associated with the player at the moment
+        when the player's <a>source content</a> became <a>ready</a>.
+    2.  Let <var>new start time</var> be the result of evaluating
+        <code><var>ready time</var> - <a>hold time</a> / <a>player
+        playback rate</a></code>.
+        If the <a>player playback rate</a> is zero, let <var>new start
+        time</var> be simply <var>ready time</var>.
+    3.  Make the player's <a>hold time</a> <a>unresolved</a>.
+    4.  Update the player's <a title="player start time">start
+        time</a> to <var>new start time</var> using the procedure
+        defined in <a href="#setting-the-start-time-of-a-player" section></a>.
+    5.  Fulfill the player's <a>current ready promise</a> with this
+        player object.
+    6.  Run the procedure for <a>updating the finished state</a> of
+        this player.
+
+        <div class="annotation">
+            Note that the order of the above two steps is important
+            since it means that a player with zero-length <a>source
+            content</a> will resolve its <a>current ready promise</a>
+            before its <a>current finished promise</a>.
+        </div>
+
+        So long as the above task is scheduled but has yet to run, the
+        player is described as having a <dfn>pending play task</dfn>.
+
+    7.  If the <a>player start time</a> is <a
+        title="unresolved">resolved</a>, make the player's <a>hold
+        time</a> <a>unresolved</a>.
+    8.  Run the procedure for <a>updating the finished state</a> of
+        this player.
+
+<h4 id='pausing-a-player-section'>Pausing a player</h4>
+
+Players maintain a boolean <dfn>pause flag</dfn> to indicate a player
+whose current time is suspended.
+The <a>pause flag</a> is initially false.
+
+As with <a>playing a player</a>, pausing may not happen
+instantaneously (see <a href="#waiting-for-source-content" section></a>).
+For example, if animation is performed by a separate process, it may
+be necessary to synchronize the <a>current time</a> to ensure that it
+reflects the state drawn by the animation process.
+
+For this reason, <a>pausing a player</a> makes the player's <a>current
+time</a> <a>unresolved</a> until the pause operation is complete.
+
+The procedure for <dfn>pausing a player</dfn> is as follows:
+
+1.  If there is no <a>timeline</a> associated with the player, or the
+    associated <a>timeline</a> is <a title="inactive timeline">inactive</a>
+    <a href="http://dom.spec.whatwg.org/#concept-throw">throw</a>
+    an "<a
+    href="http://dom.spec.whatwg.org/#invalidstateerror">InvalidStateError</a>"
+    and abort these steps.
+2.  If this player's <a>pause flag</a> is true or if this player has
+    a <a>pending pause task</a>, abort these steps.
+3.  If this player has a <a>pending play task</a>, cancel that task
+    and fulfill the <a>current ready promise</a> with this player.
+
+    Issue: Should this reject the promise?
+
+4.  Set the player's <a>pause flag</a> to true.
+5.  Make the player's <a title="player start time">start time</a>
+    <a>unresolved</a>.
+6.  Make the player's <a>hold time</a> <a>unresolved</a>.
+7.  Schedule a task to be executed at the first possible moment after
+    the user agent has performed any processing necessary to suspend
+    the playback of any animations that are <a>inclusive
+    descendants</a> of the player's <a>source content</a>, if any.
+    The task shall perform the following steps:
+
+    1.  Set the player's <a>hold time</a> to the <a>time value</a>
+        corresponding to the value of the player's <a>current time</a>
+        used at the moment when the pause operation was completed,
+        even if that value was <a>unresolved</a>.
+
+        Note: since the player's <a title="player start time">start time</a>
+            and <a>hold time</a> are set to <a>unresolved</a> earlier in this
+            procedure, user agents will be required to maintain
+            additional state in order to determine the appropriate
+            value of the <a>current time</a>.
+
+    2.  Fulfill the player's <a>current ready promise</a> with this
+        player object.
+    3.  Run the procedure for <a>updating the finished state</a> of
+        this player.
+
+    So long as the above task is scheduled but has yet to run, the
+    player is described as having a <dfn>pending pause task</dfn>.
+
+8.  Run the procedure for <a>updating the finished state</a> of
+    this player.
+
+<h4 id='finishing'>Finishing</h4>
+
+For each player, user agents maintain a <dfn>previous current
+time</dfn> <a>time value</a> that is originally <a>unresolved</a>, and
+a <dfn>previous finished state</dfn> boolean flag that is initially
+false.
+
+<div class='todo'>
+    Mention that this gets run at the end of each sample as well.
+    And at the end of any update to the timing of the <a>source
+    content</a>.
+</div>
+
+<div class="todo">
+    Define the promises somewhere.
+</div>
+
+The procedure for <dfn>updating the finished state</dfn> of
+<var>player</var> is as follows:
+
+*   Let the <dfn>source content end</dfn> be the <a>end time</a>
+    of the player's <a>source content</a>.
+    If the player has no <a>source content</a>, let the
+    <em>source content end</em> be zero.
+*   Update the player's <a>hold time</a> based on the first matching
+    condition from below, if any:
+
+    <div class='switch'>
+
+    :   If <a>player playback rate</a> &gt; 0 and the player's
+        <a>current time</a> is <a title="resolved">resolved</a> and
+        greater than or equal to <a>source content end</a>,
+    ::  let the <a>hold time</a> be the maximum value of <var>previous
+        current time</var> and <a>source content end</a>. If there
+        is <var>previously calculated value</var> is
+        <a>unresolved</a>, let the <a>hold time</a> be <a>source
+        content end</a>.
+    :   If <a>player playback rate</a> &lt; 0 and the player's
+        <a>current time</a> is <a title="resolved">resolved</a> and
+        less than or equal to 0,
+    ::  let the <a>hold time</a> be zero.
+    :   If the player's <a>current time</a> is
+        <a title="unresolved">resolved</a> and <a>paused state</a> is
+        false,
+    ::  let the <a>hold time</a> be <a>unresolved</a>.
+
+    </div>
+
+*   Let <var>current finished state</var> be true if the <a>play
+    state</a> of <var>player</var> is finished. Otherwise, let it be
+    false.
+*   If <var>current finished state</var> is true and <var>previous
+    finished state</var> is false,
+    fulfill the player's <a>current finished promise</a> object
+    with <var>player</var>.
+*   If <var>current finished state</var> is false and <var>previous
+    finished state</var> is true,
+    set the player's <a>current finished promise</a> to a new pending
+    Promise object.
+*   Set <var>player</var>'s <a>previous finished state</a> to
+    <var>current finished state</var>.
+*   Set the <a>previous current time</a> of <var>player</var> be the
+    result of calculating its <a>current time</a>.
 
 <h4 id="seeking-pausing-and-limiting">Seeking, pausing and limiting</h4>
 
@@ -4036,7 +4333,7 @@ path animation effect</a>:
 Note: the above descriptions of the length of each list
     represent the requirements of the model.
     Users of the model such as markup or programming interfaces
-    may fulfil these requirements, for example, by defining padding
+    may fulfill these requirements, for example, by defining padding
     behavior or error handling.
 
 Issue: Need a diagram here showing how the different combinations work.
@@ -4742,37 +5039,10 @@ interface AnimationPlayer : EventTarget {
 
 :   <dfn method for=AnimationPlayer title='play()'>void play()</dfn>
 ::  Unpauses the player and rewinds if it has finished playing using
-    the following procedure:
-
-    1.  Set the <a>paused state</a> of the player to false using the
-        procedure defined in <a href="#updating-the-paused-state" section></a>
-    2.  If <a>source content</a> is associated with the player,
-        <a href="#performing-a-seek">adjust the current time</a> of
-        the player as follows:
-
-        <div class="switch">
-
-        :   If <a>player playback rate</a> &gt; 0; and
-            either <a>current time</a> &lt; zero or
-            <a>current time</a> &ge; <a>source
-            content</a>'s <a>end time</a>,
-        ::  Seek to time zero.
-        :   If <a>player playback rate</a> &lt; 0; and
-            either <a>current time</a> &le; zero or
-            <a>current time</a> &gt; <a>source
-            content</a>'s <a>end time</a>,
-        ::  Seek to the <a>source content</a>'s <a>end
-            time</a>.
-        :   Otherwise,
-        ::  Do nothing.
-
-        </div>
-
-    3.  Set the player's <a>finished flag</a> to false.
-
+    the procedure for <a>playing a player</a>
 :   <dfn method for=AnimationPlayer title='pause()'>void pause()</dfn>
-::  Set the <a>paused state</a> of this player to true using the
-    procedure defined in <a href="#updating-the-paused-state" section></a>.
+::  Suspends the playback of this player by running the procedure for
+    <a>pausing a player</a>.
 :   <dfn method for=AnimationPlayer title='reverse()'>void reverse()</dfn>
 ::  Inverts the <a title="player playback rate">playback rate</a> of
     this player and seeks to the start of the source media if it has
