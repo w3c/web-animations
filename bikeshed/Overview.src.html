@@ -4879,13 +4879,14 @@ API by the {{AnimationPlayer}} interface.
 
 <pre class='idl'>
 interface AnimationPlayer : EventTarget {
-             attribute AnimationNode?    source;
-    readonly attribute AnimationTimeline timeline;
-             attribute double            startTime;
-             attribute double?           currentTime;
-             attribute double            playbackRate;
-    readonly attribute boolean           paused;
-    readonly attribute boolean           finished;
+             attribute AnimationNode?           source;
+    readonly attribute AnimationTimeline        timeline;
+             attribute double                   startTime;
+             attribute double?                  currentTime;
+             attribute double                   playbackRate;
+    readonly attribute Promise&lt;AnimationPlayer&gt; ready;
+    readonly attribute Promise&lt;AnimationPlayer&gt; finished;
+    readonly attribute boolean                  paused;
     void cancel ();
     void finish ();
     void play ();
@@ -4893,7 +4894,7 @@ interface AnimationPlayer : EventTarget {
     void reverse ();
 
     // Event callbacks
-             attribute EventHandler      onfinish;
+             attribute EventHandler             onfinish;
 };
 </pre>
 
@@ -4959,6 +4960,12 @@ interface AnimationPlayer : EventTarget {
     player.
     Setting this attribute follows the procedure to<a>update the player
     playback rate</a> of this object to the new value.
+:   <dfn attribute for=AnimationPlayer>ready</dfn>
+    <span attribute-info for=AnimationPlayer/ready></span>
+::  Returns the <a>current ready promise</a> for this object.
+:   <dfn attribute for=AnimationPlayer>finished</dfn>
+    <span attribute-info for=AnimationPlayer/finished></span>
+::  Returns the <a>current finished promise</a> for this object.
 :   <dfn attribute for=AnimationPlayer>paused</dfn>
     <span attribute-info for=paused></span>
 ::  The <a>paused state</a> of this player.
