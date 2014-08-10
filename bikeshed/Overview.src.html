@@ -1380,15 +1380,15 @@ following:
 ::  the inherited time is the <a>current time</a> of the
     <a>player</a>.
 :   Otherwise,
-::  the inherited time is <code>null</code>.
+::  the inherited time is <a>unresolved</a>.
 
 </div>
 
 The <dfn>local time</dfn> of an <a>animation node</a> is the
 <a>animation node</a>'s <a>inherited time</a> minus its <a
 title="animation node start time">start time</a>.
-If the <a>inherited time</a> is <code>null</code> then the local time
-is also <code>null</code>.
+If the <a>inherited time</a> is <a>unresolved</a> then the local time
+is also <a>unresolved</a>.
 
 <h4 id="animation-node-phases-and-states">Animation node phases and states</h4>
 
@@ -1396,7 +1396,7 @@ is also <code>null</code>.
 
 At a given moment, an <a>animation node</a> may be in one of three
 possible <em>phases</em>.
-If an <a>animation node</a> has a <code>null</code> <a>local
+If an <a>animation node</a> has an <a>unresolved</a> <a>local
 time</a> it will not be in any phase.
 
 The different phases are illustrated below.
@@ -1489,14 +1489,14 @@ The normative definition of each of these states follows.
 </div>
 
 An <a>animation node</a> is in the <dfn>before phase</dfn> if the
-animation node's <a>local time</a> is not <code>null</code> and is
+animation node's <a>local time</a> is not <a>unresolved</a> and is
 less than the node's <a>start delay</a>.
 
 An <a>animation node</a> is in the <dfn>active phase</dfn> if
 <em>all</em> of the following conditions are met:
 
 1.  the <a>animation node</a>'s <a>local time</a> is not
-    <code>null</code>, and
+    <a>unresolved</a>, and
 2.  the <a>animation node</a>'s <a>local time</a> is <em>greater than
     or equal</em> to its <a>start delay</a>, and
 3.  the <a>animation node</a>'s <a>local time</a> is <em>less
@@ -1504,7 +1504,7 @@ An <a>animation node</a> is in the <dfn>active phase</dfn> if
     duration</a>.
 
 An <a>animation node</a> is in the <dfn>after phase</dfn> if the
-animation node's <a>local time</a> is not <code>null</code> and is
+animation node's <a>local time</a> is not <a>unresolved</a> and is
 <em>greater than or equal</em> to the sum of its <a>start delay</a>
 and <a>active duration</a>.
 
@@ -1527,7 +1527,7 @@ following conditions is true:
 An animation node is <dfn>in effect</dfn> if its <a>active time</a> as
 calculated according to the procedure in <a
 href="#calculating-the-active-time" section></a> is not
-<code>null</code>.
+<a>unresolved</a>.
 
 <h3 id="fill-behavior">Fill behavior</h3>
 
@@ -1604,7 +1604,7 @@ Note: setting a fill mode has no bearing on the endpoints of the
     <a>active interval</a>.
     However, the fill mode <em>does</em> have an effect on various other
     properties of the timing model since the <a>active time</a> of an
-    animation node is only defined (that is, not <code>null</code>) inside
+    animation node is only defined (that is, not <a>unresolved</a>) inside
     the <a>active interval</a> <em>or</em> when a fill is applied.
 
 <div class="issue">
@@ -2026,13 +2026,13 @@ any, as follows,
     :   If the animation node has a <a>parent animation group</a>
         and that parent animation group is in the <a>after
         phase</a>,
-    ::  Return <code>null</code>.
+    ::  Return an <a>unresolved</a> <a>time value</a>.
     :   If the <a>fill mode</a> is <span
         class="prop-mode">backwards</span> or <span
         class="prop-mode">both</span>,
     ::  Return zero.
     :   Otherwise,
-    ::  Return <code>null</code>.
+    ::  Return an <a>unresolved</a> <a>time value</a>.
 
     </div>
 
@@ -2047,13 +2047,13 @@ any, as follows,
         phase</a>, and the <a>fill mode</a> of this animation node
         is <span class="prop-value">none</span> or <span
         class="prop-value">forwards</a>,
-    ::  Return <code>null</code>.
+    ::  Return an <a>unresolved</a> <a>time value</a>.
     :   If the animation node has a <a>parent animation group</a>
         and that parent animation group is in the <a>after
         phase</a>, and the <a>fill mode</a> of this animation node
         is <span class="prop-value">none</span> or <span
         class="prop-value">backwards</a>,
-    ::  Return <code>null</code>.
+    ::  Return an <a>unresolved</a> <a>time value</a>.
     :   Otherwise,
     ::  Return <code><a>local time</a> - <a>start delay</a></code>.
 
@@ -2068,18 +2068,18 @@ any, as follows,
     :   If the animation node has a <a>parent animation group</a>
         and that parent animation group is in the <a>before
         phase</a>,
-    ::  Return <code>null</code>.
+    ::  Return an <a>unresolved</a> <a>time value</a>.
     :   If the <a>fill mode</a> is <span
         class="prop-mode">forwards</span> or <span
         class="prop-mode">both</span>,
     ::  Return the <a>active duration</a>.
     :   Otherwise,
-    ::  Return <code>null</code>.
+    ::  Return an <a>unresolved</a> <a>time value</a>.
 
     </div>
 
-:   Otherwise (the <a>local time</a> is <code>null</code>),
-::  Return <code>null</code>.
+:   Otherwise (the <a>local time</a> is <a>unresolved</a>),
+::  Return an <a>unresolved</a> <a>time value</a>.
 
 </div>
 
@@ -2111,8 +2111,8 @@ define the <a>start offset</a> as follows:
 The <dfn>scaled active time</dfn> is calculated according to
 the following steps:
 
-1.  If the <a>active time</a> is <code>null</code>, return
-    <code>null</code>.
+1.  If the <a>active time</a> is <a>unresolved</a>, return
+    an <a>unresolved</a> <a>time value</a>.
 
 2.  Return the scaled active time based on the
     <a title="animation node playback rate">playback rate</a> as
@@ -2144,8 +2144,8 @@ the following steps:
 The <dfn>iteration time</dfn> is calculated according to the
 following steps:
 
-1.  If the <a>scaled active time</a> is <code>null</code>,
-    return <code>null</code>.
+1.  If the <a>scaled active time</a> is <a>unresolved</a>,
+    return <a>unresolved</a>.
 
 2.  If the <a>iteration duration</a> is zero, return zero.
 
@@ -2164,8 +2164,8 @@ following steps:
 The <dfn>current iteration</dfn> can be calculated using the
 following steps:
 
-1.  If the <a>scaled active time</a> is <code>null</code>, return
-    <code>null</code>.
+1.  If the <a>scaled active time</a> is <a>unresolved</a>, return
+    <a>unresolved</a>.
 
 2.  If the <a>scaled active time</a> is zero, return zero.
 
@@ -2226,8 +2226,8 @@ A non-normative definition of these values is as follows:
   The <dfn>directed time</dfn> is calculated from the <a>iteration
   time</a> using the following steps:
 
-1.  If the <a>iteration time</a> is <code>null</code>, return
-    <code>null</code>.
+1.  If the <a>iteration time</a> is <a>unresolved</a>, return
+    <a>unresolved</a>.
 
 2.  Calculate the <var>current direction</var> using the first
     matching condition from the following list:
@@ -2485,8 +2485,9 @@ effect</a> associated with an <a>animation node</a>, an additional
 The value of the <a>before flag</a> is determined as follows:
 
 
-1.  If the <a>active time</a> of the animation node is null, the
-    <a>before flag</a> is not set and these steps should be aborted.
+1.  If the <a>active time</a> of the animation node is
+    <a>unresolved</a>, the <a>before flag</a> is not set and these
+    steps should be aborted.
 2.  Determine the <var>current direction</var> using the procedure
     defined in <a href="#calculating-the-directed-time"
     section></a>.
@@ -2537,8 +2538,8 @@ The meaning of each value is as follows:
 The <dfn>transformed time</dfn> is calculated from the
 <a>directed time</a> using the following steps:
 
-1.  If the <a>directed time</a> is <code>null</code>,
-    return <code>null</code>.
+1.  If the <a>directed time</a> is <a>unresolved</a>,
+    return an <a>unresolved</a> <a>time value</a>.
 2.  If the <a>iteration duration</a> is infinity,
     return the <a>directed time</a>.
 3.  Let <var>iteration fraction</var> be the result of
@@ -2927,8 +2928,8 @@ according to the following steps:
 
 :   Otherwise,
 ::  Return <a>transformed time</a> / <a>iteration duration</a> unless
-    <a>transformed time</a> is <code>null</code>, in which case return
-    <code>null</code>.
+    <a>transformed time</a> is <a>unresolved</a>, in which case return
+    an <a>unresolved</a> <a>time value</a>.
 
 </div>
 
@@ -4165,7 +4166,7 @@ referenced by a <a>keyframe animation effect</a> as one of its
     interface</a> defined by this specification, these conditions are
     met by applying the normalization defined in <a
     href="#normalizing-a-sequence-of-keyframes" section></a>
-    and resolving <code>null</code> <a>keyframe offsets</a> by
+    and resolving null <a>keyframe offsets</a> by
     applying <a href="#spacing-keyframes">spacing behavior</a>.
 
 </div>
