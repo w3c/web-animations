@@ -234,11 +234,6 @@ called and are therefore stative.
 These methods are provided primarily for convenience and are not part
 of the core timing model but are layered on top.
 
-Likewise, <a>player events</a> are fired when the first sample occurs
-at the limit of the <a>source content</a>.
-This too is stative behavior but is part of the play control layered
-on top of the timing model.
-
 Similarly, the <a href="#reaching-the-end" section>finishing behavior</a> of
 players means that dynamic changes to the end time of
 the media (source content) of a player may produce a different result
@@ -302,7 +297,7 @@ weakened even further.
 </p>
 
 A <a>time value</a> may also be <dfn>unresolved</dfn> if, for example,
-a timing node is not in a state to produce a <a>timing value</a>.
+a timing node is not in a state to produce a <a>time value</a>.
 
 Periodically, the user agent will queue a task to update the timing
 model in a process called <dfn>sampling</dfn>.
@@ -453,7 +448,7 @@ matching condition from below:
 
 <div class="switch">
 
-:   If the player's <a>hold time</a> is <a title='unresolved'>resolved</a>,
+:   If the player's <a>hold time</a> is <a title="unresolved">resolved</a>,
 ::  The <a>current time</a> is the player's <a>hold time</a>.
 
 :   If <em>any</em> of the following are true:
@@ -503,7 +498,7 @@ a player, <var>player</var>m to <var>seek time</var> is as follows:
     :   If <em>any</em> of the following conditions are true:
 
         *   <var>player</var>'s <a>hold time</a> is
-            <a title='unresolved'>resolved</a>, or
+            <a title="unresolved">resolved</a>, or
         *   <var>player</var> has no associated <a>timeline</a> or the
             associated <a>timeline</a> is
             <a title="inactive timeline">inactive</a>, or
@@ -554,7 +549,7 @@ is as follows:
     2.  Let <var>start time offset</var> be <code><var>new start
         time</var> &minus; <var>effective start time</var></code>.
     3.  Set <var>player</var>'s <a>hold time</a> to
-        <code><a>hold time</a> + <a>start time offset</a></code>.
+        <code><a>hold time</a> + <var>start time offset</var></code>.
 
 2.  Unless <var>player</var> has a <a>pending pause task</a>,
     set <var>player</var>'s <a title="player start time">start time</a>
@@ -562,7 +557,7 @@ is as follows:
 3.  If <var>player</var> has a <a>pending play task</a>, cancel the
     task and fulfill <var>player</var>'s <a>current ready promise</a> with
     <var>player</var>.
-4.  Run the procedure for <a>updating a player's finished state</a>
+4.  Run the procedure to <a>update a player's finished state</a>
     for <var>player</var>.
 
 <h4 id='waiting-for-source-content'>Waiting for source content</h4>
@@ -580,10 +575,11 @@ frames of the animation corresponding to the setup time involved.
 To avoid this problem, Web Animations typically begins timing
 animations from the moment when the first frame of the animation is
 complete.
-This is represented by an <a>unresolved</a> <a>start time</a> on the
-<a>player</a> which becomes resolved when the animation is
-<a>ready</a>.
-Content may opt out of this behavior by setting the <a>start time</a>
+This is represented by an <a>unresolved</a> <a
+title="player start time">start time</a> on the <a>player</a> which becomes
+resolved when the animation is <a>ready</a>.
+Content may opt out of this behavior by setting the <a
+title="player start time">start time</a>
 to a <a title="unresolved">resolved</a> <a>time value</a>.
 
 A player's <a>source content</a> is <dfn>ready</dfn> when the user
@@ -616,9 +612,6 @@ cancelled (see <a href="#cancelling-a-player-section" section></a>).
     in between the calls to <code>pause</code> and
     <code>play</code> and hence the <a>current ready promise</a> does
     not change.
-    <a title="play state pending">pending</a> state in between the calls to
-    <code>pause</code> and <code>play</code> and hence the
-    <a>current ready promise</a> does not change.
 
     <pre class='example sh_javascript'>
         player.pause();
@@ -742,7 +735,7 @@ Players maintain a boolean <dfn>pause flag</dfn> to indicate a player
 whose current time is suspended.
 The <a>pause flag</a> is initially false.
 
-As with <a>playing a player</a>, pausing may not happen
+As with <a title="play a player">playing a player</a>, pausing may not happen
 instantaneously (see <a href="#waiting-for-source-content" section></a>).
 For example, if animation is performed by a separate process, it may
 be necessary to synchronize the <a>current time</a> to ensure that it
@@ -800,7 +793,7 @@ The procedure to <dfn>pause a player</dfn>, <var>player</var> is as follows:
 
     3.  Fulfill <var>player</var>'s <a>current ready promise</a> with
         <var>player</var>.
-    4.  Run the procedure for <a>updating a player's finished state</a>
+    4.  Run the procedure to <a>update a player's finished state</a>
         for <var>player</var>.
 
     So long as the above task is scheduled but has yet to run,
@@ -888,7 +881,7 @@ A player that has reached this boundary (or overshot it) and whose
 title="finished play state">finished</a>.
 
 The crossing of this boundary is checked on each modification to the
-player object using the procedure for <a>updating a player's finished
+player object using the procedure for <a>update a player's finished
 state</a> defined below.
 
 For each player, the user agent maintains a <dfn>previous current
@@ -911,7 +904,7 @@ The procedure to <dfn>update a player's finished state</dfn> for
     <div class='switch'>
 
     :   If <a>player playback rate</a> &gt; 0 and
-        <a>current time</a> is <a title="resolved">resolved</a> and
+        <a>current time</a> is <a title="unresolved">resolved</a> and
         greater than or equal to <a>source content end</a>,
     ::  let the <a>hold time</a> be the maximum value of
         <var>previous current time</var> and <a>source content end</a>.
@@ -919,11 +912,11 @@ The procedure to <dfn>update a player's finished state</dfn> for
         <a>unresolved</a>, let the <a>hold time</a> be <a>source
         content end</a>.
     :   If <a>player playback rate</a> &lt; 0 and
-        <a>current time</a> is <a title="resolved">resolved</a> and
+        <a>current time</a> is <a title="unresolved">resolved</a> and
         less than or equal to 0,
     ::  let the <a>hold time</a> be zero.
     :   If <a>current time</a> is <a title="unresolved">resolved</a>
-        and <a>paused state</a> is false,
+        and <a>pause flag</a> is false,
     ::  let the <a>hold time</a> be <a>unresolved</a>.
 
     </div>
@@ -1019,8 +1012,9 @@ as follows:
 6.  Let <a>current finished promise</a> be a new pending Promise
       object.
 7.  Make <var>player</var>'s <a>hold time</a> <a>unresolved</a>.
-8.  Make <var>player</var>'s <a>start time</a> <a>unresolved</a>.
-9.  Set <var>player</var>'s <a>pause state</a> to false.
+8.  Make <var>player</var>'s <a title="player start time">start time</a>
+    <a>unresolved</a>.
+9.  Set <var>player</var>'s <a>pause flag</a> to false.
 10. Queue a task to call any <a>custom effects</a> associated with
     <a>inclusive descendants</a> of <var>player</var>'s <a>source content</a>
     with an <a>unresolved</a> time fraction.
@@ -1136,7 +1130,7 @@ condition from the following:
 :   The <a>current time</a> of <var>player</var> is
     <a>unresolved</a>,
 ::  &rarr; <a title="idle play state">idle</a>
-:   The <a>paused flag</a> of <var>player</var> is true,
+:   The <a>pause flag</a> of <var>player</var> is true,
 ::  &rarr; <a title="paused play state">paused</a>
 :   For <var>player</var>,
     <a>player playback rate</a> &gt; 0 and
@@ -4832,7 +4826,7 @@ interface AnimationTimeline {
 
 :   <dfn method for=AnimationTimeline title='play()'>
     AnimationPlayer play(optional TimedItem? source = null)</dfn>
-::  Creates a new <a interface>AnimationPlayer</a> object associated with
+::  Creates a new {{AnimationPlayer}} object associated with
     this <a>timeline</a> that is scheduled to start at <code>currentTime</code>.
 
     The <code>timeline</code> attribute of the newly-created
@@ -4850,7 +4844,7 @@ interface AnimationTimeline {
     The <code>playbackRate</code> and <code>paused</code> attributes
     take on their default values as described in the definitions of
     the <a title="player playback rate">playback rate</a> and
-    <a>paused state</a> properties of <a>player</a> objects.
+    <a>pause flag</a> properties of <a>player</a> objects.
 
     The {{AnimationPlayer/source}}
     attribute of the created {{AnimationPlayer}}
@@ -4949,8 +4943,8 @@ interface AnimationPlayer {
 ::  Returns the <a title="player start time">start time</a> of this
     player.
     Setting this attribute updates the <a>player start time</a> using
-    the procedure to <a>update the start time</a> of this object to the
-    new value.
+    the procedure to <a>update the player start time</a> of this object
+    to the new value.
 :   <dfn attribute for=AnimationPlayer>currentTime</dfn>
     <span attribute-info for=AnimationPlayer/currentTime></span>
 ::  The <a>current time</a> of this player.
@@ -4964,7 +4958,7 @@ interface AnimationPlayer {
     playback rate</a> of this object to the new value.
 :   <dfn attribute for=AnimationPlayer>playState</dfn>
     <span attribute-info for=AnimationPlayer/playState></span>
-::  The <a>player state</a> of this player.
+::  The <a>play state</a> of this player.
 :   <dfn attribute for=AnimationPlayer>ready</dfn>
     <span attribute-info for=AnimationPlayer/ready></span>
 ::  Returns the <a>current ready promise</a> for this object.
@@ -7132,9 +7126,9 @@ the Web Animations model is as follows:
     <div class="informative-bg"><em>This section is non-normative</em>
 
     For example, if the {{AnimationPlayer}}
-    associated with an {{Animation}} is <a
-    title="seeking">seeked</a> via the programming interface,
-    the value returned when querying the
+    associated with an {{Animation}} is seeked (see <a section
+    href="#setting-the-current-time-of-a-player"></a>) via the programming
+    interface, the value returned when querying the
     animation's <code>startTime</code> will reflect updated state of
     the model immediately.
 
@@ -7403,11 +7397,11 @@ The following changes have been made since the <a
     asynchronous play/pause/reverse operations.
 *   Defined that <a>unresolved</a> <a>time values</a> are represented
     by <code>null</code>.
-*   Updated the <a>AnimationPlayer</a> interface:
+*   Updated the {{AnimationPlayer}} interface:
 
     *   Made <code>startTime</code> nullable.
     *   Added the <code>playState</code> member and corresponding
-        <a>AnimationPlayState</a> enum.
+        {{AnimationPlayState}} enum.
     *   Added the <code>ready</code> and <code>finished</code> Promise
         attributes.
     *   Removed the <code>paused</code> and <code>finished</code>
