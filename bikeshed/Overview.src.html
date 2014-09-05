@@ -437,7 +437,41 @@ of situations such as combining animations and returning the list of
 current players.
 
 Issue: Should this actually be based on when the player is attached to
-    a timeline?
+    a timeline? Or when it leaves the idle state?
+
+<h4 id="setting-the-source-content">Setting the source content of a
+  player</h4>
+
+The procedure to <dfn>set the source content of a player</dfn>,
+<var>player</var> to <var>new content</var> which may be null, is as follows:
+
+1.  Let <var>old content</var> be the current <a>source content</a> of the
+    player, if any.
+2.  If <var>new content</var> is the same object as <var>old content</var>,
+    abort this procedure.
+3.  If <var>player</var> has a <a>pending pause task</a>, reschedule that task
+    to run as soon as <var>new content</var> is <a>ready</a>.
+4.  If <var>player</var> has a <a>pending play task</a>, reschedule that task
+    to run as soon as <var>new content</var> is <a>ready</a>.
+5.  If <var>new content</var> is not <code>null</code> and
+    if <var>new content</var> has a <a>parent animation group</a>,
+    <a title="remove an animation node">remove</a> <var>new content</var> from
+    its <a>parent animation group</a>.
+6.  Let the <a>source content</a> of <var>player</var> be <var>new
+    content</var>.
+7.  If <var>old content</var> is not <code>null</code>, queue a task to call any
+    <a>custom effects</a> associated with <a>inclusive descendants</a> of
+    <var>old content</var> with an <a>unresolved</a> <a>time fraction</a>.
+    <div class="issue">
+      This is not quite right. If <var>old content</var> is attached to another
+      player in the same task then we should probably not do an extra
+      callback with <a>unresolved</a>.
+
+      The definition of when <a>custom effects</a> gets called needs to be
+      audited and probably rewritten.
+    </div>
+8.  Run the procedure to <a>update a player's finished state</a> for
+    <var>player</var>.
 
 <h4 id="the-current-time-of-a-player">The current time of a player</h4>
 
@@ -565,6 +599,10 @@ is as follows:
 
 <h4 id='waiting-for-source-content'>Waiting for source content</h4>
 
+<div class='informative-bg'>
+
+<em>This section is non-normative</em>
+
 Some operations performed by a <a>player</a> may not occur
 instantaneously.
 For example, some user agents may delegate the playback of an
@@ -584,6 +622,8 @@ resolved when the animation is <a>ready</a>.
 Content may opt out of this behavior by setting the <a
 title="player start time">start time</a>
 to a <a title="unresolved">resolved</a> <a>time value</a>.
+
+</div>
 
 A player's <a>source content</a> is <dfn>ready</dfn> when the user
 agent has completed any setup required to begin the playback of each
@@ -629,7 +669,7 @@ cancelled (see <a href="#cancelling-a-player-section" section></a>).
 
 <h4 id='playing-a-player-section'>Playing a player</h4>
 
-The procedure to <dfn>play a player</dfn>, <var>player</var> is as follows:
+The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
 
 1.  If there is no <a>timeline</a> associated with <var>player</var>, or the
     associated <a>timeline</a> is <a title="inactive timeline">inactive</a>
@@ -1027,6 +1067,11 @@ as follows:
 10. Queue a task to call any <a>custom effects</a> associated with
     <a>inclusive descendants</a> of <var>player</var>'s <a>source content</a>
     with an <a>unresolved</a> time fraction.
+    <p class="issue">
+      The procedures for calling custom effects needs to be reworked.
+      Currently they probably involve calling too often for changes that could
+      be coalesced.
+    </p>
 
 <h4 id="speed-control">Speed control</h4>
 
@@ -4709,8 +4754,8 @@ following criteria.
     *   referenced this same <a>custom effect</a>, and
     *   had a different <a>animation target</a>
 
-    Call the callback passing a null <a>time fraction</a> and the
-    <a>animation target</a> from the previous sample as parameters to
+    Call the callback passing an <a>unresolved</a> <a>time fraction</a> and
+    the <a>animation target</a> from the previous sample as parameters to
     the callback.
 2.  Call the callback for the current <a>animation target</a> based on
     the first matching condition from the following:
@@ -4720,8 +4765,8 @@ following criteria.
     :   If the <a>animation</a> referencing the custom effect is not
         <a>in effect</a> but was <a>in effect</a> in the previous
         sample,
-    ::  Call the callback passing a null <a>time fraction</a> and the
-        current <a>animation target</a> as parameters to the callback.
+    ::  Call the callback passing an <a>unresolved</a> <a>time fraction</a> and
+        the current <a>animation target</a> as parameters to the callback.
     :   Otherwise, if the <a>animation</a> referencing the custom
         effect:
     ::
@@ -4908,42 +4953,8 @@ interface AnimationPlayer {
 :   <dfn attribute for=AnimationPlayer>source</dfn>
     <span attribute-info for=source></span>
 ::  The <a>source content</a> associated with this player.
-
-    A <a>player</a> can only be associated with at most one
-    <a>animation node</a>, and likewise, an <a>animation node</a> can
-    only be <a title="associated with a player">associated</a> with at
-    most one <a>player</a>.
-    In order to maintain these invariants, on setting this value, the
-    following procedure is performed:
-
-    1.  Let <var>old value</var> be the current value of the
-        <code>source</code> attribute.
-    2.  Let <var>new value</var> be the value to set.
-    3.  If <var>new value</var> is the same object as <var>old
-        value</var>, return.
-        4.  If <var>old value</var> is not <code>null</code>,
-            disassociate <var>old value</var> from this player.
-    5.  If <var>new value</var> is not <code>null</code>,
-        perform the steps associated with the first matching condition
-        of the following:
-
-        <div class='switch'>
-
-        :   If <var>new value</var> has no parent group and is
-            associated with a player,
-        ::  disassociate <var>new value</var> from its player.
-        :   If <var>new value</var> has a parent group,
-        ::  remove <var>new value</var> from its parent group by
-            calling <code><var>new value</var>.remove()</code>.
-        :   Otherwise,
-        ::  do nothing.
-
-        </div>
-
-    6.  Associate <var>new value</var> with this player.
-    7.  Set the <code>source</code> attribute to <var>new
-        value</var>.
-
+    Setting this attribute updates the object's <a>source content</a> using
+    the procedure to <a>set the source content of a player</a>.
 :   <dfn attribute for=AnimationPlayer>timeline</dfn>
     <span attribute-info for=AnimationPlayer/timeline></span>
 ::  The <a>timeline</a> associated with this player.
