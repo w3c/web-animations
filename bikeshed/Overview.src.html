@@ -448,8 +448,9 @@ to <var>new timeline</var> which may be null, is as follows:
     <var>player</var>, if any.
 2.  If <var>new timeline</var> is the same object as <var>old timeline</var>,
     abort this procedure.
-3.  If <var>new timeline</var> is null, run the procedure to <a>reset
-    a player's pending tasks</a> on <var>player</var>.
+3.  If <var>new timeline</var> is null and <var>old timeline</var> is not null,
+    run the procedure to <a>reset a player's pending tasks</a> on
+    <var>player</var>.
     <p class="note">
       Note that if <var>new timeline</var> is not null and <var>player</var> has
       a <a>pending play task</a> or a <a>pending pause task</a> no special
@@ -487,8 +488,9 @@ The procedure to <dfn>set the source content of a player</dfn>,
     <var>player</var>, if any.
 2.  If <var>new content</var> is the same object as <var>old content</var>,
     abort this procedure.
-3.  If <var>new content</var> is null, run the procedure to <a>reset
-    a player's pending tasks</a> on <var>player</var>.
+3.  If <var>new content</var> is null and <var>old content</var> is not null,
+    run the procedure to <a>reset a player's pending tasks</a> on
+    <var>player</var>.
 4.  If <var>player</var> has a <a>pending pause task</a>, reschedule that task
     to run as soon as <var>new content</var> is <a>ready</a>.
 5.  If <var>player</var> has a <a>pending play task</a>, reschedule that task
@@ -4968,6 +4970,8 @@ interface AnimationTimeline {
 API by the {{AnimationPlayer}} interface.
 
 <pre class='idl'>
+[Constructor (optional AnimationNode? source = null,
+              optional AnimationTimeline? timeline = null)]
 interface AnimationPlayer {
              attribute AnimationNode?           source;
              attribute AnimationTimeline?       timeline;
@@ -4984,6 +4988,34 @@ interface AnimationPlayer {
     void reverse ();
 };
 </pre>
+
+<div class="constructors">
+
+:   <dfn constructor for=AnimationPlayer title="AnimationPlayer()">
+:   Constructor ()</dfn>
+::  Creates a new {{AnimationPlayer}} object using the following procedure.
+
+    1.  Let <var>player</var> be a new {{AnimationPlayer}} object.
+    2.  Run the procedure to <a>set the timeline of a player</a> on
+        <var>player</var> passing <var>timeline</var> as the <var>new
+        timeline</var>.
+    3.  Run the procedure to <a>set the source content of a player</a> on
+        <var>player</var> passing <var>source</var> as the <var>new
+        content</var>.
+
+    <div class="parameters">
+
+    :   source
+    ::  An optional value which, if not null, specifies the <a>source
+        content</a> to assign to the newly created <a>player</a>.
+
+    :   timeline
+    ::  An optional value which, if not null, specifies the <a>timeline</a>
+        with which to associate the newly created <a>player</a>.
+
+    </div>
+
+</div>
 
 <div class='attributes'>
 
@@ -7479,6 +7511,8 @@ The following changes have been made since the <a
     by <code>null</code>.
 *   Updated the {{AnimationPlayer}} interface:
 
+    *   Added the <a constructor for="AnimationPlayer">AnimationPlayer()</a>
+        constructor.
     *   Made <code>startTime</code> nullable.
     *   Added the <code>playState</code> member and corresponding
         {{AnimationPlayState}} enum.
