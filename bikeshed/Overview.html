@@ -706,8 +706,9 @@ to <var>new timeline</var> which may be null, is as follows:</p>
 <var>player</var>, if any.</p>
 <li data-md=""><p>If <var>new timeline</var> is the same object as <var>old timeline</var>,
 abort this procedure.</p>
-<li data-md=""><p>If <var>new timeline</var> is null, run the procedure to <a data-link-type=dfn href=#reset-a-players-pending-tasks title="reset a player’s pending tasks">reset
-a player’s pending tasks</a> on <var>player</var>.
+<li data-md=""><p>If <var>new timeline</var> is null and <var>old timeline</var> is not null,
+run the procedure to <a data-link-type=dfn href=#reset-a-players-pending-tasks title="reset a player’s pending tasks">reset a player’s pending tasks</a> on
+<var>player</var>.
 <p class=note>
   Note that if <var>new timeline</var> is not null and <var>player</var> has
   a <a data-link-type=dfn href=#pending-play-task title="pending play task">pending play task</a> or a <a data-link-type=dfn href=#pending-pause-task title="pending pause task">pending pause task</a> no special
@@ -745,8 +746,9 @@ Promise object.</p>
 <var>player</var>, if any.</p>
 <li data-md=""><p>If <var>new content</var> is the same object as <var>old content</var>,
 abort this procedure.</p>
-<li data-md=""><p>If <var>new content</var> is null, run the procedure to <a data-link-type=dfn href=#reset-a-players-pending-tasks title="reset a player’s pending tasks">reset
-a player’s pending tasks</a> on <var>player</var>.</p>
+<li data-md=""><p>If <var>new content</var> is null and <var>old content</var> is not null,
+run the procedure to <a data-link-type=dfn href=#reset-a-players-pending-tasks title="reset a player’s pending tasks">reset a player’s pending tasks</a> on
+<var>player</var>.</p>
 <li data-md=""><p>If <var>player</var> has a <a data-link-type=dfn href=#pending-pause-task title="pending pause task">pending pause task</a>, reschedule that task
 to run as soon as <var>new content</var> is <a data-link-type=dfn href=#ready title=ready>ready</a>.</p>
 <li data-md=""><p>If <var>player</var> has a <a data-link-type=dfn href=#pending-play-task title="pending play task">pending play task</a>, reschedule that task
@@ -5039,7 +5041,9 @@ sequence number</a>.</p>
 <p><a data-link-type=dfn href=#player title=Players>Players</a> are represented in the Web Animations
 API by the <code class=idl><a data-link-type=idl href=#dom-animationplayer title=AnimationPlayer>AnimationPlayer</a></code> interface.</p>
 
-<pre class=idl>interface <dfn class=idl-code data-dfn-type=interface data-export="" data-global-name="" id=dom-animationplayer>AnimationPlayer<a class=self-link href=#dom-animationplayer></a></dfn> {
+<pre class=idl>[Constructor (optional <a data-link-type=idl href=#dom-animationnode title=AnimationNode>AnimationNode</a>? <dfn class=idl-code data-dfn-for=AnimationPlayer/AnimationPlayer() data-dfn-type=argument data-export="" data-global-name="AnimationPlayer<interface>/AnimationPlayer()<method>/source<argument>" id=dom-animationplayer-animationplayer-source>source<a class=self-link href=#dom-animationplayer-animationplayer-source></a></dfn> = null,
+              optional <a data-link-type=idl href=#dom-animationtimeline title=AnimationTimeline>AnimationTimeline</a>? <dfn class=idl-code data-dfn-for=AnimationPlayer/AnimationPlayer() data-dfn-type=argument data-export="" data-global-name="AnimationPlayer<interface>/AnimationPlayer()<method>/timeline<argument>" id=dom-animationplayer-animationplayer-timeline>timeline<a class=self-link href=#dom-animationplayer-animationplayer-timeline></a></dfn> = null)]
+interface <dfn class=idl-code data-dfn-type=interface data-export="" data-global-name="" id=dom-animationplayer>AnimationPlayer<a class=self-link href=#dom-animationplayer></a></dfn> {
              attribute <a data-link-type=idl href=#dom-animationnode title=AnimationNode>AnimationNode</a>?           <a class=idl-code data-global-name="AnimationPlayer<interface>/source<attribute>" data-link-for=AnimationPlayer data-link-type=attribute data-type="AnimationNode?           " href=#dom-animationplayer-source title=source>source</a>;
              attribute <a data-link-type=idl href=#dom-animationtimeline title=AnimationTimeline>AnimationTimeline</a>?       <a class=idl-code data-global-name="AnimationPlayer<interface>/timeline<attribute>" data-link-for=AnimationPlayer data-link-type=attribute data-type="AnimationTimeline?       " href=#dom-animationplayer-timeline title=timeline>timeline</a>;
              attribute double?                  <a class=idl-code data-global-name="AnimationPlayer<interface>/starttime<attribute>" data-link-for=AnimationPlayer data-link-type=attribute data-type="double?                  " href=#dom-animationplayer-starttime title=startTime>startTime</a>;
@@ -5055,6 +5059,34 @@ API by the <code class=idl><a data-link-type=idl href=#dom-animationplayer title
     void <a class=idl-code data-global-name="AnimationPlayer<interface>/reverse()<method>" data-link-for=AnimationPlayer data-link-type=method href=#dom-animationplayer-reverse title=reverse()>reverse</a> ();
 };
 </pre>
+
+<div class=constructors>
+
+<dl><dt data-md=""><p><dfn class=idl-code data-dfn-for=AnimationPlayer data-dfn-type=constructor data-export="" id=dom-animationplayer-animationplayer title=AnimationPlayer()><a class=self-link href=#dom-animationplayer-animationplayer></a></dfn></p>
+<dt data-md=""><p>Constructor ()</p>
+<dd data-md=""><p>Creates a new <code class=idl><a data-link-type=idl href=#dom-animationplayer title=AnimationPlayer>AnimationPlayer</a></code> object using the following procedure.</p>
+
+<ol><li data-md=""><p>Let <var>player</var> be a new <code class=idl><a data-link-type=idl href=#dom-animationplayer title=AnimationPlayer>AnimationPlayer</a></code> object.</p>
+<li data-md=""><p>Run the procedure to <a data-link-type=dfn href=#set-the-timeline-of-a-player title="set the timeline of a player">set the timeline of a player</a> on
+<var>player</var> passing <var>timeline</var> as the <var>new
+timeline</var>.</p>
+<li data-md=""><p>Run the procedure to <a data-link-type=dfn href=#set-the-source-content-of-a-player title="set the source content of a player">set the source content of a player</a> on
+<var>player</var> passing <var>source</var> as the <var>new
+content</var>.</p>
+</ol>
+<div class=parameters>
+
+<dl><dt data-md=""><p>source</p>
+<dd data-md=""><p>An optional value which, if not null, specifies the <a data-link-type=dfn href=#source-content title="source content">source
+content</a> to assign to the newly created <a data-link-type=dfn href=#player title=player>player</a>.</p>
+
+<dt data-md=""><p>timeline</p>
+<dd data-md=""><p>An optional value which, if not null, specifies the <a data-link-type=dfn href=#timeline title=timeline>timeline</a>
+with which to associate the newly created <a data-link-type=dfn href=#player title=player>player</a>.</p>
+</dl>
+</div>
+</dl>
+</div>
 
 <div class=attributes>
 
@@ -7458,7 +7490,9 @@ asynchronous play/pause/reverse operations.</p>
 by <code>null</code>.</p>
 <li data-md=""><p>Updated the <code class=idl><a data-link-type=idl href=#dom-animationplayer title=AnimationPlayer>AnimationPlayer</a></code> interface:</p>
 
-<ul><li data-md=""><p>Made <code>startTime</code> nullable.</p>
+<ul><li data-md=""><p>Added the <a class=idl-code data-link-for=AnimationPlayer data-link-type=constructor href=#dom-animationplayer-animationplayer title=AnimationPlayer()>AnimationPlayer()</a>
+constructor.</p>
+<li data-md=""><p>Made <code>startTime</code> nullable.</p>
 <li data-md=""><p>Added the <code>playState</code> member and corresponding
 <code class=idl><a data-link-type=idl href=#enumdef-animationplaystate title=AnimationPlayState>AnimationPlayState</a></code> enum.</p>
 <li data-md=""><p>Added the <code>ready</code> and <code>finished</code> Promise
@@ -7690,6 +7724,7 @@ behavior, <a href=#animation-behavior title="section 4.1.3">4.1.3</a>
 <li>animation node playback rate, <a href=#animation-node-playback-rate title="section 3.9">3.9</a>
 <li>animation node start time, <a href=#animation-node-start-time title="section 3.6.3">3.6.3</a>
 <li>animationObject, <a href=#dom-effectcallback-animationobject title="section 5.21">5.21</a>
+<li>AnimationPlayer(), <a href=#dom-animationplayer-animationplayer title="section 5.3">5.3</a>
 <li>AnimationPlayer, <a href=#dom-animationplayer title="section 5.3">5.3</a>
 <li>AnimationPlayState, <a href=#enumdef-animationplaystate title="section 5.3.1">5.3.1</a>
 <li>AnimationSequence(), <a href=#dom-animationsequence-animationsequence title="section 5.11">5.11</a>
@@ -7968,6 +8003,7 @@ Keyframe object, <a href=#procedure-for-converting-an-ecmascript-value-to-an-idl
 <li>silently update the player playback rate, <a href=#silently-update-the-player-playback-rate title="section 3.5.15.1">3.5.15.1</a>
 <li>single-sample, <a href=#single-sample title="section 3.2">3.2</a>
 <li>source<ul><li>argument for AnimationTimeline/play(), <a href=#dom-animationtimeline-play-source title="section 5.2">5.2</a>
+<li>argument for AnimationPlayer/AnimationPlayer(), <a href=#dom-animationplayer-animationplayer-source title="section 5.3">5.3</a>
 <li>attribute for AnimationPlayer, <a href=#dom-animationplayer-source title="section 5.3">5.3</a>
 </ul><li>source content, <a href=#source-content title="section 3.5">3.5</a>
 <li>source content end, <a href=#source-content-end title="section 3.5.12">3.5.12</a>
@@ -7989,6 +8025,7 @@ Keyframe object, <a href=#procedure-for-converting-an-ecmascript-value-to-an-idl
 <li>timeFraction<ul><li>attribute for ComputedAnimationTiming, <a href=#dom-computedanimationtiming-timefraction title="section 5.7">5.7</a>
 <li>argument for EffectCallback, <a href=#dom-effectcallback-timefraction title="section 5.21">5.21</a>
 </ul><li>timeline<ul><li>definition of, <a href=#timeline title="section 3.4">3.4</a>
+<li>argument for AnimationPlayer/AnimationPlayer(), <a href=#dom-animationplayer-animationplayer-timeline title="section 5.3">5.3</a>
 <li>attribute for AnimationPlayer, <a href=#dom-animationplayer-timeline title="section 5.3">5.3</a>
 <li>attribute for Document, <a href=#dom-document-timeline title="section 5.22">5.22</a>
 </ul><li>time value, <a href=#time-value title="section 3.2">3.2</a>
