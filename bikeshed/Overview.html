@@ -104,24 +104,25 @@ features.</p>
 			<li><a href=#the-document-timeline><span class=secno>3.4.1</span> The document timeline</a></ul>
 		<li><a href=#players><span class=secno>3.5</span> Players</a>
 			<ul class=toc>
-			<li><a href=#setting-the-source-content><span class=secno>3.5.1</span> Setting the source content of a   player</a>
-			<li><a href=#the-current-time-of-a-player><span class=secno>3.5.2</span> The current time of a player</a>
-			<li><a href=#setting-the-current-time-of-a-player><span class=secno>3.5.3</span> Setting the current time of a player</a>
-			<li><a href=#setting-the-start-time-of-a-player><span class=secno>3.5.4</span> Setting the start time of a player</a>
-			<li><a href=#waiting-for-source-content><span class=secno>3.5.5</span> Waiting for source content</a>
-			<li><a href=#the-current-ready-promise><span class=secno>3.5.6</span> The current ready promise</a>
-			<li><a href=#playing-a-player-section><span class=secno>3.5.7</span> Playing a player</a>
-			<li><a href=#pausing-a-player-section><span class=secno>3.5.8</span> Pausing a player</a>
-			<li><a href=#reaching-the-end><span class=secno>3.5.9</span> Reaching the end</a>
-			<li><a href=#the-current-finished-promise><span class=secno>3.5.10</span> The current finished promise</a>
-			<li><a href=#updating-the-finished-state><span class=secno>3.5.11</span> Updating the finished state</a>
-			<li><a href=#finishing-a-player-section><span class=secno>3.5.12</span> Finishing a player</a>
-			<li><a href=#cancelling-a-player-section><span class=secno>3.5.13</span> Cancelling a player</a>
-			<li><a href=#speed-control><span class=secno>3.5.14</span> Speed control</a>
+			<li><a href=#setting-the-timeline><span class=secno>3.5.1</span> Setting the timeline of a player</a>
+			<li><a href=#setting-the-source-content><span class=secno>3.5.2</span> Setting the source content of a   player</a>
+			<li><a href=#the-current-time-of-a-player><span class=secno>3.5.3</span> The current time of a player</a>
+			<li><a href=#setting-the-current-time-of-a-player><span class=secno>3.5.4</span> Setting the current time of a player</a>
+			<li><a href=#setting-the-start-time-of-a-player><span class=secno>3.5.5</span> Setting the start time of a player</a>
+			<li><a href=#waiting-for-source-content><span class=secno>3.5.6</span> Waiting for source content</a>
+			<li><a href=#the-current-ready-promise><span class=secno>3.5.7</span> The current ready promise</a>
+			<li><a href=#playing-a-player-section><span class=secno>3.5.8</span> Playing a player</a>
+			<li><a href=#pausing-a-player-section><span class=secno>3.5.9</span> Pausing a player</a>
+			<li><a href=#reaching-the-end><span class=secno>3.5.10</span> Reaching the end</a>
+			<li><a href=#the-current-finished-promise><span class=secno>3.5.11</span> The current finished promise</a>
+			<li><a href=#updating-the-finished-state><span class=secno>3.5.12</span> Updating the finished state</a>
+			<li><a href=#finishing-a-player-section><span class=secno>3.5.13</span> Finishing a player</a>
+			<li><a href=#cancelling-a-player-section><span class=secno>3.5.14</span> Cancelling a player</a>
+			<li><a href=#speed-control><span class=secno>3.5.15</span> Speed control</a>
 				<ul class=toc>
-				<li><a href=#updating-the-playback-rate-of-a-player><span class=secno>3.5.14.1</span>  Updating the playback rate of a player</a></ul>
-			<li><a href=#reversing-a-player-section><span class=secno>3.5.15</span> Reversing a player</a>
-			<li><a href=#player-state><span class=secno>3.5.16</span> Player state</a></ul>
+				<li><a href=#updating-the-playback-rate-of-a-player><span class=secno>3.5.15.1</span>  Updating the playback rate of a player</a></ul>
+			<li><a href=#reversing-a-player-section><span class=secno>3.5.16</span> Reversing a player</a>
+			<li><a href=#player-state><span class=secno>3.5.17</span> Player state</a></ul>
 		<li><a href=#animation-nodes><span class=secno>3.6</span> Animation nodes</a>
 			<ul class=toc>
 			<li><a href=#animation-nodes-and-players><span class=secno>3.6.1</span> Relationship between animation nodes and players</a>
@@ -696,16 +697,56 @@ current players.</p>
 <p class=issue id=issue-f3507204><a class=self-link href=#issue-f3507204></a>Should this actually be based on when the player is attached to
     a timeline? Or when it leaves the idle state?</p>
 
-<h4 class="heading settled" data-level=3.5.1 id=setting-the-source-content><span class=secno>3.5.1 </span><span class=content>Setting the source content of a
+<h4 class="heading settled" data-level=3.5.1 id=setting-the-timeline><span class=secno>3.5.1 </span><span class=content>Setting the timeline of a player</span><a class=self-link href=#setting-the-timeline></a></h4>
+
+<p>The procedure to <dfn data-dfn-type=dfn data-noexport="" id=set-the-timeline-of-a-player>set the timeline of a player<a class=self-link href=#set-the-timeline-of-a-player></a></dfn>, <var>player</var>,
+to <var>new timeline</var> which may be null, is as follows:</p>
+
+<ol><li data-md=""><p>Let <var>old timeline</var> be the current <a data-link-type=dfn href=#timeline title=timeline>timeline</a> of
+<var>player</var>, if any.</p>
+<li data-md=""><p>If <var>new timeline</var> is the same object as <var>old timeline</var>,
+abort this procedure.</p>
+<li data-md=""><p>If <var>new timeline</var> is null, run the procedure to <a data-link-type=dfn href=#reset-a-players-pending-tasks title="reset a player’s pending tasks">reset
+a player’s pending tasks</a> on <var>player</var>.
+<p class=note>
+  Note that if <var>new timeline</var> is not null and <var>player</var> has
+  a <a data-link-type=dfn href=#pending-play-task title="pending play task">pending play task</a> or a <a data-link-type=dfn href=#pending-pause-task title="pending pause task">pending pause task</a> no special
+  handling is required: the pending task will run as soon as the <a data-link-type=dfn href=#source-content title="source content">source
+  content</a> is <a data-link-type=dfn href=#ready title=ready>ready</a> even though this may occur at a different
+  moment that it might have with the old timeline.
+<p></p>
+<li data-md=""><p>Let the <a data-link-type=dfn href=#timeline title=timeline>timeline</a> of <var>player</var> be <var>new timeline</var>.</p>
+<li data-md=""><p class=todo>
+  If <var>new timeline</var> is null, ensure that <a data-link-type=dfn href=#custom-effect title="custom effects">custom effects</a> get
+  called with an <a data-link-type=dfn href=#unresolved title=unresolved>unresolved</a> <a data-link-type=dfn href=#time-fraction title="time fraction">time fraction</a> (unless a subsequent
+  change in the same script execution context makes this redundant).
+</p>
+<li data-md=""><p>Run the procedure to <a data-link-type=dfn href=#update-a-players-finished-state title="update a player’s finished state">update a player’s finished state</a> for
+<var>player</var>.</p>
+</ol>
+<p>The procedure to <dfn data-dfn-type=dfn data-noexport="" id=reset-a-players-pending-tasks>reset a player’s pending tasks<a class=self-link href=#reset-a-players-pending-tasks></a></dfn> for <var>player</var>
+is as follows:</p>
+
+<ol><li data-md=""><p>If <var>player</var> has a <a data-link-type=dfn href=#pending-play-task title="pending play task">pending play task</a>, cancel that task.</p>
+<li data-md=""><p>If <var>player</var> has a <a data-link-type=dfn href=#pending-pause-task title="pending pause task">pending pause task</a>, cancel that task.</p>
+<li data-md=""><p>Reject <var>player</var>’s <a data-link-type=dfn href=#current-ready-promise title="current ready promise">current ready promise</a> with a DOMException
+named "AbortError".</p>
+<li data-md=""><p>Let <var>player</var>’s <a data-link-type=dfn href=#current-ready-promise title="current ready promise">current ready promise</a> be a new resolved
+Promise object.</p>
+</ol>
+<h4 class="heading settled" data-level=3.5.2 id=setting-the-source-content><span class=secno>3.5.2 </span><span class=content>Setting the source content of a
   player</span><a class=self-link href=#setting-the-source-content></a></h4>
 
 <p>The procedure to <dfn data-dfn-type=dfn data-noexport="" id=set-the-source-content-of-a-player>set the source content of a player<a class=self-link href=#set-the-source-content-of-a-player></a></dfn>,
-<var>player</var> to <var>new content</var> which may be null, is as follows:</p>
+<var>player</var>, to <var>new content</var> which may be null, is as follows:</p>
 
-<ol><li data-md=""><p>Let <var>old content</var> be the current <a data-link-type=dfn href=#source-content title="source content">source content</a> of the
-player, if any.</p>
+
+<ol><li data-md=""><p>Let <var>old content</var> be the current <a data-link-type=dfn href=#source-content title="source content">source content</a> of
+<var>player</var>, if any.</p>
 <li data-md=""><p>If <var>new content</var> is the same object as <var>old content</var>,
 abort this procedure.</p>
+<li data-md=""><p>If <var>new content</var> is null, run the procedure to <a data-link-type=dfn href=#reset-a-players-pending-tasks title="reset a player’s pending tasks">reset
+a player’s pending tasks</a> on <var>player</var>.</p>
 <li data-md=""><p>If <var>player</var> has a <a data-link-type=dfn href=#pending-pause-task title="pending pause task">pending pause task</a>, reschedule that task
 to run as soon as <var>new content</var> is <a data-link-type=dfn href=#ready title=ready>ready</a>.</p>
 <li data-md=""><p>If <var>player</var> has a <a data-link-type=dfn href=#pending-play-task title="pending play task">pending play task</a>, reschedule that task
@@ -730,7 +771,7 @@ content</var>.</p>
 <li data-md=""><p>Run the procedure to <a data-link-type=dfn href=#update-a-players-finished-state title="update a player’s finished state">update a player’s finished state</a> for
 <var>player</var>.</p>
 </ol>
-<h4 class="heading settled" data-level=3.5.2 id=the-current-time-of-a-player><span class=secno>3.5.2 </span><span class=content>The current time of a player</span><a class=self-link href=#the-current-time-of-a-player></a></h4>
+<h4 class="heading settled" data-level=3.5.3 id=the-current-time-of-a-player><span class=secno>3.5.3 </span><span class=content>The current time of a player</span><a class=self-link href=#the-current-time-of-a-player></a></h4>
 
 <p><a data-link-type=dfn href=#player title=Players>Players</a> provide a <a data-link-type=dfn href=#time-value title="time value">time value</a> to their <a data-link-type=dfn href=#source-content title="source content">source
 content</a> called the player’s <dfn data-dfn-type=dfn data-noexport="" id=current-time>current time<a class=self-link href=#current-time></a></dfn>.</p>
@@ -765,11 +806,11 @@ matching condition from below:</p>
 <p>Where <var>timeline time</var> is the current <a data-link-type=dfn href=#time-value title="time value">time value</a> of
 the associated <a data-link-type=dfn href=#timeline title=timeline>timeline</a>.
 The <a data-link-type=dfn href=#player-playback-rate title="player playback rate">playback rate</a> value is
-defined in <a data-section="" href=#speed-control>§3.5.14 Speed control</a>.</p>
+defined in <a data-section="" href=#speed-control>§3.5.15 Speed control</a>.</p>
 </dl>
 </div>
 
-<h4 class="heading settled" data-level=3.5.3 id=setting-the-current-time-of-a-player><span class=secno>3.5.3 </span><span class=content>Setting the current time of a player</span><a class=self-link href=#setting-the-current-time-of-a-player></a></h4>
+<h4 class="heading settled" data-level=3.5.4 id=setting-the-current-time-of-a-player><span class=secno>3.5.4 </span><span class=content>Setting the current time of a player</span><a class=self-link href=#setting-the-current-time-of-a-player></a></h4>
 
 <p>The <a data-link-type=dfn href=#current-time title="current time">current time</a> of a player can be set to a new value to
 <em>seek</em> the player.
@@ -819,7 +860,7 @@ with <var>player</var>.</p>
 <li data-md=""><p>Run the procedure to <a data-link-type=dfn href=#update-a-players-finished-state title="update a player’s finished state">update a player’s finished state</a>
 for <var>player</var>.</p>
 </ol>
-<h4 class="heading settled" data-level=3.5.4 id=setting-the-start-time-of-a-player><span class=secno>3.5.4 </span><span class=content>Setting the start time of a player</span><a class=self-link href=#setting-the-start-time-of-a-player></a></h4>
+<h4 class="heading settled" data-level=3.5.5 id=setting-the-start-time-of-a-player><span class=secno>3.5.5 </span><span class=content>Setting the start time of a player</span><a class=self-link href=#setting-the-start-time-of-a-player></a></h4>
 
 <p>The procedure to <dfn data-dfn-type=dfn data-noexport="" id=update-the-player-start-time>update the player start time<a class=self-link href=#update-the-player-start-time></a></dfn>
 of <a data-link-type=dfn href=#player title=player>player</a>, <var>player</var>, to
@@ -850,7 +891,7 @@ task and fulfill <var>player</var>’s <a data-link-type=dfn href=#current-ready
 <li data-md=""><p>Run the procedure to <a data-link-type=dfn href=#update-a-players-finished-state title="update a player’s finished state">update a player’s finished state</a>
 for <var>player</var>.</p>
 </ol>
-<h4 class="heading settled" data-level=3.5.5 id=waiting-for-source-content><span class=secno>3.5.5 </span><span class=content>Waiting for source content</span><a class=self-link href=#waiting-for-source-content></a></h4>
+<h4 class="heading settled" data-level=3.5.6 id=waiting-for-source-content><span class=secno>3.5.6 </span><span class=content>Waiting for source content</span><a class=self-link href=#waiting-for-source-content></a></h4>
 
 <div class=informative-bg>
 
@@ -883,7 +924,7 @@ rendering the first frame of any <a data-link-type=dfn href=#animation title=ani
 <a data-link-type=dfn href=#animation-effect title="animation effect">animation effect</a> or executing any <a data-link-type=dfn href=#custom-effect title="custom effects">custom
 effects</a> associated with such an <a data-link-type=dfn href=#animation title=animation>animation</a>.</p>
 
-<h4 class="heading settled" data-level=3.5.6 id=the-current-ready-promise><span class=secno>3.5.6 </span><span class=content>The current ready promise</span><a class=self-link href=#the-current-ready-promise></a></h4>
+<h4 class="heading settled" data-level=3.5.7 id=the-current-ready-promise><span class=secno>3.5.7 </span><span class=content>The current ready promise</span><a class=self-link href=#the-current-ready-promise></a></h4>
 
 <p>Each <a data-link-type=dfn href=#player title=player>player</a> has a <dfn data-dfn-type=dfn data-noexport="" id=current-ready-promise>current ready promise<a class=self-link href=#current-ready-promise></a></dfn>.
 The <a data-link-type=dfn href=#current-ready-promise title="current ready promise">current ready promise</a> is initially a resovled Promise
@@ -891,7 +932,7 @@ object.</p>
 
 <p>The object is replaced with a new Promise object every time the player
 enters the <a data-link-type=dfn href=#pending-play-state title="pending play state">pending play state</a> as well as when the player is
-cancelled (see <a data-section="" href=#cancelling-a-player-section>§3.5.13 Cancelling a player</a>).</p>
+cancelled (see <a data-section="" href=#cancelling-a-player-section>§3.5.14 Cancelling a player</a>).</p>
 
 <div class=note>
 
@@ -917,7 +958,7 @@ player.play();
 
 </div>
 
-<h4 class="heading settled" data-level=3.5.7 id=playing-a-player-section><span class=secno>3.5.7 </span><span class=content>Playing a player</span><a class=self-link href=#playing-a-player-section></a></h4>
+<h4 class="heading settled" data-level=3.5.8 id=playing-a-player-section><span class=secno>3.5.8 </span><span class=content>Playing a player</span><a class=self-link href=#playing-a-player-section></a></h4>
 
 <p>The procedure to <dfn data-dfn-type=dfn data-noexport="" id=play-a-player>play a player<a class=self-link href=#play-a-player></a></dfn>, <var>player</var>, is as follows:</p>
 
@@ -1021,14 +1062,14 @@ determines the <a data-link-type=dfn href=#source-content title="source content"
 <li data-md=""><p>Run the procedure to <a data-link-type=dfn href=#update-a-players-finished-state title="update a player’s finished state">update a player’s finished state</a>
 for <var>player</var>.</p>
 </ol></ol>
-<h4 class="heading settled" data-level=3.5.8 id=pausing-a-player-section><span class=secno>3.5.8 </span><span class=content>Pausing a player</span><a class=self-link href=#pausing-a-player-section></a></h4>
+<h4 class="heading settled" data-level=3.5.9 id=pausing-a-player-section><span class=secno>3.5.9 </span><span class=content>Pausing a player</span><a class=self-link href=#pausing-a-player-section></a></h4>
 
 <p>Players maintain a boolean <dfn data-dfn-type=dfn data-noexport="" id=pause-flag>pause flag<a class=self-link href=#pause-flag></a></dfn> to indicate a player
 whose current time is suspended.
 The <a data-link-type=dfn href=#pause-flag title="pause flag">pause flag</a> is initially false.</p>
 
 <p>As with <a data-link-type=dfn href=#play-a-player title="play a player">playing a player</a>, pausing may not happen
-instantaneously (see <a data-section="" href=#waiting-for-source-content>§3.5.5 Waiting for source content</a>).
+instantaneously (see <a data-section="" href=#waiting-for-source-content>§3.5.6 Waiting for source content</a>).
 For example, if animation is performed by a separate process, it may
 be necessary to synchronize the <a data-link-type=dfn href=#current-time title="current time">current time</a> to ensure that it
 reflects the state drawn by the animation process.</p>
@@ -1095,7 +1136,7 @@ While the task is running, however, <var>player</var> does
 <li data-md=""><p>Run the procedure to <a data-link-type=dfn href=#update-a-players-finished-state title="update a player’s finished state">update a player’s finished state</a>
 for <var>player</var>.</p>
 </ol>
-<h4 class="heading settled" data-level=3.5.9 id=reaching-the-end><span class=secno>3.5.9 </span><span class=content>Reaching the end</span><a class=self-link href=#reaching-the-end></a></h4>
+<h4 class="heading settled" data-level=3.5.10 id=reaching-the-end><span class=secno>3.5.10 </span><span class=content>Reaching the end</span><a class=self-link href=#reaching-the-end></a></h4>
 
 <div class=informative-bg>
 
@@ -1147,7 +1188,7 @@ length of a player’s <a data-link-type=dfn href=#source-content title="source 
 
 </div>
 
-<h4 class="heading settled" data-level=3.5.10 id=the-current-finished-promise><span class=secno>3.5.10 </span><span class=content>The current finished promise</span><a class=self-link href=#the-current-finished-promise></a></h4>
+<h4 class="heading settled" data-level=3.5.11 id=the-current-finished-promise><span class=secno>3.5.11 </span><span class=content>The current finished promise</span><a class=self-link href=#the-current-finished-promise></a></h4>
 
 <p>Each player has a <dfn data-dfn-type=dfn data-noexport="" id=current-finished-promise>current finished promise<a class=self-link href=#current-finished-promise></a></dfn>.
 The <a data-link-type=dfn href=#current-finished-promise title="current finished promise">current finished promise</a> is initially a pending Promise
@@ -1156,7 +1197,7 @@ object.</p>
 <p>The object is replaced with a new Promise object every time the player
 leaves the <a data-link-type=dfn href=#finished-play-state title="finished play state">finished play state</a>.</p>
 
-<h4 class="heading settled" data-level=3.5.11 id=updating-the-finished-state><span class=secno>3.5.11 </span><span class=content>Updating the finished state</span><a class=self-link href=#updating-the-finished-state></a></h4>
+<h4 class="heading settled" data-level=3.5.12 id=updating-the-finished-state><span class=secno>3.5.12 </span><span class=content>Updating the finished state</span><a class=self-link href=#updating-the-finished-state></a></h4>
 
 <p>For a player with a positive <a data-link-type=dfn href=#player-playback-rate title="player playback rate">playback
 rate</a>, the <a data-link-type=dfn href=#current-time title="current time">current time</a> continues to increase until it
@@ -1231,7 +1272,7 @@ Promise object.</p>
 <li data-md=""><p>Set the <a data-link-type=dfn href=#previous-current-time title="previous current time">previous current time</a> of <var>player</var> be the
 result of calculating its <a data-link-type=dfn href=#current-time title="current time">current time</a>.</p>
 </ul>
-<h4 class="heading settled" data-level=3.5.12 id=finishing-a-player-section><span class=secno>3.5.12 </span><span class=content>Finishing a player</span><a class=self-link href=#finishing-a-player-section></a></h4>
+<h4 class="heading settled" data-level=3.5.13 id=finishing-a-player-section><span class=secno>3.5.13 </span><span class=content>Finishing a player</span><a class=self-link href=#finishing-a-player-section></a></h4>
 
 <p>A player can be advanced to the natural end of its current playback
 direction by using the procedure to <dfn data-dfn-type=dfn data-noexport="" id=finish-a-player>finish a player<a class=self-link href=#finish-a-player></a></dfn>
@@ -1286,7 +1327,7 @@ of the associated <a data-link-type=dfn href=#timeline title=timeline>timeline</
 <li data-md=""><p>Run the procedure to <a data-link-type=dfn href=#update-a-players-finished-state title="update a player’s finished state">update a player’s finished state</a>
 for <var>player</var>.</p>
 </ol>
-<h4 class="heading settled" data-level=3.5.13 id=cancelling-a-player-section><span class=secno>3.5.13 </span><span class=content>Cancelling a player</span><a class=self-link href=#cancelling-a-player-section></a></h4>
+<h4 class="heading settled" data-level=3.5.14 id=cancelling-a-player-section><span class=secno>3.5.14 </span><span class=content>Cancelling a player</span><a class=self-link href=#cancelling-a-player-section></a></h4>
 
 <p>A player can be cancelled which causes the <a data-link-type=dfn href=#current-time title="current time">current time</a> to
 become <a data-link-type=dfn href=#unresolved title=unresolved>unresolved</a> hence removing any effects caused by the
@@ -1295,11 +1336,8 @@ become <a data-link-type=dfn href=#unresolved title=unresolved>unresolved</a> he
 <p>The procedure to <dfn data-dfn-type=dfn data-noexport="" id=cancel-a-player>cancel a player<a class=self-link href=#cancel-a-player></a></dfn> for <var>player</var> is
 as follows:</p>
 
-<ol><li data-md=""><p>If there is a <a data-link-type=dfn href=#pending-play-task title="pending play task">pending play task</a>, cancel that task.</p>
-<li data-md=""><p>If there is a <a data-link-type=dfn href=#pending-pause-task title="pending pause task">pending pause task</a>, cancel that task.</p>
-<li data-md=""><p>Reject the <a data-link-type=dfn href=#current-ready-promise title="current ready promise">current ready promise</a> with a DOMException
-  named "AbortError".</p>
-<li data-md=""><p>Let <a data-link-type=dfn href=#current-ready-promise title="current ready promise">current ready promise</a> be a new resolved Promise object.</p>
+<ol><li data-md=""><p>Run the procedure to <a data-link-type=dfn href=#reset-a-players-pending-tasks title="reset a player’s pending tasks">reset a player’s pending tasks</a> on
+<var>player</var>.</p>
 <li data-md=""><p>Reject the <a data-link-type=dfn href=#current-finished-promise title="current finished promise">current finished promise</a> with a DOMException
   named "AbortError".</p>
 <li data-md=""><p>Let <a data-link-type=dfn href=#current-finished-promise title="current finished promise">current finished promise</a> be a new pending Promise
@@ -1317,7 +1355,7 @@ with an <a data-link-type=dfn href=#unresolved title=unresolved>unresolved</a> t
   be coalesced.
 <p></p>
 </ol>
-<h4 class="heading settled" data-level=3.5.14 id=speed-control><span class=secno>3.5.14 </span><span class=content>Speed control</span><a class=self-link href=#speed-control></a></h4>
+<h4 class="heading settled" data-level=3.5.15 id=speed-control><span class=secno>3.5.15 </span><span class=content>Speed control</span><a class=self-link href=#speed-control></a></h4>
 
 <div class=informative-bg>
 
@@ -1344,7 +1382,7 @@ The <a data-link-type=dfn href=#player-playback-rate title="player playback rate
 to zero effectively pauses the player b(however, the <a data-link-type=dfn href=#play-state title="play state">play state</a>
 does not necessarily become <a data-link-type=dfn href=#paused-play-state title="paused play state">paused</a>).</p>
 
-<h5 class="heading settled" data-level=3.5.14.1 id=updating-the-playback-rate-of-a-player><span class=secno>3.5.14.1 </span><span class=content>
+<h5 class="heading settled" data-level=3.5.15.1 id=updating-the-playback-rate-of-a-player><span class=secno>3.5.15.1 </span><span class=content>
 Updating the playback rate of a player</span><a class=self-link href=#updating-the-playback-rate-of-a-player></a></h5>
 
 <p>Changes to the <a data-link-type=dfn href=#player-playback-rate title="player playback rate">playback rate</a>
@@ -1371,7 +1409,7 @@ is identical to the above procedure except that rather than invoking
 the procedure to <a data-link-type=dfn href=#set-the-current-time title="set the current time">set the current time</a> in the final step, the
 procedure to <a data-link-type=dfn href=#silently-set-the-current-time title="silently set the current time">silently set the current time</a> is invoked instead.</p>
 
-<h4 class="heading settled" data-level=3.5.15 id=reversing-a-player-section><span class=secno>3.5.15 </span><span class=content>Reversing a player</span><a class=self-link href=#reversing-a-player-section></a></h4>
+<h4 class="heading settled" data-level=3.5.16 id=reversing-a-player-section><span class=secno>3.5.16 </span><span class=content>Reversing a player</span><a class=self-link href=#reversing-a-player-section></a></h4>
 
 <p>The procedure to <dfn data-dfn-type=dfn data-noexport="" id=reverse-a-player>reverse a player<a class=self-link href=#reverse-a-player></a></dfn> of <a data-link-type=dfn href=#player title=player>player</a>
 <var>player</var> is as follows:</p>
@@ -1391,7 +1429,7 @@ and abort these steps.</p>
 </div>
 <li data-md=""><p>Run the steps to <a data-link-type=dfn href=#play-a-player title="play a player">play a player</a> for <var>player</var>.</p>
 </ol>
-<h4 class="heading settled" data-level=3.5.16 id=player-state><span class=secno>3.5.16 </span><span class=content>Player state</span><a class=self-link href=#player-state></a></h4>
+<h4 class="heading settled" data-level=3.5.17 id=player-state><span class=secno>3.5.17 </span><span class=content>Player state</span><a class=self-link href=#player-state></a></h4>
 
 <p>A <a data-link-type=dfn href=#player title=player>player</a> may be described as being in one of the following
 <dfn data-dfn-type=dfn data-noexport="" id=play-state title="play state">play states<a class=self-link href=#play-state></a></dfn> for each of which, a 
@@ -4964,7 +5002,7 @@ moment the method was called, or, if <code>currentTime</code> is
 
 <p>The <code>currentTime</code> attribute of the
 <code class=idl><a data-link-type=idl href=#dom-animationplayer title=AnimationPlayer>AnimationPlayer</a></code> object is a calculated value described in
-<a data-section="" href=#the-current-time-of-a-player>§3.5.2 The current time of a player</a>.</p>
+<a data-section="" href=#the-current-time-of-a-player>§3.5.3 The current time of a player</a>.</p>
 
 <p>The <code>playbackRate</code> and <code>paused</code> attributes
 take on their default values as described in the definitions of
@@ -5003,7 +5041,7 @@ API by the <code class=idl><a data-link-type=idl href=#dom-animationplayer title
 
 <pre class=idl>interface <dfn class=idl-code data-dfn-type=interface data-export="" data-global-name="" id=dom-animationplayer>AnimationPlayer<a class=self-link href=#dom-animationplayer></a></dfn> {
              attribute <a data-link-type=idl href=#dom-animationnode title=AnimationNode>AnimationNode</a>?           <a class=idl-code data-global-name="AnimationPlayer<interface>/source<attribute>" data-link-for=AnimationPlayer data-link-type=attribute data-type="AnimationNode?           " href=#dom-animationplayer-source title=source>source</a>;
-    readonly attribute <a data-link-type=idl href=#dom-animationtimeline title=AnimationTimeline>AnimationTimeline</a>        <a class=idl-code data-global-name="AnimationPlayer<interface>/timeline<attribute>" data-link-for=AnimationPlayer data-link-type=attribute data-readonly="" data-type="AnimationTimeline        " href=#dom-animationplayer-timeline title=timeline>timeline</a>;
+             attribute <a data-link-type=idl href=#dom-animationtimeline title=AnimationTimeline>AnimationTimeline</a>?       <a class=idl-code data-global-name="AnimationPlayer<interface>/timeline<attribute>" data-link-for=AnimationPlayer data-link-type=attribute data-type="AnimationTimeline?       " href=#dom-animationplayer-timeline title=timeline>timeline</a>;
              attribute double?                  <a class=idl-code data-global-name="AnimationPlayer<interface>/starttime<attribute>" data-link-for=AnimationPlayer data-link-type=attribute data-type="double?                  " href=#dom-animationplayer-starttime title=startTime>startTime</a>;
              attribute double?                  <a class=idl-code data-global-name="AnimationPlayer<interface>/currenttime<attribute>" data-link-for=AnimationPlayer data-link-type=attribute data-type="double?                  " href=#dom-animationplayer-currenttime title=currentTime>currentTime</a>;
              attribute double                   <a class=idl-code data-global-name="AnimationPlayer<interface>/playbackrate<attribute>" data-link-for=AnimationPlayer data-link-type=attribute data-type="double                   " href=#dom-animationplayer-playbackrate title=playbackRate>playbackRate</a>;
@@ -5026,8 +5064,10 @@ API by the <code class=idl><a data-link-type=idl href=#dom-animationplayer title
 Setting this attribute updates the object’s <a data-link-type=dfn href=#source-content title="source content">source content</a> using
 the procedure to <a data-link-type=dfn href=#set-the-source-content-of-a-player title="set the source content of a player">set the source content of a player</a>.</p>
 <dt data-md=""><p><dfn class=idl-code data-dfn-for=AnimationPlayer data-dfn-type=attribute data-export="" id=dom-animationplayer-timeline>timeline<a class=self-link href=#dom-animationplayer-timeline></a></dfn>
-<span data-attribute-info="" for=AnimationPlayer/timeline> of type <a data-link-type=idl-name href=#dom-animationtimeline title=AnimationTimeline>AnimationTimeline</a>, readonly</span></p>
-<dd data-md=""><p>The <a data-link-type=dfn href=#timeline title=timeline>timeline</a> associated with this player.</p>
+<span data-attribute-info="" for=AnimationPlayer/timeline> of type <a data-link-type=idl-name href=#dom-animationtimeline title=AnimationTimeline>AnimationTimeline</a>, nullable</span></p>
+<dd data-md=""><p>The <a data-link-type=dfn href=#timeline title=timeline>timeline</a> associated with this player.
+Setting this attribute updates the object’s <a data-link-type=dfn href=#timeline title=timeline>timeline</a> using
+the procedure to <a data-link-type=dfn href=#set-the-timeline-of-a-player title="set the timeline of a player">set the timeline of a player</a>.</p>
 <dt data-md=""><p><dfn class=idl-code data-dfn-for=AnimationPlayer data-dfn-type=attribute data-export="" id=dom-animationplayer-starttime>startTime<a class=self-link href=#dom-animationplayer-starttime></a></dfn>
 <span data-attribute-info="" for=AnimationPlayer/startTime> of type <a data-link-type=idl-name title=double>double</a>, nullable</span></p>
 <dd data-md=""><p>Returns the <a data-link-type=dfn href=#player-start-time title="player start time">start time</a> of this
@@ -7164,7 +7204,7 @@ incorporated.</p>
 <div class=informative-bg><em>This section is non-normative</em>
 
 <p>For example, if the <code class=idl><a data-link-type=idl href=#dom-animationplayer title=AnimationPlayer>AnimationPlayer</a></code>
-associated with an <code class=idl><a data-link-type=idl href=#dom-animation title=Animation>Animation</a></code> is seeked (see <a data-section="" href=#setting-the-current-time-of-a-player>§3.5.3 Setting the current time of a player</a>) via the programming
+associated with an <code class=idl><a data-link-type=idl href=#dom-animation title=Animation>Animation</a></code> is seeked (see <a data-section="" href=#setting-the-current-time-of-a-player>§3.5.4 Setting the current time of a player</a>) via the programming
 interface, the value returned when querying the
 animation’s <code>startTime</code> will reflect updated state of
 the model immediately.</p>
@@ -7679,7 +7719,7 @@ a timeline, <a href=#associated-with-a-timeline title="section 3.6.1">3.6.1</a>
 <li>before flag, <a href=#before-flag title="section 3.12.4">3.12.4</a>
 <li>before phase, <a href=#before-phase title="section 3.6.5">3.6.5</a>
 <li>cancel(), <a href=#dom-animationplayer-cancel title="section 5.3">5.3</a>
-<li>cancel a player, <a href=#cancel-a-player title="section 3.5.13">3.5.13</a>
+<li>cancel a player, <a href=#cancel-a-player title="section 3.5.14">3.5.14</a>
 <li>child animation node, <a href=#child-animation-node title="section 3.13">3.13</a>
 <li>children, <a href=#dom-animationgroup-children title="section 5.9">5.9</a>
 <li>clone()<ul><li>method for AnimationGroup, <a href=#dom-animationgroup-clone title="section 5.9">5.9</a>
@@ -7707,12 +7747,12 @@ a timeline, <a href=#associated-with-a-timeline title="section 3.6.1">3.6.1</a>
 <li>&lt;cubic-bezier-timing-function&gt;, <a href=#typedef-cubic-bezier-timing-function title="section 3.12.3">3.12.3</a>
 <li>cubic Bézier timing function, <a href=#cubic-bzier-timing-function title="section 3.12.3">3.12.3</a>
 <li>current, <a href=#current title="section 3.6.5">3.6.5</a>
-<li>current finished promise, <a href=#current-finished-promise title="section 3.5.10">3.5.10</a>
+<li>current finished promise, <a href=#current-finished-promise title="section 3.5.11">3.5.11</a>
 <li>current iteration, <a href=#current-iteration title="section 3.10.4">3.10.4</a>
 <li>currentIteration, <a href=#dom-computedanimationtiming-currentiteration title="section 5.7">5.7</a>
-<li>current ready promise, <a href=#current-ready-promise title="section 3.5.6">3.5.6</a>
+<li>current ready promise, <a href=#current-ready-promise title="section 3.5.7">3.5.7</a>
 <li>currentTarget, <a href=#dom-effectcallback-currenttarget title="section 5.21">5.21</a>
-<li>current time, <a href=#current-time title="section 3.5.2">3.5.2</a>
+<li>current time, <a href=#current-time title="section 3.5.3">3.5.3</a>
 <li>currentTime<ul><li>attribute for AnimationTimeline, <a href=#dom-animationtimeline-currenttime title="section 5.2">5.2</a>
 <li>attribute for AnimationPlayer, <a href=#dom-animationplayer-currenttime title="section 5.3">5.3</a>
 </ul><li>custom effect, <a href=#custom-effect title="section 4.5">4.5</a>
@@ -7763,9 +7803,9 @@ a keyframe, <a href=#evenly-distributing-a-keyframe title="section 4.3.1.1">4.3.
 </ul><li>fill mode, <a href=#fill-mode title="section 3.7">3.7</a>
 <li>FillMode, <a href=#enumdef-fillmode title="section 5.8.1">5.8.1</a>
 <li>finish(), <a href=#dom-animationplayer-finish title="section 5.3">5.3</a>
-<li>finish a player, <a href=#finish-a-player title="section 3.5.12">3.5.12</a>
+<li>finish a player, <a href=#finish-a-player title="section 3.5.13">3.5.13</a>
 <li>finished, <a href=#dom-animationplayer-finished title="section 5.3">5.3</a>
-<li>finished play state, <a href=#finished-play-state title="section 3.5.16">3.5.16</a>
+<li>finished play state, <a href=#finished-play-state title="section 3.5.17">3.5.17</a>
 <li>firstChild, <a href=#dom-animationgroup-firstchild title="section 5.9">5.9</a>
 <li>first child, <a href=#first-child title="section 3.13">3.13</a>
 <li>frames<ul><li>argument for KeyframeEffect/KeyframeEffect(), <a href=#dom-keyframeeffect-keyframeeffect-frames title="section 5.17">5.17</a>
@@ -7776,7 +7816,7 @@ a keyframe, <a href=#evenly-distributing-a-keyframe title="section 4.3.1.1">4.3.
 <li>getFrames(), <a href=#dom-keyframeeffect-getframes title="section 5.17">5.17</a>
 <li>global clock, <a href=#global-clock title="section 3.3">3.3</a>
 <li>hold time, <a href=#hold-time title="section 3.5">3.5</a>
-<li>idle play state, <a href=#idle-play-state title="section 3.5.16">3.5.16</a>
+<li>idle play state, <a href=#idle-play-state title="section 3.5.17">3.5.17</a>
 <li>inactive timeline, <a href=#inactive-timeline title="section 3.4">3.4</a>
 <li>inclusive ancestor, <a href=#inclusive-ancestor title="section 3.13">3.13</a>
 <li>inclusive descendant, <a href=#inclusive-descendant title="section 3.13">3.13</a>
@@ -7866,15 +7906,15 @@ animation group, <a href=#parent-animation-group title="section 3.13">3.13</a>
 <li>path command, <a href=#path-command title="section 4.4">4.4</a>
 <li>path fraction, <a href=#path-fraction title="section 4.4.3">4.4.3</a>
 <li>pause(), <a href=#dom-animationplayer-pause title="section 5.3">5.3</a>
-<li>pause a player, <a href=#pause-a-player title="section 3.5.8">3.5.8</a>
-<li>paused play state, <a href=#paused-play-state title="section 3.5.16">3.5.16</a>
-<li>pause flag, <a href=#pause-flag title="section 3.5.8">3.5.8</a>
-<li>pending pause task, <a href=#pending-pause-task title="section 3.5.8">3.5.8</a>
-<li>pending play state, <a href=#pending-play-state title="section 3.5.16">3.5.16</a>
-<li>pending play task, <a href=#pending-play-task title="section 3.5.7">3.5.7</a>
+<li>pause a player, <a href=#pause-a-player title="section 3.5.9">3.5.9</a>
+<li>paused play state, <a href=#paused-play-state title="section 3.5.17">3.5.17</a>
+<li>pause flag, <a href=#pause-flag title="section 3.5.9">3.5.9</a>
+<li>pending pause task, <a href=#pending-pause-task title="section 3.5.9">3.5.9</a>
+<li>pending play state, <a href=#pending-play-state title="section 3.5.17">3.5.17</a>
+<li>pending play task, <a href=#pending-play-task title="section 3.5.8">3.5.8</a>
 <li>play()<ul><li>method for AnimationTimeline, <a href=#dom-animationtimeline-play title="section 5.2">5.2</a>
 <li>method for AnimationPlayer, <a href=#dom-animationplayer-play title="section 5.3">5.3</a>
-</ul><li>play a player, <a href=#play-a-player title="section 3.5.7">3.5.7</a>
+</ul><li>play a player, <a href=#play-a-player title="section 3.5.8">3.5.8</a>
 <li>PlaybackDirection, <a href=#enumdef-playbackdirection title="section 5.8.2">5.8.2</a>
 <li>playback
 direction, <a href=#playback-direction title="section 3.11">3.11</a>
@@ -7885,19 +7925,19 @@ direction, <a href=#playback-direction title="section 3.11">3.11</a>
 </ul><li>player<ul><li>definition of, <a href=#player title="section 3.5">3.5</a>
 <li>attribute for AnimationNode, <a href=#dom-animationnode-player title="section 5.4">5.4</a>
 </ul><li>player playback
-rate, <a href=#player-playback-rate title="section 3.5.14">3.5.14</a>
+rate, <a href=#player-playback-rate title="section 3.5.15">3.5.15</a>
 <li>player sequence number, <a href=#player-sequence-number title="section 3.5">3.5</a>
 <li>player start time, <a href=#player-start-time title="section 3.5">3.5</a>
 <li>playState, <a href=#dom-animationplayer-playstate title="section 5.3">5.3</a>
-<li>play state, <a href=#play-state title="section 3.5.16">3.5.16</a>
+<li>play state, <a href=#play-state title="section 3.5.17">3.5.17</a>
 <li>point(), <a href=#funcdef-point title="section 4.4.2.1">4.4.2.1</a>
 <li>point easing, <a href=#point-easing title="section 4.4.2">4.4.2</a>
 <li>point offset, <a href=#point-offset title="section 4.4.2">4.4.2</a>
 <li>prepend()<ul><li>method for AnimationGroup, <a href=#dom-animationgroup-prepend title="section 5.9">5.9</a>
 <li>method for AnimationTimeline, <a href=#dom-animationtimeline-prepend title="section 5.9">5.9</a>
 </ul><li>previous current
-time, <a href=#previous-current-time title="section 3.5.11">3.5.11</a>
-<li>previous finished state, <a href=#previous-finished-state title="section 3.5.11">3.5.11</a>
+time, <a href=#previous-current-time title="section 3.5.12">3.5.12</a>
+<li>previous finished state, <a href=#previous-finished-state title="section 3.5.12">3.5.12</a>
 <li>previousSibling, <a href=#dom-animationnode-previoussibling title="section 5.4">5.4</a>
 <li>previous sibling, <a href=#previous-sibling title="section 3.13">3.13</a>
 <li>procedure for converting an ECMAScript value into
@@ -7905,30 +7945,32 @@ an IDL keyframe or sequence of keyframes, <a href=#procedure-for-converting-an-e
 <li>procedure for converting an ECMAScript value to an IDL
 Keyframe object, <a href=#procedure-for-converting-an-ecmascript-value-to-an-idl-keyframe-object title="section 5.18.1">5.18.1</a>
 <li>procedure for converting an effect to an IDL value, <a href=#procedure-for-converting-an-effect-to-an-idl-value title="section 5.12.1">5.12.1</a>
-<li>ready<ul><li>definition of, <a href=#ready title="section 3.5.5">3.5.5</a>
+<li>ready<ul><li>definition of, <a href=#ready title="section 3.5.6">3.5.6</a>
 <li>attribute for AnimationPlayer, <a href=#dom-animationplayer-ready title="section 5.3">5.3</a>
 </ul><li>remove(), <a href=#dom-animationnode-remove title="section 5.4">5.4</a>
 <li>remove an animation node, <a href=#remove-an-animation-node title="section 5.9.1">5.9.1</a>
 <li>repeated duration, <a href=#repeated-duration title="section 3.10.2">3.10.2</a>
 <li>replace(), <a href=#dom-animationnode-replace title="section 5.4">5.4</a>
+<li>reset a player’s pending tasks, <a href=#reset-a-players-pending-tasks title="section 3.5.1">3.5.1</a>
 <li>reverse(), <a href=#dom-animationplayer-reverse title="section 5.3">5.3</a>
-<li>reverse a player, <a href=#reverse-a-player title="section 3.5.15">3.5.15</a>
+<li>reverse a player, <a href=#reverse-a-player title="section 3.5.16">3.5.16</a>
 <li>root, <a href=#root title="section 3.13">3.13</a>
 <li>rotation angle, <a href=#rotation-angle title="section 4.4">4.4</a>
-<li>running play state, <a href=#running-play-state title="section 3.5.16">3.5.16</a>
+<li>running play state, <a href=#running-play-state title="section 3.5.17">3.5.17</a>
 <li>sampling, <a href=#sampling title="section 3.2">3.2</a>
 <li>scaled active time, <a href=#scaled-active-time title="section 3.10.3.2">3.10.3.2</a>
 <li>segments, <a href=#dom-motionpatheffect-segments title="section 5.20">5.20</a>
 <li>setFrames(), <a href=#dom-keyframeeffect-setframes title="section 5.17">5.17</a>
-<li>set the current time, <a href=#set-the-current-time title="section 3.5.3">3.5.3</a>
-<li>set the source content of a player, <a href=#set-the-source-content-of-a-player title="section 3.5.1">3.5.1</a>
-<li>silently set the current time, <a href=#silently-set-the-current-time title="section 3.5.3">3.5.3</a>
-<li>silently update the player playback rate, <a href=#silently-update-the-player-playback-rate title="section 3.5.14.1">3.5.14.1</a>
+<li>set the current time, <a href=#set-the-current-time title="section 3.5.4">3.5.4</a>
+<li>set the source content of a player, <a href=#set-the-source-content-of-a-player title="section 3.5.2">3.5.2</a>
+<li>set the timeline of a player, <a href=#set-the-timeline-of-a-player title="section 3.5.1">3.5.1</a>
+<li>silently set the current time, <a href=#silently-set-the-current-time title="section 3.5.4">3.5.4</a>
+<li>silently update the player playback rate, <a href=#silently-update-the-player-playback-rate title="section 3.5.15.1">3.5.15.1</a>
 <li>single-sample, <a href=#single-sample title="section 3.2">3.2</a>
 <li>source<ul><li>argument for AnimationTimeline/play(), <a href=#dom-animationtimeline-play-source title="section 5.2">5.2</a>
 <li>attribute for AnimationPlayer, <a href=#dom-animationplayer-source title="section 5.3">5.3</a>
 </ul><li>source content, <a href=#source-content title="section 3.5">3.5</a>
-<li>source content end, <a href=#source-content-end title="section 3.5.11">3.5.11</a>
+<li>source content end, <a href=#source-content-end title="section 3.5.12">3.5.12</a>
 <li>spacing<ul><li>attribute for KeyframeEffect, <a href=#dom-keyframeeffect-spacing title="section 5.17">5.17</a>
 <li>attribute for KeyframeEffectOptions, <a href=#dom-keyframeeffectoptions-spacing title="section 5.17.2">5.17.2</a>
 <li>attribute for MotionPathEffect, <a href=#dom-motionpatheffect-spacing title="section 5.20">5.20</a>
@@ -7958,9 +8000,9 @@ Keyframe object, <a href=#procedure-for-converting-an-ecmascript-value-to-an-idl
 <li>tree order, <a href=#tree-order title="section 3.13">3.13</a>
 <li>underlying value, <a href=#underlying-value title="section 4.2.2">4.2.2</a>
 <li>unresolved, <a href=#unresolved title="section 3.2">3.2</a>
-<li>update a player’s finished state, <a href=#update-a-players-finished-state title="section 3.5.11">3.5.11</a>
-<li>update the player playback rate, <a href=#update-the-player-playback-rate title="section 3.5.14.1">3.5.14.1</a>
-<li>update the player start time, <a href=#update-the-player-start-time title="section 3.5.4">3.5.4</a>
+<li>update a player’s finished state, <a href=#update-a-players-finished-state title="section 3.5.12">3.5.12</a>
+<li>update the player playback rate, <a href=#update-the-player-playback-rate title="section 3.5.15.1">3.5.15.1</a>
+<li>update the player start time, <a href=#update-the-player-start-time title="section 3.5.5">3.5.5</a>
 <li>zero time, <a href=#zero-time title="section 3.4">3.4</a>
 </ul></div>
 
