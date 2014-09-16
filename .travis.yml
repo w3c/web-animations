@@ -1,0 +1,23 @@
+language: node_js
+node_js:
+  - "0.10"
+
+install:
+  - ./build/install-bikeshed.sh
+  - npm install
+
+script:
+  - ./build/travis.sh
+
+env:
+  global:
+  - TRAVIS_COMMIT_MSG="$(git log --format=%B --no-merges -n 1)"
+  - COMMIT_USER="$(git log --format=%an --no-merges -n 1)"
+  - COMMIT_EMAIL="$(git log --format=%ae --no-merges -n 1)"
+  - secure: hPpq9LxBahIqcEDrPiHQ69UZsnKLMET4EhAhpxWtRLYpII/GByKHeeol4ReV9vI/qMPKPD4g8yVcW5JUtcOvLfizotsf5z8JO1eLI63SHARIAZkRv1KFRAj07wSeDYj7LcmE55nkdjSPl8WnFLCIN6nlZTUMpF6UYV8Ifjpqf58=
+
+notifications:
+  irc:
+  - "irc.w3.org#webanimations"
+  email:
+  - web-anim-bugs@googlegroups.com
