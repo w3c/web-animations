@@ -53,8 +53,10 @@ module.exports = function(grunt) {
   grunt.config('copy', {
     spec: {
       nonull: true, /* error if we haven't build the spec yet */
-      src: [ 'Overview.html', '*.css', 'img/*', 'MathJax/*' ] ,
-      dest: 'publish/',
+      files: [
+        { src: 'Overview.html', dest: 'publish/index.html' },
+        { src: [ '*.css', 'img/*', 'MathJax/*' ] , dest: 'publish/' }
+      ]
     }
   });
 
