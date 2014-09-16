@@ -42,11 +42,9 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-open');
   grunt.config('open', {
-    open: {
-      all: {
-        path: 'http://localhost:' + port + '/Overview.html'
-      }
-    },
+    all: {
+      path: 'http://localhost:' + port + '/Overview.html'
+    }
   });
 
   grunt.loadNpmTasks('grunt-contrib-copy');
