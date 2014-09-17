@@ -754,7 +754,7 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
         *   <a>current time</a> &lt; zero, or
         *   <a>current time</a> &ge; <a>source content end</a>,
 
-    ::  Set <var>player</var>'s <a>hold time</a> to zero
+    ::  Set <var>player</var>'s <a>hold time</a> to zero.
     :   If <a>player playback rate</a> &lt; 0 and <em>either</em>
         <var>player</var>'s:
 
@@ -769,11 +769,20 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
 
     </div>
 
-6.  If <var>has pending ready promise</var> is false,
+6.  If <var>player</var>'s <a>hold time</a> is <a>unresolved</a>, perform the
+    following steps:
+
+    1.  If <var>has pending ready promise</var> is true,
+        fulfill <var>player</var>'s <a>current ready promise</a> with
+        <var>player</var>.
+
+    2.  Abort this procedure.
+
+7.  If <var>has pending ready promise</var> is false,
     let <var>player</var>'s <a>current ready promise</a> be a new
     pending Promise object.
 
-7.  Schedule a task to run as soon as <var>player</var>'s <a>source
+8.  Schedule a task to run as soon as <var>player</var>'s <a>source
     content</a> is <a>ready</a>.
     The task shall perform the following steps:
 
