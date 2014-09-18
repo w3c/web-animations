@@ -4094,8 +4094,8 @@ Note: although the above procedure defines computing keyframe
     implement the <a href="#programming-interface">programming
     interface</a> are required to maintain the original null values as
     well as calculating the computed offsets.
-    This is because the <code>getFrames</code> method of the
-    <a>KeyframeEffect</a> interface returns keyframe offsets both
+    This is because the {{KeyframeEffect/getFrames()}} method of the
+    {{KeyframeEffect}} interface returns keyframe offsets both
     before and after applying spacing.
 
 Issue: The above algorithm is quite complex.
@@ -4931,32 +4931,22 @@ interface AnimationTimeline {
 :   <dfn method for=AnimationTimeline title='play()'>
     AnimationPlayer play(optional TimedItem? source = null)</dfn>
 ::  Creates a new {{AnimationPlayer}} object associated with
-    this <a>timeline</a> that is scheduled to start at <code>currentTime</code>.
+    this <a>timeline</a> that begins playback as soon as its <a>source
+    content</a> is ready.
 
-    The <code>timeline</code> attribute of the newly-created
-    {{AnimationPlayer}} object will be set to this object.
+    If <var>source</var> is specified, it will be used as the player's <a>source
+    content</a>.
 
-    Similarly, the <code>startTime</code> attribute will be set to the
-    value of this object's <code>currentTime</code> attribute at the
-    moment the method was called, or, if <code>currentTime</code> is
-    <code>null</code>, zero.</li>
+    Issue: Need to define the start behavior when <var>source</var> is null.
 
-    The <code>currentTime</code> attribute of the
-    {{AnimationPlayer}} object is a calculated value described in
-    <a href="#the-current-time-of-a-player" section></a>.
+    The new {{AnimationPlayer}} object is created using the <a 
+    constructor for="AnimationPlayer" title="AnimationPlayer()">the
+    AnimationPlayer constructor</a> passing this
+    {{AnimationTimeline}} object as the <var>timeline</var> parameter and
+    <var>source</var> as the <var>source</var> parameter.
 
-    The <code>playbackRate</code> and <code>paused</code> attributes
-    take on their default values as described in the definitions of
-    the <a title="player playback rate">playback rate</a> and
-    <a>pause flag</a> properties of <a>player</a> objects.
-
-    The {{AnimationPlayer/source}}
-    attribute of the created {{AnimationPlayer}}
-    is set from the <em>source</em> parameter by following the
-    procedure defined for updating that attribute.
-    As a result, if <em>source</em> is already associated with
-    a <code>player</code>, it will be disassociated first before
-    being associated with the new {{AnimationPlayer}}.
+    Following construction of the {{AnimationPlayer}} object, the procedure to
+    <a>play a player</a> is performed on the newly constructed object.
 
     <div class='parameters'>
 
@@ -5757,8 +5747,8 @@ interface AnimationGroup : AnimationNode {
     ::  A sequence of animation nodes to add as children of this group.
 
         These children are appended in sequence using the same
-        semantics as the <code>{{AnimationGroup}}.append</code>
-        method.
+        semantics as the {{AnimationGroup/append()}} method of the
+        {{AnimationGroup}} interface.
 
     :   timing
     ::  The timing properties or <a>iteration duration</a> of the new
@@ -5934,8 +5924,8 @@ interface AnimationSequence : AnimationGroup {
     Constructor (sequence&lt;AnimationNode&gt;? children,
     optional (unrestricted double or AnimationTimingInput) timing)</dfn>
 ::  The meaning and handling of each of the parameters in this
-    constructor is identical to the constructor for
-    {{AnimationGroup}}.
+    constructor is identical to the <a constructor for="AnimationGroup"
+    title="AnimationGroup()">constructor for AnimationGroup</a>.
 
 </div>
 
@@ -6943,8 +6933,8 @@ We have a few options:
 
 <h3 id="the-computedkeyframe-dictionary">The <code>ComputedKeyframe</code> dictionary</h3>
 
-<a>Keyframes</a> returned by
-<code><a>KeyframeEffect</a>.getFrames</code> are represented using
+<a>Keyframes</a> returned by the {{KeyframeEffect/getFrames()}} method of the
+{{KeyframeEffect}} interface are represented using
 {{ComputedKeyframe}} dictionary objects.
 
 <pre class='idl'>
