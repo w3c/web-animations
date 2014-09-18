@@ -17,7 +17,7 @@
 </p>
   <h1 class="p-name no-ref" id=title>Web Animations</h1>
   <h2 class="no-num no-toc no-ref heading settled" id=subtitle><span class=content>Editor’s Draft,
-    <span class=dt-updated><span class=value-title title=20140917>17 September 2014</span></span></span></h2>
+    <span class=dt-updated><span class=value-title title=20140918>18 September 2014</span></span></span></h2>
   <div data-fill-with=spec-metadata><dl>
 	<dt>This version:
 	<dd><a class=u-url href=http://w3c.github.io/web-animations/>http://w3c.github.io/web-animations/</a>
@@ -4201,8 +4201,8 @@ a keyframe</a> to each keyframe in the range (<var>A</var>,
     implement the <a href=#programming-interface>programming
     interface</a> are required to maintain the original null values as
     well as calculating the computed offsets.
-    This is because the <code>getFrames</code> method of the
-    <a data-link-type=dfn href=#keyframeeffect title=KeyframeEffect>KeyframeEffect</a> interface returns keyframe offsets both
+    This is because the <code class=idl><a data-link-for=KeyframeEffect data-link-type=idl href=#dom-keyframeeffect-getframes title=getFrames()>getFrames()</a></code> method of the
+    <code class=idl><a data-link-type=idl href=#dom-keyframeeffect title=KeyframeEffect>KeyframeEffect</a></code> interface returns keyframe offsets both
     before and after applying spacing.</p>
 
 <p class=issue id=issue-867fbc9b><a class=self-link href=#issue-867fbc9b></a>The above algorithm is quite complex.
@@ -5006,32 +5006,21 @@ if this timeline is <a data-link-type=dfn href=#inactive-timeline title="inactiv
 <dl><dt data-md=""><p><dfn class=idl-code data-dfn-for=AnimationTimeline data-dfn-type=method data-export="" id=dom-animationtimeline-play title=play()>
 AnimationPlayer play(optional TimedItem? source = null)<a class=self-link href=#dom-animationtimeline-play></a></dfn></p>
 <dd data-md=""><p>Creates a new <code class=idl><a data-link-type=idl href=#dom-animationplayer title=AnimationPlayer>AnimationPlayer</a></code> object associated with
-this <a data-link-type=dfn href=#timeline title=timeline>timeline</a> that is scheduled to start at <code>currentTime</code>.</p>
+this <a data-link-type=dfn href=#timeline title=timeline>timeline</a> that begins playback as soon as its <a data-link-type=dfn href=#source-content title="source content">source
+content</a> is ready.</p>
 
-<p>The <code>timeline</code> attribute of the newly-created
-<code class=idl><a data-link-type=idl href=#dom-animationplayer title=AnimationPlayer>AnimationPlayer</a></code> object will be set to this object.</p>
+<p>If <var>source</var> is specified, it will be used as the player’s <a data-link-type=dfn href=#source-content title="source content">source
+content</a>.</p>
 
-<p>Similarly, the <code>startTime</code> attribute will be set to the
-value of this object’s <code>currentTime</code> attribute at the
-moment the method was called, or, if <code>currentTime</code> is
-<code>null</code>, zero.</p>
+<p class=issue id=issue-c794ed35><a class=self-link href=#issue-c794ed35></a>Need to define the start behavior when <var>source</var> is null.</p>
 
-<p>The <code>currentTime</code> attribute of the
-<code class=idl><a data-link-type=idl href=#dom-animationplayer title=AnimationPlayer>AnimationPlayer</a></code> object is a calculated value described in
-<a data-section="" href=#the-current-time-of-a-player>§3.5.3 The current time of a player</a>.</p>
+<p>The new <code class=idl><a data-link-type=idl href=#dom-animationplayer title=AnimationPlayer>AnimationPlayer</a></code> object is created using the <a class=idl-code data-link-for=AnimationPlayer data-link-type=constructor href=#dom-animationplayer-animationplayer title=AnimationPlayer()>the
+AnimationPlayer constructor</a> passing this
+<code class=idl><a data-link-type=idl href=#dom-animationtimeline title=AnimationTimeline>AnimationTimeline</a></code> object as the <var>timeline</var> parameter and
+<var>source</var> as the <var>source</var> parameter.</p>
 
-<p>The <code>playbackRate</code> and <code>paused</code> attributes
-take on their default values as described in the definitions of
-the <a data-link-type=dfn href=#player-playback-rate title="player playback rate">playback rate</a> and
-<a data-link-type=dfn href=#pause-flag title="pause flag">pause flag</a> properties of <a data-link-type=dfn href=#player title=player>player</a> objects.</p>
-
-<p>The <code class=idl><a data-link-for=AnimationPlayer data-link-type=idl href=#dom-animationplayer-source title=source>source</a></code>
-attribute of the created <code class=idl><a data-link-type=idl href=#dom-animationplayer title=AnimationPlayer>AnimationPlayer</a></code>
-is set from the <em>source</em> parameter by following the
-procedure defined for updating that attribute.
-As a result, if <em>source</em> is already associated with
-a <code>player</code>, it will be disassociated first before
-being associated with the new <code class=idl><a data-link-type=idl href=#dom-animationplayer title=AnimationPlayer>AnimationPlayer</a></code>.</p>
+<p>Following construction of the <code class=idl><a data-link-type=idl href=#dom-animationplayer title=AnimationPlayer>AnimationPlayer</a></code> object, the procedure to
+<a data-link-type=dfn href=#play-a-player title="play a player">play a player</a> is performed on the newly constructed object.</p>
 
 <div class=parameters>
 
@@ -5819,8 +5808,8 @@ will effectively be cloned, not shared.</p>
 <dd data-md=""><p>A sequence of animation nodes to add as children of this group.</p>
 
 <p>These children are appended in sequence using the same
-semantics as the <code>{{AnimationGroup}}.append</code>
-method.</p>
+semantics as the <code class=idl><a data-link-for=AnimationGroup data-link-type=idl href=#dom-animationgroup-append title=append()>append()</a></code> method of the
+<code class=idl><a data-link-type=idl href=#dom-animationgroup title=AnimationGroup>AnimationGroup</a></code> interface.</p>
 
 <dt data-md=""><p>timing</p>
 <dd data-md=""><p>The timing properties or <a data-link-type=dfn href=#iteration-duration title="iteration duration">iteration duration</a> of the new
@@ -5996,8 +5985,7 @@ interface <dfn class=idl-code data-dfn-type=interface data-export="" data-global
 Constructor (sequence&lt;AnimationNode&gt;? children,
 optional (unrestricted double or AnimationTimingInput) timing)<a class=self-link href=#dom-animationsequence-animationsequence></a></dfn></p>
 <dd data-md=""><p>The meaning and handling of each of the parameters in this
-constructor is identical to the constructor for
-<code class=idl><a data-link-type=idl href=#dom-animationgroup title=AnimationGroup>AnimationGroup</a></code>.</p>
+constructor is identical to the <a class=idl-code data-link-for=AnimationGroup data-link-type=constructor href=#dom-animationgroup-animationgroup title=AnimationGroup()>constructor for AnimationGroup</a>.</p>
 </dl>
 </div>
 
@@ -6954,8 +6942,8 @@ e.g. "keyframeOffset".</p>
 
 <h3 class="heading settled" data-level=5.19 id=the-computedkeyframe-dictionary><span class=secno>5.19 </span><span class=content>The <code>ComputedKeyframe</code> dictionary</span><a class=self-link href=#the-computedkeyframe-dictionary></a></h3>
 
-<p><a data-link-type=dfn href=#keyframe title=Keyframes>Keyframes</a> returned by
-<code><a data-link-type=dfn href=#keyframeeffect title=KeyframeEffect>KeyframeEffect</a>.getFrames</code> are represented using
+<p><a data-link-type=dfn href=#keyframe title=Keyframes>Keyframes</a> returned by the <code class=idl><a data-link-for=KeyframeEffect data-link-type=idl href=#dom-keyframeeffect-getframes title=getFrames()>getFrames()</a></code> method of the
+<code class=idl><a data-link-type=idl href=#dom-keyframeeffect title=KeyframeEffect>KeyframeEffect</a></code> interface are represented using
 <code class=idl><a data-link-type=idl href=#dictdef-computedkeyframe title=ComputedKeyframe>ComputedKeyframe</a></code> dictionary objects.</p>
 
 <pre class=idl>dictionary <dfn class=idl-code data-dfn-type=dictionary data-export="" data-global-name="" id=dictdef-computedkeyframe>ComputedKeyframe<a class=self-link href=#dictdef-computedkeyframe></a></dfn> : <a data-link-type=idl href=#dictdef-keyframe title=Keyframe>Keyframe</a> {
@@ -7275,7 +7263,7 @@ element, the result of the new animation will be
 incorporated in the value returned.</p>
 
     <div><pre class="example sh_javascript">    // Set opacity to 0 immediately
-    elem.animate({ opacity: 0 }, { fill: ‘forwards’ });
+    elem.animate({ opacity: 0 }, { fill: 'forwards' });
     alert(window.getComputedStyle(elem).opacity); // Displays ‘0’
     </pre></div>
 
@@ -7285,7 +7273,7 @@ SVG 1.1 <a data-biblio-type=normative data-link-type=biblio href=#biblio-svg11 t
 animated values.</p>
 
     <div><pre class="example sh_javascript">    // Set width to 0 immediately
-    rect.animate({ width: ‘100px’ }, { fill: ‘forwards’ });
+    rect.animate({ width: '100px' }, { fill: 'forwards' });
     alert(rect.width.animVal.value); // Displays ‘100’
     </pre></div>
 
@@ -7327,7 +7315,7 @@ rendered without the animation.</p>
 
     <div><pre class="example sh_javascript">    // Fade the opacity with fallback for browsers that don’t
     // support Element.animate
-    elem.style.opacity = ‘0&amp;rqsuo;
+    elem.style.opacity = '0';
     elem.animate([ { opacity: 1 }, { opacity: 0 } ], 500);
     </pre></div>
 
@@ -8253,7 +8241,7 @@ in a specific playback direction.</p>
     Are styles flushed?
     Presumably they are.
     Can we suspend reflow for the duration of executing the script-based
-    animation effects and just do it once afterwards?<a href=#issue-8b46f38c> ↵ </a></div><div class=issue>Should this be <code>parentGroup</code>?<a href=#issue-894adfa6> ↵ </a></div><div class=issue>Feedback has been provided that suggests this reference causes the
+    animation effects and just do it once afterwards?<a href=#issue-8b46f38c> ↵ </a></div><div class=issue>Need to define the start behavior when <var>source</var> is null.<a href=#issue-c794ed35> ↵ </a></div><div class=issue>Should this be <code>parentGroup</code>?<a href=#issue-894adfa6> ↵ </a></div><div class=issue>Feedback has been provided that suggests this reference causes the
     relationship between AnimationPlayers and AnimationNodes to be
     circular, which confuses the model. The player attribute should be
     considered <strong>at risk</strong> unless a strong use case for the
