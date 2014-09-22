@@ -1570,27 +1570,25 @@ effectively be snapshotted within the <a data-link-type=dfn href=#active-phase t
 despite no longer being <a data-link-type=dfn href=#in-play title="in play">in play</a>.</p>
 
 <dt data-md=""><p><a data-link-type=dfn href=#current title=current>current</a></p>
-<dd data-md=""><p>Corresponds to an <a data-link-type=dfn href=#animation-node title="animation node">animation node</a> that is either <a data-link-type=dfn href=#in-play title="in play">in
-play</a> or may become <a data-link-type=dfn href=#in-play title="in play">in play</a> in the future.
-This will be the case if the <a data-link-type=dfn href=#animation-node title="animation node">animation node</a> is <a data-link-type=dfn href=#in-play title="in play">in
-play</a> or in its <a data-link-type=dfn href=#before-phase title="before phase">before phase</a>, <em>or</em> it has an
+<dd data-md=""><p>Corresponds to an <a data-link-type=dfn href=#animation-node title="animation node">animation node</a> that is either <a data-link-type=dfn href=#in-effect title="in effect">in
+effect</a> or may become <a data-link-type=dfn href=#in-effect title="in effect">in effect</a> in the future.
+This will be the case if the <a data-link-type=dfn href=#animation-node title="animation node">animation node</a> is <a data-link-type=dfn href=#in-effect title="in effect">in
+effect</a> or in its <a data-link-type=dfn href=#before-phase title="before phase">before phase</a>, <em>or</em> it has an
 ancestor for which this is true thereby opening up the
 possibility that this <a data-link-type=dfn href=#animation-node title="animation node">animation node</a> might play again
-(e.g.  due to repeating).</p>
+(e.g. due to repeating).</p>
 
 <p>This state is used in the <a href=#programming-interface>programming interface</a> to
-identify all <a data-link-type=dfn href=#animation title=animations>animations</a> and <a data-link-type=dfn href=#player title=players>players</a> that are
-likely to be of interest.</p>
+identify all <a data-link-type=dfn href=#player title=players>players</a> that are likely to be of interest.</p>
 
-<p>Furthermore, the <a data-link-type=dfn href=#current title=current>current</a> state provides an important
-definition for managing the amount of memory required by
-implementations.
-Assuming a monotonically increasing <a data-link-type=dfn href=#timeline title=timeline>timeline</a> an
-implementation can safely discard all <a data-link-type=dfn href=#animation-node title="animation nodes">animation nodes</a>
-that are <em>not</em> <a data-link-type=dfn href=#current title=current>current</a> and not referenced
-elsewhere provided they take care to preserve any fill values.
-This is because such <a data-link-type=dfn href=#animation-node title="animation nodes">animation nodes</a> will no longer have
-any dynamic effect.</p>
+<p class=issue id=issue-fdd68413><a class=self-link href=#issue-fdd68413></a>This definition, as used in
+       <code class=idl><a data-link-for=AnimationTimeline data-link-type=idl href=#dom-animationtimeline-getanimationplayers title=getAnimationPlayers()>getAnimationPlayers()</a></code> on the
+       <code class=idl><a data-link-type=idl href=#dom-animationtimeline title=AnimationTimeline>AnimationTimeline</a></code> interface and
+       <code class=idl><a data-link-for=Animatable data-link-type=idl href=#dom-animatable-getanimationplayers title=getAnimationPlayers()>getAnimationPlayers()</a></code> on the <code class=idl><a data-link-type=idl href=#dom-animatable title=Animatable>Animatable</a></code> interface
+       means that a document that repeatedly produces forwards-filling
+       animations will consume memory in an unbounded fashion.
+       We may need to revise this definition or provide a loophole for
+       implementations to discard old players in such conditions.</p>
 
 <dt data-md=""><p><a data-link-type=dfn href=#in-effect title="in effect">in effect</a></p>
 <dd data-md=""><p>Corresponds to an <a data-link-type=dfn href=#animation-node title="animation node">animation node</a> that has a resolved
@@ -1638,7 +1636,7 @@ a player</a> that is not <a data-link-type=dfn href=#finished-play-state title="
 following conditions is true:</p>
 
 <ul><li data-md=""><p>it is in the <a data-link-type=dfn href=#before-phase title="before phase">before phase</a>, or</p>
-<li data-md=""><p>it is <a data-link-type=dfn href=#in-play title="in play">in play</a>, or</p>
+<li data-md=""><p>it is <a data-link-type=dfn href=#in-effect title="in effect">in effect</a>, or</p>
 <li data-md=""><p>it has a <a data-link-type=dfn href=#parent-animation-group title="parent animation group">parent animation group</a> and the
 <a data-link-type=dfn href=#parent-animation-group title="parent animation group">parent animation group</a> is <a data-link-type=dfn href=#current title=current>current</a>.</p>
 </ul>
@@ -6123,6 +6121,8 @@ object will still only appear in the returned list once.</p>
 
 <p>The returned list is sorted in increasing order by <a data-link-type=dfn href=#player-sequence-number title="player sequence number">player
 sequence number</a>.</p>
+
+<p class=issue id=issue-667300a0><a class=self-link href=#issue-667300a0></a>Should this trigger style resolution? Presumably it should.</p>
 </dl>
 <h3 class="heading settled" data-level=5.14 id=the-animationeffect-interface><span class=secno>5.14 </span><span class=content>The <code>AnimationEffect</code> interface</span><a class=self-link href=#the-animationeffect-interface></a></h3>
 
@@ -7417,7 +7417,14 @@ Property index</span><a class=self-link href=#property-index></a></h2>
   The procedures for calling custom effects needs to be reworked.
   Currently they probably involve calling too often for changes that could
   be coalesced.
-<a href=#issue-8b479841> ↵ </a></div><div class=issue>
+<a href=#issue-8b479841> ↵ </a></div><div class=issue>This definition, as used in
+       <code class=idl><a data-link-for=AnimationTimeline data-link-type=idl href=#dom-animationtimeline-getanimationplayers title=getAnimationPlayers()>getAnimationPlayers()</a></code> on the
+       <code class=idl><a data-link-type=idl href=#dom-animationtimeline title=AnimationTimeline>AnimationTimeline</a></code> interface and
+       <code class=idl><a data-link-for=Animatable data-link-type=idl href=#dom-animatable-getanimationplayers title=getAnimationPlayers()>getAnimationPlayers()</a></code> on the <code class=idl><a data-link-type=idl href=#dom-animatable title=Animatable>Animatable</a></code> interface
+       means that a document that repeatedly produces forwards-filling
+       animations will consume memory in an unbounded fashion.
+       We may need to revise this definition or provide a loophole for
+       implementations to discard old players in such conditions.<a href=#issue-fdd68413> ↵ </a></div><div class=issue>
 Currently <a data-link-type=dfn href=#timing-function title="timing functions">timing functions</a> that generate results outside the
 range [0, 1] will behave unexpectedly when applied to animation
 groups, as children will increase iterations or enter into fill mode
@@ -7616,7 +7623,7 @@ in a specific playback direction.</p>
     animation effects and just do it once afterwards?<a href=#issue-8b46f38c> ↵ </a></div><div class=issue>Need to define the start behavior when <var>source</var> is null.<a href=#issue-c794ed35> ↵ </a></div><div class=issue>Should this be <code>parentGroup</code>?<a href=#issue-894adfa6> ↵ </a></div><div class=issue>Now that we have <code>endDelay</code>, should we change this back
     to <code>startDelay</code>?<a href=#issue-1d679d8c> ↵ </a></div><div class=issue>On setting, if the previous value was an <code class=idl><a data-link-type=idl href=#callbackdef-effectcallback title=EffectCallback>EffectCallback</a></code>, we
     should call the old callback with a null time fraction so it can
-    clear its result.<a href=#issue-fb3b828f> ↵ </a></div><div class=issue>Should this be defined in terms of <code>IsIterable</code> instead?<a href=#issue-0a95c3b0> ↵ </a></div><div class=issue>Need to define what invalid means here.<a href=#issue-53ccb020> ↵ </a></div><div class=issue>
+    clear its result.<a href=#issue-fb3b828f> ↵ </a></div><div class=issue>Should this trigger style resolution? Presumably it should.<a href=#issue-667300a0> ↵ </a></div><div class=issue>Should this be defined in terms of <code>IsIterable</code> instead?<a href=#issue-0a95c3b0> ↵ </a></div><div class=issue>Need to define what invalid means here.<a href=#issue-53ccb020> ↵ </a></div><div class=issue>
 
 <p>The above algorithm gives special meaning to the property names
 "offset", "computedOffset", "easing", and "composite".
