@@ -5127,9 +5127,6 @@ interface AnimationNode {
     void after (AnimationNode... nodes);
     void replace (AnimationNode... nodes);
     void remove ();
-
-    // Associated player
-    readonly attribute AnimationPlayer?        player;
 };
 </pre>
 
@@ -5178,22 +5175,6 @@ interface AnimationNode {
 :   <dfn attribute for=AnimationNode>nextSibling</dfn>
     <span attribute-info for=nextSibling></span>
 ::  The <a>next sibling</a> of this <a>animation node</a>.
-:   <dfn attribute for=AnimationNode>player</dfn>
-    <span attribute-info for=player></span>
-::  The <a>player</a> with which this animation node is <a
-    title="associated with a player">associated</a>, if any.
-    This object can be used to perform play control such as pausing or
-    rewinding on this <a>animation node</a> <em>and all other
-    animation nodes in the same hierarchy</em>.
-
-    This will be <code>null</code> if this <a>animation node</a> is
-    not <a>associated with a player</a>.
-
-    Issue: Feedback has been provided that suggests this reference causes the
-        relationship between AnimationPlayers and AnimationNodes to be
-        circular, which confuses the model. The player attribute should be
-        considered <strong>at risk</strong> unless a strong use case for the
-        reference arises.
 
 </div>
 
@@ -6247,7 +6228,6 @@ Objects that may be the target of an {{Animation}} implement the
 interface Animatable {
     AnimationPlayer           animate (object? effect,
                                        optional (double or AnimationTimingInput) timing);
-    sequence&lt;Animation&gt;       getCurrentAnimations ();
     sequence&lt;AnimationPlayer&gt; getAnimationPlayers ();
 };
 </pre>
@@ -6297,54 +6277,6 @@ interface Animatable {
         same interpretation as defined for that constructor.
 
     </div>
-
-:   <dfn method for=Animatable title="getCurrentAnimations()">
-    sequence&lt;Animation&gt; getCurrentAnimations()</dfn>
-::  Returns the set of <a>current</a> {{Animation}}
-    objects that have an <a>animation
-    effect</a> whose <a>animation target</a> is this object.
-
-    The returned list of {{Animation}}
-    objects is sorted by their associated <a>animation effect</a>
-    using the procedure defined for sorting <a>animation effects</a>
-    in <a href="#the-animation-stack" section></a>.
-
-    <div class="note">
-
-    Note that the definition of a <a>current</a> <a>animation</a>
-    does not include those <a>animations</a> whose
-    <a>local time</a> falls <em>after</em> the <a>active
-    interval</a> but which are still <a>in effect</a> due to
-    a <a>fill mode</a>.
-    As a result such <a>animations</a> are <em>not</em> returned by
-    this method.
-
-    This is because in order to return such <a
-    title="animation">animations</a>, user agents
-    would be required to maintain all <a
-    title="animation">animations</a> with a forwards
-    <a title="fill mode">fill</a> indefinitely.
-    As a result the resources consumed by an animated document would
-    steadily accumulate over time.
-
-    </div>
-
-    Note: that when called on <code>Element</code> objects, the list of
-        returned {{Animation}}s will
-        <em>not</em> include those animations whose target is
-        a <code>PseudoElement</code> associated with the
-        <code>Element</code> since <code>PseudoElement</code> and
-        <code>Element</code> are treated as independent {{Animatable}}
-        objects.
-
-    Issue: Feedback has been provided that suggests direct references from
-        AnimationNode objects to AnimationPlayers generate circular
-        reference and confuse the model. Without this reference,
-        getCurrentAnimations is not very useful, as the returned
-        AnimationNodes can't be used to effect play control. In the
-        absence of a strong use case for a reference from AnimationNode
-        to AnimationPlayer, this feature should be considered <strong>at
-        risk</strong>.
 
 :   <dfn method for=Animatable title="getAnimationPlayers()">
     sequence&lt;AnimationPlayer&gt; getAnimationPlayers()</dfn>
@@ -7523,8 +7455,12 @@ The following changes have been made since the <a
 *   Moved computed timing from {{AnimationNode}} to a
     <code>computedTiming</code> attribute of type
     {{ComputedAnimationTiming}}.
+*   Removed the <code>player</code> attribute from the {{AnimationNode}}
+    interface.
 *   Exposed the <a>time fraction</a> to script as
     <code>node.computedTiming.timeFraction</code>.
+*   Removed the <code>getCurrentAnimations</code> method from the {{Animatable}}
+    interface.
 
 Changes since the <a
   href="http://www.w3.org/TR/2013/WD-web-animations-20130625/">25 June
