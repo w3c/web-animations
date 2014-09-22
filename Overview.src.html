@@ -5114,13 +5114,13 @@ Animations API by the {{AnimationNode}} interface.
 <pre class='idl'>
 interface AnimationNode {
     // Timing
-    readonly attribute AnimationTiming         timing;
-    readonly attribute ComputedAnimationTiming computedTiming;
+    readonly attribute AnimationTiming          timing;
+    readonly attribute ComputedTimingProperties computedTiming;
 
     // Timing hierarchy
-    readonly attribute AnimationGroup?         parent;
-    readonly attribute AnimationNode?          previousSibling;
-    readonly attribute AnimationNode?          nextSibling;
+    readonly attribute AnimationGroup?          parent;
+    readonly attribute AnimationNode?           previousSibling;
+    readonly attribute AnimationNode?           nextSibling;
     void before (AnimationNode... nodes);
     void after (AnimationNode... nodes);
     void replace (AnimationNode... nodes);
@@ -5144,8 +5144,8 @@ interface AnimationNode {
     <code>window.getComputedStyle(elem)</code>.
 
     Although several of the attributes of the this object are common
-    to the <code>timing</code> {{AnimationTiming}} object they
-    have the following differences:
+    to the {{AnimationTiming}} object returned by the {{AnimationNode/timing}}
+    attribute, they have the following differences:
 
     *   <code>duration</code> &ndash; returns the calculated value of
         the <a>iteration duration</a>. If <code>timing.duration</code>
@@ -5458,24 +5458,25 @@ interface AnimationTiming : AnimationTimingReadOnly {
 
 </div>
 
-<h3 id="the-computedanimationtiming-interface">The <code>ComputedAnimationTiming</code> interface</h3>
+<h3 id="the-computedanimationtiming-interface">The
+  <code>ComputedTimingProperties</code> dictionary</h3>
 
-Timing parameters calculated by the timing model are exposed using the
-{{ComputedAnimationTiming}} interface.
+Timing parameters calculated by the timing model are exposed using
+{{ComputedTimingProperties}} dictionary objects.
 
-<pre class='idl'>interface ComputedAnimationTiming : AnimationTimingReadOnly {
-    readonly attribute double              startTime;
-    readonly attribute unrestricted double endTime;
-    readonly attribute unrestricted double activeDuration;
-    readonly attribute double?             localTime;
-    readonly attribute unrestricted double timeFraction;
-    readonly attribute unsigned long?      currentIteration;
+<pre class='idl'>dictionary ComputedTimingProperties : AnimationTimingProperties {
+    double              startTime;
+    unrestricted double endTime;
+    unrestricted double activeDuration;
+    double?             localTime;
+    unrestricted double timeFraction;
+    unsigned long?      currentIteration;
 };</pre>
 
 <div class='attributes'>
 
-:   <dfn attribute for=ComputedAnimationTiming>startTime</dfn>
-    <span attribute-info for=ComputedAnimationTiming/startTime></span>
+:   <dfn attribute for=ComputedTimingProperties>startTime</dfn>
+    <span attribute-info for=ComputedTimingProperties/startTime></span>
 ::  The <a title='animation node start time'>start time</a> of this
     <a>animation node</a> in milliseconds.
     This is the time at which the <a>parent animation group</a>, if
@@ -5488,20 +5489,20 @@ Timing parameters calculated by the timing model are exposed using the
     the <a title="animation node start time">start time</a> and
     <a>start delay</a>.
 
-:   <dfn attribute for=ComputedAnimationTiming>endTime</dfn>
-    <span attribute-info for=ComputedAnimationTiming/endTime></span>
+:   <dfn attribute for=ComputedTimingProperties>endTime</dfn>
+    <span attribute-info for=ComputedTimingProperties/endTime></span>
 ::  The <a>end time</a> of the <a>animation node</a> expressed in
     milliseconds in <a title="inherited time">inherited time
     space</a>.
     This corresponds to the end of the <a>animation node</a>'s active
     interval plus any <a>end delay</a>.
 
-:   <dfn attribute for=ComputedAnimationTiming>activeDuration</dfn>
-    <span attribute-info for=ComputedAnimationTiming/activeDuration></span>
+:   <dfn attribute for=ComputedTimingProperties>activeDuration</dfn>
+    <span attribute-info for=ComputedTimingProperties/activeDuration></span>
 ::  The <a>active duration</a> of this <a>animation node</a>.
 
-:   <dfn attribute for=ComputedAnimationTiming>localTime</dfn>
-    <span attribute-info for=ComputedAnimationTiming/localTime></span>
+:   <dfn attribute for=ComputedTimingProperties>localTime</dfn>
+    <span attribute-info for=ComputedTimingProperties/localTime></span>
 ::  The <a>local time</a> of this <a>animation node</a>.
 
     <code>localTime</code> will be <code>null</code> if this
@@ -5509,25 +5510,27 @@ Timing parameters calculated by the timing model are exposed using the
     it has a <a>parent animation group</a> that is not <a>in
     effect</a>.
 
-:   <dfn attribute for=ComputedAnimationTiming>timeFraction</dfn>
-    <span attribute-info for=ComputedAnimationTiming/timeFraction></span>
+:   <dfn attribute for=ComputedTimingProperties>timeFraction</dfn>
+    <span attribute-info for=ComputedTimingProperties/timeFraction></span>
 ::  The current <a>time fraction</a> of this <a>animation node</a>.
 
-:   <dfn attribute for=ComputedAnimationTiming>currentIteration</dfn>
-    <span attribute-info for=ComputedAnimationTiming/currentIteration></span>
+:   <dfn attribute for=ComputedTimingProperties>currentIteration</dfn>
+    <span attribute-info for=ComputedTimingProperties/currentIteration></span>
 ::  The <a>current iteration</a> index beginning with zero for the first
     iteration.
 
 </div>
 
-<h3 id="the-animationtiminginput-dictionary">The <code>AnimationTimingInput</code> dictionary</h3>
+<h3 id="the-animationtiminginput-dictionary">The <code>AnimationTimingProperties</code> dictionary</h3>
 
-The {{AnimationTimingInput}} dictionary is used as a convenience
-for specifying the timing properties of an {{AnimationNode}} in
-bulk.
+The {{AnimationTimingProperties}} dictionary is encapsulates the timing
+properties of an {{AnimationNode}} so that they can be set in bulk (as in
+the <a constructor for="Animation" title="Animation()">constructor for
+Animation</a>) or returned as a readonly snapshot (as in
+{{AnimationNode/computedTiming}}).
 
 <pre class='idl'>
-dictionary AnimationTimingInput {
+dictionary AnimationTimingProperties {
     double                             delay = 0;
     double                             endDelay = 0;
     FillMode                           fill = "auto";
@@ -5542,63 +5545,63 @@ dictionary AnimationTimingInput {
 
 <div class='attributes'>
 
-:   <dfn attribute for=AnimationTimingInput>delay</dfn>
-    <span attribute-info for=AnimationTimingInput/delay></span>
+:   <dfn attribute for=AnimationTimingProperties>delay</dfn>
+    <span attribute-info for=AnimationTimingProperties/delay></span>
 ::  The specified <a>start delay</a>.
 
     See the description of the <code>delay</code> attribute on
     the {{AnimationTiming}} interface.
 
-:   <dfn attribute for=AnimationTimingInput>endDelay</dfn>
-    <span attribute-info for=AnimationTimingInput/endDelay></span>
+:   <dfn attribute for=AnimationTimingProperties>endDelay</dfn>
+    <span attribute-info for=AnimationTimingProperties/endDelay></span>
 ::  The specified <a>end delay</a>.
 
     See the description of the <code>endDelay</code> attribute on
     the {{AnimationTiming}} interface.
 
-:   <dfn attribute for=AnimationTimingInput>fill</dfn>
-    <span attribute-info for=AnimationTimingInput/fill></span>
+:   <dfn attribute for=AnimationTimingProperties>fill</dfn>
+    <span attribute-info for=AnimationTimingProperties/fill></span>
 ::  The <a>fill mode</a> as specified by one of the <a enum>FillMode</a>
     enumeration values.
 
-:   <dfn attribute for=AnimationTimingInput>iterationStart</dfn>
-    <span attribute-info for=AnimationTimingInput/iterationStart></span>
+:   <dfn attribute for=AnimationTimingProperties>iterationStart</dfn>
+    <span attribute-info for=AnimationTimingProperties/iterationStart></span>
 ::  The <a>animation node</a>'s <a>iteration start</a> property.
 
     See the description of the <code>iterationStart</code> attribute
     on the {{AnimationTiming}} interface.
 
-:   <dfn attribute for=AnimationTimingInput>iterations</dfn>
-    <span attribute-info for=AnimationTimingInput/iterations></span>
+:   <dfn attribute for=AnimationTimingProperties>iterations</dfn>
+    <span attribute-info for=AnimationTimingProperties/iterations></span>
 ::  The <a>animation node</a>'s <a>iteration count</a> property.
 
     See the description of the <code>iterations</code> attribute
     on the {{AnimationTiming}} interface.
 
-:   <dfn attribute for=AnimationTimingInput>duration</dfn>
-    <span attribute-info for=AnimationTimingInput/duration></span>
+:   <dfn attribute for=AnimationTimingProperties>duration</dfn>
+    <span attribute-info for=AnimationTimingProperties/duration></span>
 ::  The <a>iteration duration</a> of the <a>animation node</a>.
 
     See the description of the <code>duration</code>
     attribute on the {{AnimationTiming}} interface.
 
-:   <dfn attribute for=AnimationTimingInput>playbackRate</dfn>
-    <span attribute-info for=AnimationTimingInput/playbackRate></span>
+:   <dfn attribute for=AnimationTimingProperties>playbackRate</dfn>
+    <span attribute-info for=AnimationTimingProperties/playbackRate></span>
 ::  The <a>animation node</a>'s <a
     title="animation node playback rate">playback rate</a> property.
 
     See the description of the <code>playbackRate</code> attribute
     on the {{AnimationTiming}} interface.
 
-:   <dfn attribute for=AnimationTimingInput>direction</dfn>
-    <span attribute-info for=AnimationTimingInput/direction></span>
+:   <dfn attribute for=AnimationTimingProperties>direction</dfn>
+    <span attribute-info for=AnimationTimingProperties/direction></span>
 ::  The <a>playback direction</a> of the <a>animation node</a>.
 
     See the description of the <code>direction</code> attribute
     on the {{AnimationTiming}} interface.
 
-:   <dfn attribute for=AnimationTimingInput>easing</dfn>
-    <span attribute-info for=AnimationTimingInput/easing></span>
+:   <dfn attribute for=AnimationTimingProperties>easing</dfn>
+    <span attribute-info for=AnimationTimingProperties/easing></span>
 ::  The <a>timing function</a> used to scale the time to produce
     easing effects.
 
@@ -5653,8 +5656,9 @@ dictionary AnimationTimingInput {
 <a>Animation groups</a> are represented by the {{AnimationGroup}}
 interface.
 
-<pre class='idl'>[Constructor (sequence<AnimationNode>? children,
-              optional (unrestricted double or AnimationTimingInput) timing)]
+<pre class='idl'>
+[Constructor (sequence<AnimationNode>? children,
+              optional (unrestricted double or AnimationTimingProperties) timing)]
 interface AnimationGroup : AnimationNode {
     readonly attribute AnimationNodeList children;
     readonly attribute AnimationNode?    firstChild;
@@ -5676,19 +5680,19 @@ interface AnimationGroup : AnimationNode {
 
         <div class="switch">
 
-        :   If <var>timing</var> is an {{AnimationTimingInput}}
+        :   If <var>timing</var> is an {{AnimationTimingProperties}}
             object,
         ::  Let <var>timing input</var> refer to <var>timing</var>.
 
         :   If <var>timing</var> is a <code>double</code>,
         ::  Let <var>timing input</var> be a new
-            {{AnimationTimingInput}} object with all members set to
+            {{AnimationTimingProperties}} object with all members set to
             their default values and <code>duration</code> set to
             <var>timing</var>.
 
         :   Otherwise (<var>timing</var> is undefined),
         ::  Let <var>timing input</var> be a new
-            {{AnimationTimingInput}} object with all members set to
+            {{AnimationTimingProperties}} object with all members set to
             their default values.
 
         </div>
@@ -5710,12 +5714,12 @@ interface AnimationGroup : AnimationNode {
     <div class="note">
 
     Note that since {{AnimationTiming}} objects have the same
-    member names as {{AnimationTimingInput}} dictionaries, it is
+    member names as {{AnimationTimingProperties}} dictionaries, it is
     also possible to pass the <code>timing</code> member of another
     {{AnimationNode}} as the <var>timing</var> parameter.
 
     Doing so will cause the {{AnimationTiming}} object to be
-    treated as an {{AnimationTimingInput}} dictionary and thus it
+    treated as an {{AnimationTimingProperties}} dictionary and thus it
     will effectively be cloned, not shared.
 
     </div>
@@ -5785,7 +5789,7 @@ interface AnimationGroup : AnimationNode {
     1.  Let <var>source</var> be this {{AnimationGroup}} object,
         the object to be cloned.
     2.  Let <var>cloned timing</var> be a new
-        {{AnimationTimingInput}} object whose members are assigned
+        {{AnimationTimingProperties}} object whose members are assigned
         the value of the attribute with the same name on
         <code><var>source</var>.timing</code>.
     3.  Let <var>cloned children</var> be an empty sequence of
@@ -5891,8 +5895,9 @@ are accessed via a <code>children</code> member.
 <a>Animation sequences</a> are represented by the
 <code>AnimationSequence</code> interface.
 
-<pre class='idl'>[Constructor (sequence<AnimationNode>? children,
-              optional (unrestricted double or AnimationTimingInput) timing)]
+<pre class='idl'>
+[Constructor (sequence<AnimationNode>? children,
+              optional (unrestricted double or AnimationTimingProperties) timing)]
 interface AnimationSequence : AnimationGroup {
     AnimationSequence clone ();
 };</pre>
@@ -5901,7 +5906,7 @@ interface AnimationSequence : AnimationGroup {
 
 :   <dfn constructor for=AnimationSequence title="AnimationSequence()">
     Constructor (sequence&lt;AnimationNode&gt;? children,
-    optional (unrestricted double or AnimationTimingInput) timing)</dfn>
+    optional (unrestricted double or AnimationTimingProperties) timing)</dfn>
 ::  The meaning and handling of each of the parameters in this
     constructor is identical to the <a constructor for="AnimationGroup"
     title="AnimationGroup()">constructor for AnimationGroup</a>.
@@ -5923,9 +5928,9 @@ interface AnimationSequence : AnimationGroup {
 
 <a>Animations</a> are represented by the {{Animation}} interface.
 
-<pre class='idl'>[Constructor (Animatable? target, object? effect,
-              optional (unrestricted double or AnimationTimingInput)
-                timing)]
+<pre class='idl'>
+[Constructor (Animatable? target, object? effect,
+              optional (unrestricted double or AnimationTimingProperties) timing)]
 interface Animation : AnimationNode {
     attribute (AnimationEffect or EffectCallback)? effect;
     attribute Animatable?                          target;
@@ -5944,19 +5949,19 @@ interface Animation : AnimationNode {
 
         <div class="switch">
 
-        :   If <var>timing</var> is an {{AnimationTimingInput}}
+        :   If <var>timing</var> is an {{AnimationTimingProperties}}
             object,
         ::  Let <var>timing input</var> refer to <var>timing</var>.
 
         :   If <var>timing</var> is a <code>double</code>,
         ::  Let <var>timing input</var> be a new
-            {{AnimationTimingInput}} object with all members set to
+            {{AnimationTimingProperties}} object with all members set to
             their default values and <code>duration</code> set to
             <var>timing</var>.
 
         :   Otherwise (<var>timing</var> is undefined),
         ::  Let <var>timing input</var> be a new
-            {{AnimationTimingInput}} object with all members set to
+            {{AnimationTimingProperties}} object with all members set to
             their default values.
 
         </div>
@@ -6017,7 +6022,7 @@ interface Animation : AnimationNode {
 
         If this parameter is <code>null</code>, the newly-created
         {{Animation}} will also have a <code>null</code> animation effect.
-    :   optional (unrestricted double or AnimationTimingInput)
+    :   optional (unrestricted double or AnimationTimingProperties)
         timing
     ::  The timing properties or <a>iteration duration</a> of the new
         animation.
@@ -6056,7 +6061,7 @@ interface Animation : AnimationNode {
     1.  Let <var>source</var> be the {{Animation}} object to
         clone, that is, this object.</li>
     2.  Let <var>cloned timing</var> be a new
-        {{AnimationTimingInput}} object whose members are assigned
+        {{AnimationTimingProperties}} object whose members are assigned
         the value of the attribute with the same name on
         <code><var>source</var>.timing</code>.</li>
     3.  The {{AnimationEffect}} is cloned depending on the type of
@@ -6172,7 +6177,7 @@ The third parameter representing the animation's timing, may
 simply be a number representing the <a>iteration duration</a> in
 milliseconds as above, or, to specify further timing properties such
 as the <a title="animation node playback rate">playback rate</a>,
-an {{AnimationTimingInput}} object can be used as follows:
+an {{AnimationTimingProperties}} object can be used as follows:
 
 <pre class='example sh_javascript'>
 var anim =
@@ -6224,8 +6229,8 @@ Objects that may be the target of an {{Animation}} implement the
 <pre class='idl'>
 [NoInterfaceObject]
 interface Animatable {
-    AnimationPlayer           animate (object? effect,
-                                       optional (double or AnimationTimingInput) timing);
+    AnimationPlayer                animate (object? effect,
+                                            optional (double or AnimationTimingProperties) timing);
     sequence&lt;AnimationPlayer&gt; getAnimationPlayers ();
 };
 </pre>
@@ -6234,7 +6239,7 @@ interface Animatable {
 
 :   <dfn method for=Animatable title="animate()">
     AnimationPlayer animate(object? effect,
-        optional (double or AnimationTimingInput) timing)</dfn>
+        optional (double or AnimationTimingProperties) timing)</dfn>
 ::  Creates a new {{Animation}} object
     whose <a>animation target</a> is the object on which the method is
     called, and calls the {{AnimationTimeline/play()}} method of the
@@ -6267,7 +6272,7 @@ interface Animatable {
         constructor for="Animation" title="Animation()">Animation
         constructor</a> as the <var>effect</var> parameter and has the
         same interpretation as defined for that constructor.
-    :   optional (double or AnimationTimingInput) timing
+    :   optional (double or AnimationTimingProperties) timing
     ::  The timing parameters of the animation.
         This value is passed to the <a
         constructor for="Animation" title="Animation()">Animation
@@ -6411,7 +6416,8 @@ enum CompositeOperation {"replace", "add", "accumulate"};
 <a>Keyframe animation effects</a> are represented by the
 <dfn>KeyframeEffect</dfn> interface.
 
-<pre class='idl'>[Constructor (object frames, optional KeyframeEffectOptions options)]
+<pre class='idl'>
+[Constructor (object frames, optional KeyframeEffectOptions options)]
 interface KeyframeEffect : AnimationEffect {
     attribute DOMString spacing;
     sequence&lt;ComputedKeyframe&gt; getFrames ();
@@ -7450,11 +7456,11 @@ The following changes have been made since the <a
 
 *   Fixed the grammar for <a>&lt;cubic-bezier-timing-function&gt;</a> to
     match CSS Transitions.
-*   Introduced the {{ComputedAnimationTiming}} interface and
+*   Introduced the {{ComputedTimingProperties}} dictionary and
     {{AnimationTimingReadOnly}} interface.
 *   Moved computed timing from {{AnimationNode}} to a
-    <code>computedTiming</code> attribute of type
-    {{ComputedAnimationTiming}}.
+    {{AnimationNode/computedTiming}} attribute of type
+    {{ComputedTimingProperties}}.
 *   Removed the <code>player</code> attribute from the {{AnimationNode}}
     interface.
 *   Exposed the <a>time fraction</a> to script as
