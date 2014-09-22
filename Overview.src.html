@@ -1550,27 +1550,25 @@ follows:
 
 :   <a>current</a>
 ::  Corresponds to an <a>animation node</a> that is either <a>in
-    play</a> or may become <a>in play</a> in the future.
+    effect</a> or may become <a>in effect</a> in the future.
     This will be the case if the <a>animation node</a> is <a>in
-    play</a> or in its <a>before phase</a>, <em>or</em> it has an
+    effect</a> or in its <a>before phase</a>, <em>or</em> it has an
     ancestor for which this is true thereby opening up the
     possibility that this <a>animation node</a> might play again
-    (e.g.  due to repeating).
+    (e.g. due to repeating).
 
     This state is used in the <a
     href="#programming-interface">programming interface</a> to
-    identify all <a>animations</a> and <a>players</a> that are
-    likely to be of interest.
+    identify all <a>players</a> that are likely to be of interest.
 
-    Furthermore, the <a>current</a> state provides an important
-    definition for managing the amount of memory required by
-    implementations.
-    Assuming a monotonically increasing <a>timeline</a> an
-    implementation can safely discard all <a>animation nodes</a>
-    that are <em>not</em> <a>current</a> and not referenced
-    elsewhere provided they take care to preserve any fill values.
-    This is because such <a>animation nodes</a> will no longer have
-    any dynamic effect.
+    Issue: This definition, as used in
+           {{AnimationTimeline/getAnimationPlayers()}} on the
+           {{AnimationTimeline}} interface and
+           {{Animatable/getAnimationPlayers()}} on the {{Animatable}} interface
+           means that a document that repeatedly produces forwards-filling
+           animations will consume memory in an unbounded fashion.
+           We may need to revise this definition or provide a loophole for
+           implementations to discard old players in such conditions.
 
 :   <a>in effect</a>
 ::  Corresponds to an <a>animation node</a> that has a resolved
@@ -1619,7 +1617,7 @@ An animation node is <dfn>current</dfn> if it <em>any</em> of the
 following conditions is true:
 
 *   it is in the <a>before phase</a>, or
-*   it is <a>in play</a>, or
+*   it is <a>in effect</a>, or
 *   it has a <a>parent animation group</a> and the
     <a>parent animation group</a> is <a>current</a>.
 
