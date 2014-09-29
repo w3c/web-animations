@@ -1549,25 +1549,12 @@ follows:
 
 :   <a>current</a>
 ::  Corresponds to an <a>animation node</a> that is either <a>in
-    effect</a> or may become <a>in effect</a> in the future.
+    play</a> or may become <a>in play</a> in the future.
     This will be the case if the <a>animation node</a> is <a>in
-    effect</a> or in its <a>before phase</a>, <em>or</em> it has an
+    play</a> or in its <a>before phase</a>, <em>or</em> it has an
     ancestor for which this is true thereby opening up the
     possibility that this <a>animation node</a> might play again
     (e.g. due to repeating).
-
-    This state is used in the <a
-    href="#programming-interface">programming interface</a> to
-    identify all <a>players</a> that are likely to be of interest.
-
-    Issue: This definition, as used in
-           {{AnimationTimeline/getAnimationPlayers()}} on the
-           {{AnimationTimeline}} interface and
-           {{Animatable/getAnimationPlayers()}} on the {{Animatable}} interface
-           means that a document that repeatedly produces forwards-filling
-           animations will consume memory in an unbounded fashion.
-           We may need to revise this definition or provide a loophole for
-           implementations to discard old players in such conditions.
 
 :   <a>in effect</a>
 ::  Corresponds to an <a>animation node</a> that has a resolved
@@ -1609,14 +1596,15 @@ of the following conditions are met:
 
 1.  the <a>animation node</a> is in the <a>active phase</a>, and
 2.  the <a>animation node</a> has a <a>parent animation group</a> that
-    is <a>in play</a> or else is <a>directly associated with
-    a player</a> that is not <a title="finished play state">finished</a>.
+    is <a>in play</a> or else the <a>animation node</a> is <a>directly
+    associated with a player</a> that is not <a
+    title="finished play state">finished</a>.
 
 An animation node is <dfn>current</dfn> if it <em>any</em> of the
 following conditions is true:
 
 *   it is in the <a>before phase</a>, or
-*   it is <a>in effect</a>, or
+*   it is <a>in play</a>, or
 *   it has a <a>parent animation group</a> and the
     <a>parent animation group</a> is <a>current</a>.
 
@@ -4959,7 +4947,7 @@ interface AnimationTimeline {
     sequence&lt;AnimationPlayer&gt; getAnimationPlayers()</dfn>
 ::  Returns the set of {{AnimationPlayer}} objects
     associated with this <a>timeline</a> that have associated
-    <a>source content</a> which is <a>current</a>.
+    <a>source content</a> which is <a>current</a> or <a>in effect</a>.
 
     The returned list is sorted in increasing order by <a>player
     sequence number</a>.
@@ -4967,6 +4955,16 @@ interface AnimationTimeline {
     The returned list reflects the state <em>after</em> applying any pending
     changes to animation such as changes to animation-related style properties
     that have yet to be processed.
+
+    Issue: Both this method and {{Animatable/getAnimationPlayers()}} on the
+           {{Animatable}} interface require retaining forwards-filling
+           <a>animations</a> and their <a>players</a> such that a document that
+           repeatedly produces forwards-filling animations will consume memory
+           in an unbounded fashion.
+           We may need to revise this definition (previously these methods
+           only returned players whose <a>source content</a> was <a>current</a>)
+           or provide a loophole for implementations to discard old players in
+           such conditions.
 
 <h3 id="the-animationplayer-interface">The <code>AnimationPlayer</code> interface</h3>
 
@@ -6295,8 +6293,8 @@ interface Animatable {
 :   <dfn method for=Animatable title="getAnimationPlayers()">
     sequence&lt;AnimationPlayer&gt; getAnimationPlayers()</dfn>
 ::  Returns the set of {{AnimationPlayer}} objects
-    whose <a>source content</a> is <a>current</a> and contains at
-    least one <a>animation</a> whose <a>animation target</a> is this
+    whose <a>source content</a> is <a>current</a> or <a>in effect</a> and
+    contains at least one <a>animation</a> whose <a>animation target</a> is this
     object.
 
     If this object is the <a>animation target</a> of two or more <a
