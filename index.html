@@ -773,11 +773,17 @@ initially false.</p>
 <li data-md=""><p>If <var>player</var> has a <a data-link-type=dfn href=#pending-pause-task title="pending pause task">pending pause task</a>,</p>
 
 <ol><li data-md=""><p>Cancel that task.</p>
-<li data-md=""><p>Set the value of <var>player</var>’s
-<a data-link-type=dfn href=#player-start-time title="player start time">start time</a> to the value
-that was set before the <a data-link-type=dfn href=#pause-a-player title="pause a player">pause a player</a> procedure was
-last run to completion including if the <a data-link-type=dfn href=#player-start-time title="player start time">player start time</a>
-was <a data-link-type=dfn href=#unresolved title=unresolved>unresolved</a>.</p>
+<li data-md=""><p>If <var>player</var> has an associated <a data-link-type=dfn href=#timeline title=timeline>timeline</a> that is not
+<a data-link-type=dfn href=#inactive-timeline title="inactive timeline">inactive</a>, perform the following steps:</p>
+
+<ol><li data-md=""><p>Set <var>player</var>’s <a data-link-type=dfn href=#player-start-time title="player start time">start time</a>
+to the result of evaluating <code><var>timeline time</var> -
+<a data-link-type=dfn href=#hold-time title="hold time">hold time</a> / <a data-link-type=dfn href=#player-playback-rate title="player playback rate">playback
+rate</a></code>
+where <var>timeline time</var> is the current <a data-link-type=dfn href=#time-value title="time value">time value</a> of
+the <a data-link-type=dfn href=#timeline title=timeline>timeline</a> associated with <var>player</var>.</p>
+<li data-md=""><p>Let <var>player</var>’s <a data-link-type=dfn href=#hold-time title="hold time">hold time</a> be <a data-link-type=dfn href=#unresolved title=unresolved>unresolved</a>.</p>
+</ol>
 <li data-md=""><p>Set <var>has pending ready promise</var> to true.</p>
 </ol>
 <li data-md=""><p>Perform the steps corresponding to the <em>first</em> matching
@@ -818,6 +824,9 @@ fulfill <var>player</var>’s <a data-link-type=dfn href=#current-ready-promise 
 
 <li data-md=""><p>Abort this procedure.</p>
 </ol>
+<li data-md=""><p>Let <var>player</var>’s <a data-link-type=dfn href=#player-start-time title="player start time">start time</a> be
+<a data-link-type=dfn href=#unresolved title=unresolved>unresolved</a>.</p>
+
 <li data-md=""><p>If <var>has pending ready promise</var> is false,
 let <var>player</var>’s <a data-link-type=dfn href=#current-ready-promise title="current ready promise">current ready promise</a> be a new
 pending Promise object.</p>
@@ -877,10 +886,6 @@ For example, if animation is performed by a separate process, it may
 be necessary to synchronize the <a data-link-type=dfn href=#current-time title="current time">current time</a> to ensure that it
 reflects the state drawn by the animation process.</p>
 
-<p>For this reason, the procedure to <a data-link-type=dfn href=#pause-a-player title="pause a player">pause a player</a> makes the
-player’s <a data-link-type=dfn href=#current-time title="current time">current time</a> <a data-link-type=dfn href=#unresolved title=unresolved>unresolved</a> until the pause
-operation is complete.</p>
-
 <p>The procedure to <dfn data-dfn-type=dfn data-noexport="" id=pause-a-player>pause a player<a class=self-link href=#pause-a-player></a></dfn>, <var>player</var> is as follows:</p>
 
 <ol><li data-md=""><p>If <var>player</var>’s <a data-link-type=dfn href=#pause-flag title="pause flag">pause flag</a> is true or if <var>player</var>
@@ -890,9 +895,9 @@ initially false.</p>
 <li data-md=""><p>If <var>player</var> has a <a data-link-type=dfn href=#pending-play-task title="pending play task">pending play task</a>, cancel that task
 and let <var>has pending ready promise</var> be true.</p>
 <li data-md=""><p>Set <var>player</var>’s <a data-link-type=dfn href=#pause-flag title="pause flag">pause flag</a> to true.</p>
+<li data-md=""><p>Set <var>player</var>’s <a data-link-type=dfn href=#hold-time title="hold time">hold time</a> to <a data-link-type=dfn href=#current-time title="current time">current time</a>.</p>
 <li data-md=""><p>Make <var>player</var>’s <a data-link-type=dfn href=#player-start-time title="player start time">start time</a>
 <a data-link-type=dfn href=#unresolved title=unresolved>unresolved</a>.</p>
-<li data-md=""><p>Make <var>player</var>’s <a data-link-type=dfn href=#hold-time title="hold time">hold time</a> <a data-link-type=dfn href=#unresolved title=unresolved>unresolved</a>.</p>
 <li data-md=""><p>If <var>has pending ready promise</var> is false,
 set <var>player</var>’s <a data-link-type=dfn href=#current-ready-promise title="current ready promise">current ready promise</a> to a new
 pending Promise object.</p>
@@ -4895,8 +4900,15 @@ the procedure to <a data-link-type=dfn href=#update-the-player-start-time title=
 to the new value.</p>
 <dt data-md=""><p><dfn class=idl-code data-dfn-for=AnimationPlayer data-dfn-type=attribute data-export="" id=dom-animationplayer-currenttime>currentTime<a class=self-link href=#dom-animationplayer-currenttime></a></dfn>
 <span data-attribute-info="" for=AnimationPlayer/currentTime> of type <a data-link-type=idl-name title=double>double</a>, nullable</span></p>
-<dd data-md=""><p>The <a data-link-type=dfn href=#current-time title="current time">current time</a> of this player.
-Setting this attribute follows the procedure to <a data-link-type=dfn href=#set-the-current-time title="set the current time">set the current time</a>
+<dd data-md=""><p>The <a data-link-type=dfn href=#current-time title="current time">current time</a> of this player unless
+this player has a <a data-link-type=dfn href=#pending-pause-task title="pending pause task">pending pause task</a>, in which case
+this attribute returns <code>null</code>.</p>
+
+<p class=issue id=issue-df52ec70><a class=self-link href=#issue-df52ec70></a>This behavior is intended to prevent authors for relying
+on the <code>currentTime</code> while a player is waiting to pause
+but is also somewhat confusing.</p>
+
+<p>Setting this attribute follows the procedure to <a data-link-type=dfn href=#set-the-current-time title="set the current time">set the current time</a>
 of this object to the new value.</p>
 <dt data-md=""><p><dfn class=idl-code data-dfn-for=AnimationPlayer data-dfn-type=attribute data-export="" id=dom-animationplayer-playbackrate>playbackRate<a class=self-link href=#dom-animationplayer-playbackrate></a></dfn>
 <span data-attribute-info="" for=AnimationPlayer/playbackRate> of type <a data-link-type=idl-name title=double>double</a></span></p>
@@ -7613,7 +7625,9 @@ in a specific playback direction.</p>
        We may need to revise this definition (previously these methods
        only returned players whose <a data-link-type=dfn href=#source-content title="source content">source content</a> was <a data-link-type=dfn href=#current title=current>current</a>)
        or provide a loophole for implementations to discard old players in
-       such conditions.<a href=#issue-e1aa7c8e> ↵ </a></div><div class=issue>Should this be <code>parentGroup</code>?<a href=#issue-894adfa6> ↵ </a></div><div class=issue>Now that we have <code>endDelay</code>, should we change this back
+       such conditions.<a href=#issue-e1aa7c8e> ↵ </a></div><div class=issue>This behavior is intended to prevent authors for relying
+on the <code>currentTime</code> while a player is waiting to pause
+but is also somewhat confusing.<a href=#issue-df52ec70> ↵ </a></div><div class=issue>Should this be <code>parentGroup</code>?<a href=#issue-894adfa6> ↵ </a></div><div class=issue>Now that we have <code>endDelay</code>, should we change this back
     to <code>startDelay</code>?<a href=#issue-1d679d8c> ↵ </a></div><div class=issue>On setting, if the previous value was an <code class=idl><a data-link-type=idl href=#callbackdef-effectcallback title=EffectCallback>EffectCallback</a></code>, we
     should call the old callback with a null time fraction so it can
     clear its result.<a href=#issue-fb3b828f> ↵ </a></div><div class=issue>Should this be defined in terms of <code>IsIterable</code> instead?<a href=#issue-0a95c3b0> ↵ </a></div><div class=issue>Need to define what invalid means here.<a href=#issue-53ccb020> ↵ </a></div><div class=issue>
