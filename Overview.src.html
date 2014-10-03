@@ -731,11 +731,17 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
 3.  If <var>player</var> has a <a>pending pause task</a>,
 
     1.  Cancel that task.
-    2.  Set the value of <var>player</var>'s
-        <a title="player start time">start time</a> to the value
-        that was set before the <a>pause a player</a> procedure was
-        last run to completion including if the <a>player start time</a>
-        was <a>unresolved</a>.
+    2.  If <var>player</var> has an associated <a>timeline</a> that is not
+        <a title="inactive timeline">inactive</a>, perform the following steps:
+
+        1.  Set <var>player</var>'s <a title="player start time">start time</a>
+            to the result of evaluating <code><var>timeline time</var> -
+            <a>hold time</a> / <a title="player playback rate">playback
+            rate</a></code>
+            where <var>timeline time</var> is the current <a>time value</a> of
+            the <a>timeline</a> associated with <var>player</var>.
+        2.  Let <var>player</var>'s <a>hold time</a> be <a>unresolved</a>.
+
     3.  Set <var>has pending ready promise</var> to true.
 
 4.  Perform the steps corresponding to the <em>first</em> matching
@@ -776,11 +782,14 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
 
     2.  Abort this procedure.
 
-6.  If <var>has pending ready promise</var> is false,
+6.  Let <var>player</var>'s <a title="player start time">start time</a> be
+    <a>unresolved</a>.
+
+7.  If <var>has pending ready promise</var> is false,
     let <var>player</var>'s <a>current ready promise</a> be a new
     pending Promise object.
 
-7.  Schedule a task to run as soon as <var>player</var> is <a>ready</a>.
+8.  Schedule a task to run as soon as <var>player</var> is <a>ready</a>.
     The task shall perform the following steps:
 
     1.  Let <var>ready time</var> be the <a>time value</a> of
@@ -820,7 +829,7 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
         determines <var>player</var> is immediately <a>ready</a>) thereby
         bypassing the <a>pending play state</a> altogether.
 
-8.  Run the procedure to <a>update a player's finished state</a>
+9.  Run the procedure to <a>update a player's finished state</a>
     for <var>player</var>.
 
 <h4 id='pausing-a-player-section'>Pausing a player</h4>
@@ -835,10 +844,6 @@ For example, if animation is performed by a separate process, it may
 be necessary to synchronize the <a>current time</a> to ensure that it
 reflects the state drawn by the animation process.
 
-For this reason, the procedure to <a>pause a player</a> makes the
-player's <a>current time</a> <a>unresolved</a> until the pause
-operation is complete.
-
 The procedure to <dfn>pause a player</dfn>, <var>player</var> is as follows:
 
 1.  If <var>player</var>'s <a>pause flag</a> is true or if <var>player</var>
@@ -848,9 +853,9 @@ The procedure to <dfn>pause a player</dfn>, <var>player</var> is as follows:
 3.  If <var>player</var> has a <a>pending play task</a>, cancel that task
     and let <var>has pending ready promise</var> be true.
 4.  Set <var>player</var>'s <a>pause flag</a> to true.
+6.  Set <var>player</var>'s <a>hold time</a> to <a>current time</a>.
 5.  Make <var>player</var>'s <a title="player start time">start time</a>
     <a>unresolved</a>.
-6.  Make <var>player</var>'s <a>hold time</a> <a>unresolved</a>.
 7.  If <var>has pending ready promise</var> is false,
     set <var>player</var>'s <a>current ready promise</a> to a new
     pending Promise object.
@@ -5032,7 +5037,14 @@ interface AnimationPlayer {
     to the new value.
 :   <dfn attribute for=AnimationPlayer>currentTime</dfn>
     <span attribute-info for=AnimationPlayer/currentTime></span>
-::  The <a>current time</a> of this player.
+::  The <a>current time</a> of this player unless
+    this player has a <a>pending pause task</a>, in which case
+    this attribute returns <code>null</code>.
+
+    Issue: This behavior is intended to prevent authors for relying
+    on the <code>currentTime</code> while a player is waiting to pause
+    but is also somewhat confusing.
+
     Setting this attribute follows the procedure to <a>set the current time</a>
     of this object to the new value.
 :   <dfn attribute for=AnimationPlayer>playbackRate</dfn>
