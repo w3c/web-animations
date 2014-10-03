@@ -457,9 +457,9 @@ to <var>new timeline</var> which may be null, is as follows:
     <p class="note">
       Note that if <var>new timeline</var> is not null and <var>player</var> has
       a <a>pending play task</a> or a <a>pending pause task</a> no special
-      handling is required: the pending task will run as soon as the <a>source
-      content</a> is <a>ready</a> even though this may occur at a different
-      moment that it might have with the old timeline.
+      handling is required: the pending task will run as soon as the
+      <a>player</a> is <a>ready</a> even though this may occur at a different
+      moment than it might have done with the old timeline.
     </p>
 6.  Let the <a>timeline</a> of <var>player</var> be <var>new timeline</var>.
 7.  <p class="todo">
@@ -495,9 +495,10 @@ The procedure to <dfn>set the source content of a player</dfn>,
     run the procedure to <a>reset a player's pending tasks</a> on
     <var>player</var>.
 4.  If <var>player</var> has a <a>pending pause task</a>, reschedule that task
-    to run as soon as <var>new content</var> is <a>ready</a>.
+    to run as soon as <var>player</var> is <a>ready</a>.
 5.  If <var>player</var> has a <a>pending play task</a>, reschedule that task
-    to run as soon as <var>new content</var> is <a>ready</a>.
+    to run as soon as <var>player</var> is <a>ready</a> to play <var>new
+    content</var>.
 6.  If <var>new content</var> is not <code>null</code> and
     if <var>new content</var> has a <a>parent animation group</a>,
     <a title="remove an animation node">remove</a> <var>new content</var> from
@@ -535,7 +536,7 @@ matching condition from below:
 
     1.  the player has no associated <a>timeline</a>, or
     2.  the associated <a>timeline</a> is
-        <a title='inactive timeline'>inactive</a>, or
+        <a title="inactive timeline">inactive</a>, or
     3.  the player's <a title="player start time">start time</a> is
         <a>unresolved</a>.
 
@@ -662,19 +663,24 @@ animations from the moment when the first frame of the animation is
 complete.
 This is represented by an <a>unresolved</a> <a
 title="player start time">start time</a> on the <a>player</a> which becomes
-resolved when the animation is <a>ready</a>.
+resolved when the player is <a>ready</a>.
 Content may opt out of this behavior by setting the <a
 title="player start time">start time</a>
 to a <a title="unresolved">resolved</a> <a>time value</a>.
 
 </div>
 
-A player's <a>source content</a> is <dfn>ready</dfn> when the user
-agent has completed any setup required to begin the playback of each
-<a>inclusive descendant</a> of the <a>source content</a> including
-rendering the first frame of any <a>animation</a> with an associated
-<a>animation effect</a> or executing any <a>custom
-effects</a> associated with such an <a>animation</a>.
+A player is <dfn>ready</dfn> at the first moment where <em>both</em> of the
+following conditions are true:
+
+*   the user agent has completed any setup required to begin the playback of
+    each <a>inclusive descendant</a> of the player's <a>source content</a>
+    including rendering the first frame of any <a>animation</a> with an
+    associated <a>animation effect</a> or executing any <a>custom effects</a>
+    associated with such an <a>animation</a>.
+
+*   the player is associated with a <a>timeline</a> that is not
+    <a title="inactive timeline">inactive</a>.
 
 <h4 id='the-current-ready-promise'>The current ready promise</h4>
 
@@ -715,30 +721,24 @@ cancelled (see <a href="#cancelling-a-player-section" section></a>).
 
 The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
 
-1.  If there is no <a>timeline</a> associated with <var>player</var>, or the
-    associated <a>timeline</a> is <a title="inactive timeline">inactive</a>
-    <a href="http://dom.spec.whatwg.org/#concept-throw">throw</a>
-    an "<a
-    href="http://dom.spec.whatwg.org/#invalidstateerror">InvalidStateError</a>"
-    and abort these steps.
-2.  Let <var>has pending ready promise</var> be a boolean flag that is
+1.  Let <var>has pending ready promise</var> be a boolean flag that is
     initially false.
-3.  If <var>player</var> has a <a>pending play task</a>,
+2.  If <var>player</var> has a <a>pending play task</a>,
 
     1.  Cancel that task.
     2.  Set <var>has pending ready promise</var> to true.
 
-4.  If <var>player</var> has a <a>pending pause task</a>,
+3.  If <var>player</var> has a <a>pending pause task</a>,
 
     1.  Cancel that task.
-    2.  Restore the value of <var>player</var>'s
-        <a title="player start time">start time</a> that was set before
-        the <a>pause a player</a> procedure was last run to
-        completion including if the <a>player start time</a> was
-        <a>unresolved</a>.
+    2.  Set the value of <var>player</var>'s
+        <a title="player start time">start time</a> to the value
+        that was set before the <a>pause a player</a> procedure was
+        last run to completion including if the <a>player start time</a>
+        was <a>unresolved</a>.
     3.  Set <var>has pending ready promise</var> to true.
 
-5.  Perform the steps corresponding to the <em>first</em> matching
+4.  Perform the steps corresponding to the <em>first</em> matching
     condition from the following, if any:
 
     <div class="switch">
@@ -767,7 +767,7 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
 
     </div>
 
-6.  If <var>player</var>'s <a>hold time</a> is <a>unresolved</a>, perform the
+5.  If <var>player</var>'s <a>hold time</a> is <a>unresolved</a>, perform the
     following steps:
 
     1.  If <var>has pending ready promise</var> is true,
@@ -776,17 +776,16 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
 
     2.  Abort this procedure.
 
-7.  If <var>has pending ready promise</var> is false,
+6.  If <var>has pending ready promise</var> is false,
     let <var>player</var>'s <a>current ready promise</a> be a new
     pending Promise object.
 
-8.  Schedule a task to run as soon as <var>player</var>'s <a>source
-    content</a> is <a>ready</a>.
+7.  Schedule a task to run as soon as <var>player</var> is <a>ready</a>.
     The task shall perform the following steps:
 
     1.  Let <var>ready time</var> be the <a>time value</a> of
         the <a>timeline</a> associated with <var>player</var> at the moment
-        when <var>player</var>'s <a>source content</a> became <a>ready</a>.
+        when <var>player</var> became <a>ready</a>.
     2.  Let <var>new start time</var> be the result of evaluating
         <code><var>ready time</var> - <a>hold time</a> / <a>player
         playback rate</a></code> for <var>player</var>.
@@ -818,9 +817,8 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
         <dfn>pending play task</dfn>.
 
         A user agent MAY execute the above task immediately (if it
-        determines the <a>source content</a> is immediately
-        <a>ready</a>) thereby bypassing the
-        <a>pending play state</a> altogether.
+        determines <var>player</var> is immediately <a>ready</a>) thereby
+        bypassing the <a>pending play state</a> altogether.
 
 8.  Run the procedure to <a>update a player's finished state</a>
     for <var>player</var>.
@@ -843,26 +841,20 @@ operation is complete.
 
 The procedure to <dfn>pause a player</dfn>, <var>player</var> is as follows:
 
-1.  If there is no <a>timeline</a> associated with <var>player</var>, or the
-    associated <a>timeline</a> is <a title="inactive timeline">inactive</a>
-    <a href="http://dom.spec.whatwg.org/#concept-throw">throw</a>
-    an "<a
-    href="http://dom.spec.whatwg.org/#invalidstateerror">InvalidStateError</a>"
-    and abort these steps.
-2.  If <var>player</var>'s <a>pause flag</a> is true or if <var>player</var>
+1.  If <var>player</var>'s <a>pause flag</a> is true or if <var>player</var>
     has a <a>pending pause task</a>, abort these steps.
-3.  Let <var>has pending ready promise</vaR> be a boolean flag that is
+2.  Let <var>has pending ready promise</var> be a boolean flag that is
     initially false.
-4.  If <var>player</var> has a <a>pending play task</a>, cancel that task
+3.  If <var>player</var> has a <a>pending play task</a>, cancel that task
     and let <var>has pending ready promise</var> be true.
-5.  Set <var>player</var>'s <a>pause flag</a> to true.
-6.  Make <var>player</var>'s <a title="player start time">start time</a>
+4.  Set <var>player</var>'s <a>pause flag</a> to true.
+5.  Make <var>player</var>'s <a title="player start time">start time</a>
     <a>unresolved</a>.
-7.  Make <var>player</var>'s <a>hold time</a> <a>unresolved</a>.
-8.  If <var>has pending ready promise</var> is false,
+6.  Make <var>player</var>'s <a>hold time</a> <a>unresolved</a>.
+7.  If <var>has pending ready promise</var> is false,
     set <var>player</var>'s <a>current ready promise</a> to a new
     pending Promise object.
-9.  Schedule a task to be executed at the first possible moment after
+8.  Schedule a task to be executed at the first possible moment after
     the user agent has performed any processing necessary to suspend
     the playback of any animations that are <a>inclusive
     descendants</a> of <var>player</var>'s <a>source content</a>, if any.
@@ -897,7 +889,7 @@ The procedure to <dfn>pause a player</dfn>, <var>player</var> is as follows:
     While the task is running, however, <var>player</var> does
     <em>not</em> have a <a>pending pause task</a>.
 
-8.  Run the procedure to <a>update a player's finished state</a>
+9.  Run the procedure to <a>update a player's finished state</a>
     for <var>player</var>.
 
 <h4 id="reaching-the-end">Reaching the end</h4>
@@ -4918,8 +4910,8 @@ interface AnimationTimeline {
 :   <dfn method for=AnimationTimeline title='play()'>
     AnimationPlayer play(optional TimedItem? source = null)</dfn>
 ::  Creates a new {{AnimationPlayer}} object associated with
-    this <a>timeline</a> that begins playback as soon as its <a>source
-    content</a> is ready.
+    this <a>timeline</a> that begins playback as soon as it is
+    <a>ready</a>.
 
     If <var>source</var> is specified, it will be used as the player's <a>source
     content</a>.
