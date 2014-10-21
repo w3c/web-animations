@@ -424,7 +424,7 @@ a <a>player</a> may have no associated <a>source content</a> or
 
 A <a>player</a>'s <dfn title="player start time">start time</dfn> is the
 <a>time value</a> of its <a>timeline</a> when its <a>source content</a>
-is scheduled to begin playback. A players's <a
+is scheduled to begin playback. A player's <a
 title="player start time">start time</a> is initially
 <a>unresolved</a>.
 
@@ -469,6 +469,10 @@ to <var>new timeline</var> which may be null, is as follows:
     </p>
 8.  Run the procedure to <a>update a player's finished state</a> for
     <var>player</var>.
+
+<p class=todo>
+  Update this to preserve the player's <a>current time</a>.
+</p>
 
 The procedure to <dfn>reset a player's pending tasks</dfn> for <var>player</var>
 is as follows:
@@ -569,9 +573,8 @@ The procedure to <dfn>silently set the current time</dfn> of
 a player, <var>player</var>, to <var>seek time</var> is as follows:
 
 1.  If <var>seek time</var> is an <a>unresolved</a> time value,
-    <a href="http://dom.spec.whatwg.org/#concept-throw">throw</a>
-    a "<a
-    href="http://dom.spec.whatwg.org/#notsupportederror">NotSupportedError</a>".
+    <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
+    NotSupportedError.
 2.  Update either <var>player</var>'s <a>hold time</a> or <a
     title="player start time">start time</a> as follows:
 
@@ -598,6 +601,19 @@ a player, <var>player</var>, to <var>seek time</var> is as follows:
         where <var>timeline time</var> is the current <a>time value</a>
         of <a>timeline</a> associated with <var>player</var>.
 
+    </div>
+
+1.  If <var>player</var> has no associated <a>timeline</a> or the associated
+    <a>timeline</a> is <a title="inactive timeline">inactive</a>,
+    make <var>player</var>'s <a title="player start time">start time</a>
+    <a>unresolved</a>.
+
+    <p class=annotation>
+      This preserves the invariant that when we don't have an active timeline it
+      is only possible to set <em>either</em> the <a>player start time</a>
+      <em>or</em> the player's <a>current time</a>.
+    </p>
+
 4.  Make <var>player</var>'s <a>previous current time</a> <a>unresolved</a>.
 
 The procedure to <dfn>set the current time</dfn> of a player,
@@ -618,28 +634,54 @@ of <a>player</a>, <var>player</var>, to
 <a title="player start time">start time</a>, <var>new start time</var>,
 is as follows:
 
-1.  If <var>player</var>'s <a>hold time</a> is
-    <a title="unresolved">resolved</a>
-    and there is a <a>timeline</a> associated with <var>player</var>
-    that is <em>not</em> <a title="inactive timeline">inactive</a>,
+1.  Let <var>timeline time</var> be the current <a>time value</a> of the
+    <a>timeline</a> that <var>player</var> is associated with.
+    If there is no <a>timeline</a> associated with <var>player</var> or the
+    associated timeline is <a title="inactive timeline">inactive</a>,
+    let the <var>timeline time</var> be <a>unresolved</a>.
 
-    1.  Let <var>effective start time</var> be the result of
-        evaluating <code><var>timeline time</var> - <a>hold time</a>
-        / <a title="player playback rate">playback rate</a></code>
-        where <var>timeline time</var> is the current <a>time value</a>
-        of the <a>timeline</a> associated with <var>player</var>.
-    2.  Let <var>start time offset</var> be <code><var>new start
-        time</var> &minus; <var>effective start time</var></code>.
-    3.  Set <var>player</var>'s <a>hold time</a> to
-        <code><a>hold time</a> + <var>start time offset</var></code>.
+1.  If <var>timeline time</var> is <a>unresolved</a> and <var>new start
+    time</var> is <a title="unresolved">resolved</a>, make <var>player</var>'s
+    <a>hold time</a> <a>unresolved</a>.
 
-2.  Unless <var>player</var> has a <a>pending pause task</a>,
-    set <var>player</var>'s <a title="player start time">start time</a>
-    to <var>new start time</var>.
-3.  If <var>player</var> has a <a>pending play task</a>, cancel the
-    task and fulfill <var>player</var>'s <a>current ready promise</a> with
-    <var>player</var>.
-4.  Run the procedure to <a>update a player's finished state</a>
+    <p class=annotation>
+      This preserves the invariant that when we don't have an active timeline it
+      is only possible to set <em>either</em> the <a>player start time</a>
+      <em>or</em> the player's <a>current time</a>.
+    </p>
+
+1.  Let <var>previous current time</var> be <var>player</var>'s <a>current
+    time</a>.
+
+    Note: This is the <a>current time</a> after applying the changes from the
+    previous step which may cause the <a>current time</a> to become
+    <a>unresolved</a>.
+
+1.  Set <var>player</var>'s <a title="player start time">start time</a> to
+    <var>new start time</var>.
+
+1.  Update <var>player</var>'s <a>hold time</a> based on the first matching
+    condition from the following,
+
+    <div class="switch">
+
+    :   If <var>new start time</var> is <a title="unresolved">resolved</a>,
+    ::  If <var>player</var>'s <a title="player playback rate">playback rate</a>
+        is not zero, make <var>player</var>'s <a>hold time</a>
+        <a>unresolved</a>.
+
+    :   Otherwise (<var>new start time</var> is <a>unresolved</a>),
+    ::  Set <var>player</var>'s <a>hold time</a> to <var>previous current
+        time</var> even if <var>previous current time</var> is
+        <a>unresolved</a>.
+
+    </div>
+
+1.  If <var>player</var> has a <a>pending play task</a> or
+    a <a>pending play task</a>, cancel that task and fulfill
+    <var>player</var>'s <a>current ready promise</a> with <var>player</var>.
+
+1.  Run the procedure to <a>update a player's finished state</a>
     for <var>player</var>.
 
 <h4 id='waiting-for-source-content'>Waiting for source content</h4>
@@ -749,8 +791,6 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
 
     <div class="switch">
 
-    :   If <var>player</var>'s <a>pause flag</a> is true,
-    ::  Set the <a>pause flag</a> to false.
     :   If <a>player playback rate</a> &gt; 0 and <em>either</em>
         <var>player</var>'s:
 
@@ -800,9 +840,14 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
         playback rate</a></code> for <var>player</var>.
         If the <a>player playback rate</a> is zero, let <var>new start
         time</var> be simply <var>ready time</var>.
-    3.  Make <var>player</var>'s <a>hold time</a> <a>unresolved</a>.
+    3.  If <var>player</var>'s <a title="player playback rate">playback rate</a>
+        is not 0, make <var>player</var>'s <a>hold time</a> <a>unresolved</a>.
     4.  <a>Update the player start time</a> of <var>player</var>
         to <var>new start time</var>.
+
+        Issue: Does this actually need to the use <a>update the player start
+        time</a> procedure or can we just set the start time directly?
+
     5.
 
         <div class="todo">Queue a task here for sampling custom effects.
@@ -834,9 +879,8 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
 
 <h4 id='pausing-a-player-section'>Pausing a player</h4>
 
-Players maintain a boolean <dfn>pause flag</dfn> to indicate a player
-whose current time is suspended.
-The <a>pause flag</a> is initially false.
+Whenever a <a>player</a> has an <a>unresolved</a> <a title="player start
+time">start time</a>, its <a>current time</a> will be suspended.
 
 As with <a title="play a player">playing a player</a>, pausing may not happen
 instantaneously (see <a href="#waiting-for-source-content" section></a>).
@@ -846,16 +890,18 @@ reflects the state drawn by the animation process.
 
 The procedure to <dfn>pause a player</dfn>, <var>player</var> is as follows:
 
-1.  If <var>player</var>'s <a>pause flag</a> is true or if <var>player</var>
-    has a <a>pending pause task</a>, abort these steps.
+1.  If <var>player</var> has a <a>pending pause task</a>, abort these steps.
 2.  Let <var>has pending ready promise</var> be a boolean flag that is
     initially false.
 3.  If <var>player</var> has a <a>pending play task</a>, cancel that task
     and let <var>has pending ready promise</var> be true.
-4.  Set <var>player</var>'s <a>pause flag</a> to true.
 6.  Set <var>player</var>'s <a>hold time</a> to <a>current time</a>.
 5.  Make <var>player</var>'s <a title="player start time">start time</a>
     <a>unresolved</a>.
+
+    Issue: It might be more consistent to actually leave the start time
+    resolved until the pause completes.
+
 7.  If <var>has pending ready promise</var> is false,
     set <var>player</var>'s <a>current ready promise</a> to a new
     pending Promise object.
@@ -975,9 +1021,12 @@ A player with a negative <a title="player playback rate">playback
 rate</a>, the <a>current time</a> continues to decrease until it
 reaches zero.
 
-A player that has reached this boundary (or overshot it) and whose
-<a>pause flag</a> is false is said to be <a
-title="finished play state">finished</a>.
+A player that has reached this boundary (or overshot it) and has a
+<a title="unresolved">resolved</a> <a>player start time</a>
+is said to be <a title="finished play state">finished</a>.
+(If the player has an <a>unresolved</a> <a>player start time</a> it is
+considered to be <a title="paused play state">paused</a> rather than
+<a title="finished play state">finished</a>.)
 
 The crossing of this boundary is checked on each modification to the
 player object using the procedure for <a>update a player's finished
@@ -997,8 +1046,15 @@ initially false.
 The procedure to <dfn>update a player's finished state</dfn> for
 <var>player</var> is as follows:
 
-*   Update <var>player</var>'s <a>hold time</a> based on the first matching
-    condition for <var>player</var> from below, if any:
+1.  If both of the following conditions are true,
+
+    *   <var>player</var>'s <a title="player start time">start time</a> is
+        <a title="unresolved">resolved</a>, and
+    *   <var>player</var> does <em>not</em> have a <a>pending play task</a> or
+        a <a>pending pause task</a>,
+
+    then update <var>player</var>'s <a>hold time</a> based on the first
+    matching condition for <var>player</var> from below, if any:
 
     <div class='switch'>
 
@@ -1014,26 +1070,26 @@ The procedure to <dfn>update a player's finished state</dfn> for
         <a>current time</a> is <a title="unresolved">resolved</a> and
         less than or equal to 0,
     ::  let the <a>hold time</a> be zero.
-    :   If <a>current time</a> is <a title="unresolved">resolved</a>
-        and <a>pause flag</a> is false,
+    :   If <a>current time</a> is <a title="unresolved">resolved</a>, and
+        <a>player playback rate</a> &ne; 0,
     ::  let the <a>hold time</a> be <a>unresolved</a>.
 
     </div>
 
-*   Let <var>current finished state</var> be true if the <a>play
+1.  Let <var>current finished state</var> be true if the <a>play
     state</a> of <var>player</var> is finished. Otherwise, let it be
     false.
-*   If <var>current finished state</var> is true and <a>previous
+1.  If <var>current finished state</var> is true and <a>previous
     finished state</a> is false,
     fulfill <var>player</var>'s <a>current finished promise</a> object
     with <var>player</var>.
-*   If <var>current finished state</var> is false and <a>previous
+1.  If <var>current finished state</var> is false and <a>previous
     finished state</a> is true,
     set <var>player</var>'s <a>current finished promise</a> to a new pending
     Promise object.
-*   Set <var>player</var>'s <a>previous finished state</a> to
+1.  Set <var>player</var>'s <a>previous finished state</a> to
     <var>current finished state</var>.
-*   Set the <a>previous current time</a> of <var>player</var> be the
+1.  Set the <a>previous current time</a> of <var>player</var> be the
     result of calculating its <a>current time</a>.
 
 <h4 id="finishing-a-player-section">Finishing a player</h4>
@@ -1074,15 +1130,6 @@ for <var>player</var> defined below:
     fulfill the <a>current ready promise</a> of <var>player</var> with
     <var>player</var>.
 
-5.  If <var>player</var> has an associated <a>timeline</a> that is
-    <em>not</em> <a title="inactive timeline">inactive</a>, update
-    <var>player</var>'s <a title="player start time">start time</a> to
-    the result of evaluating
-    <code><var>timeline time</var> - <var>limit</var> / <a>player
-    playback rate</a></code>
-    where <var>timeline time</var> is the current <a>time value</a>
-    of the associated <a>timeline</a>.
-
 6.  Run the procedure to <a>update a player's finished state</a>
     for <var>player</var>.
 
@@ -1109,7 +1156,6 @@ as follows:
 4.  Make <var>player</var>'s <a>hold time</a> <a>unresolved</a>.
 5.  Make <var>player</var>'s <a title="player start time">start time</a>
     <a>unresolved</a>.
-6.  Set <var>player</var>'s <a>pause flag</a> to false.
 7.  Queue a task to call any <a>custom effects</a> associated with
     <a>inclusive descendants</a> of <var>player</var>'s <a>source content</a>
     with an <a>unresolved</a> time fraction.
@@ -1181,9 +1227,8 @@ The procedure to <dfn>reverse a player</dfn> of <a>player</a>
 
 1.  If there is no <a>timeline</a> associated with <var>player</var>, or the
     associated <a>timeline</a> is <a title="inactive timeline">inactive</a>
-    <a href="http://dom.spec.whatwg.org/#concept-throw">throw</a> an "<a
-    href="http://dom.spec.whatwg.org/#invalidstateerror">InvalidStateError</a>"
-    and abort these steps.
+    <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> an
+    InvalidStateError and abort these steps.
 2.  <a>Silently update the player playback rate</a> of
     <var>player</var> to <code>&minus;<a>player playback rate</a></code>.
 
@@ -1201,6 +1246,7 @@ A <a>player</a> may be described as being in one of the following
 <dfn title="play state">play states</dfn> for each of which, a 
 non-normative description is also provided:
 
+<div class=informative-bg>
 
 :   <dfn title="idle play state">idle</dfn>
 ::  The <a>current time</a> of the player is <a>unresolved</a> and
@@ -1218,6 +1264,7 @@ non-normative description is also provided:
 ::  The player has reached the natural boundary of its playback range
     and the <a>current time</a> is no longer updating.
 
+</div>
 
 The <a>play state</a> of <a>player</a>, <var>player</var>, at a given
 moment is the state corresponding to the <em>first</em> matching
@@ -1231,11 +1278,12 @@ condition from the following:
 :   The <a>current time</a> of <var>player</var> is
     <a>unresolved</a>,
 ::  &rarr; <a title="idle play state">idle</a>
-:   The <a>pause flag</a> of <var>player</var> is true,
+:   The <a title="player start time">start time</a> of <var>player</var> is
+    <a>unresolved</a>,
 ::  &rarr; <a title="paused play state">paused</a>
 :   For <var>player</var>,
     <a>player playback rate</a> &gt; 0 and
-    <a>current time</a> &ge; <a>source content end</a>; or
+    <a>current time</a> &ge; <a>source content end</a>; or<br>
     <a>player playback rate</a> &lt; 0 and
     <a>current time</a> &le; 0,
 ::  &rarr; <a title="finished play state">finished</a>
@@ -1249,11 +1297,10 @@ condition from the following:
 Note that the <a>paused play state</a> effectively
 &ldquo;wins&rdquo; over the <a>finished play state</a>.
 
-However, the procedure to <a>play a player</a> is defined such that
-a player that is paused outside of its natural playback range can
+However, a player that is paused outside of its natural playback range can
 be converted from a <a title="paused play state">paused</a>
 player into a <a title="finished play state">finished</a> player
-without restarting as shown below.
+without restarting by setting the <a>player start time</a> such as below:
 
 <pre class='example sh_javascript'>
 player.source.timing.duration = 5000;
@@ -1261,13 +1308,10 @@ player.currentTime = 4000;
 player.pause();
 player.ready.then(function() {
   player.source.timing.duration = 3000;
-  // Displays 'paused'
-  alert(player.playState);
-  player.play();
-  return player.ready;
-}).then(function() {
-  // Displays 'finished'
-  alert(player.playState);
+  alert(player.playState); // Displays 'paused'
+  player.startTime =
+    document.timeline.currentTime - player.currentTime * player.playbackRate;
+  alert(player.playState); // Displays 'finished'
 });
 </pre>
 
