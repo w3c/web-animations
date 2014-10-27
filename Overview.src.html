@@ -475,10 +475,11 @@ is as follows:
 
 1.  If <var>player</var> has a <a>pending play task</a>, cancel that task.
 2.  If <var>player</var> has a <a>pending pause task</a>, cancel that task.
-3.  Reject <var>player</var>'s <a>current ready promise</a> with a DOMException
-    named "AbortError".
-4.  Let <var>player</var>'s <a>current ready promise</a> be a new resolved
-    Promise object.
+3.  <a title="reject a Promise">Reject</a> <var>player</var>'s <a>current ready
+    promise</a> with a DOMException named "AbortError".
+4.  Let <var>player</var>'s <a>current ready promise</a> be the result of
+    <a title="create a new resolved Promise">creating a new resolved Promise
+    object</a>.
 
 <h4 id="setting-the-source-content">Setting the source content of a
   player</h4>
@@ -606,8 +607,8 @@ The procedure to <dfn>set the current time</dfn> of a player,
 1.  Run the steps to <a>silently set the current time</a> of
     <var>player</var> to <var>seek time</var>.
 2.  If <var>player</var> has a <a>pending pause task</a>, cancel the
-    task and fulfill <var>player</var>'s <a>current ready promise</a>
-    with <var>player</var>.
+    task and <a title="resolve a Promise">resolve</a> <var>player</var>'s
+    <a>current ready promise</a> with <var>player</var>.
 3.  Run the procedure to <a>update a player's finished state</a>
     for <var>player</var>.
 
@@ -637,8 +638,8 @@ is as follows:
     set <var>player</var>'s <a title="player start time">start time</a>
     to <var>new start time</var>.
 3.  If <var>player</var> has a <a>pending play task</a>, cancel the
-    task and fulfill <var>player</var>'s <a>current ready promise</a> with
-    <var>player</var>.
+    task and <a title="resolve a Promise">resolve</a> <var>player</var>'s
+    <a>current ready promise</a> with <var>player</var>.
 4.  Run the procedure to <a>update a player's finished state</a>
     for <var>player</var>.
 
@@ -682,13 +683,35 @@ following conditions are true:
 *   the player is associated with a <a>timeline</a> that is not
     <a title="inactive timeline">inactive</a>.
 
+<h4 id='promise-objects'>Promise objects</h4>
+
+<dfn>Promise</dfn> objects are defined by [[!ECMA-262]], <a
+  href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">section
+  25.4</a>.
+
+To <dfn>resolve a Promise</dfn> with <var>value</var>, 
+call the \[[Call]] internal method of \[[Resolve]] on the <a
+  href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promisecapability-records">Promise
+capability</a> record for the promise, passing <code>undefined</code> as
+<var>thisArgument</var> and (<var>value</var>) as <var>argumentsList</var>.
+
+To <dfn>reject a Promise</dfn> with <var>reason</var>, 
+call the \[[Call]] internal method of \[[Reject]] on the <a
+  href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promisecapability-records">Promise
+capability</a> record for the promise, passing <code>undefined</code> as
+<var>thisArgument</var> and (<var>reason</var>) as <var>argumentsList</var>.
+
+To <dfn>create a new resolved Promise</dfn> with <var>value</var>, call <a
+  href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve">Promise.resolve</a>,
+passing <var>value</var> as <var>x</var>.
+
 <h4 id='the-current-ready-promise'>The current ready promise</h4>
 
 Each <a>player</a> has a <dfn>current ready promise</dfn>.
-The <a>current ready promise</a> is initially a resolved Promise
-object.
+The <a>current ready promise</a> is initially a resolved <a>Promise</a> created
+using the procedure to <a>create a new resolved Promise</a>.
 
-The object is replaced with a new Promise object every time the player
+The object is replaced with a new <a>Promise</a> object every time the player
 enters the <a>pending play state</a> as well as when the player is
 cancelled (see <a href="#cancelling-a-player-section" section></a>).
 
@@ -696,7 +719,7 @@ cancelled (see <a href="#cancelling-a-player-section" section></a>).
 
     Note that since the same object is used for both pending play and
     pending pause requests, authors are advised to check the state of the
-    player when the Promise is resolved.
+    player when the <a>Promise</a> is resolved.
 
     For example, in the following code fragment, the state of the player
     will be <a title="running play state">running</a> when the
@@ -777,8 +800,8 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
     following steps:
 
     1.  If <var>has pending ready promise</var> is true,
-        fulfill <var>player</var>'s <a>current ready promise</a> with
-        <var>player</var>.
+        <a title="resolve a Promise">resolve</a> <var>player</var>'s <a>current
+        ready promise</a> with <var>player</var>.
 
     2.  Abort this procedure.
 
@@ -787,7 +810,7 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
 
 7.  If <var>has pending ready promise</var> is false,
     let <var>player</var>'s <a>current ready promise</a> be a new
-    pending Promise object.
+    (pending) <a>Promise</a> object.
 
 8.  Schedule a task to run as soon as <var>player</var> is <a>ready</a>.
     The task shall perform the following steps:
@@ -809,8 +832,8 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
         (This should happen before we resolve the ready promise.)
         </div>
 
-    6.  Fulfill <var>player</var>'s <a>current ready promise</a> with
-        <var>player</var>.
+    6.  <a title="resolve a Promise">Resolve</a> <var>player</var>'s <a>current
+        ready promise</a> with <var>player</var>.
     7.  Run the procedure to <a>update a player's finished state</a>
         for <var>player</var>.
 
@@ -858,7 +881,7 @@ The procedure to <dfn>pause a player</dfn>, <var>player</var> is as follows:
     <a>unresolved</a>.
 7.  If <var>has pending ready promise</var> is false,
     set <var>player</var>'s <a>current ready promise</a> to a new
-    pending Promise object.
+    (pending) <a>Promise</a> object.
 8.  Schedule a task to be executed at the first possible moment after
     the user agent has performed any processing necessary to suspend
     the playback of any animations that are <a>inclusive
@@ -884,8 +907,8 @@ The procedure to <dfn>pause a player</dfn>, <var>player</var> is as follows:
             resolve the ready promise).
         </div>
 
-    3.  Fulfill <var>player</var>'s <a>current ready promise</a> with
-        <var>player</var>.
+    3.  <a title="resolve a Promise">Resolve</a> <var>player</var>'s <a>current
+        ready promise</a> with <var>player</var>.
     4.  Run the procedure to <a>update a player's finished state</a>
         for <var>player</var>.
 
@@ -954,11 +977,11 @@ Similarly, when the <a>player playback rate</a> is negative, the
 <h4 id="the-current-finished-promise">The current finished promise</h4>
 
 Each player has a <dfn>current finished promise</dfn>.
-The <a>current finished promise</a> is initially a pending Promise
+The <a>current finished promise</a> is initially a pending <a>Promise</a>
 object.
 
-The object is replaced with a new Promise object every time the player
-leaves the <a>finished play state</a>.
+The object is replaced with a new (pending) <a>Promise</a> object every time the
+player leaves the <a>finished play state</a>.
 
 <h4 id="updating-the-finished-state">Updating the finished state</h4>
 
@@ -1025,12 +1048,12 @@ The procedure to <dfn>update a player's finished state</dfn> for
     false.
 *   If <var>current finished state</var> is true and <a>previous
     finished state</a> is false,
-    fulfill <var>player</var>'s <a>current finished promise</a> object
-    with <var>player</var>.
+    <a title="resolve a promise">resolve</a> <var>player</var>'s <a>current
+    finished promise</a> object with <var>player</var>.
 *   If <var>current finished state</var> is false and <a>previous
     finished state</a> is true,
-    set <var>player</var>'s <a>current finished promise</a> to a new pending
-    Promise object.
+    set <var>player</var>'s <a>current finished promise</a> to a new (pending)
+    <a>Promise</a> object.
 *   Set <var>player</var>'s <a>previous finished state</a> to
     <var>current finished state</var>.
 *   Set the <a>previous current time</a> of <var>player</var> be the
@@ -1071,8 +1094,8 @@ for <var>player</var> defined below:
     </div>
 
 4.  If there is a <a>pending play task</a>, cancel that task and
-    fulfill the <a>current ready promise</a> of <var>player</var> with
-    <var>player</var>.
+    <a title="resolve a Promise">resolve</a> the <a>current ready promise</a> of
+    <var>player</var> with <var>player</var>.
 
 5.  If <var>player</var> has an associated <a>timeline</a> that is
     <em>not</em> <a title="inactive timeline">inactive</a>, update
@@ -1102,10 +1125,10 @@ as follows:
 
 1.  Run the procedure to <a>reset a player's pending tasks</a> on
     <var>player</var>.
-2.  Reject the <a>current finished promise</a> with a DOMException
-      named "AbortError".
-3.  Let <a>current finished promise</a> be a new pending Promise
-      object.
+2.  <a title="reject a Promise">Reject</a> the <a>current finished promise</a>
+    with a DOMException named "AbortError".
+3.  Let <a>current finished promise</a> be a new (pending) <a>Promise</a>
+    object.
 4.  Make <var>player</var>'s <a>hold time</a> <a>unresolved</a>.
 5.  Make <var>player</var>'s <a title="player start time">start time</a>
     <a>unresolved</a>.
@@ -1188,7 +1211,7 @@ The procedure to <dfn>reverse a player</dfn> of <a>player</a>
     <var>player</var> to <code>&minus;<a>player playback rate</a></code>.
 
     <div class="annotation">
-        This must be done silently or else we may end up fulfilling
+        This must be done silently or else we may end up resolving
         the <a>current ready promise</a> when we do the compensatory
         seek despite the fact that we are most likely not exiting the
         <a>pending play state</a>.
@@ -6776,7 +6799,7 @@ is as follows:
     CSS property, replace "float" in
     <var>supported properties</var> with "cssFloat".
 5.  Let <var>animation properties</var> be an empty sequence.
-6.  Use the internal [&zwnj;[Enumerate]] operation on <var>keyframe
+6.  Use the internal \[[Enumerate]] operation on <var>keyframe
     input</var> to iterate over its properties.
     For each <var>property</var> perform the step corresponding to
     the first matching condition from below, if any.
@@ -6789,7 +6812,7 @@ is as follows:
         result</var> to the result of applying the <a
         href="http://www.w3.org/TR/WebIDL/#es-double">procedure for
         converting an ECMAScript value into an IDL double</a>
-        [[!WEBIDL]] to the result of calling the [&zwnj;[Get]]
+        [[!WEBIDL]] to the result of calling the \[[Get]]
         internal method on <var>keyframe input</var> with property
         name "offset".
 
@@ -6802,7 +6825,7 @@ is as follows:
         DOMString value</a> [[!WEBIDL]] with the <a
         href="http://www.w3.org/TR/WebIDL/#TreatNullAs">[TreatNullAs=EmptyString]</a>
         annotation in effect, to the result of calling
-        the [&zwnj;[Get]] internal method of <var>keyframe
+        the \[[Get]] internal method of <var>keyframe
         input</var> with property name "easing".
 
         If the resulting string does not conform to the
@@ -6820,7 +6843,7 @@ is as follows:
         procedure for converting an ECMAScript value to an IDL
         enumeration type</a> [[!WEBIDL]] with
         <a>CompositeOperation</a> as the enumeration type, to
-        the result of calling the [&zwnj;[Get]] internal method on
+        the result of calling the \[[Get]] internal method on
         <var>keyframe input</var> with property name "composite".
 
     :   Otherwise, if <var>property</var> also exists in
@@ -6855,9 +6878,9 @@ is as follows:
         which case use the string "float".
     *   <em>member value</em>: the result of calling
         <code>ToString</code> on the value returned from the
-        [&zwnj;[Get]] method of <var>keyframe input</var> with property
+        \[[Get]] method of <var>keyframe input</var> with property
         name, <var>name</var>.
-        If [&zwnj;[Get]] returns null or undefined, let the member
+        If \[[Get]] returns null or undefined, let the member
         value be an empty string.
 
 10. Return <var>keyframe result</var>.
