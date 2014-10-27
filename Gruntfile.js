@@ -24,7 +24,7 @@ module.exports = function(grunt) {
     options: {
       livereload: true,
     },
-    files: [ 'Overview.src.html', 'biblio.json' ],
+    files: [ 'Overview.src.html', 'footer.include', 'biblio.json' ],
     tasks: 'default'
   });
 
