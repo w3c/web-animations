@@ -17,7 +17,7 @@
 </p>
   <h1 class="p-name no-ref" id=title>Web Animations</h1>
   <h2 class="no-num no-toc no-ref heading settled" id=subtitle><span class=content>Editor’s Draft,
-    <span class=dt-updated><span class=value-title title=20141027>27 October 2014</span></span></span></h2>
+    <span class=dt-updated><span class=value-title title=20141029>29 October 2014</span></span></span></h2>
   <div data-fill-with=spec-metadata><dl><dt>This version:<dd><a class=u-url href=http://w3c.github.io/web-animations/>http://w3c.github.io/web-animations/</a><dt>Latest version:<dd><a href=http://www.w3.org/TR/web-animations/>http://www.w3.org/TR/web-animations/</a><dt>Previous Versions:<dd><a href=http://www.w3.org/TR/2014/WD-web-animations-20140605/ rel=previous>http://www.w3.org/TR/2014/WD-web-animations-20140605/</a><dd><a href=http://www.w3.org/TR/2013/WD-web-animations-20130625/ rel=previous>http://www.w3.org/TR/2013/WD-web-animations-20130625/</a><dt>Version History:<dd><a href=https://github.com/w3c/web-animations/commits/master>https://github.com/w3c/web-animations/commits/master</a><dt>Feedback:<dd><span><a href="mailto:public-fx@w3.org?subject=[web-animations] feedback">public-fx@w3.org</a> with subject line “<kbd>[web-animations] <var>… message topic …</var></kbd>” (<a href=http://lists.w3.org/Archives/Public/public-fx/ rel=discussion>archives</a>)</span><dt>Editors:<dd><div class="p-author h-card vcard"><a class="p-name fn u-email email" href=mailto:bbirtles@mozilla.com>Brian Birtles</a> (<span class="p-org org">Mozilla Japan</span>)</div><dd><div class="p-author h-card vcard"><a class="p-name fn u-email email" href=mailto:shans@google.com>Shane Stephens</a> (<span class="p-org org">Google Inc</span>)</div><dd><div class="p-author h-card vcard"><a class="p-name fn u-email email" href=mailto:adanilo@google.com>Alex Danilo</a> (<span class="p-org org">Google Inc</span>)</div><dd><div class="p-author h-card vcard"><a class="p-name fn u-email email" href=mailto:jackalmage@gmail.com>Tab Atkins</a> (<span class="p-org org">Google Inc</span>)</div></dl></div>
   <div data-fill-with=warning></div>
   <p class=copyright data-fill-with=copyright><a href=http://www.w3.org/Consortium/Legal/ipr-notice#Copyright>Copyright</a> © 2014 <a href=http://www.w3.org/><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>®</sup> (<a href=http://www.csail.mit.edu/><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>, <a href=http://www.ercim.eu/><abbr title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>, <a href=http://www.keio.ac.jp/>Keio</a>, <a href=http://ev.buaa.edu.cn/>Beihang</a>), All Rights Reserved. W3C <a href=http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer>liability</a>, <a href=http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks>trademark</a> and <a href=http://www.w3.org/Consortium/Legal/copyright-documents>document use</a> rules apply.
@@ -3132,8 +3132,6 @@ operation and <var>V</var><sub>b</sub> represents the second.</p>
 <p>For many types of animation such as numbers or lengths, <a data-link-type=dfn href=#animation-accumulation title="animation accumulation">accumulation</a> is defined to
 be identical to <a data-link-type=dfn href=#animation-addition title="animation addition">addition</a>.</p>
 
-</div>
-
 <p>A common case where the definitions differ is for list-based
 types where <a data-link-type=dfn href=#animation-addition title="animation addition">addition</a> may be
 defined as appending to a list
@@ -3144,6 +3142,8 @@ For example, the filter list values "blur(2)" and
 together may produce "blur(2) blur(3)", but when
 <a data-link-type=dfn href=#animation-accumulation title="animation accumulation">accumulated</a>,
 may produce "blur(5)".</p>
+
+</div>
 
 <li data-md=""><p><dfn data-dfn-type=dfn data-noexport="" id=distance-computation>distance computation<a class=self-link href=#distance-computation></a></dfn> — given two target property
 values <var>V</var><sub>start</sub> and
@@ -3257,14 +3257,14 @@ number<a class=self-link href=#animatable-as-real-number></a></dfn> has the foll
 
 <ul><li data-md=""><p><a data-link-type=dfn href=#animation-interpolation title="animation interpolation">interpolation</a>:
 <var>V</var><sub>res</sub> =
-  (1 - <var>p</var>) × <var>V</var><sub>start</sub></p>
-<ul><li data-md=""><p><var>p</var> × <var>V</var><sub>end</sub></p>
-</ul><li data-md=""><p><a data-link-type=dfn href=#animation-addition title="animation addition">addition</a>:
+  (1 - <var>p</var>) × <var>V</var><sub>start</sub> +
+  <var>p</var> × <var>V</var><sub>end</sub></p>
+<li data-md=""><p><a data-link-type=dfn href=#animation-addition title="animation addition">addition</a>:
   <var>V</var><sub>a</sub> + <var>V</var><sub>b</sub></p>
 <li data-md=""><p><a data-link-type=dfn href=#distance-computation title="distance computation">distance computation</a>:
-<var>distance</var> = |<var>V</var><sub>end</sub></p>
-<ul><li data-md=""><p><var>V</var><sub>start</sub>|</p>
-</ul></ul>
+<var>distance</var> =
+  |<var>V</var><sub>end</sub> - <var>V</var><sub>start</sub>|</p>
+</ul>
 <h5 class="heading settled" data-level=4.1.3.4 id=animatable-as-length-percentage-or-calc-section><span class=secno>4.1.3.4. </span><span class=content>Animatable as length, percentage, or calc</span><a class=self-link href=#animatable-as-length-percentage-or-calc-section></a></h5>
 
 <p>A <a data-link-type=dfn href=#target-property title="target property">target property</a> that is <dfn data-dfn-type=dfn data-noexport="" id=animatable-as-length-percentage-or-calc>animatable as length,
