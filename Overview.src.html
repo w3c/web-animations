@@ -856,6 +856,11 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
 8.  Schedule a task to run as soon as <var>player</var> is <a>ready</a>.
     The task shall perform the following steps:
 
+    1.  <a>Assert</a> that <a>hold time</a> is <a
+        title="unresolved">resolved</a>. (This is because we don't queue this
+        task if <a>hold time</a> is <a>unresolved</a> and anything that causes
+        it to become <a>unresolved</a> while this task is queued, should cancel
+        this task.)
     1.  Let <var>ready time</var> be the <a>time value</a> of
         the <a>timeline</a> associated with <var>player</var> at the moment
         when <var>player</var> became <a>ready</a>.
@@ -866,12 +871,8 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
         time</var> be simply <var>ready time</var>.
     3.  If <var>player</var>'s <a title="player playback rate">playback rate</a>
         is not 0, make <var>player</var>'s <a>hold time</a> <a>unresolved</a>.
-    4.  <a>Update the player start time</a> of <var>player</var>
+    4.  Set the <a>player start time</a> of <var>player</var>
         to <var>new start time</var>.
-
-        Issue: Does this actually need to the use <a>update the player start
-        time</a> procedure or can we just set the start time directly?
-
     5.
 
         <div class="todo">Queue a task here for sampling custom effects.
@@ -1296,7 +1297,7 @@ condition from the following:
 <div class="switch">
 
 :   <var>player</var> has a <a>pending play task</a> or a
-    <var>pending pause task</var>,
+    <a>pending pause task</a>,
 ::  &rarr; <a title="pending play state">pending</a>
 :   The <a>current time</a> of <var>player</var> is
     <a>unresolved</a>,
