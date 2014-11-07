@@ -916,48 +916,35 @@ reflects the state drawn by the animation process.
 The procedure to <dfn>pause a player</dfn>, <var>player</var> is as follows:
 
 1.  If <var>player</var> has a <a>pending pause task</a>, abort these steps.
-2.  Let <var>has pending ready promise</var> be a boolean flag that is
+1.  Let <var>has pending ready promise</var> be a boolean flag that is
     initially false.
-3.  If <var>player</var> has a <a>pending play task</a>, cancel that task
+1.  If <var>player</var> has a <a>pending play task</a>, cancel that task
     and let <var>has pending ready promise</var> be true.
-6.  Set <var>player</var>'s <a>hold time</a> to <a>current time</a>.
-5.  Make <var>player</var>'s <a title="player start time">start time</a>
-    <a>unresolved</a>.
-
-    Issue: It might be more consistent to actually leave the start time
-    resolved until the pause completes.
-
-7.  If <var>has pending ready promise</var> is false,
+1.  Set <var>player</var>'s <a>hold time</a> to <a>current time</a>.
+1.  If <var>has pending ready promise</var> is false,
     set <var>player</var>'s <a>current ready promise</a> to a new
     (pending) <a>Promise</a> object.
-8.  Schedule a task to be executed at the first possible moment after
+1.  Schedule a task to be executed at the first possible moment after
     the user agent has performed any processing necessary to suspend
     the playback of any animations that are <a>inclusive
     descendants</a> of <var>player</var>'s <a>source content</a>, if any.
     The task shall perform the following steps:
 
-    1.  Set <var>player</var>'s <a>hold time</a> to the <a>time value</a>
-        corresponding to the value of <var>player</var>'s <a>current time</a>
-        used at the moment when the pause operation was completed,
-        even if that value was <a>unresolved</a>.
+    1.  Set <var>player</var>'s <a>hold time</a> to its <a>current time</a>
+        (even if the current time is <a>unresolved</a>).
+    1.  Make <var>player</var>'s <a title="player start time">start time</a>
+        unresolved.
 
-        Note: since <var>player</var>'s
-            <a title="player start time">start time</a> and
-            <a>hold time</a> are set to <a>unresolved</a> earlier in this
-            procedure, user agents will be required to maintain
-            additional state in order to determine the appropriate
-            value of the <a>current time</a>.
-
-    2.
+    1.
 
         <div class="todo">Queue a task here for sampling custom effects
             with the final current time.  (This should happen before we
             resolve the ready promise).
         </div>
 
-    3.  <a title="resolve a Promise">Resolve</a> <var>player</var>'s <a>current
+    1.  <a title="resolve a Promise">Resolve</a> <var>player</var>'s <a>current
         ready promise</a> with <var>player</var>.
-    4.  Run the procedure to <a>update a player's finished state</a>
+    1.  Run the procedure to <a>update a player's finished state</a>
         for <var>player</var>.
 
     So long as the above task is scheduled but has yet to run,
@@ -965,7 +952,7 @@ The procedure to <dfn>pause a player</dfn>, <var>player</var> is as follows:
     While the task is running, however, <var>player</var> does
     <em>not</em> have a <a>pending pause task</a>.
 
-9.  Run the procedure to <a>update a player's finished state</a>
+1.  Run the procedure to <a>update a player's finished state</a>
     for <var>player</var>.
 
 <h4 id="reaching-the-end">Reaching the end</h4>
