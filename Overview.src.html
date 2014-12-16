@@ -4753,7 +4753,12 @@ interface AnimationNode {
 
     Although several of the attributes of the this object are common
     to the {{AnimationTiming}} object returned by the {{AnimationNode/timing}}
-    attribute, they have the following differences:
+    attribute, the values of this object represent the values <em>after</em>
+    applying the adjustments described by the {{AnimationTiming}} interface as
+    being <cite>&ldquo;for the purpose of timing model
+    calculations&rdquo;</cite>.
+
+    <code>auto</code> values are also expanded as follows:
 
     *   <code>duration</code> &ndash; returns the calculated value of
         the <a>iteration duration</a>. If <code>timing.duration</code>
@@ -4764,8 +4769,6 @@ interface AnimationNode {
         replaced with the specific <a enum>FillMode</a> depending on the type
         of <a>animation node</a> (see <a
         href="#the-fillmode-enumeration" section></a>).
-    *   <code>easing</code> &ndash; unrecognised or unsupported values
-        are replaced with the string <code>linear</code>.
 
 :   <dfn attribute for=AnimationNode>parent</dfn>
 ::  The <a>parent animation group</a> of this <a>animation node</a> or
@@ -4982,31 +4985,31 @@ interface AnimationTiming : AnimationTimingReadOnly {
 <div class='attributes'>
 
 :   <dfn attribute for=AnimationTiming>delay</dfn>
-::  See the <code>delay</code> member of the {{AnimationTimingReadOnly}}
-    interface.
+::  See the {{AnimationTimingReadOnly/delay}} attribute of the
+    {{AnimationTimingReadOnly}} interface.
 :   <dfn attribute for=AnimationTiming>endDelay</dfn>
-::  See the <code>endDelay</code> member of the {{AnimationTimingReadOnly}}
-    interface.
+::  See the {{AnimationTimingReadOnly/endDelay}} attribute of the
+    {{AnimationTimingReadOnly}} interface.
 :   <dfn attribute for=AnimationTiming>fill</dfn>
-::  See the <code>fill</code> member of the {{AnimationTimingReadOnly}}
-    interface.
+::  See the {{AnimationTimingReadOnly/fill}} attribute of the
+    {{AnimationTimingReadOnly}} interface.
 :   <dfn attribute for=AnimationTiming>iterationStart</dfn>
-::  See the <code>iterationStart</code> member of the
+::  See the {{AnimationTimingReadOnly/iterationStart}} attribute of the
     {{AnimationTimingReadOnly}} interface.
 
     Values less than zero are clamped to zero for the purpose of timing model
     calculations.
 
     <div class="note">
-    Note that the value of <code>iterations</code> is effectively
-    <em>added</em> to the <code>iterationStart</code> such that
-    an animation node with an <code>iterationStart</code> of
-    &lsquo;0.5&rsquo; and <code>iterations</code> of
+    Note that the value of {{AnimationTiming/iterations}} is effectively
+    <em>added</em> to the {{AnimationTiming/iterationStart}} such that
+    an animation node with an {{AnimationTiming/iterationStart}} of
+    &lsquo;0.5&rsquo; and {{AnimationTiming/iterations}} of
     &lsquo;2&rsquo; would still repeat twice however it would begin
     and end half-way through the animation node's <a>iteration
     interval</a>.
 
-    Setting the <code>iterationStart</code> to a value greater than
+    Setting the {{AnimationTiming/iterationStart}} to a value greater than
     or equal to one is typically only useful in combination with an
     animation effect that has an <a>iteration composite
     operation</a> of &lsquo;accumulate&rsquo;.
@@ -5014,28 +5017,28 @@ interface AnimationTiming : AnimationTimingReadOnly {
 
 
 :   <dfn attribute for=AnimationTiming>iterations</dfn>
-::  See the <code>iterations</code> member of the
+::  See the {{AnimationTimingReadOnly/iterations}} attribute of the
     {{AnimationTimingReadOnly}} interface.
 
     Values less than zero and <code>NaN</code> values are treated as
     the value 1.0 for the purpose of timing model calculations.
 :   <dfn attribute for=AnimationTiming>duration</dfn>
-::  See the <code>duration</code> member of the {{AnimationTimingReadOnly}}
-    interface.
+::  See the {{AnimationTimingReadOnly/duration}} attribute of the
+    {{AnimationTimingReadOnly}} interface.
 
     Real numbers less than zero, <code>NaN</code> values, and strings
     other than the lowercase value <code>auto</code> are treated
     the same as <code>auto</code> for the purpose of timing model
     calculations.
 :   <dfn attribute for=AnimationTiming>playbackRate</dfn>
-::  See the <code>playbackRate</code> member of the
+::  See the {{AnimationTimingReadOnly/playbackRate}} attribute of the
     {{AnimationTimingReadOnly}} interface.
 :   <dfn attribute for=AnimationTiming>direction</dfn>
-::  See the <code>direction</code> member of the
+::  See the {{AnimationTimingReadOnly/direction}} attribute of the
     {{AnimationTimingReadOnly}} interface.
 :   <dfn attribute for=AnimationTiming>easing</dfn>
-::  See the <code>easing</code> member of the {{AnimationTimingReadOnly}}
-    interface.
+::  See the {{AnimationTimingReadOnly/easing}} attribute of the
+    {{AnimationTimingReadOnly}} interface.
 
     Unrecognized string values or values that correspond to
     a <a>timing function</a> that is not supported for the type of
@@ -5135,13 +5138,13 @@ dictionary AnimationTimingProperties {
 :   <dfn dict-member for=AnimationTimingProperties>delay</dfn>
 ::  The specified <a>start delay</a>.
 
-    See the description of the <code>delay</code> attribute on
+    See the {{AnimationTiming/delay}} attribute of
     the {{AnimationTiming}} interface.
 
 :   <dfn dict-member for=AnimationTimingProperties>endDelay</dfn>
 ::  The specified <a>end delay</a>.
 
-    See the description of the <code>endDelay</code> attribute on
+    See the {{AnimationTiming/endDelay}} attribute of
     the {{AnimationTiming}} interface.
 
 :   <dfn dict-member for=AnimationTimingProperties>fill</dfn>
@@ -5151,40 +5154,40 @@ dictionary AnimationTimingProperties {
 :   <dfn dict-member for=AnimationTimingProperties>iterationStart</dfn>
 ::  The <a>animation node</a>'s <a>iteration start</a> property.
 
-    See the description of the <code>iterationStart</code> attribute
-    on the {{AnimationTiming}} interface.
+    See the {{AnimationTiming/iterationStart}} attribute
+    of the {{AnimationTiming}} interface.
 
 :   <dfn dict-member for=AnimationTimingProperties>iterations</dfn>
 ::  The <a>animation node</a>'s <a>iteration count</a> property.
 
-    See the description of the <code>iterations</code> attribute
-    on the {{AnimationTiming}} interface.
+    See the {{AnimationTiming/iterations}} attribute
+    of the {{AnimationTiming}} interface.
 
 :   <dfn dict-member for=AnimationTimingProperties>duration</dfn>
 ::  The <a>iteration duration</a> of the <a>animation node</a>.
 
-    See the description of the <code>duration</code>
-    attribute on the {{AnimationTiming}} interface.
+    See the {{AnimationTiming/duration}}
+    attribute of the {{AnimationTiming}} interface.
 
 :   <dfn dict-member for=AnimationTimingProperties>playbackRate</dfn>
 ::  The <a>animation node</a>'s <a
     title="animation node playback rate">playback rate</a> property.
 
-    See the description of the <code>playbackRate</code> attribute
-    on the {{AnimationTiming}} interface.
+    See the {{AnimationTiming/playbackRate}} attribute
+    of the {{AnimationTiming}} interface.
 
 :   <dfn dict-member for=AnimationTimingProperties>direction</dfn>
 ::  The <a>playback direction</a> of the <a>animation node</a>.
 
-    See the description of the <code>direction</code> attribute
-    on the {{AnimationTiming}} interface.
+    See the {{AnimationTiming/direction}} attribute
+    of the {{AnimationTiming}} interface.
 
 :   <dfn dict-member for=AnimationTimingProperties>easing</dfn>
 ::  The <a>timing function</a> used to scale the time to produce
     easing effects.
 
-    See the description of the <code>easing</code> attribute
-    on the {{AnimationTiming}} interface.
+    See the {{AnimationTiming/easing}} attribute
+    of the {{AnimationTiming}} interface.
 
 </div>
 
@@ -6157,7 +6160,7 @@ constructor by providing a {{KeyframeEffectOptions}} object.
 ::  The <a title="keyframe spacing mode">spacing mode</a> to apply
     to this <a>animation effect</a>'s <a>keyframes</a>.
 
-    See the description of the <code>spacing</code> attribute of the
+    See the {{KeyframeEffect/spacing}} attribute of the
     <a>KeyframeEffect</a> interface for the recognized values and
     their meaning are described
 
