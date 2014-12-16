@@ -494,23 +494,28 @@ The procedure to <dfn>set the source content of a player</dfn>,
 
 1.  Let <var>old content</var> be the current <a>source content</a> of
     <var>player</var>, if any.
-2.  If <var>new content</var> is the same object as <var>old content</var>,
+1.  If <var>new content</var> is the same object as <var>old content</var>,
     abort this procedure.
-3.  If <var>new content</var> is null and <var>old content</var> is not null,
+1.  If <var>new content</var> is null and <var>old content</var> is not null,
     run the procedure to <a>reset a player's pending tasks</a> on
     <var>player</var>.
-4.  If <var>player</var> has a <a>pending pause task</a>, reschedule that task
+1.  If <var>player</var> has a <a>pending pause task</a>, reschedule that task
     to run as soon as <var>player</var> is <a>ready</a>.
-5.  If <var>player</var> has a <a>pending play task</a>, reschedule that task
+1.  If <var>player</var> has a <a>pending play task</a>, reschedule that task
     to run as soon as <var>player</var> is <a>ready</a> to play <var>new
     content</var>.
-6.  If <var>new content</var> is not <code>null</code> and
+1.  If <var>new content</var> is not <code>null</code> and
     if <var>new content</var> has a <a>parent animation group</a>,
     <a title="remove an animation node">remove</a> <var>new content</var> from
     its <a>parent animation group</a>.
-7.  Let the <a>source content</a> of <var>player</var> be <var>new
+1.  If <var>new content</var> is not <code>null</code> and
+    if <var>new content</var> is the <a>source content</a> of another
+    <a>player</a>, <var>previous player</var>, run the procedure to <a>set the
+    source content of a player</a> (this procedure) on <var>previous
+    player</var> passing null as <var>new content</var>.
+1.  Let the <a>source content</a> of <var>player</var> be <var>new
     content</var>.
-8.  If <var>old content</var> is not <code>null</code>, queue a task to call any
+1.  If <var>old content</var> is not <code>null</code>, queue a task to call any
     <a>custom effects</a> associated with <a>inclusive descendants</a> of
     <var>old content</var> with an <a>unresolved</a> <a>time fraction</a>.
     <div class="issue">
@@ -521,7 +526,7 @@ The procedure to <dfn>set the source content of a player</dfn>,
       The definition of when <a>custom effects</a> gets called needs to be
       audited and probably rewritten.
     </div>
-9.  Run the procedure to <a>update a player's finished state</a> for
+1.  Run the procedure to <a>update a player's finished state</a> for
     <var>player</var>.
 
 <h4 id="the-current-time-of-a-player">The current time of a player</h4>
