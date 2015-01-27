@@ -335,9 +335,9 @@ Time values in the programming interface</span></a></li>
             <li><a href="#the-animationnode-interface"><span class="secno">5.4</span> <span class="content">The <code>AnimationNode</code> interface</span></a></li>
             <li><a href="#the-animationtimingreadonly-interface"><span class="secno">5.5</span> <span class="content">The <code>AnimationTimingReadOnly</code> interface</span></a></li>
             <li><a href="#the-animationtiming-interface"><span class="secno">5.6</span> <span class="content">The <code>AnimationTiming</code> interface</span></a></li>
-            <li><a href="#the-computedanimationtiming-interface"><span class="secno">5.7</span> <span class="content">The
-  <code>ComputedTimingProperties</code> dictionary</span></a></li>
-            <li><a href="#the-animationtiminginput-dictionary"><span class="secno">5.8</span> <span class="content">The <code>AnimationTimingProperties</code> dictionary</span></a>
+            <li><a href="#the-animationtiminginput-dictionary"><span class="secno">5.7</span> <span class="content">The <code>AnimationTimingProperties</code> dictionary</span></a></li>
+            <li><a href="#the-computedanimationtiming-interface"><span class="secno">5.8</span> <span class="content">The
+  <code>ComputedTimingProperties</code> dictionary</span></a>
               <ul class="toc">
                 <li><a href="#the-fillmode-enumeration"><span class="secno">5.8.1</span> <span class="content">The <code>FillMode</code> enumeration</span></a></li>
                 <li><a href="#the-playbackdirection-enumeration"><span class="secno">5.8.2</span> <span class="content">The <code>PlaybackDirection</code> enumeration</span></a></li>
@@ -4147,16 +4147,10 @@ following steps:</p>
         </li>
         <li data-md="">
           <p>If the <a data-link-type="dfn" href="#iteration-time">iteration time</a> equals the <a data-link-type="dfn" href="#iteration-duration" title="iteration duration">iteration
-duration</a>, return <code><a data-link-type="dfn" href="#iteration-start">iteration start</a></code></p><code>
-</code>
-          <ul><code></code>
-            <li data-md=""><code></code>
-              <p><code><a data-link-type="dfn" href="#iteration-count">iteration count</a> - 1</code>.</p>
-              
-
-            </li>
-          </ul>
+duration</a>, return <code><a data-link-type="dfn" href="#iteration-start">iteration start</a>+
+<a data-link-type="dfn" href="#iteration-count">iteration count</a> - 1</code>.</p>
           
+
 
         </li>
         <li data-md="">
@@ -4364,15 +4358,9 @@ the <a data-link-type="dfn" href="#iteration-time">iteration time</a>.</p>
           
 
 
-          <p>Otherwise, return the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a></p>
+          <p>Otherwise, return the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> - <a data-link-type="dfn" href="#iteration-time">iteration time</a>.</p>
           
 
-          <ul>
-            <li data-md="">
-              <p><a data-link-type="dfn" href="#iteration-time">iteration time</a>.</p>
-              
-
-            </li></ul>
         </li></ol>
 
       <h3 class="heading settled" data-level="3.12" id="time-transformations"><span class="secno">3.12. </span><span class="content">Time transformations</span><a class="self-link" href="#time-transformations"></a></h3>
@@ -8476,11 +8464,6 @@ time</a> to the start of the <a data-link-type="dfn" href="#active-interval">act
               
 
 
-              <p class="issue" id="issue-1d679d8c"><a class="self-link" href="#issue-1d679d8c"></a>Now that we have <code>endDelay</code>, should we change this back
-    to <code>startDelay</code>?</p>
-              
-
-
             </dd>
             <dt data-md="">
               <p><dfn class="idl-code" data-dfn-for="AnimationTimingReadOnly" data-dfn-type="attribute" data-export="" id="dom-animationtimingreadonly-enddelay">endDelay<a class="self-link" href="#dom-animationtimingreadonly-enddelay"></a></dfn>, <span data-attribute-info="" for="AnimationTimingReadOnly/endDelay"> of type <a data-link-type="idl-name">double</a>, readonly</span></p>
@@ -8503,12 +8486,12 @@ follow, for example, in an <a data-link-type="dfn" href="#animation-sequence">an
 
             </dt>
             <dd data-md="">
-              <p>The <a data-link-type="dfn" href="#fill-mode">fill mode</a> as specified by one of the <a class="idl-code" data-link-type="enum" href="#enumdef-fillmode">FillMode</a>
-enumeration values.</p>
+              <p>The <a data-link-type="dfn" href="#fill-mode">fill mode</a> which defines the behavior of the <a data-link-type="dfn" href="#animation-node">animation node</a>
+outside its <a data-link-type="dfn" href="#active-interval">active interval</a>.</p>
               
 
 
-              <p>When performing timing calculations the special value <span class="prop-value">auto</span> is expanded
+              <p>When performing timing calculations the special value <span class="enum-value">auto</span> is expanded
 to one of the <a data-link-type="dfn" href="#fill-mode">fill modes</a> recognized by the timing model as
 follows,</p>
               
@@ -8525,7 +8508,7 @@ applied is an <a data-link-type="dfn" href="#concept-animation">animation</a>,</
 
                   </dt>
                   <dd data-md="">
-                    <p>Use <span class="prop-value">none</span> as the <a data-link-type="dfn" href="#fill-mode" title="fill mode">fill
+                    <p>Use <span class="enum-value">none</span> as the <a data-link-type="dfn" href="#fill-mode" title="fill mode">fill
 mode</a>.</p>
                     
 
@@ -8536,7 +8519,7 @@ mode</a>.</p>
 
                   </dt>
                   <dd data-md="">
-                    <p>Use <span class="prop-value">both</span> as the <a data-link-type="dfn" href="#fill-mode" title="fill mode">fill
+                    <p>Use <span class="enum-value">both</span> as the <a data-link-type="dfn" href="#fill-mode" title="fill mode">fill
 mode</a>.</p>
                     
 
@@ -8552,13 +8535,34 @@ mode</a>.</p>
 
             </dt>
             <dd data-md="">
-              <p>The <a data-link-type="dfn" href="#animation-node">animation node</a>’s <a data-link-type="dfn" href="#iteration-start">iteration start</a> property.</p>
+              <p>The <a data-link-type="dfn" href="#animation-node">animation node</a>’s <a data-link-type="dfn" href="#iteration-start">iteration start</a> property which is a
+finite real number greater than or equal to zero representing the iteration
+index at which the animation node begins and its progress through that
+iteration.</p>
               
 
 
-              <p>A finite real number greater than or equal to zero representing
-the number of iterations into the animation node at which to
-begin.</p>
+              <p>For example, a value of 0.5 indicates that the animation node begins half
+way through its first iteration. A value of 1.2 indicates the animation node
+begins 20% of the way through its second iteration.</p>
+              
+
+
+              <div class="note" role="note">
+Note that the value of <code class="idl"><a data-link-for="AnimationTimingReadOnly" data-link-type="idl" href="#dom-animationtimingreadonly-iterations">iterations</a></code> is effectively
+<em>added</em> to the <code class="idl"><a data-link-for="AnimationTimingReadOnly" data-link-type="idl" href="#dom-animationtimingreadonly-iterationstart">iterationStart</a></code> such that
+an animation node with an <code class="idl"><a data-link-for="AnimationTimingReadOnly" data-link-type="idl" href="#dom-animationtimingreadonly-iterationstart">iterationStart</a></code> of
+‘0.5’ and <code class="idl"><a data-link-for="AnimationTimingReadOnly" data-link-type="idl" href="#dom-animationtimingreadonly-iterations">iterations</a></code> of
+‘2’ will still repeat twice however it will begin
+and end half-way through the its <a data-link-type="dfn" href="#iteration-interval">iteration interval</a>.
+
+
+                <p><code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-iterationstart">iterationStart</a></code> values greater than
+or equal to one are typically only useful in combination with an
+animation effect that has an <a data-link-type="dfn" href="#iteration-composite-operation" title="iteration composite operation">iteration composite
+operation</a> of <span class="enum-value">accumulate</span> or when the
+<a data-link-type="dfn" href="#current-iteration">current iteration</a> index is otherwise significant.</p>
+</div>
               
 
 
@@ -8569,13 +8573,14 @@ begin.</p>
 
             </dt>
             <dd data-md="">
-              <p>The <a data-link-type="dfn" href="#animation-node">animation node</a>’s <a data-link-type="dfn" href="#iteration-count">iteration count</a> property.</p>
+              <p>The <a data-link-type="dfn" href="#animation-node">animation node</a>’s <a data-link-type="dfn" href="#iteration-count">iteration count</a> property which is
+a real number greater than or equal to zero (including positive
+infinity) representing the number of times to the animation node repeats.</p>
               
 
 
-              <p>A real number greater than or equal to zero (including positive
-infinity) representing the number of times to repeat the
-animation node.</p>
+              <p>A value of positive infinity indicates that the animation node repeats
+forever.</p>
               
 
 
@@ -8606,11 +8611,8 @@ node</a>.</p>
 
             </dt>
             <dd data-md="">
-              <p>The <a data-link-type="dfn" href="#animation-node">animation node</a>’s <a data-link-type="dfn" href="#animation-node-playback-rate" title="animation node playback rate">playback rate</a> property.</p>
-              
-
-
-              <p>This is a multiplier applied to the <a data-link-type="dfn" href="#local-time">local time</a> potentially
+              <p>The <a data-link-type="dfn" href="#animation-node">animation node</a>’s <a data-link-type="dfn" href="#animation-node-playback-rate" title="animation node playback rate">playback rate</a> property
+which is a multiplier applied to the <a data-link-type="dfn" href="#local-time">local time</a> potentially
 causing the node to run at a different rate to its natural speed.</p>
               
 
@@ -8622,9 +8624,9 @@ causing the node to run at a different rate to its natural speed.</p>
 
             </dt>
             <dd data-md="">
-              <p>The <a data-link-type="dfn" href="#playback-direction">playback direction</a> of the <a data-link-type="dfn" href="#animation-node">animation node</a> as
-specified by one of the <a class="idl-code" data-link-type="enum" href="#enumdef-playbackdirection">PlaybackDirection</a> enumeration
-values.</p>
+              <p>The <a data-link-type="dfn" href="#playback-direction">playback direction</a> of the <a data-link-type="dfn" href="#animation-node">animation node</a> which
+defines whether playback proceeds forwards, backwards, or alternates
+on each iteration.</p>
               
 
 
@@ -8742,25 +8744,6 @@ calculations.</p>
               
 
 
-              <div class="note" role="note">
-Note that the value of <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-iterations">iterations</a></code> is effectively
-<em>added</em> to the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-iterationstart">iterationStart</a></code> such that
-an animation node with an <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-iterationstart">iterationStart</a></code> of
-‘0.5’ and <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-iterations">iterations</a></code> of
-‘2’ would still repeat twice however it would begin
-and end half-way through the animation node’s <a data-link-type="dfn" href="#iteration-interval" title="iteration interval">iteration
-interval</a>.
-
-
-                <p>Setting the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-iterationstart">iterationStart</a></code> to a value greater than
-or equal to one is typically only useful in combination with an
-animation effect that has an <a data-link-type="dfn" href="#iteration-composite-operation" title="iteration composite operation">iteration composite
-operation</a> of ‘accumulate’.</p>
-</div>
-              
-
-
-
             </dd>
             <dt data-md="">
               <p><dfn class="idl-code" data-dfn-for="AnimationTiming" data-dfn-type="attribute" data-export="" id="dom-animationtiming-iterations">iterations<a class="self-link" href="#dom-animationtiming-iterations"></a></dfn>, <span data-attribute-info="" for="AnimationTiming/iterations"> of type <a data-link-type="idl-name">unrestricted double</a></span></p>
@@ -8773,9 +8756,15 @@ operation</a> of ‘accumulate’.</p>
               
 
 
-              <p>Values less than zero and <code>NaN</code> values are treated as
-the value 1.0 for the purpose of timing model calculations.</p>
+              <p>This may be set to <code class="esvalue">+Infinity</code> to cause
+the <a data-link-type="dfn" href="#animation-node">animation node</a> to repeat indefinitely.</p>
               
+
+
+              <p>Values less than zero and <code class="esvalue">NaN</code> values are
+treated as the value 1.0 for the purpose of timing model calculations.</p>
+              
+
 
             </dd>
             <dt data-md="">
@@ -8840,7 +8829,151 @@ for the purpose of timing model calculations.</p>
 </div>
 
 
-        <h3 class="heading settled" data-level="5.7" id="the-computedanimationtiming-interface"><span class="secno">5.7. </span><span class="content">The
+        <h3 class="heading settled" data-level="5.7" id="the-animationtiminginput-dictionary"><span class="secno">5.7. </span><span class="content">The <code>AnimationTimingProperties</code> dictionary</span><a class="self-link" href="#the-animationtiminginput-dictionary"></a></h3>
+
+
+        <p>The <code class="idl"><a data-link-type="idl" href="#dictdef-animationtimingproperties">AnimationTimingProperties</a></code> dictionary encapsulates the timing
+properties of an <code class="idl"><a data-link-type="idl" href="#animationnode">AnimationNode</a></code> so that they can be set in bulk (as with
+the <a class="idl-code" data-link-for="Animation" data-link-type="constructor" href="#dom-animation-animation" title="Animation()">constructor for
+Animation</a>) or returned as a readonly snapshot (as with
+the <code class="idl"><a data-link-for="AnimationNode" data-link-type="idl" href="#dom-animationnode-computedtiming">computedTiming</a></code> attribute of the <code class="idl"><a data-link-type="idl" href="#animationnode">AnimationNode</a></code>
+interface).</p>
+
+
+        <p><code class="idl"><a data-link-type="idl" href="#dictdef-animationtimingproperties">AnimationTimingProperties</a></code> is simply a dictionary-equivalent of the
+<code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.
+The meaning and acceptable values for each of its members are identical.</p>
+
+
+        <pre class="idl">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" data-global-name="" id="dictdef-animationtimingproperties">AnimationTimingProperties<a class="self-link" href="#dictdef-animationtimingproperties"></a></dfn> {
+    double                             <a class="idl-code" data-default="0" data-global-name="AnimationTimingProperties<dictionary>/delay<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="double                             " href="#dom-animationtimingproperties-delay">delay</a> = 0;
+    double                             <a class="idl-code" data-default="0" data-global-name="AnimationTimingProperties<dictionary>/endDelay<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="double                             " href="#dom-animationtimingproperties-enddelay">endDelay</a> = 0;
+    <a data-link-type="idl-name" href="#enumdef-fillmode">FillMode</a>                           <a class="idl-code" data-default="&quot;auto&quot;" data-global-name="AnimationTimingProperties<dictionary>/fill<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="FillMode                           " href="#dom-animationtimingproperties-fill">fill</a> = "auto";
+    double                             <a class="idl-code" data-default="0.0" data-global-name="AnimationTimingProperties<dictionary>/iterationStart<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="double                             " href="#dom-animationtimingproperties-iterationstart">iterationStart</a> = 0.0;
+    unrestricted double                <a class="idl-code" data-default="1.0" data-global-name="AnimationTimingProperties<dictionary>/iterations<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="unrestricted double                " href="#dom-animationtimingproperties-iterations">iterations</a> = 1.0;
+    (unrestricted double or DOMString) <a class="idl-code" data-default="&quot;auto&quot;" data-global-name="AnimationTimingProperties<dictionary>/duration<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="(unrestricted double or DOMString) " href="#dom-animationtimingproperties-duration">duration</a> = "auto";
+    double                             <a class="idl-code" data-default="1.0" data-global-name="AnimationTimingProperties<dictionary>/playbackRate<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="double                             " href="#dom-animationtimingproperties-playbackrate">playbackRate</a> = 1.0;
+    <a data-link-type="idl-name" href="#enumdef-playbackdirection">PlaybackDirection</a>                  <a class="idl-code" data-default="&quot;normal&quot;" data-global-name="AnimationTimingProperties<dictionary>/direction<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="PlaybackDirection                  " href="#dom-animationtimingproperties-direction">direction</a> = "normal";
+    DOMString                          <a class="idl-code" data-default="&quot;linear&quot;" data-global-name="AnimationTimingProperties<dictionary>/easing<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="DOMString                          " href="#dom-animationtimingproperties-easing">easing</a> = "linear";
+};
+</pre>
+
+
+        <div class="attributes">
+
+
+          <dl>
+            <dt data-md="">
+              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-delay">delay<a class="self-link" href="#dom-animationtimingproperties-delay"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/delay"> of type <a data-link-type="idl-name">double</a>, defaulting to <code>0</code></span></p>
+              
+
+            </dt>
+            <dd data-md="">
+              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-delay">delay</a></code> attribute of
+the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
+              
+
+
+            </dd>
+            <dt data-md="">
+              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-enddelay">endDelay<a class="self-link" href="#dom-animationtimingproperties-enddelay"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/endDelay"> of type <a data-link-type="idl-name">double</a>, defaulting to <code>0</code></span></p>
+              
+
+            </dt>
+            <dd data-md="">
+              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-enddelay">endDelay</a></code> attribute of
+the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
+              
+
+
+            </dd>
+            <dt data-md="">
+              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-fill">fill<a class="self-link" href="#dom-animationtimingproperties-fill"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/fill"> of type <a data-link-type="idl-name" href="#enumdef-fillmode">FillMode</a>, defaulting to <code>"auto"</code></span></p>
+              
+
+            </dt>
+            <dd data-md="">
+              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-fill">fill</a></code> attribute of
+the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
+              
+
+
+            </dd>
+            <dt data-md="">
+              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-iterationstart">iterationStart<a class="self-link" href="#dom-animationtimingproperties-iterationstart"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/iterationStart"> of type <a data-link-type="idl-name">double</a>, defaulting to <code>0.0</code></span></p>
+              
+
+            </dt>
+            <dd data-md="">
+              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-iterationstart">iterationStart</a></code> attribute
+of the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
+              
+
+
+            </dd>
+            <dt data-md="">
+              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-iterations">iterations<a class="self-link" href="#dom-animationtimingproperties-iterations"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/iterations"> of type <a data-link-type="idl-name">unrestricted double</a>, defaulting to <code>1.0</code></span></p>
+              
+
+            </dt>
+            <dd data-md="">
+              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-iterations">iterations</a></code> attribute
+of the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
+              
+
+
+            </dd>
+            <dt data-md="">
+              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-duration">duration<a class="self-link" href="#dom-animationtimingproperties-duration"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/duration"> of type <a data-link-type="idl-name">(unrestricted double or DOMString)</a>, defaulting to <code>"auto"</code></span></p>
+              
+
+            </dt>
+            <dd data-md="">
+              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-duration">duration</a></code>
+attribute of the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
+              
+
+
+            </dd>
+            <dt data-md="">
+              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-playbackrate">playbackRate<a class="self-link" href="#dom-animationtimingproperties-playbackrate"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/playbackRate"> of type <a data-link-type="idl-name">double</a>, defaulting to <code>1.0</code></span></p>
+              
+
+            </dt>
+            <dd data-md="">
+              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-playbackrate">playbackRate</a></code> attribute
+of the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
+              
+
+
+            </dd>
+            <dt data-md="">
+              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-direction">direction<a class="self-link" href="#dom-animationtimingproperties-direction"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/direction"> of type <a data-link-type="idl-name" href="#enumdef-playbackdirection">PlaybackDirection</a>, defaulting to <code>"normal"</code></span></p>
+              
+
+            </dt>
+            <dd data-md="">
+              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-direction">direction</a></code> attribute
+of the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
+              
+
+
+            </dd>
+            <dt data-md="">
+              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-easing">easing<a class="self-link" href="#dom-animationtimingproperties-easing"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/easing"> of type <a data-link-type="idl-name">DOMString</a>, defaulting to <code>"linear"</code></span></p>
+              
+
+            </dt>
+            <dd data-md="">
+              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-easing">easing</a></code> attribute
+of the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
+              
+
+            </dd></dl>
+</div>
+
+
+        <h3 class="heading settled" data-level="5.8" id="the-computedanimationtiming-interface"><span class="secno">5.8. </span><span class="content">The
   <code>ComputedTimingProperties</code> dictionary</span><a class="self-link" href="#the-computedanimationtiming-interface"></a></h3>
 
 
@@ -8855,7 +8988,8 @@ for the purpose of timing model calculations.</p>
     double?             <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/localTime<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="double?             " href="#dom-computedtimingproperties-localtime">localTime</a>;
     unrestricted double <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/timeFraction<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="unrestricted double " href="#dom-computedtimingproperties-timefraction">timeFraction</a>;
     unsigned long?      <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/currentIteration<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="unsigned long?      " href="#dom-computedtimingproperties-currentiteration">currentIteration</a>;
-};</pre>
+};
+</pre>
 
 
         <div class="attributes">
@@ -8954,177 +9088,6 @@ iteration.</p>
 (as can happen with a zero-duration animation that repeats infinite times),
 the return value to be used in ECMAScript is <code>Infinity</code>.
 The value for other language bindings is undefined.</p>
-              
-
-            </dd></dl>
-</div>
-
-
-        <h3 class="heading settled" data-level="5.8" id="the-animationtiminginput-dictionary"><span class="secno">5.8. </span><span class="content">The <code>AnimationTimingProperties</code> dictionary</span><a class="self-link" href="#the-animationtiminginput-dictionary"></a></h3>
-
-
-        <p>The <code class="idl"><a data-link-type="idl" href="#dictdef-animationtimingproperties">AnimationTimingProperties</a></code> dictionary is encapsulates the timing
-properties of an <code class="idl"><a data-link-type="idl" href="#animationnode">AnimationNode</a></code> so that they can be set in bulk (as in
-the <a class="idl-code" data-link-for="Animation" data-link-type="constructor" href="#dom-animation-animation" title="Animation()">constructor for
-Animation</a>) or returned as a readonly snapshot (as in
-<code class="idl"><a data-link-for="AnimationNode" data-link-type="idl" href="#dom-animationnode-computedtiming">computedTiming</a></code>).</p>
-
-
-        <pre class="idl">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" data-global-name="" id="dictdef-animationtimingproperties">AnimationTimingProperties<a class="self-link" href="#dictdef-animationtimingproperties"></a></dfn> {
-    double                             <a class="idl-code" data-default="0" data-global-name="AnimationTimingProperties<dictionary>/delay<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="double                             " href="#dom-animationtimingproperties-delay">delay</a> = 0;
-    double                             <a class="idl-code" data-default="0" data-global-name="AnimationTimingProperties<dictionary>/endDelay<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="double                             " href="#dom-animationtimingproperties-enddelay">endDelay</a> = 0;
-    <a data-link-type="idl-name" href="#enumdef-fillmode">FillMode</a>                           <a class="idl-code" data-default="&quot;auto&quot;" data-global-name="AnimationTimingProperties<dictionary>/fill<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="FillMode                           " href="#dom-animationtimingproperties-fill">fill</a> = "auto";
-    double                             <a class="idl-code" data-default="0.0" data-global-name="AnimationTimingProperties<dictionary>/iterationStart<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="double                             " href="#dom-animationtimingproperties-iterationstart">iterationStart</a> = 0.0;
-    unrestricted double                <a class="idl-code" data-default="1.0" data-global-name="AnimationTimingProperties<dictionary>/iterations<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="unrestricted double                " href="#dom-animationtimingproperties-iterations">iterations</a> = 1.0;
-    (unrestricted double or DOMString) <a class="idl-code" data-default="&quot;auto&quot;" data-global-name="AnimationTimingProperties<dictionary>/duration<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="(unrestricted double or DOMString) " href="#dom-animationtimingproperties-duration">duration</a> = "auto";
-    double                             <a class="idl-code" data-default="1.0" data-global-name="AnimationTimingProperties<dictionary>/playbackRate<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="double                             " href="#dom-animationtimingproperties-playbackrate">playbackRate</a> = 1.0;
-    <a data-link-type="idl-name" href="#enumdef-playbackdirection">PlaybackDirection</a>                  <a class="idl-code" data-default="&quot;normal&quot;" data-global-name="AnimationTimingProperties<dictionary>/direction<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="PlaybackDirection                  " href="#dom-animationtimingproperties-direction">direction</a> = "normal";
-    DOMString                          <a class="idl-code" data-default="&quot;linear&quot;" data-global-name="AnimationTimingProperties<dictionary>/easing<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="DOMString                          " href="#dom-animationtimingproperties-easing">easing</a> = "linear";
-};
-</pre>
-
-
-        <div class="attributes">
-
-
-          <dl>
-            <dt data-md="">
-              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-delay">delay<a class="self-link" href="#dom-animationtimingproperties-delay"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/delay"> of type <a data-link-type="idl-name">double</a>, defaulting to <code>0</code></span></p>
-              
-
-            </dt>
-            <dd data-md="">
-              <p>The specified <a data-link-type="dfn" href="#start-delay">start delay</a>.</p>
-              
-
-
-              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-delay">delay</a></code> attribute of
-the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
-              
-
-
-            </dd>
-            <dt data-md="">
-              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-enddelay">endDelay<a class="self-link" href="#dom-animationtimingproperties-enddelay"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/endDelay"> of type <a data-link-type="idl-name">double</a>, defaulting to <code>0</code></span></p>
-              
-
-            </dt>
-            <dd data-md="">
-              <p>The specified <a data-link-type="dfn" href="#end-delay">end delay</a>.</p>
-              
-
-
-              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-enddelay">endDelay</a></code> attribute of
-the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
-              
-
-
-            </dd>
-            <dt data-md="">
-              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-fill">fill<a class="self-link" href="#dom-animationtimingproperties-fill"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/fill"> of type <a data-link-type="idl-name" href="#enumdef-fillmode">FillMode</a>, defaulting to <code>"auto"</code></span></p>
-              
-
-            </dt>
-            <dd data-md="">
-              <p>The <a data-link-type="dfn" href="#fill-mode">fill mode</a> as specified by one of the <a class="idl-code" data-link-type="enum" href="#enumdef-fillmode">FillMode</a>
-enumeration values.</p>
-              
-
-
-            </dd>
-            <dt data-md="">
-              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-iterationstart">iterationStart<a class="self-link" href="#dom-animationtimingproperties-iterationstart"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/iterationStart"> of type <a data-link-type="idl-name">double</a>, defaulting to <code>0.0</code></span></p>
-              
-
-            </dt>
-            <dd data-md="">
-              <p>The <a data-link-type="dfn" href="#animation-node">animation node</a>’s <a data-link-type="dfn" href="#iteration-start">iteration start</a> property.</p>
-              
-
-
-              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-iterationstart">iterationStart</a></code> attribute
-of the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
-              
-
-
-            </dd>
-            <dt data-md="">
-              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-iterations">iterations<a class="self-link" href="#dom-animationtimingproperties-iterations"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/iterations"> of type <a data-link-type="idl-name">unrestricted double</a>, defaulting to <code>1.0</code></span></p>
-              
-
-            </dt>
-            <dd data-md="">
-              <p>The <a data-link-type="dfn" href="#animation-node">animation node</a>’s <a data-link-type="dfn" href="#iteration-count">iteration count</a> property.</p>
-              
-
-
-              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-iterations">iterations</a></code> attribute
-of the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
-              
-
-
-            </dd>
-            <dt data-md="">
-              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-duration">duration<a class="self-link" href="#dom-animationtimingproperties-duration"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/duration"> of type <a data-link-type="idl-name">(unrestricted double or DOMString)</a>, defaulting to <code>"auto"</code></span></p>
-              
-
-            </dt>
-            <dd data-md="">
-              <p>The <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> of the <a data-link-type="dfn" href="#animation-node">animation node</a>.</p>
-              
-
-
-              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-duration">duration</a></code>
-attribute of the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
-              
-
-
-            </dd>
-            <dt data-md="">
-              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-playbackrate">playbackRate<a class="self-link" href="#dom-animationtimingproperties-playbackrate"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/playbackRate"> of type <a data-link-type="idl-name">double</a>, defaulting to <code>1.0</code></span></p>
-              
-
-            </dt>
-            <dd data-md="">
-              <p>The <a data-link-type="dfn" href="#animation-node">animation node</a>’s <a data-link-type="dfn" href="#animation-node-playback-rate" title="animation node playback rate">playback rate</a> property.</p>
-              
-
-
-              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-playbackrate">playbackRate</a></code> attribute
-of the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
-              
-
-
-            </dd>
-            <dt data-md="">
-              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-direction">direction<a class="self-link" href="#dom-animationtimingproperties-direction"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/direction"> of type <a data-link-type="idl-name" href="#enumdef-playbackdirection">PlaybackDirection</a>, defaulting to <code>"normal"</code></span></p>
-              
-
-            </dt>
-            <dd data-md="">
-              <p>The <a data-link-type="dfn" href="#playback-direction">playback direction</a> of the <a data-link-type="dfn" href="#animation-node">animation node</a>.</p>
-              
-
-
-              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-direction">direction</a></code> attribute
-of the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
-              
-
-
-            </dd>
-            <dt data-md="">
-              <p><dfn class="idl-code" data-dfn-for="AnimationTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-animationtimingproperties-easing">easing<a class="self-link" href="#dom-animationtimingproperties-easing"></a></dfn>, <span data-dict-member-info="" for="AnimationTimingProperties/easing"> of type <a data-link-type="idl-name">DOMString</a>, defaulting to <code>"linear"</code></span></p>
-              
-
-            </dt>
-            <dd data-md="">
-              <p>The <a data-link-type="dfn" href="#timing-function">timing function</a> used to scale the time to produce
-easing effects.</p>
-              
-
-
-              <p>See the <code class="idl"><a data-link-for="AnimationTiming" data-link-type="idl" href="#dom-animationtiming-easing">easing</a></code> attribute
-of the <code class="idl"><a data-link-type="idl" href="#animationtiming">AnimationTiming</a></code> interface.</p>
               
 
             </dd></dl>
@@ -9268,7 +9231,8 @@ interface <dfn class="idl-code" data-dfn-type="interface" data-export="" data-gl
     void           <dfn class="idl-code" data-dfn-for="AnimationGroup" data-dfn-type="method" data-export="" data-global-name="AnimationGroup<interface>/prepend(nodes...)<method>/prepend()<method>" id="dom-animationgroup-prependnodes" title="prepend(nodes...)|prepend()">prepend<a class="self-link" href="#dom-animationgroup-prependnodes"></a></dfn> (<a data-link-type="idl-name" href="#animationnode">AnimationNode</a>... <dfn class="idl-code" data-dfn-for="AnimationGroup/prepend" data-dfn-type="argument" data-export="" data-global-name="AnimationGroup/prepend/nodes<argument>" id="dom-animationgroup-prepend-nodes">nodes<a class="self-link" href="#dom-animationgroup-prepend-nodes"></a></dfn>);
     void           <dfn class="idl-code" data-dfn-for="AnimationGroup" data-dfn-type="method" data-export="" data-global-name="AnimationGroup<interface>/append(nodes...)<method>/append()<method>" id="dom-animationgroup-appendnodes" title="append(nodes...)|append()">append<a class="self-link" href="#dom-animationgroup-appendnodes"></a></dfn> (<a data-link-type="idl-name" href="#animationnode">AnimationNode</a>... <dfn class="idl-code" data-dfn-for="AnimationGroup/append" data-dfn-type="argument" data-export="" data-global-name="AnimationGroup/append/nodes<argument>" id="dom-animationgroup-append-nodes">nodes<a class="self-link" href="#dom-animationgroup-append-nodes"></a></dfn>);
     <a data-link-type="idl-name" href="#animationgroup">AnimationGroup</a> <dfn class="idl-code" data-dfn-for="AnimationGroup" data-dfn-type="method" data-export="" data-global-name="AnimationGroup<interface>/clone()<method>" id="dom-animationgroup-clone" title="clone()">clone<a class="self-link" href="#dom-animationgroup-clone"></a></dfn> ();
-};</pre>
+};
+</pre>
 
 
         <div class="constructors">
@@ -12249,7 +12213,7 @@ Document conventions</span><a class="self-link" href="#conventions"></a></h3>
       <dd>Patrick Schmitz; Aaron Cohen. <a href="http://www.w3.org/TR/smil-animation/">SMIL Animation</a>. 4 September 2001. REC. URL: <a href="http://www.w3.org/TR/smil-animation/">http://www.w3.org/TR/smil-animation/</a></dd></dl>
     <h2 class="no-num heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
     <ul class="indexlist">
-      <li>activeDuration, <a href="#dom-computedtimingproperties-activeduration" title="section 5.7">5.7</a></li>
+      <li>activeDuration, <a href="#dom-computedtimingproperties-activeduration" title="section 5.8">5.8</a></li>
       <li>active
 duration, <a href="#active-duration" title="section 3.6.3">3.6.3</a></li>
       <li>active interval, <a href="#active-interval" title="section 3.6.3">3.6.3</a></li>
@@ -12307,7 +12271,7 @@ target, <a href="#animation-target" title="section 3.14">3.14</a></li>
       <li>Animation(target, effect, timing), <a href="#dom-animation-animationtarget-effect-timing" title="section 5.12">5.12</a></li>
       <li>AnimationTimeline, <a href="#animationtimeline" title="section 5.2">5.2</a></li>
       <li>AnimationTiming, <a href="#animationtiming" title="section 5.6">5.6</a></li>
-      <li>AnimationTimingProperties, <a href="#dictdef-animationtimingproperties" title="section 5.8">5.8</a></li>
+      <li>AnimationTimingProperties, <a href="#dictdef-animationtimingproperties" title="section 5.7">5.7</a></li>
       <li>AnimationTimingReadOnly, <a href="#animationtimingreadonly" title="section 5.5">5.5</a></li>
       <li>append()
         <ul>
@@ -12359,7 +12323,7 @@ a timeline, <a href="#associated-with-a-timeline" title="section 3.6.1">3.6.1</a
       <li>ComputedKeyframe, <a href="#dictdef-computedkeyframe" title="section 5.19">5.19</a></li>
       <li>computedOffset, <a href="#dom-computedkeyframe-computedoffset" title="section 5.19">5.19</a></li>
       <li>computedTiming, <a href="#dom-animationnode-computedtiming" title="section 5.4">5.4</a></li>
-      <li>ComputedTimingProperties, <a href="#dictdef-computedtimingproperties" title="section 5.7">5.7</a></li>
+      <li>ComputedTimingProperties, <a href="#dictdef-computedtimingproperties" title="section 5.8">5.8</a></li>
       <li>conforming scripted Web Animations user agent, <a href="#conforming-scripted-web-animations-user-agent" title="section 8.2">8.2</a></li>
       <li>create a new resolved Promise, <a href="#create-a-new-resolved-promise" title="section 3.5.7">3.5.7</a></li>
       <li>&lt;cubic-bezier-timing-function>, <a href="#typedef-cubic-bezier-timing-function" title="section 3.12.3">3.12.3</a></li>
@@ -12367,7 +12331,7 @@ a timeline, <a href="#associated-with-a-timeline" title="section 3.6.1">3.6.1</a
       <li>current, <a href="#current" title="section 3.6.5">3.6.5</a></li>
       <li>current finished promise, <a href="#current-finished-promise" title="section 3.5.12">3.5.12</a></li>
       <li>current iteration, <a href="#current-iteration" title="section 3.10.4">3.10.4</a></li>
-      <li>currentIteration, <a href="#dom-computedtimingproperties-currentiteration" title="section 5.7">5.7</a></li>
+      <li>currentIteration, <a href="#dom-computedtimingproperties-currentiteration" title="section 5.8">5.8</a></li>
       <li>current ready promise, <a href="#current-ready-promise" title="section 3.5.8">3.5.8</a></li>
       <li>currentTarget, <a href="#dom-effectcallback-currenttarget" title="section 5.20">5.20</a></li>
       <li>current time, <a href="#current-time" title="section 3.5.3">3.5.3</a></li>
@@ -12384,7 +12348,7 @@ priority, <a href="#custom-player-priority" title="section 4.2.1.1">4.2.1.1</a><
         <ul>
           <li>attribute for AnimationTimingReadOnly, <a href="#dom-animationtimingreadonly-delay" title="section 5.5">5.5</a></li>
           <li>attribute for AnimationTiming, <a href="#dom-animationtiming-delay" title="section 5.6">5.6</a></li>
-          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-delay" title="section 5.8">5.8</a></li>
+          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-delay" title="section 5.7">5.7</a></li>
         </ul>
       </li>
       <li>descendant, <a href="#descendant" title="section 3.13">3.13</a></li>
@@ -12393,7 +12357,7 @@ priority, <a href="#custom-player-priority" title="section 4.2.1.1">4.2.1.1</a><
         <ul>
           <li>attribute for AnimationTimingReadOnly, <a href="#dom-animationtimingreadonly-direction" title="section 5.5">5.5</a></li>
           <li>attribute for AnimationTiming, <a href="#dom-animationtiming-direction" title="section 5.6">5.6</a></li>
-          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-direction" title="section 5.8">5.8</a></li>
+          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-direction" title="section 5.7">5.7</a></li>
         </ul>
       </li>
       <li>directly associated with a player, <a href="#directly-associated-with-a-player" title="section 3.6.1">3.6.1</a></li>
@@ -12406,14 +12370,14 @@ timeline, <a href="#document-timeline" title="section 3.4.1">3.4.1</a></li>
         <ul>
           <li>attribute for AnimationTimingReadOnly, <a href="#dom-animationtimingreadonly-duration" title="section 5.5">5.5</a></li>
           <li>attribute for AnimationTiming, <a href="#dom-animationtiming-duration" title="section 5.6">5.6</a></li>
-          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-duration" title="section 5.8">5.8</a></li>
+          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-duration" title="section 5.7">5.7</a></li>
         </ul>
       </li>
       <li>easing
         <ul>
           <li>attribute for AnimationTimingReadOnly, <a href="#dom-animationtimingreadonly-easing" title="section 5.5">5.5</a></li>
           <li>attribute for AnimationTiming, <a href="#dom-animationtiming-easing" title="section 5.6">5.6</a></li>
-          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-easing" title="section 5.8">5.8</a></li>
+          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-easing" title="section 5.7">5.7</a></li>
           <li>dict-member for Keyframe, <a href="#dom-keyframe-easing" title="section 5.18">5.18</a></li>
         </ul>
       </li>
@@ -12430,10 +12394,10 @@ timeline, <a href="#document-timeline" title="section 3.4.1">3.4.1</a></li>
         <ul>
           <li>attribute for AnimationTimingReadOnly, <a href="#dom-animationtimingreadonly-enddelay" title="section 5.5">5.5</a></li>
           <li>attribute for AnimationTiming, <a href="#dom-animationtiming-enddelay" title="section 5.6">5.6</a></li>
-          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-enddelay" title="section 5.8">5.8</a></li>
+          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-enddelay" title="section 5.7">5.7</a></li>
         </ul>
       </li>
-      <li>endTime, <a href="#dom-computedtimingproperties-endtime" title="section 5.7">5.7</a></li>
+      <li>endTime, <a href="#dom-computedtimingproperties-endtime" title="section 5.8">5.8</a></li>
       <li>end time, <a href="#end-time" title="section 3.13.3">3.13.3</a></li>
       <li>evenly distributing
 a keyframe, <a href="#evenly-distributing-a-keyframe" title="section 4.3.1.1">4.3.1.1</a></li>
@@ -12441,7 +12405,7 @@ a keyframe, <a href="#evenly-distributing-a-keyframe" title="section 4.3.1.1">4.
         <ul>
           <li>attribute for AnimationTimingReadOnly, <a href="#dom-animationtimingreadonly-fill" title="section 5.5">5.5</a></li>
           <li>attribute for AnimationTiming, <a href="#dom-animationtiming-fill" title="section 5.6">5.6</a></li>
-          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-fill" title="section 5.8">5.8</a></li>
+          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-fill" title="section 5.7">5.7</a></li>
         </ul>
       </li>
       <li>fill mode, <a href="#fill-mode" title="section 3.7">3.7</a></li>
@@ -12503,14 +12467,14 @@ duration, <a href="#iteration-duration" title="section 3.8.1">3.8.1</a></li>
         <ul>
           <li>attribute for AnimationTimingReadOnly, <a href="#dom-animationtimingreadonly-iterations" title="section 5.5">5.5</a></li>
           <li>attribute for AnimationTiming, <a href="#dom-animationtiming-iterations" title="section 5.6">5.6</a></li>
-          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-iterations" title="section 5.8">5.8</a></li>
+          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-iterations" title="section 5.7">5.7</a></li>
         </ul>
       </li>
       <li>iterationStart
         <ul>
           <li>attribute for AnimationTimingReadOnly, <a href="#dom-animationtimingreadonly-iterationstart" title="section 5.5">5.5</a></li>
           <li>attribute for AnimationTiming, <a href="#dom-animationtiming-iterationstart" title="section 5.6">5.6</a></li>
-          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-iterationstart" title="section 5.8">5.8</a></li>
+          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-iterationstart" title="section 5.7">5.7</a></li>
         </ul>
       </li>
       <li>iteration start, <a href="#iteration-start" title="section 3.8.2">3.8.2</a></li>
@@ -12530,7 +12494,7 @@ duration, <a href="#iteration-duration" title="section 3.8.1">3.8.1</a></li>
       <li>length, <a href="#dom-animationnodelist-length" title="section 5.10">5.10</a></li>
       <li>linear timing
 function, <a href="#linear-timing-function" title="section 3.12.2">3.12.2</a></li>
-      <li>localTime, <a href="#dom-computedtimingproperties-localtime" title="section 5.7">5.7</a></li>
+      <li>localTime, <a href="#dom-computedtimingproperties-localtime" title="section 5.8">5.8</a></li>
       <li>local time, <a href="#local-time" title="section 3.6.4">3.6.4</a></li>
       <li>loosely sorted by offset, <a href="#loosely-sorted-by-offset" title="section 4.3">4.3</a></li>
       <li>name
@@ -12586,7 +12550,7 @@ direction, <a href="#playback-direction" title="section 3.11">3.11</a></li>
           <li>attribute for AnimationPlayer, <a href="#dom-animationplayer-playbackrate" title="section 5.3">5.3</a></li>
           <li>attribute for AnimationTimingReadOnly, <a href="#dom-animationtimingreadonly-playbackrate" title="section 5.5">5.5</a></li>
           <li>attribute for AnimationTiming, <a href="#dom-animationtiming-playbackrate" title="section 5.6">5.6</a></li>
-          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-playbackrate" title="section 5.8">5.8</a></li>
+          <li>dict-member for AnimationTimingProperties, <a href="#dom-animationtimingproperties-playbackrate" title="section 5.7">5.7</a></li>
         </ul>
       </li>
       <li>player, <a href="#player" title="section 3.5">3.5</a></li>
@@ -12661,7 +12625,7 @@ Keyframe object, <a href="#procedure-for-converting-an-ecmascript-value-to-an-id
       <li>startTime
         <ul>
           <li>attribute for AnimationPlayer, <a href="#dom-animationplayer-starttime" title="section 5.3">5.3</a></li>
-          <li>dict-member for ComputedTimingProperties, <a href="#dom-computedtimingproperties-starttime" title="section 5.7">5.7</a></li>
+          <li>dict-member for ComputedTimingProperties, <a href="#dom-computedtimingproperties-starttime" title="section 5.8">5.8</a></li>
         </ul>
       </li>
       <li>step timing function, <a href="#step-timing-function" title="section 3.12.4">3.12.4</a></li>
@@ -12676,7 +12640,7 @@ Keyframe object, <a href="#procedure-for-converting-an-ecmascript-value-to-an-id
       <li>time fraction, <a href="#time-fraction" title="section 3.14.1">3.14.1</a></li>
       <li>timeFraction
         <ul>
-          <li>dict-member for ComputedTimingProperties, <a href="#dom-computedtimingproperties-timefraction" title="section 5.7">5.7</a></li>
+          <li>dict-member for ComputedTimingProperties, <a href="#dom-computedtimingproperties-timefraction" title="section 5.8">5.8</a></li>
           <li>argument for EffectCallback, <a href="#dom-effectcallback-timefraction" title="section 5.20">5.20</a></li>
         </ul>
       </li>
@@ -12771,14 +12735,6 @@ interface <a data-dfn-type="interface" data-export="" data-global-name="" href="
     inherit attribute DOMString                          <a class="idl-code" data-global-name="AnimationTiming<interface>/easing<attribute>" data-link-for="AnimationTiming" data-link-type="attribute" data-type="DOMString                          " href="#dom-animationtiming-easing">easing</a>;
 };
 
-dictionary <a data-dfn-type="dictionary" data-export="" data-global-name="" href="#dictdef-computedtimingproperties">ComputedTimingProperties</a> : <a data-link-type="idl-name" href="#dictdef-animationtimingproperties">AnimationTimingProperties</a> {
-    double              <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/startTime<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="double              " href="#dom-computedtimingproperties-starttime">startTime</a>;
-    unrestricted double <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/endTime<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="unrestricted double " href="#dom-computedtimingproperties-endtime">endTime</a>;
-    unrestricted double <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/activeDuration<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="unrestricted double " href="#dom-computedtimingproperties-activeduration">activeDuration</a>;
-    double?             <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/localTime<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="double?             " href="#dom-computedtimingproperties-localtime">localTime</a>;
-    unrestricted double <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/timeFraction<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="unrestricted double " href="#dom-computedtimingproperties-timefraction">timeFraction</a>;
-    unsigned long?      <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/currentIteration<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="unsigned long?      " href="#dom-computedtimingproperties-currentiteration">currentIteration</a>;
-};
 dictionary <a data-dfn-type="dictionary" data-export="" data-global-name="" href="#dictdef-animationtimingproperties">AnimationTimingProperties</a> {
     double                             <a class="idl-code" data-default="0" data-global-name="AnimationTimingProperties<dictionary>/delay<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="double                             " href="#dom-animationtimingproperties-delay">delay</a> = 0;
     double                             <a class="idl-code" data-default="0" data-global-name="AnimationTimingProperties<dictionary>/endDelay<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="double                             " href="#dom-animationtimingproperties-enddelay">endDelay</a> = 0;
@@ -12789,6 +12745,15 @@ dictionary <a data-dfn-type="dictionary" data-export="" data-global-name="" href
     double                             <a class="idl-code" data-default="1.0" data-global-name="AnimationTimingProperties<dictionary>/playbackRate<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="double                             " href="#dom-animationtimingproperties-playbackrate">playbackRate</a> = 1.0;
     <a data-link-type="idl-name" href="#enumdef-playbackdirection">PlaybackDirection</a>                  <a class="idl-code" data-default="&quot;normal&quot;" data-global-name="AnimationTimingProperties<dictionary>/direction<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="PlaybackDirection                  " href="#dom-animationtimingproperties-direction">direction</a> = "normal";
     DOMString                          <a class="idl-code" data-default="&quot;linear&quot;" data-global-name="AnimationTimingProperties<dictionary>/easing<dict-member>" data-link-for="AnimationTimingProperties" data-link-type="dict-member" data-type="DOMString                          " href="#dom-animationtimingproperties-easing">easing</a> = "linear";
+};
+
+dictionary <a data-dfn-type="dictionary" data-export="" data-global-name="" href="#dictdef-computedtimingproperties">ComputedTimingProperties</a> : <a data-link-type="idl-name" href="#dictdef-animationtimingproperties">AnimationTimingProperties</a> {
+    double              <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/startTime<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="double              " href="#dom-computedtimingproperties-starttime">startTime</a>;
+    unrestricted double <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/endTime<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="unrestricted double " href="#dom-computedtimingproperties-endtime">endTime</a>;
+    unrestricted double <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/activeDuration<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="unrestricted double " href="#dom-computedtimingproperties-activeduration">activeDuration</a>;
+    double?             <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/localTime<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="double?             " href="#dom-computedtimingproperties-localtime">localTime</a>;
+    unrestricted double <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/timeFraction<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="unrestricted double " href="#dom-computedtimingproperties-timefraction">timeFraction</a>;
+    unsigned long?      <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/currentIteration<dict-member>" data-link-for="ComputedTimingProperties" data-link-type="dict-member" data-type="unsigned long?      " href="#dom-computedtimingproperties-currentiteration">currentIteration</a>;
 };
 
 enum <a data-dfn-type="enum" data-export="" data-global-name="" href="#enumdef-fillmode">FillMode</a> { "none", "forwards", "backwards", "both", "auto" };
@@ -12805,6 +12770,7 @@ interface <a data-dfn-type="interface" data-export="" data-global-name="" href="
     void           <a data-dfn-for="AnimationGroup" data-dfn-type="method" data-export="" data-global-name="AnimationGroup<interface>/append(nodes...)<method>/append()<method>" href="#dom-animationgroup-appendnodes" title="append(nodes...)|append()">append</a> (<a data-link-type="idl-name" href="#animationnode">AnimationNode</a>... <a data-dfn-for="AnimationGroup/append" data-dfn-type="argument" data-export="" data-global-name="AnimationGroup/append/nodes<argument>" href="#dom-animationgroup-append-nodes">nodes</a>);
     <a data-link-type="idl-name" href="#animationgroup">AnimationGroup</a> <a data-dfn-for="AnimationGroup" data-dfn-type="method" data-export="" data-global-name="AnimationGroup<interface>/clone()<method>" href="#dom-animationgroup-clone" title="clone()">clone</a> ();
 };
+
 interface <a data-dfn-type="interface" data-export="" data-global-name="" href="#animationnodelist">AnimationNodeList</a> {
     readonly attribute unsigned long <a class="idl-code" data-global-name="AnimationNodeList<interface>/length<attribute>" data-link-for="AnimationNodeList" data-link-type="attribute" data-readonly="" data-type="unsigned long " href="#dom-animationnodelist-length">length</a>;
     getter <a data-link-type="idl-name" href="#animationnode">AnimationNode</a>? <a data-dfn-for="AnimationNodeList" data-dfn-type="method" data-export="" data-global-name="AnimationNodeList<interface>/item(index)<method>" href="#dom-animationnodelist-itemindex" title="item(index)">item</a> (unsigned long <a data-dfn-for="AnimationNodeList/item" data-dfn-type="argument" data-export="" data-global-name="AnimationNodeList/item/index<argument>" href="#dom-animationnodelist-item-index">index</a>);
@@ -13213,8 +13179,6 @@ in a specific playback direction.</p>
 on the <code>currentTime</code> while a player is waiting to pause
 but is also somewhat confusing.<a href="#issue-df52ec70"> ↵ </a></div>
       <div class="issue">Should this be <code>parentGroup</code>?<a href="#issue-894adfa6"> ↵ </a></div>
-      <div class="issue">Now that we have <code>endDelay</code>, should we change this back
-    to <code>startDelay</code>?<a href="#issue-1d679d8c"> ↵ </a></div>
       <div class="issue">On setting, if the previous value was an <code class="idl"><a data-link-type="idl" href="#callbackdef-effectcallback">EffectCallback</a></code>, we
     should call the old callback with a null time fraction so it can
     clear its result.<a href="#issue-67055717"> ↵ </a></div>
