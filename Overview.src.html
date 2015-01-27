@@ -5512,29 +5512,39 @@ interface AnimationSequence : AnimationGroup {
 
 </div>
 
-<h3 id="the-animation-interface">The <code>Animation</code> interface</h3>
+<h3 id="the-animation-interfaces">The <code>AnimationReadonly</code> and
+<code>Animation</code> interfaces</h3>
 
-<a>Animations</a> are represented by the {{Animation}}
-interface.
+<a>Animations</a> are represented by the {{AnimationReadonly}} interface.
+Mutable <a>animations</a> are represented by the {{Animation}} interface.
 
 <pre class='idl'>
 [Constructor (Animatable? target, object? effect,
               optional (unrestricted double or AnimationTimingProperties) timing)]
-interface Animation : AnimationNodeReadonly {
-    attribute (AnimationEffectReadonly or EffectCallback)? effect;
-    attribute Animatable?                          target;
+interface AnimationReadonly : AnimationNodeReadonly {
+    readonly attribute (AnimationEffectReadonly or EffectCallback)? effect;
+    readonly attribute Animatable? target;
     Animation clone ();
 };
+
+[Constructor (Animatable? target, object? effect,
+              optional (unrestricted double or AnimationTimingProperties) timing)]
+interface Animation : AnimationReadonly {
+    inherit attribute (AnimationEffectReadonly or EffectCallback)? effect;
+    inherit attribute Animatable? target;
+};
+Animation implements AnimationNodeMutable;
 </pre>
 
-<div class="contructors">
+<div class="constructors">
 
-:   <dfn constructor for=Animation title="Animation()">
-:   Constructor ()</dfn>
-::  Creates a new {{Animation}} object
+:   <dfn constructor for=AnimationReadonly
+     title="AnimationReadonly(target, effect, timing)">
+    AnimationReadonly ()</dfn>
+::  Creates a new {{AnimationReadonly}} object
     using the following procedure:
 
-    1.  Create a new {{Animation}} object, <var>animation</var>.</li>
+    1.  Create a new {{AnimationReadonly}} object, <var>animation</var>.</li>
     2.  Set <var>timing input</var> as follows,
 
         <div class="switch">
@@ -5557,20 +5567,17 @@ interface Animation : AnimationNodeReadonly {
         </div>
 
     3.  Set <code><var>animation</var>.timing</code> to a new
-        {{AnimationTiming}} object whose attributes are assigned the
+        {{AnimationTimingReadonly}} object whose attributes are assigned the
         value of the member of the same name on <var>timing input</var>.
     4.  Set <code><var>animation</var>.effect</code> to
         the result of applying the <a>procedure for converting an effect
         to an IDL value</a> to <var>effect</var>.
 
-    Examples of the usage of this constructor are given in <a
-    href="#creating-a-new-animation-object" section></a>.
-
     Note: as with <a constructor for="AnimationGroup"
     title="AnimationGroup()">the AnimationGroup constructor</a>
     it is possible to pass in an {{AnimationTiming}} object here
     (e.g. the <code>timing</code> member of another
-    {{AnimationNodeReadonly}}) in which case it will be cloned.
+    {{AnimationNodeReadonly}} object) in which case it will be cloned.
 
     <div class="parameters">
 
@@ -5617,7 +5624,21 @@ interface Animation : AnimationNodeReadonly {
     ::  The timing properties or <a>iteration duration</a> of the new
         animation.
 
-    </div>
+:   <dfn constructor for=Animation title="Animation(target, effect, timing)">
+    Animation ()</dfn>
+::  Creates a new {{Animation}} object using the same procedure as with
+    the <a constructor for=AnimationReadonly
+    title="AnimationReadonly()">AnimationReadonly constructor</a> 
+    with the following differences:
+
+    *   <var>animation</var> is initialized to a new {{Animation}} object rather
+        than a new {{AnimationReadonly}} object.
+    *   <code><var>animation</var>.timing</code> is set to a new
+        {{AnimationTiming}} object rather than a new {{AnimationTimingReadonly}}
+        object.
+
+    Examples of the usage of this constructor are given in <a
+    href="#creating-a-new-animation-object" section></a>.
 
 </div>
 
@@ -5642,17 +5663,18 @@ interface Animation : AnimationNodeReadonly {
 
 <div class="methods">
 
-:   <dfn method for=Animation title="clone()">
+:   <dfn method for=AnimationReadonly title="clone()">
     Animation clone ()</dfn>
-::  Creates a copy of this {{Animation}} object using the following procedure.
+::  Creates a new {{Animation}} object by copying the properties of the
+    {{AnimationReadonly}} object on which it is called as follows:
 
-    1.  Let <var>source</var> be the {{Animation}} object to
+    1.  Let <var>source</var> be the {{AnimationReadonly}} object to
         clone, that is, this object.</li>
     2.  Let <var>cloned timing</var> be a new
         {{AnimationTimingProperties}} object whose members are assigned
         the value of the attribute with the same name on
         <code><var>source</var>.timing</code>.</li>
-    3.  The {{AnimationEffectReadonly}} is cloned depending on the type of
+    3.  The <a>animation effect</a> is cloned depending on the type of
         <code><var>source</var>.effect</code> as follows,
 
         <div class="switch">
@@ -5671,8 +5693,7 @@ interface Animation : AnimationNodeReadonly {
         </div>
 
     4.  Return a new {{Animation}} object created by
-        calling the <a constructor for="Animation"
-        title="Animation()">Animation constructor</a> with parameters
+        calling the {{Animation()}} constructor</a> with parameters
         <code>Animation(<var>source</var>.target, <var>cloned
         effect</var>, <var>cloned timing</var>)</code>.</li>
 
@@ -5681,10 +5702,10 @@ interface Animation : AnimationNodeReadonly {
 <h4 id="processing-the-effect-parameter">Processing the <var>effect</var> parameter</h4>
 
 The <var>effect</var> parameter, an ECMAScript value passed to the
-{{Animation}} constructor or to the
-<code>animate</code> operation of the {{Animatable}} interface,
+{{AnimationReadonly()}} constructor, the {{Animation()}} constructor, or to
+the {{Animatable/animate()}} operation of the {{Animatable}} interface,
 may specify an {{EffectCallback}}, an {{AnimationEffectReadonly}},
-a <a>Keyframe</a> a sequence of <a>Keyframes</a>, or <span
+a {{Keyframe}}, a sequence of {{Keyframe}}s, or <span
 class="esvalue">null</span>.
 However, since callback functions and dictionaries are not
 distinguishable in WebIDL, we define the processing of this
@@ -5724,11 +5745,11 @@ Note: since the processing of this parameter is defined in prose, the
 
 <div class='informative-bg'><em>This section is non-normative</em>
 
-The {{Animation}} constructor offers a number of approaches to
-creating a new {{Animation}} object.
+The {{AnimationReadonly()}} and {{Animation()}} constructors offer a number of
+approaches to creating a new {{AnimationReadonly}} and {{Animation}} objects.
 At its simplest, an {{Animation}} object that changes the
 &lsquo;left&rsquo; property of <var>elem</var> to 100px over three
-seconds can be achieved as follows:
+seconds can be constructed as follows:
 
 <pre class='example sh_javascript'>
 var anim = new Animation(elem, { left: '100px' }, 3000);
@@ -5760,17 +5781,17 @@ The third parameter representing the animation's timing, may
 simply be a number representing the <a>iteration duration</a> in
 milliseconds as above, or, to specify further timing properties such
 as the <a title="animation node playback rate">playback rate</a>,
-an {{AnimationTimingProperties}} object can be used as follows:
+an {{AnimationTimingProperties}} object can be used, as follows:
 
 <pre class='example sh_javascript'>
 var anim =
   new Animation(elem, { left: '100px' }, { duration: 3000, playbackRate: 2 });
 </pre>
 
-            If the duration is not specified, the <a>intrinsic iteration
-            duration</a> is used which, for an <a>animation</a> is zero.
-            It is possible to create an animation that simply sets a property
-            without any interpolation as follows:
+If the duration is not specified, the <a>intrinsic iteration
+duration</a> is used which, for an <a>animation</a>, is zero.
+It is possible to create an animation that simply sets a property
+without any interpolation as follows:
 
 <pre class='example sh_javascript'>
 new Animation(elem, { display: 'none' }, { fill: 'forwards' });
@@ -5806,7 +5827,7 @@ elem.animate({ left: '100px' }, 3000);
 
 <h3 id="the-animatable-interface">The <code>Animatable</code> interface</h3>
 
-Objects that may be the target of an {{Animation}} implement the
+Objects that may be the target of an {{AnimationReadonly}} object implement the
 {{Animatable}} interface.
 
 <pre class='idl'>
@@ -5828,7 +5849,7 @@ interface Animatable {
     called, and calls the {{AnimationTimeline/play()}} method of the
     {{AnimationTimeline}} object of the <a>document timeline</a> of the <a
     href="http://www.w3.org/TR/dom/#concept-node-document">node
-    document</a> [[!DOM]] of the element passing the newly created
+    document</a> [[!DOM]] of the element, passing the newly created
     {{Animation}} as the argument to the method.
 
     The following code fragment:
@@ -5845,15 +5866,14 @@ interface Animatable {
     </pre></div>
 
     Returns the {{AnimationPlayer}} object returned by the
-    <code>play</code> method of the {{AnimationTimeline}}.
+    {{AnimationTimeline/play()}} method of the {{AnimationTimeline}}.
 
     <div class="parameters">
 
     :   object? effect
     ::  The effect to apply.
-        This value is passed to the <a
-        constructor for="Animation" title="Animation()">Animation
-        constructor</a> as the <var>effect</var> parameter and has the
+        This value is passed to the {{Animation()}} constructor 
+        as the <var>effect</var> parameter and has the
         same interpretation as defined for that constructor.
     :   optional (double or AnimationTimingProperties) timing
     ::  The timing parameters of the animation.
@@ -5985,7 +6005,7 @@ enum CompositeOperation {"replace", "add", "accumulate"};
     title="animation accumulation">accumulated</a> on to the
     <a>underlying value</a>.
 
-<h3 id="the-keyframeeffect-interface">The <code>KeyframeEffectReadonly</code>
+<h3 id="the-keyframeeffect-interfaces">The <code>KeyframeEffectReadonly</code>
   and <code>KeyframeEffect</code> interfaces</h3>
 
 <a>Keyframe animation effects</a> are represented by the
