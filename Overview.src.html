@@ -19,7 +19,7 @@ Abstract: This specification defines a model for synchronization and
     for interacting with this model and it is expected that further
     specifications will define declarative means for exposing these
     features.
-Ignored Terms: double, boolean, DOMString, unsigned long, unrestricted double, (animationeffect or effectcallback), SVGPathSegList, (unrestricted double or DOMString)
+Ignored Terms: double, boolean, DOMString, unsigned long, unrestricted double, (animationeffectreadonly or effectcallback), SVGPathSegList, (unrestricted double or DOMString)
 Link Defaults: dom-core-ls (interface) event, dom-core-ls (interface) document, cssom-1 (interface) pseudoelement
 </pre>
 
@@ -4123,7 +4123,7 @@ Note: although the above procedure defines computing keyframe
     implement the <a href="#programming-interface">programming
     interface</a> are required to maintain the original null values as
     well as calculating the computed offsets.
-    This is because the {{KeyframeEffect/getFrames()}} method of the
+    This is because the {{KeyframeEffectReadonly/getFrames()}} method of the
     {{KeyframeEffect}} interface returns keyframe offsets both
     before and after applying spacing.
 
@@ -5518,7 +5518,7 @@ interface.
 [Constructor (Animatable? target, object? effect,
               optional (unrestricted double or AnimationTimingProperties) timing)]
 interface Animation : AnimationNode {
-    attribute (AnimationEffect or EffectCallback)? effect;
+    attribute (AnimationEffectReadonly or EffectCallback)? effect;
     attribute Animatable?                          target;
     Animation clone ();
 };
@@ -5587,16 +5587,16 @@ interface Animation : AnimationNode {
 
         <var>effect</var> may be one of the following:
 
-        *   An {{AnimationEffect}} object,
+        *   An {{AnimationEffectReadonly}} object,
         *   An {{EffectCallback}} function,
         *   A single {{Keyframe}} object,
         *   A sequence of {{Keyframe}} objects, or
         *   null
 
-        If this parameter is an {{AnimationEffect}} object or
+        If this parameter is an {{AnimationEffectReadonly}} object or
         {{EffectCallback}} object, it will be shared with any
         other {{Animation}} objects referring to the same
-        {{AnimationEffect}} or {{EffectCallback}} object.
+        {{AnimationEffectReadonly}} or {{EffectCallback}} object.
         It will <em>not</em> be copied.
 
         If this parameter is of type {{Keyframe}} or
@@ -5649,7 +5649,7 @@ interface Animation : AnimationNode {
         {{AnimationTimingProperties}} object whose members are assigned
         the value of the attribute with the same name on
         <code><var>source</var>.timing</code>.</li>
-    3.  The {{AnimationEffect}} is cloned depending on the type of
+    3.  The {{AnimationEffectReadonly}} is cloned depending on the type of
         <code><var>source</var>.effect</code> as follows,
 
         <div class="switch">
@@ -5680,7 +5680,7 @@ interface Animation : AnimationNode {
 The <var>effect</var> parameter, an ECMAScript value passed to the
 {{Animation}} constructor or to the
 <code>animate</code> operation of the {{Animatable}} interface,
-may specify an {{EffectCallback}}, an {{AnimationEffect}},
+may specify an {{EffectCallback}}, an {{AnimationEffectReadonly}},
 a <a>Keyframe</a> a sequence of <a>Keyframes</a>, or <span
 class="esvalue">null</span>.
 However, since callback functions and dictionaries are not
@@ -5696,7 +5696,7 @@ with parameter <var>effect</var> is as follows:
 ::  Return <span class="idlvalue">null</span>.
 
 :   If <var>effect</var> is a <a spec='webidl' status='TR'>platform
-    object</a> that implements {{AnimationEffect}},
+    object</a> that implements {{AnimationEffectReadonly}},
 ::  return the IDL value that is a reference to the that platform
     object.
 
@@ -5732,7 +5732,7 @@ var anim = new Animation(elem, { left: '100px' }, 3000);
 </pre>
 
 The second parameter, representing the <a>animation effect</a>, may
-specify multiple properties, an {{AnimationEffect}} object, or
+specify multiple properties, an {{AnimationEffectReadonly}} object, or
 even a callback function.
 
 <pre class='example sh_javascript'>
@@ -5881,52 +5881,41 @@ interface Animatable {
     changes to animation such as changes to animation-related style properties
     that have yet to be processed.
 
-<h3 id="the-animationeffect-interface">The <code>AnimationEffect</code> interface</h3>
+<h3 id="the-animationeffectreadonly-interface">The <code>AnimationEffectReadonly</code> interface</h3>
 
 <a>Animation effects</a> are represented by
-the <code>AnimationEffect</code> interface.
-{{AnimationEffect}} is an abstract interface of which several
-concrete subinterfaces are provided.
+the {{AnimationEffectReadonly}} interface.
+
+{{AnimationEffectReadonly}} is an abstract interface inherited by
+{{KeyframeEffectReadonly}}.
+
+All members of {{AnimationEffectReadonly}} are read-only.
+Interfaces that inherit from {{AnimationEffectReadonly}} that are intended to
+be mutable must provide the equivalent setter for each member.
 
 <pre class='idl'>
-interface AnimationEffect {
-    attribute DOMString                   name;
-    attribute IterationCompositeOperation iterationComposite;
-    attribute CompositeOperation          composite;
-    AnimationEffect clone ();
+interface AnimationEffectReadonly {
+    readonly attribute DOMString                   name;
+    readonly attribute IterationCompositeOperation iterationComposite;
+    readonly attribute CompositeOperation          composite;
 };
 </pre>
 
 <div class="attributes">
 
-:   <dfn attribute for=AnimationEffect>name</dfn>
+:   <dfn attribute for=AnimationEffectReadonly>name</dfn>
 ::  A string used to identify the effect.
 
-:   <dfn attribute for=AnimationEffect>iterationComposite</dfn>
+:   <dfn attribute for=AnimationEffectReadonly>iterationComposite</dfn>
 ::  The <a>iteration composite operation</a> property of this
     <a>animation effect</a> as specified by one of the
     <a>IterationCompositeOperation</a> enumeration values.
 
-:   <dfn attribute for=AnimationEffect>composite</dfn>
+:   <dfn attribute for=AnimationEffectReadonly>composite</dfn>
 ::  The <a>composite operation</a> used to composite this
     <a>animation effect</a> with the <a>animation stack</a>, as
     specified by one of the <a>CompositeOperation</a> enumeration
     values.
-
-</div>
-
-<div class="methods">
-
-:   <dfn method for=AnimationEffect title="clone()">
-:   AnimationEffect clone ()</dfn>
-::  Creates and returns a new object of the same type as this object's
-    most-derived interface such that it will produce the same output
-    as this object.
-
-    <p class="todo">
-    We either need a more rigorous definition here or (probably
-    better) a sets of steps on a per-subclass basis.
-    </p>
 
 </div>
 
@@ -5993,48 +5982,40 @@ enum CompositeOperation {"replace", "add", "accumulate"};
     title="animation accumulation">accumulated</a> on to the
     <a>underlying value</a>.
 
-<h3 id="the-keyframeeffect-interface">The <code>KeyframeEffect</code> interface</h3>
+<h3 id="the-keyframeeffect-interface">The <code>KeyframeEffectReadonly</code>
+  and <code>KeyframeEffect</code> interfaces</h3>
 
 <a>Keyframe animation effects</a> are represented by the
+{{KeyframeEffectReadonly}} interface.
+Mutable <a>keyframe animation effects</a> are represented by the
 {{KeyframeEffect}} interface.
 
 <pre class='idl'>
+interface KeyframeEffectReadonly : AnimationEffectReadonly {
+    readonly attribute DOMString spacing;
+    KeyframeEffect               clone();
+    sequence&lt;ComputedKeyframe&gt;   getFrames ();
+};
+
 [Constructor (object frames, optional KeyframeEffectOptions options)]
-interface KeyframeEffect : AnimationEffect {
-    attribute DOMString spacing;
-    sequence&lt;ComputedKeyframe&gt; getFrames ();
-    void                       setFrames (object frames);
+interface KeyframeEffect : KeyframeEffectReadonly {
+    // Mutable overrides of AnimationEffectReadonly members
+    inherit attribute DOMString                   name;
+    inherit attribute IterationCompositeOperation iterationComposite;
+    inherit attribute CompositeOperation          composite;
+
+    // Mutable additions to KeyframeEffectReadonly interface
+    inherit attribute DOMString spacing;
+    void                        setFrames (object frames);
 };
 </pre>
 
-<div class="constructors">
+Issue: This might be easier to read and navigate if we reworked it along the
+lines of <a href="http://dev.w3.org/fxtf/geometry/">Geometry interfaces</a>.
+i.e. re-add sections for constructors, attributes, methods, and then define each
+in prose rather than a &lt;dl&gt;?
 
-:   <dfn constructor for=KeyframeEffect title="KeyframeEffect()">
-:   Constructor ()</dfn>
-::  Creates a new {{KeyframeEffect}} object for the
-    given set of keyframes.
-
-    <div class="parameters">
-
-    :   object frames
-    ::  A {{Keyframe}} object or sequence of {{Keyframe}} objects used for
-        calculating animation values for this <a>animation effect</a>.
-        The constraints on this parameter and its processing are
-        identical to those for <code>setFrames</code>.
-
-    :   optional KeyframeEffectOptions options
-    ::  A {{KeyframeEffectOptions}} dictionary defining other aspects
-        of the <a>animation effect</a>'s behavior.
-        If this parameter is not provided, the default values of the
-        dictionary are used.
-
-    </div>
-
-</div>
-
-<div class="attributes">
-
-:   <dfn attribute for=KeyframeEffect>spacing</dfn>
+:   <dfn attribute for=KeyframeEffectReadonly>spacing</dfn>
 ::  The <a title="keyframe spacing mode">spacing mode</a> to use for
     this <a>animation effect</a>.
 
@@ -6065,18 +6046,19 @@ interface KeyframeEffect : AnimationEffect {
     All other values are treated as "distribute" for the purpose of
     animation model calculations.
 
-</div>
+:   <dfn method for=KeyframeEffectReadonly title="clone()">
+    KeyframeEffect clone ()</dfn>
+::  Creates and returns a new {{KeyframeEffect}} object.
 
-<div class="methods">
-
-:   <dfn method for=KeyframeEffect title="getFrames()">
+:   <dfn method for=KeyframeEffectReadonly title="getFrames()">
     sequence&lt;ComputedKeyframe&gt; getFrames()</dfn>
 ::  Returns the <a>keyframes</a> that make up this effect as
     a sequence of {{ComputedKeyframe}} objects.
 
     The value returned differs from the <var>frames</var> parameter
-    passed into <code>setFrames</code> or the constructor for this
-    interface in the following ways:
+    passed into {{KeyframeEffect/setFrames()}} or the
+    <a constructor for="KeyframeEffect" title="KeyframeEffect()">KeyframeEffect
+    constructor</a> in the following ways:
 
     *   The normalization defined in <a
         href="#normalizing-a-sequence-of-keyframes"
@@ -6090,20 +6072,84 @@ interface KeyframeEffect : AnimationEffect {
         href="#spacing-keyframes" section></a> is stored in
         the <code>computedOffset</code> member of each frame.
 
-:   <dfn method for=KeyframeEffect title="setFrames()">
+:   <dfn constructor for=KeyframeEffect title="KeyframeEffect(frames, options)">
+:   KeyframeEffect ()</dfn>
+::  Creates a new {{KeyframeEffect}} object for the given set of keyframes.
+
+    <div class="parameters">
+
+    :   object frames
+    ::  A {{Keyframe}} object or sequence of {{Keyframe}} objects used for
+        calculating animation values for this <a>animation effect</a>.
+        The constraints on this parameter and its processing are
+        identical to those for {{KeyframeEffect/setFrames()}}.
+
+    :   optional KeyframeEffectOptions options
+    ::  A {{KeyframeEffectOptions}} dictionary defining other aspects
+        of the <a>animation effect</a>'s behavior.
+        If this parameter is not provided, the default values of the
+        dictionary are used.
+
+    </div>
+
+:   <dfn attribute for=KeyframeEffect>name</dfn>
+::  A string used to identify this effect.
+    The getter for this attribute is inherited from the
+    {{AnimationEffectReadonly/name}} attribute on {{AnimationEffectReadonly}}
+    interface.
+
+    On setting, replaces the string with the provided DOMString.
+
+    Issue: We should define the name as an internal member in the model and
+    reference that here.
+
+:   <dfn attribute for=KeyframeEffect>iterationComposite</dfn>
+::  The <a>iteration composite operation</a> of this <a>animation effect</a>.
+    The getter for this attribute is inherited from the
+    {{AnimationEffectReadonly/iterationComposite}} attribute on
+    {{AnimationEffectReadonly}} interface.
+
+    On setting, sets the <a>iteration composite operation</a> property of this
+    <a>animation effect</a> to the provided value.
+
+:   <dfn attribute for=KeyframeEffect>composite</dfn>
+::  The <a>composite operation</a> of this <a>animation effect</a>.
+    The getter for this attribute is inherited from the
+    {{AnimationEffectReadonly/composite}} attribute on
+    {{AnimationEffectReadonly}} interface.
+
+    On setting, sets the <a>composite operation</a> property of this
+    <a>animation effect</a> to the provided value.
+
+:   <dfn attribute for=KeyframeEffect>spacing</dfn>
+::  The <a title="keyframe spacing mode">spacing mode</a> of this
+    <a>keyframe animation effect</a>.
+    The getter for this attribute is inherited from the
+    {{KeyframeEffectReadonly/spacing}} attribute on
+    {{KeyframeEffectReadonly}} interface.
+
+    On setting, sets the <a title="keyframe spacing mode">spacing mode</a>
+    property of this <a>keyframe animation effect</a> to the provided value.
+
+:   <dfn method for=KeyframeEffect title='setFrames(frames)'>
     void setFrames(object frames)</dfn>
-::  A {{Keyframe}} object or sequence of {{Keyframe}} objects used to
-    replace the set of <a>keyframes</a> that make up this effect.
+::  Replaces the set of <a>keyframes</a> that make up this effect.
 
-    The processing of the <var>frames</var> parameter is defined in <a
-    href="#processing-a-sequence-of-keyframe-objects-or-a-single-item"
-    section></a>.
-    Subsequently, the resulting sequence of {{Keyframe}} objects is normalized
-    using the procedure in <a
-    href="#normalizing-a-sequence-of-keyframes"
-    section></a> before storing.
+    <div class="parameters">
 
-</div>
+    :   object frames
+    ::  A {{Keyframe}} object or sequence of {{Keyframe}} objects used to
+        replace the set of <a>keyframes</a> that make up this effect.
+
+        The processing of the <var>frames</var> parameter is defined in <a
+        href="#processing-a-sequence-of-keyframe-objects-or-a-single-item"
+        section></a>.
+
+        Subsequently, the resulting sequence of {{Keyframe}} objects is
+        normalized using the procedure in <a
+        href="#normalizing-a-sequence-of-keyframes" section></a> before storing.
+
+    </div>
 
 <h4 id="processing-a-sequence-of-keyframe-objects-or-a-single-item">Processing a sequence of <code>Keyframe</code> objects or a single item</h4>
 
@@ -6157,8 +6203,8 @@ constructor by providing a {{KeyframeEffectOptions}} object.
 <div class="attributes">
 
 :   <dfn dict-member for=KeyframeEffectOptions>name</dfn>
-::  The value to set for the {{AnimationEffect}}'s {{AnimationEffect/name}}
-    property.
+::  The value to set for the {{AnimationEffectReadonly}}'s
+    {{AnimationEffectReadonly/name}} property.
 
 :   <dfn dict-member for=KeyframeEffectOptions>iterationComposite</dfn>
 ::  The <a>iteration composite operation</a> used to define the way
@@ -6188,8 +6234,9 @@ constructor by providing a {{KeyframeEffectOptions}} object.
 
 <h4 id="normalizing-a-sequence-of-keyframes">Normalizing a sequence of keyframes</h4>
 
-For each call to <code>setFrames</code> or the {{KeyframeEffect}}
-constructor, the following normalization is performed on the passed
+For each call to {{KeyframeEffect/setFrames()}} or the
+<a constructor for="KeyframeEffect" title="KeyframeEffect()">KeyframeEffect
+constructor</a>, the following normalization is performed on the passed
 in <var>frames</var> parameter before storing its value.
 
 Note: the processing of the ECMAScript value into a suitable IDL
@@ -6279,7 +6326,7 @@ dictionary Keyframe {
     specified in this keyframe with the <a>underlying value</a>.
 
     If <code>null</code>, the <a>composite operation</a>
-    specified on the {{AnimationEffect}} will be used.
+    specified on the {{AnimationEffectReadonly}} will be used.
 
 </div>
 
@@ -6431,8 +6478,8 @@ We have a few options:
 
 <h3 id="the-computedkeyframe-dictionary">The <code>ComputedKeyframe</code> dictionary</h3>
 
-<a>Keyframes</a> returned by the {{KeyframeEffect/getFrames()}} method of the
-{{KeyframeEffect}} interface are represented using
+<a>Keyframes</a> returned by the {{KeyframeEffectReadonly/getFrames()}} method
+of the {{KeyframeEffectReadonly}} interface are represented using
 {{ComputedKeyframe}} dictionary objects.
 
 <pre class='idl'>
