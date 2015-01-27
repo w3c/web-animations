@@ -5058,69 +5058,6 @@ interface AnimationTiming : AnimationTimingReadOnly {
 
 </div>
 
-<h3 id="the-computedanimationtiming-interface">The
-  <code>ComputedTimingProperties</code> dictionary</h3>
-
-Timing parameters calculated by the timing model are exposed using
-{{ComputedTimingProperties}} dictionary objects.
-
-<pre class='idl'>
-dictionary ComputedTimingProperties : AnimationTimingProperties {
-    double              startTime;
-    unrestricted double endTime;
-    unrestricted double activeDuration;
-    double?             localTime;
-    unrestricted double timeFraction;
-    unsigned long?      currentIteration;
-};</pre>
-
-<div class='attributes'>
-
-:   <dfn dict-member for=ComputedTimingProperties>startTime</dfn>
-::  The <a title='animation node start time'>start time</a> of this
-    <a>animation node</a> in milliseconds.
-    This is the time at which the <a>parent animation group</a>, if
-    any, has scheduled this child to run within its <a
-    title="transformed time">transformed time space</a>, that is, the
-    <a>animation node</a>'s <a title="inherited time">inherited time
-    space</a>.
-
-    The start of the <a>active interval</a> is based on the sum of
-    the <a title="animation node start time">start time</a> and
-    <a>start delay</a>.
-
-:   <dfn dict-member for=ComputedTimingProperties>endTime</dfn>
-::  The <a>end time</a> of the <a>animation node</a> expressed in
-    milliseconds in <a title="inherited time">inherited time
-    space</a>.
-    This corresponds to the end of the <a>animation node</a>'s active
-    interval plus any <a>end delay</a>.
-
-:   <dfn dict-member for=ComputedTimingProperties>activeDuration</dfn>
-::  The <a>active duration</a> of this <a>animation node</a>.
-
-:   <dfn dict-member for=ComputedTimingProperties>localTime</dfn>
-::  The <a>local time</a> of this <a>animation node</a>.
-
-    <code>localTime</code> will be <code>null</code> if this
-    <a>animation node</a> is not <a>associated with a player</a> or if
-    it has a <a>parent animation group</a> that is not <a>in
-    effect</a>.
-
-:   <dfn dict-member for=ComputedTimingProperties>timeFraction</dfn>
-::  The current <a>time fraction</a> of this <a>animation node</a>.
-
-:   <dfn dict-member for=ComputedTimingProperties>currentIteration</dfn>
-::  The <a>current iteration</a> index beginning with zero for the first
-    iteration.
-
-    In the case where the <a>current iteration</a> index is infinity,
-    (as can happen with a zero-duration animation that repeats infinite times),
-    the return value to be used in ECMAScript is <code>Infinity</code>.
-    The value for other language bindings is undefined.
-
-</div>
-
 <h3 id="the-animationtiminginput-dictionary">The <code>AnimationTimingProperties</code> dictionary</h3>
 
 The {{AnimationTimingProperties}} dictionary is encapsulates the timing
@@ -5201,6 +5138,70 @@ dictionary AnimationTimingProperties {
 
 </div>
 
+<h3 id="the-computedanimationtiming-interface">The
+  <code>ComputedTimingProperties</code> dictionary</h3>
+
+Timing parameters calculated by the timing model are exposed using
+{{ComputedTimingProperties}} dictionary objects.
+
+<pre class='idl'>
+dictionary ComputedTimingProperties : AnimationTimingProperties {
+    double              startTime;
+    unrestricted double endTime;
+    unrestricted double activeDuration;
+    double?             localTime;
+    unrestricted double timeFraction;
+    unsigned long?      currentIteration;
+};
+</pre>
+
+<div class='attributes'>
+
+:   <dfn dict-member for=ComputedTimingProperties>startTime</dfn>
+::  The <a title='animation node start time'>start time</a> of this
+    <a>animation node</a> in milliseconds.
+    This is the time at which the <a>parent animation group</a>, if
+    any, has scheduled this child to run within its <a
+    title="transformed time">transformed time space</a>, that is, the
+    <a>animation node</a>'s <a title="inherited time">inherited time
+    space</a>.
+
+    The start of the <a>active interval</a> is based on the sum of
+    the <a title="animation node start time">start time</a> and
+    <a>start delay</a>.
+
+:   <dfn dict-member for=ComputedTimingProperties>endTime</dfn>
+::  The <a>end time</a> of the <a>animation node</a> expressed in
+    milliseconds in <a title="inherited time">inherited time
+    space</a>.
+    This corresponds to the end of the <a>animation node</a>'s active
+    interval plus any <a>end delay</a>.
+
+:   <dfn dict-member for=ComputedTimingProperties>activeDuration</dfn>
+::  The <a>active duration</a> of this <a>animation node</a>.
+
+:   <dfn dict-member for=ComputedTimingProperties>localTime</dfn>
+::  The <a>local time</a> of this <a>animation node</a>.
+
+    <code>localTime</code> will be <code>null</code> if this
+    <a>animation node</a> is not <a>associated with a player</a> or if
+    it has a <a>parent animation group</a> that is not <a>in
+    effect</a>.
+
+:   <dfn dict-member for=ComputedTimingProperties>timeFraction</dfn>
+::  The current <a>time fraction</a> of this <a>animation node</a>.
+
+:   <dfn dict-member for=ComputedTimingProperties>currentIteration</dfn>
+::  The <a>current iteration</a> index beginning with zero for the first
+    iteration.
+
+    In the case where the <a>current iteration</a> index is infinity,
+    (as can happen with a zero-duration animation that repeats infinite times),
+    the return value to be used in ECMAScript is <code>Infinity</code>.
+    The value for other language bindings is undefined.
+
+</div>
+
 <h4 id="the-fillmode-enumeration">The <code>FillMode</code> enumeration</h4>
 
 <pre class='idl'>
@@ -5261,7 +5262,8 @@ interface AnimationGroup : AnimationNode {
     void           prepend (AnimationNode... nodes);
     void           append (AnimationNode... nodes);
     AnimationGroup clone ();
-};</pre>
+};
+</pre>
 
 <div class="constructors">
 
