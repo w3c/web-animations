@@ -4722,6 +4722,9 @@ enum AnimationPlayState { "idle", "pending", "running", "paused", "finished" };
 <a>Animation nodes</a> are represented in the Web
 Animations API by the {{AnimationNode}} interface.
 
+Mutable <a>animation nodes</a> implement the additional
+{{MutableAnimationNode}} interface.
+
 <pre class='idl'>
 interface AnimationNode {
     // Timing
@@ -4732,6 +4735,10 @@ interface AnimationNode {
     readonly attribute AnimationGroup?          parent;
     readonly attribute AnimationNode?           previousSibling;
     readonly attribute AnimationNode?           nextSibling;
+};
+
+[NoInterfaceObject]
+interface MutableAnimationNode {
     void before (AnimationNode... nodes);
     void after (AnimationNode... nodes);
     void replace (AnimationNode... nodes);
@@ -4787,7 +4794,7 @@ interface AnimationNode {
 
 <div class='methods'>
 
-:   <dfn method for=AnimationNode title='before()'>
+:   <dfn method for=MutableAnimationNode title='before()'>
     void before (AnimationNode... nodes)</dfn>
 ::  Inserts <var>nodes</var> before this <a>animation node</a>.
 
@@ -4809,7 +4816,7 @@ interface AnimationNode {
         </pre></div>
     </div>
 
-:   <dfn method for=AnimationNode title='after()'>
+:   <dfn method for=MutableAnimationNode title='after()'>
     void after(AnimationNode... nodes)</dfn>
 ::  Inserts <var>nodes</var> after this <a>animation node</a>.
 
@@ -4825,7 +4832,7 @@ interface AnimationNode {
     4.  <a title="insert children">Insert</a> <var>nodes</var> before
         <var>reference child</var>.
 
-:   <dfn method for=AnimationNode title='replace()'>
+:   <dfn method for=MutableAnimationNode title='replace()'>
     void replace(AnimationNode... nodes)</dfn>
 ::  Replaces this {{AnimationNode}} with the passed in
     <var>nodes</var>.
@@ -4844,7 +4851,7 @@ interface AnimationNode {
     5.  <a title="insert children">Insert</a> <var>nodes</var> before
         <var>reference child</var>.
 
-:   <dfn method for=AnimationNode title='remove()'>void remove()</dfn>
+:   <dfn method for=MutableAnimationNode title='remove()'>void remove()</dfn>
 ::  <a title="remove an animation node">Removes</a> this <a>animation
     node</a> from its <a>parent animation group</a> or <a>player</a>.
 
@@ -5881,7 +5888,8 @@ the <code>AnimationEffect</code> interface.
 {{AnimationEffect}} is an abstract interface of which several
 concrete subinterfaces are provided.
 
-<pre class='idl'>interface AnimationEffect {
+<pre class='idl'>
+interface AnimationEffect {
     attribute DOMString                   name;
     attribute IterationCompositeOperation iterationComposite;
     attribute CompositeOperation          composite;
