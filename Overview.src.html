@@ -4732,7 +4732,7 @@ interface AnimationNodeReadonly {
     readonly attribute ComputedTimingProperties computedTiming;
 
     // Timing hierarchy
-    readonly attribute AnimationGroup?          parent;
+    readonly attribute AnimationGroupReadonly?  parent;
     readonly attribute AnimationNodeReadonly?   previousSibling;
     readonly attribute AnimationNodeReadonly?   nextSibling;
 };
@@ -4992,7 +4992,8 @@ interface AnimationTimingReadonly {
 
 The {{AnimationTiming}} interface is a mutable subclass of
 {{AnimationTimingReadonly}} returned for the <code>timing</code> attribute of a
-mutable <a>animation node</a> such as {{Animation}} or {{AnimationGroup}}.
+mutable <a>animation node</a> such as {{Animation}}, {{AnimationGroup}}, or
+{{AnimationSequence}}.
 
 <pre class='idl'>
 interface AnimationTiming : AnimationTimingReadonly {
@@ -5213,8 +5214,8 @@ enum FillMode { "none", "forwards", "backwards", "both", "auto" };
 
 :   <code>auto</code>
 ::  Fill backwards and forwards when applied to an
-    {{AnimationGroup}} and no fill when applied to an
-    {{Animation}}.
+    {{AnimationGroupReadonly}} and no fill when applied to an
+    {{AnimationReadonly}}.
 
 
 <h4 id="the-playbackdirection-enumeration">The <code>PlaybackDirection</code> enumeration</h4>
@@ -5238,113 +5239,107 @@ enum PlaybackDirection { "normal", "reverse", "alternate", "alternate-reverse" }
 ::  Even iterations are played in the reverse direction from the way
     they are specified, odd iterations are played as specified.
 
-<h3 id="the-animationgroup-interface">The <code>AnimationGroup</code> interface</h3>
+<h3 id="the-animationgroup-interfaces">The <code>AnimationGroupReadonly</code>
+  and <code>AnimationGroup</code> interfaces</h3>
 
-<a>Animation groups</a> are represented by the {{AnimationGroup}}
+<a>Animation groups</a> are represented by the {{AnimationGroupReadonly}}
+interface.
+Mutable <a>animation groups</a> are represented by the {{AnimationGroup}}
 interface.
 
 <pre class='idl'>
 [Constructor (sequence<AnimationNodeReadonly>? children,
               optional (unrestricted double or AnimationTimingProperties) timing)]
-interface AnimationGroup : AnimationNodeReadonly {
-    readonly attribute AnimationNodeList children;
-    readonly attribute AnimationNodeReadonly?    firstChild;
-    readonly attribute AnimationNodeReadonly?    lastChild;
-    void           prepend (AnimationNodeReadonly... nodes);
-    void           append (AnimationNodeReadonly... nodes);
+interface AnimationGroupReadonly : AnimationNodeReadonly {
+    readonly attribute AnimationNodeList      children;
+    readonly attribute AnimationNodeReadonly? firstChild;
+    readonly attribute AnimationNodeReadonly? lastChild;
     AnimationGroup clone ();
 };
+
+[NoInterfaceObject]
+interface AnimationGroupMutable {
+  void prepend (AnimationNodeReadonly... nodes);
+  void append (AnimationNodeReadonly... nodes);
+};
+
+[Constructor (sequence<AnimationNodeReadonly>? children,
+              optional (unrestricted double or AnimationTimingProperties) timing)]
+interface AnimationGroup : AnimationGroupReadonly {
+};
+AnimationGroup implements AnimationNodeMutable;
+AnimationGroup implements AnimationGroupMutable;
 </pre>
 
 <div class="constructors">
 
-:   <dfn constructor for=AnimationGroup title="AnimationGroup()">
-:   Constructor ()</dfn>
+:   <dfn constructor for=AnimationGroupReadonly
+      title="AnimationGroupReadonly(children, timing)">
+    AnimationGroupReadonly ()</dfn>
 ::  Creates a new {{AnimationGroup}} object using the following
     procedure:
 
     1.  Create a new {{AnimationGroup}} object, <var>group</var>.
-    2.  Set <var>timing input</var> as follows,
 
-        <div class="switch">
-
-        :   If <var>timing</var> is an {{AnimationTimingProperties}}
-            object,
-        ::  Let <var>timing input</var> refer to <var>timing</var>.
-
-        :   If <var>timing</var> is a <code>double</code>,
-        ::  Let <var>timing input</var> be a new
-            {{AnimationTimingProperties}} object with all members set to
-            their default values and <code>duration</code> set to
-            <var>timing</var>.
-
-        :   Otherwise (<var>timing</var> is undefined),
-        ::  Let <var>timing input</var> be a new
-            {{AnimationTimingProperties}} object with all members set to
-            their default values.
-
-        </div>
+    2.  Let <var>timing input</var> be the result of applying the
+        <a>procedure for processing a timing argument</a> to <var>timing.
 
     3.  Set <code><var>group</var>.timing</code> to a new
-        {{AnimationTiming}} object whose attributes are assigned the
+        {{AnimationTimingReadonly}} object whose attributes are assigned the
         value of the member of the same name on <var>timing input</var>.
-
-        <div class="todo">
-
-        The above two steps are identical with the constructor for
-        {{Animation}} and should be factored out somewhere.
-
-        </div>
 
     4.  <a title="insert children">Insert</a> <var>children</var>
         before <code>null</code>.
 
-    <div class="note">
-
-    Note that since {{AnimationTiming}} objects have the same
-    member names as {{AnimationTimingProperties}} dictionaries, it is
-    also possible to pass the <code>timing</code> member of another
-    {{AnimationNodeReadonly}} as the <var>timing</var> parameter.
-
-    Doing so will cause the {{AnimationTiming}} object to be
-    treated as an {{AnimationTimingProperties}} dictionary and thus it
-    will effectively be cloned, not shared.
-
-    </div>
-
     <div class="parameters">
 
-    :   children
+    :   <dfn argument
+        for="AnimationGroupReadonly/AnimationGroupReadonly(children, timing)"
+        title="children">children</dfn>
     ::  A sequence of animation nodes to add as children of this group.
 
         These children are appended in sequence using the same
-        semantics as the {{AnimationGroup/append()}} method of the
-        {{AnimationGroup}} interface.
+        semantics as the {{AnimationGroupMutable/append()}} method of the
+        {{AnimationGroupMutable}} interface.
 
-    :   timing
+    :   <dfn argument
+        for="AnimationGroupReadonly/AnimationGroupReadonly(children, timing)"
+        title="timing">timing</dfn>
     ::  The timing properties or <a>iteration duration</a> of the new
         animation group.
 
     </div>
 
+:   <dfn constructor for=AnimationGroup
+      title="AnimationGroup(children, timing)">
+    AnimationGroup ()</dfn>
+::  Creates a new {{AnimationGroup}} object using the same procedure as with
+    the {{AnimationGroupReadonly()}} constructor with the following differences:
+
+    *   <var>group</var> is initialized to a new {{AnimationGroup}} object
+        rather than a new {{AnimationGroupReadonly}} object.
+    *   <code><var>group</var>.timing</code> is set to a new
+        {{AnimationTiming}} object rather than a new {{AnimationTimingReadonly}}
+        object.
+
 </div>
 
 <div class="attributes">
 
-:   <dfn attribute for=AnimationGroup>children</dfn>
+:   <dfn attribute for=AnimationGroupReadonly>children</dfn>
 ::  The list of <a>child animation nodes</a> in the group.
 
-:   <dfn attribute for=AnimationGroup>firstChild</dfn>
+:   <dfn attribute for=AnimationGroupReadonly>firstChild</dfn>
 ::  The <a>first child</a> of this <a>animation group</a>.
 
-:   <dfn attribute for=AnimationGroup>lastChild</dfn>
+:   <dfn attribute for=AnimationGroupReadonly>lastChild</dfn>
 ::  The <a>last child</a> of this <a>animation group</a>.
 
 </div>
 
 <div class="methods">
 
-:   <dfn method for=AnimationTimeline title="prepend()">
+:   <dfn method for=AnimationGroupMutable title="prepend()">
 :   void prepend (AnimationNodeReadonly... nodes)</dfn>
 ::
 
@@ -5355,7 +5350,7 @@ interface AnimationGroup : AnimationNodeReadonly {
     2.  <a title="insert children">Insert</a> <var>nodes</var> before
         the <a>first child</a>.
 
-:   <dfn method for=AnimationTimeline title="append()">
+:   <dfn method for=AnimationGroupMutable title="append()">
     void append (AnimationNodeReadonly... nodes)</dfn>
 ::
 
@@ -5366,27 +5361,80 @@ interface AnimationGroup : AnimationNodeReadonly {
     2.  <a title="insert children">Insert</a> <var>nodes</var> before
         <code>null</code>.
 
-:   <dfn method for=AnimationTimeline title="clone()">
+:   <dfn method for=AnimationGroupReadonly title="clone()">
     AnimationGroup clone ()</dfn>
-::  Creates a deep copy of this {{AnimationGroup}} object using the
+::  Creates a deep copy of this {{AnimationGroupReadonly}} object using the
     following procedure.
 
-    1.  Let <var>source</var> be this {{AnimationGroup}} object,
+    1.  Let <var>source</var> be this {{AnimationGroupReadonly}} object,
         the object to be cloned.
+
     2.  Let <var>cloned timing</var> be a new
         {{AnimationTimingProperties}} object whose members are assigned
         the value of the attribute with the same name on
         <code><var>source</var>.timing</code>.
+
     3.  Let <var>cloned children</var> be an empty sequence of
         {{AnimationNodeReadonly}} objects.
+
     4.  For each <var>child</var> in
         <code><var>source</var>.children</code>, append the result
         of calling <code><var>child</var>.clone()</code>
         to <var>cloned children</var>.
+
     5.  Return a new {{AnimationGroup}} object created by
-        calling the {{AnimationGroup}} constructor with parameters
+        calling the {{AnimationGroup()}} constructor with parameters
         <code>AnimationGroup(<var>cloned children</var>,
         <var>cloned timing</var>)</code>.
+
+</div>
+
+<h4 id="processing-a-timing-argument">Processing a <var>timing</var> argument</h4>
+
+<p>The <var>timing</var> parameter passed to the {{AnimationGroupReadonly()}},
+{{AnimationGroup()}}, {{AnimationReadonly()}}, or {{Animation()}} constructor
+may be an {{AnimationTimingProperties}} object, a double representing the
+duration of the <a>animation node</a> in milliseconds, or undefined.</p>
+
+<p>The following <dfn>procedure for processing a timing argument</dfn>,
+<var>timing</var>, normalizes the above inputs into
+a {{AnimationTimingProperties}} object.</p>
+
+    :   If <var>timing</var> is an {{AnimationTimingProperties}} object,
+    ::  Return <var>timing</var>.
+
+    :   If <var>timing</var> is a <code>double</code>,
+    ::  Return a new {{AnimationTimingProperties}} object with all members set
+        to their default values and {{AnimationTimingProperties/duration}} set
+        to <var>timing</var>.
+
+    :   Otherwise (<var>timing</var> is undefined),
+    ::  Return a new {{AnimationTimingProperties}} object with all members set
+        to their default values.
+
+<div class="note">
+
+Note that since {{AnimationTimingReadonly}} objects have the same
+member names as {{AnimationTimingProperties}} dictionaries, it is
+also possible to pass the {{AnimationNodeReadonly/timing}} member of another
+{{AnimationNodeReadonly}} to the any of the methods that invoke this method
+as the <var>timing</var> parameter.
+
+Doing so will cause the {{AnimationTimingReadonly}} object to be
+treated as an {{AnimationTimingProperties}} dictionary and thus it
+will effectively be cloned, not shared.
+
+<div class="example">
+
+For example, the timing of two animations may be aligned as follows:
+
+<pre class="lang-javascript">
+var animA = elem.animate({ opacity: 0 }, 1000).source;
+var animB = elem.animate({ width: '0px' }, animA.timing).source;
+alert(animA.timing !== animB.timing); // Displays 'true'
+alert(animA.timing.duration === animB.timing.duration); // Displays 'true'
+</pre>
+</div>
 
 </div>
 
@@ -5476,17 +5524,28 @@ interface AnimationNodeList {
 
 </div>
 
-<h3 id="the-animationsequence-interface">The <code>AnimationSequence</code> interface</h3>
+<h3 id="the-animationsequence-interfaces">The
+<code>AnimationSequenceReadonly</code> and <code>AnimationSequence</code>
+interfaces</h3>
 
-<a>Animation sequences</a> are represented by the
-<code>AnimationSequence</code> interface.
+<a>Animation sequences</a> are represented by the {{AnimationSequenceReadonly}}
+interface.
+Mutable <a>animation sequences</a> are represented by the {{AnimationSequence}}
+interface.
 
 <pre class='idl'>
 [Constructor (sequence<AnimationNodeReadonly>? children,
               optional (unrestricted double or AnimationTimingProperties) timing)]
-interface AnimationSequence : AnimationGroup {
+interface AnimationSequenceReadonly : AnimationGroupReadonly {
     AnimationSequence clone ();
 };
+
+[Constructor (sequence<AnimationNodeReadonly>? children,
+              optional (unrestricted double or AnimationTimingProperties) timing)]
+interface AnimationSequence : AnimationSequenceReadonly {
+};
+AnimationSequence implements AnimationNodeMutable;
+AnimationSequence implements AnimationGroupMutable;
 </pre>
 
 <div class="contructors">
@@ -5502,12 +5561,12 @@ interface AnimationSequence : AnimationGroup {
 
 <div class="methods">
 
-:   <dfn method for=AnimationSequence title="clone()">
+:   <dfn method for=AnimationSequenceReadonly title="clone()">
     AnimationSequence clone ()</dfn>
-::  Creates a deep copy of this {{AnimationSequence}} object using
-    the same procedure as defined for the {{AnimationGroup/clone()}} method of
-    the {{AnimationGroup}} interface except that a new {{AnimationSequence}}
-    object is created.
+::  Creates a deep copy of this {{AnimationSequenceReadonly}} object using
+    the same procedure as defined for the {{AnimationGroupReadonly/clone()}}
+    method of the {{AnimationGroupReadonly}} interface except that a new
+    {{AnimationSequence}} object is created.
 
 </div>
 
@@ -5544,30 +5603,14 @@ Animation implements AnimationNodeMutable;
     using the following procedure:
 
     1.  Create a new {{AnimationReadonly}} object, <var>animation</var>.</li>
-    2.  Set <var>timing input</var> as follows,
 
-        <div class="switch">
-
-        :   If <var>timing</var> is an {{AnimationTimingProperties}}
-            object,
-        ::  Let <var>timing input</var> refer to <var>timing</var>.
-
-        :   If <var>timing</var> is a <code>double</code>,
-        ::  Let <var>timing input</var> be a new
-            {{AnimationTimingProperties}} object with all members set to
-            their default values and <code>duration</code> set to
-            <var>timing</var>.
-
-        :   Otherwise (<var>timing</var> is undefined),
-        ::  Let <var>timing input</var> be a new
-            {{AnimationTimingProperties}} object with all members set to
-            their default values.
-
-        </div>
+    2.  Let <var>timing input</var> be the result of applying the
+        <a>procedure for processing a timing argument</a> to <var>timing.
 
     3.  Set <code><var>animation</var>.timing</code> to a new
         {{AnimationTimingReadonly}} object whose attributes are assigned the
         value of the member of the same name on <var>timing input</var>.
+
     4.  Set <code><var>animation</var>.effect</code> to
         the result of applying the <a>procedure for converting an effect
         to an IDL value</a> to <var>effect</var>.
@@ -5626,9 +5669,7 @@ Animation implements AnimationNodeMutable;
 :   <dfn constructor for=Animation title="Animation(target, effect, timing)">
     Animation ()</dfn>
 ::  Creates a new {{Animation}} object using the same procedure as with
-    the <a constructor for=AnimationReadonly
-    title="AnimationReadonly()">AnimationReadonly constructor</a> 
-    with the following differences:
+    the {{AnimationReadonly()}} constructor with the following differences:
 
     *   <var>animation</var> is initialized to a new {{Animation}} object rather
         than a new {{AnimationReadonly}} object.
