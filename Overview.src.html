@@ -5876,9 +5876,8 @@ interface Animatable {
         same interpretation as defined for that constructor.
     :   optional (double or AnimationTimingProperties) timing
     ::  The timing parameters of the animation.
-        This value is passed to the <a
-        constructor for="Animation" title="Animation()">Animation
-        constructor</a> as the <var>timing</var> parameter and has the
+        This value is passed to the {{Animation()}} constructor
+        as the <var>timing</var> parameter and has the
         same interpretation as defined for that constructor.
 
     </div>
@@ -6013,6 +6012,7 @@ Mutable <a>keyframe animation effects</a> are represented by the
 {{KeyframeEffect}} interface.
 
 <pre class='idl'>
+[Constructor (object frames, optional KeyframeEffectOptions options)]
 interface KeyframeEffectReadonly : AnimationEffectReadonly {
     readonly attribute DOMString spacing;
     KeyframeEffect               clone();
@@ -6032,14 +6032,58 @@ interface KeyframeEffect : KeyframeEffectReadonly {
 };
 </pre>
 
-Issue: This might be easier to read and navigate if we reworked it along the
-lines of <a href="http://dev.w3.org/fxtf/geometry/">Geometry interfaces</a>.
-i.e. re-add sections for constructors, attributes, methods, and then define each
-in prose rather than a &lt;dl&gt;?
+<div class="constructors">
+
+:   <dfn constructor for=KeyframeEffectReadonly
+      title="KeyframeEffectReadonly(frames, options)">
+    KeyframeEffectReadonly ()</dfn>
+::  Creates a new {{KeyframeEffectReadonly}} object for the given set of
+    keyframes.
+
+    <div class="parameters">
+
+    :   <dfn argument
+        for="KeyframeEffectReadonly/KeyframeEffectReadonly(frames, options)"
+        title="frames"><dfn argument
+        for="KeyframeEffect/KeyframeEffect(frames, options)"
+        title="frames">object frames</dfn></dfn>
+    ::  A {{Keyframe}} object or sequence of {{Keyframe}} objects used for
+        calculating animation values for this <a>animation effect</a>.
+        The constraints on this parameter and its processing are
+        identical to those specified for the
+        {{KeyframeEffect/setFrames/frames}} argument to
+        {{KeyframeEffect/setFrames()}}.
+
+    :   <dfn argument
+        for="KeyframeEffectReadonly/KeyframeEffectReadonly(frames, options)"
+        title="options"><dfn argument
+        for="KeyframeEffect/KeyframeEffect(frames, options)"
+        title="options">optional KeyframeEffect options</dfn></dfn>
+    ::  A {{KeyframeEffectOptions}} dictionary defining other aspects
+        of the <a>animation effect</a>'s behavior.
+        If this parameter is not provided, the default values of the
+        dictionary are used.
+
+    </div>
+
+:   <dfn constructor for=KeyframeEffect title="KeyframeEffect(frames, options)">
+    KeyframeEffect ()</dfn>
+::  Creates a new {{KeyframeEffect}} object for the given set of keyframes.
+    The meaning and processing of the
+    <code>frames</code> and <code>options</code> arguments is identical to that
+    defined for the {{KeyframeEffectReadonly()}} constructor.
+
+</div>
+
+<div class="attributes">
 
 :   <dfn attribute for=KeyframeEffectReadonly>spacing</dfn>
-::  The <a title="keyframe spacing mode">spacing mode</a> to use for
-    this <a>animation effect</a>.
+:   <dfn attribute for=KeyframeEffect>spacing</dfn>
+::  On getting, returns the <a title="keyframe spacing mode">spacing mode</a> to
+    use for this <a>keyframe animation effect</a>.
+
+    On setting, sets the <a title="keyframe spacing mode">spacing mode</a>
+    property of this <a>keyframe animation effect</a> to the provided value.
 
     Recognized values are defined by the following grammar:
 
@@ -6067,52 +6111,6 @@ in prose rather than a &lt;dl&gt;?
 
     All other values are treated as "distribute" for the purpose of
     animation model calculations.
-
-:   <dfn method for=KeyframeEffectReadonly title="clone()">
-    KeyframeEffect clone ()</dfn>
-::  Creates and returns a new {{KeyframeEffect}} object.
-
-:   <dfn method for=KeyframeEffectReadonly title="getFrames()">
-    sequence&lt;ComputedKeyframe&gt; getFrames()</dfn>
-::  Returns the <a>keyframes</a> that make up this effect as
-    a sequence of {{ComputedKeyframe}} objects.
-
-    The value returned differs from the <var>frames</var> parameter
-    passed into {{KeyframeEffect/setFrames()}} or the
-    <a constructor for="KeyframeEffect" title="KeyframeEffect()">KeyframeEffect
-    constructor</a> in the following ways:
-
-    *   The normalization defined in <a
-        href="#normalizing-a-sequence-of-keyframes"
-        section></a> is applied to <var>frames</var> which
-        may result in some frames being removed or re-ordered and some
-        properties being removed.
-        This normalization will also cause a single {{Keyframe}}
-        object to be replaced with a sequence.
-    *   The result of computing the <a>keyframe offset</a>
-        of each <a>keyframe</a> as defined in <a
-        href="#spacing-keyframes" section></a> is stored in
-        the <code>computedOffset</code> member of each frame.
-
-:   <dfn constructor for=KeyframeEffect title="KeyframeEffect(frames, options)">
-:   KeyframeEffect ()</dfn>
-::  Creates a new {{KeyframeEffect}} object for the given set of keyframes.
-
-    <div class="parameters">
-
-    :   object frames
-    ::  A {{Keyframe}} object or sequence of {{Keyframe}} objects used for
-        calculating animation values for this <a>animation effect</a>.
-        The constraints on this parameter and its processing are
-        identical to those for {{KeyframeEffect/setFrames()}}.
-
-    :   optional KeyframeEffectOptions options
-    ::  A {{KeyframeEffectOptions}} dictionary defining other aspects
-        of the <a>animation effect</a>'s behavior.
-        If this parameter is not provided, the default values of the
-        dictionary are used.
-
-    </div>
 
 :   <dfn attribute for=KeyframeEffect>name</dfn>
 ::  A string used to identify this effect.
@@ -6143,15 +6141,35 @@ in prose rather than a &lt;dl&gt;?
     On setting, sets the <a>composite operation</a> property of this
     <a>animation effect</a> to the provided value.
 
-:   <dfn attribute for=KeyframeEffect>spacing</dfn>
-::  The <a title="keyframe spacing mode">spacing mode</a> of this
-    <a>keyframe animation effect</a>.
-    The getter for this attribute is inherited from the
-    {{KeyframeEffectReadonly/spacing}} attribute on
-    {{KeyframeEffectReadonly}} interface.
+</div>
 
-    On setting, sets the <a title="keyframe spacing mode">spacing mode</a>
-    property of this <a>keyframe animation effect</a> to the provided value.
+<div class="methods">
+
+:   <dfn method for=KeyframeEffectReadonly title="clone()">
+    KeyframeEffect clone ()</dfn>
+::  Creates and returns a new {{KeyframeEffect}} object.
+
+:   <dfn method for=KeyframeEffectReadonly title="getFrames()">
+    sequence&lt;ComputedKeyframe&gt; getFrames()</dfn>
+::  Returns the <a>keyframes</a> that make up this effect as
+    a sequence of {{ComputedKeyframe}} objects.
+
+    The value returned differs from the {{KeyframeEffect/setFrames/frames}}
+    argument passed into {{KeyframeEffect/setFrames()}} or the
+    {{KeyframeEffectReadonly()}} or {{KeyframeEffect()}} constructors in
+    the following ways:
+
+    *   The normalization defined in <a
+        href="#normalizing-a-sequence-of-keyframes"
+        section></a> is applied to <var>frames</var> which
+        may result in some frames being removed or re-ordered and some
+        properties being removed.
+        This normalization will also cause a single {{Keyframe}}
+        object to be replaced with a sequence.
+    *   The result of computing the <a>keyframe offset</a>
+        of each <a>keyframe</a> as defined in <a
+        href="#spacing-keyframes" section></a> is stored in
+        the {{ComputedKeyframe/computedOffset}} member of each frame.
 
 :   <dfn method for=KeyframeEffect title='setFrames(frames)'>
     void setFrames(object frames)</dfn>
@@ -6159,7 +6177,8 @@ in prose rather than a &lt;dl&gt;?
 
     <div class="parameters">
 
-    :   object frames
+    :   <dfn argument for=KeyframeEffect/setFrames
+        title="frames">object frames</dfn>
     ::  A {{Keyframe}} object or sequence of {{Keyframe}} objects used to
         replace the set of <a>keyframes</a> that make up this effect.
 
@@ -6172,6 +6191,8 @@ in prose rather than a &lt;dl&gt;?
         href="#normalizing-a-sequence-of-keyframes" section></a> before storing.
 
     </div>
+
+</div>
 
 <h4 id="processing-a-sequence-of-keyframe-objects-or-a-single-item">Processing a sequence of <code>Keyframe</code> objects or a single item</h4>
 
