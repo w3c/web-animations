@@ -6197,9 +6197,8 @@ interface KeyframeEffect : KeyframeEffectReadonly {
 <h4 id="processing-a-sequence-of-keyframe-objects-or-a-single-item">Processing a sequence of <code>Keyframe</code> objects or a single item</h4>
 
 WebIDL does not currently make a dictionary and a sequence
-distinguishable but it was felt that allowing both was important
-for useability of the <code>animate</code> operation on
-{{Animatable}}.
+distinguishable but for ease of use, the {{Animatable/animate()}} operation
+on the {{Animatable}} interface allows both.
 Therefore, we define the processing for handling a parameter
 that may be either a single {{Keyframe}} dictionary object, or
 a sequence of such objects.
@@ -6232,10 +6231,12 @@ Issue: Should this be defined in terms of <code>IsIterable</code> instead?
 
 <h4 id="the-keyframeeffectoptions-dictionary">The <code>KeyframeEffectOptions</code> dictionary</h4>
 
-Additional parameters may be passed to the {{KeyframeEffect}}
-constructor by providing a {{KeyframeEffectOptions}} object.
+Additional parameters may be passed to the {{KeyframeEffectReadonly()}} and
+{{KeyframeEffect()}} constructors by providing a {{KeyframeEffectOptions}}
+object.
 
-<pre class='idl'>dictionary KeyframeEffectOptions {
+<pre class='idl'>
+dictionary KeyframeEffectOptions {
     DOMString                   name = "";
     IterationCompositeOperation iterationComposite = "replace";
     CompositeOperation          composite = "replace";
@@ -6266,20 +6267,20 @@ constructor by providing a {{KeyframeEffectOptions}} object.
 
     See the {{KeyframeEffect/spacing}} attribute of the
     {{KeyframeEffect}} interface for the recognized values and
-    their meaning are described
+    their meanings.
 
-    Unrecognized values are set on the created {{KeyframeEffect}}
-    object, but are treated as "distribute" for the purpose of
-    animation model calculations.
+    Unrecognized values are set on the created {{KeyframeEffectReadonly}} or
+    {{KeyframeEffect}} object, but are treated as "distribute" for the purpose
+    of animation model calculations.
 
 </div>
 
 
 <h4 id="normalizing-a-sequence-of-keyframes">Normalizing a sequence of keyframes</h4>
 
-For each call to {{KeyframeEffect/setFrames()}} or the
-<a constructor for="KeyframeEffect" title="KeyframeEffect()">KeyframeEffect
-constructor</a>, the following normalization is performed on the passed
+For each call to {{KeyframeEffect/setFrames()}}, the
+{{KeyframeEffectReadonly()}} constructor or the {{KeyframeEffect()}}
+constructor, the following normalization is performed on the passed
 in <var>frames</var> parameter before storing its value.
 
 Note: the processing of the ECMAScript value into a suitable IDL
