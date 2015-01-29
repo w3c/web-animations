@@ -3,13 +3,41 @@ module.exports = function(grunt) {
 
   grunt.initConfig({});
 
+  grunt.loadNpmTasks('grunt-preprocess');
+  grunt.config('preprocess', {
+    'level-1': {
+      src: 'Overview.src.html',
+      dest: 'Overview.level-1.src.html',
+      options: {
+        context: {
+          LEVEL: 1
+        }
+      }
+    },
+    'level-2': {
+      src: 'Overview.src.html',
+      dest: 'Overview.level-2.src.html',
+      options: {
+        context: {
+          LEVEL: 2
+        }
+      }
+    }
+  });
+
   grunt.loadNpmTasks('grunt-shell');
   grunt.config('shell', {
-    build: {
+    'build-level-1': {
       options: {
         stdout: true
       },
-      command: 'bikeshed spec Overview.src.html'
+      command: 'bikeshed spec Overview.level-1.src.html'
+    },
+    'build-level-2': {
+      options: {
+        stdout: true
+      },
+      command: 'bikeshed spec Overview.level-2.src.html'
     },
     update: {
       options: {
@@ -43,7 +71,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-open');
   grunt.config('open', {
     all: {
-      path: 'http://localhost:' + port + '/Overview.html'
+      path: 'http://localhost:' + port + '/Overview.level-1.html'
     }
   });
 
@@ -52,8 +80,10 @@ module.exports = function(grunt) {
     spec: {
       nonull: true, /* error if we haven't build the spec yet */
       files: [
-        { src: 'Overview.html', dest: 'publish/index.html' },
-        { src: [ '*.css', 'img/*', 'MathJax/*' ] , dest: 'publish/' }
+        { src: 'Overview.level-1.html', dest: 'publish/index.html' },
+        { src: [ '*.css', 'img/*', 'MathJax/*' ] , dest: 'publish/' },
+        { src: 'Overview.level-2.html', dest: 'publish/level-2/index.html' },
+        { src: [ '*.css', 'img/*', 'MathJax/*' ] , dest: 'publish/level-2/' }
       ]
     }
   });
@@ -84,11 +114,16 @@ module.exports = function(grunt) {
     });
   }
 
-  grunt.registerTask('default', ['shell:build']);
-  grunt.registerTask('build', ['shell:build']);
+  grunt.registerTask('build:level-1', ['preprocess:level-1',
+                                       'shell:build-level-1']);
+  grunt.registerTask('build:level-2', ['preprocess:level-2',
+                                       'shell:build-level-2']);
+  grunt.registerTask('build', ['build:level-1', 'build:level-2']);
+  grunt.registerTask('default', ['build']);
+
   grunt.registerTask('publish', ['copy:spec']);
   grunt.registerTask('upload', ['gh-pages:spec']);
-  grunt.registerTask('live-edit', [ 'shell:build',
+  grunt.registerTask('live-edit', [ 'build',
                                     'express',
                                     'open',
                                     'watch']);
