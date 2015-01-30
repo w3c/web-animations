@@ -342,7 +342,7 @@ a timing node is not in a state to produce a <a>time value</a>.
 
 Periodically, the user agent will queue a task to update the timing
 model in a process called <dfn>sampling</dfn>.
-On each <dfn title='single-sample'>sample</dfn> the 
+On each <dfn lt='single-sample'>sample</dfn> the 
 <a>time values</a> of each timing node are updated.
 
 Note: A more precise definition of when the model is updated when scripting is
@@ -402,7 +402,7 @@ Since a <a>timeline</a> may be defined relative to a moment that has yet
 to occur, it may not always be able to return a meaningful <a>time
 value</a>, but only an <a>unresolved</a> time value.
 A <a>timeline</a> is considered to be
-<dfn title="inactive timeline">inactive</dfn>
+<dfn lt="inactive timeline">inactive</dfn>
 when its <a>time value</a> is <a>unresolved</a>.
 
 <h4 id="the-document-timeline">The document timeline</h4>
@@ -415,7 +415,7 @@ time</a> corresponds to the <a
 href="http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart">
 <code>navigationStart</code></a> moment [[!NAVIGATION-TIMING]].
 Prior to this moment, the <a>document timeline</a> is
-<a title="inactive timeline">inactive</a>.
+<a lt="inactive timeline">inactive</a>.
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
@@ -459,10 +459,10 @@ Both of these associations are optional and configurable such that
 a <a>player</a> may have no associated <a>source content</a> or
 <a>timeline</a> at a given moment.
 
-A <a>player</a>'s <dfn title="player start time">start time</dfn> is the
+A <a>player</a>'s <dfn lt="player start time">start time</dfn> is the
 <a>time value</a> of its <a>timeline</a> when its <a>source content</a>
 is scheduled to begin playback. A player's <a
-title="player start time">start time</a> is initially
+lt="player start time">start time</a> is initially
 <a>unresolved</a>.
 
 A <a>player</a> also maintains a <dfn>hold time</dfn> <a>time value</a>
@@ -516,10 +516,10 @@ is as follows:
 
 1.  If <var>player</var> has a <a>pending play task</a>, cancel that task.
 2.  If <var>player</var> has a <a>pending pause task</a>, cancel that task.
-3.  <a title="reject a Promise">Reject</a> <var>player</var>'s <a>current ready
+3.  <a lt="reject a Promise">Reject</a> <var>player</var>'s <a>current ready
     promise</a> with a DOMException named "AbortError".
 4.  Let <var>player</var>'s <a>current ready promise</a> be the result of
-    <a title="create a new resolved Promise">creating a new resolved Promise
+    <a lt="create a new resolved Promise">creating a new resolved Promise
     object</a>.
 
 <h4 id="setting-the-source-content">Setting the source content of a
@@ -543,7 +543,7 @@ The procedure to <dfn>set the source content of a player</dfn>,
     content</var>.
 6.  If <var>new content</var> is not <code>null</code> and
     if <var>new content</var> has a <a>parent animation group</a>,
-    <a title="remove an animation node">remove</a> <var>new content</var> from
+    <a lt="remove an animation node">remove</a> <var>new content</var> from
     its <a>parent animation group</a>.
 7.  If <var>new content</var> is not <code>null</code> and
     if <var>new content</var> is the <a>source content</a> of another
@@ -576,15 +576,15 @@ matching condition from below:
 
 <div class="switch">
 
-:   If the player's <a>hold time</a> is <a title="unresolved">resolved</a>,
+:   If the player's <a>hold time</a> is <a lt="unresolved">resolved</a>,
 ::  The <a>current time</a> is the player's <a>hold time</a>.
 
 :   If <em>any</em> of the following are true:
 
     1.  the player has no associated <a>timeline</a>, or
     2.  the associated <a>timeline</a> is
-        <a title="inactive timeline">inactive</a>, or
-    3.  the player's <a title="player start time">start time</a> is
+        <a lt="inactive timeline">inactive</a>, or
+    3.  the player's <a lt="player start time">start time</a> is
         <a>unresolved</a>.
 
 ::  The <a>current time</a> is an <a>unresolved</a> time value.
@@ -594,14 +594,13 @@ matching condition from below:
 
     <blockquote>
       <code><a>current time</a> =
-      (<var>timeline time</var> - <a
-       title="player start time">start time</a>)
-      &times; <a title="player playback rate">playback rate</a></code>
+      (<var>timeline time</var> - <a lt="player start time">start time</a>)
+      &times; <a lt="player playback rate">playback rate</a></code>
     </blockquote>
 
     Where <var>timeline time</var> is the current <a>time value</a> of
     the associated <a>timeline</a>.
-    The <a title="player playback rate">playback rate</a> value is
+    The <a lt="player playback rate">playback rate</a> value is
     defined in <a href="#speed-control" section></a>.
 
 </div>
@@ -619,36 +618,36 @@ a player, <var>player</var>, to <var>seek time</var> is as follows:
     <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
     NotSupportedError.
 2.  Update either <var>player</var>'s <a>hold time</a> or <a
-    title="player start time">start time</a> as follows:
+    lt="player start time">start time</a> as follows:
 
     <div class="switch">
 
     :   If <em>any</em> of the following conditions are true:
 
         *   <var>player</var>'s <a>hold time</a> is
-            <a title="unresolved">resolved</a>, or
+            <a lt="unresolved">resolved</a>, or
         *   <var>player</var> has no associated <a>timeline</a> or the
             associated <a>timeline</a> is
-            <a title="inactive timeline">inactive</a>, or
+            <a lt="inactive timeline">inactive</a>, or
         *   <var>player</var>'s
-            <a title="player playback rate">playback rate</a> is 0, or
+            <a lt="player playback rate">playback rate</a> is 0, or
         *   <var>player</var> has a <a>pending pause task</a>
 
     ::  Set <var>player</var>'s <a>hold time</a> to <var>seek time</var>.
 
     :   Otherwise,
-    ::  Set <var>player</var>'s <a title="player start time">start time</a> to
+    ::  Set <var>player</var>'s <a lt="player start time">start time</a> to
         the result of evaluating
         <code><var>timeline time</var> - (<var>seek time</var> / <a
-            title="player playback rate">playback rate</a>)</code>
+            lt="player playback rate">playback rate</a>)</code>
         where <var>timeline time</var> is the current <a>time value</a>
         of <a>timeline</a> associated with <var>player</var>.
 
     </div>
 
 1.  If <var>player</var> has no associated <a>timeline</a> or the associated
-    <a>timeline</a> is <a title="inactive timeline">inactive</a>,
-    make <var>player</var>'s <a title="player start time">start time</a>
+    <a>timeline</a> is <a lt="inactive timeline">inactive</a>,
+    make <var>player</var>'s <a lt="player start time">start time</a>
     <a>unresolved</a>.
 
     <p class=annotation>
@@ -665,7 +664,7 @@ The procedure to <dfn>set the current time</dfn> of a player,
 1.  Run the steps to <a>silently set the current time</a> of
     <var>player</var> to <var>seek time</var>.
 2.  If <var>player</var> has a <a>pending pause task</a>, cancel the
-    task and <a title="resolve a Promise">resolve</a> <var>player</var>'s
+    task and <a lt="resolve a Promise">resolve</a> <var>player</var>'s
     <a>current ready promise</a> with <var>player</var>.
 3.  Run the procedure to <a>update a player's finished state</a>
     for <var>player</var>.
@@ -674,17 +673,17 @@ The procedure to <dfn>set the current time</dfn> of a player,
 
 The procedure to <dfn>update the player start time</dfn>
 of <a>player</a>, <var>player</var>, to
-<a title="player start time">start time</a>, <var>new start time</var>,
+<a lt="player start time">start time</a>, <var>new start time</var>,
 is as follows:
 
 1.  Let <var>timeline time</var> be the current <a>time value</a> of the
     <a>timeline</a> that <var>player</var> is associated with.
     If there is no <a>timeline</a> associated with <var>player</var> or the
-    associated timeline is <a title="inactive timeline">inactive</a>,
+    associated timeline is <a lt="inactive timeline">inactive</a>,
     let the <var>timeline time</var> be <a>unresolved</a>.
 
 1.  If <var>timeline time</var> is <a>unresolved</a> and <var>new start
-    time</var> is <a title="unresolved">resolved</a>, make <var>player</var>'s
+    time</var> is <a lt="unresolved">resolved</a>, make <var>player</var>'s
     <a>hold time</a> <a>unresolved</a>.
 
     <p class=annotation>
@@ -700,7 +699,7 @@ is as follows:
     previous step which may cause the <a>current time</a> to become
     <a>unresolved</a>.
 
-1.  Set <var>player</var>'s <a title="player start time">start time</a> to
+1.  Set <var>player</var>'s <a lt="player start time">start time</a> to
     <var>new start time</var>.
 
 1.  Update <var>player</var>'s <a>hold time</a> based on the first matching
@@ -708,8 +707,8 @@ is as follows:
 
     <div class="switch">
 
-    :   If <var>new start time</var> is <a title="unresolved">resolved</a>,
-    ::  If <var>player</var>'s <a title="player playback rate">playback rate</a>
+    :   If <var>new start time</var> is <a lt="unresolved">resolved</a>,
+    ::  If <var>player</var>'s <a lt="player playback rate">playback rate</a>
         is not zero, make <var>player</var>'s <a>hold time</a>
         <a>unresolved</a>.
 
@@ -722,7 +721,7 @@ is as follows:
 
 1.  If <var>player</var> has a <a>pending play task</a> or
     a <a>pending pause task</a>, cancel that task and
-    <a title="resolve a Promise">resolve</a> <var>player</var>'s
+    <a lt="resolve a Promise">resolve</a> <var>player</var>'s
     <a>current ready promise</a> with <var>player</var>.
 
 1.  Run the procedure to <a>update a player's finished state</a>
@@ -748,11 +747,11 @@ To avoid this problem, Web Animations typically begins timing
 animations from the moment when the first frame of the animation is
 complete.
 This is represented by an <a>unresolved</a> <a
-title="player start time">start time</a> on the <a>player</a> which becomes
+lt="player start time">start time</a> on the <a>player</a> which becomes
 resolved when the player is <a>ready</a>.
 Content may opt out of this behavior by setting the <a
-title="player start time">start time</a>
-to a <a title="unresolved">resolved</a> <a>time value</a>.
+lt="player start time">start time</a>
+to a <a lt="unresolved">resolved</a> <a>time value</a>.
 
 </div>
 
@@ -766,7 +765,7 @@ following conditions are true:
     associated with such an <a>animation</a>.
 
 *   the player is associated with a <a>timeline</a> that is not
-    <a title="inactive timeline">inactive</a>.
+    <a lt="inactive timeline">inactive</a>.
 
 <h4 id='promise-objects'>Promise objects</h4>
 
@@ -807,7 +806,7 @@ cancelled (see <a href="#cancelling-a-player-section" section></a>).
     player when the <a>Promise</a> is resolved.
 
     For example, in the following code fragment, the state of the player
-    will be <a title="running play state">running</a> when the
+    will be <a lt="running play state">running</a> when the
     <a>current ready promise</a> is resolved.
     This is because the player does not leave the <a>pending play state</a>
     in between the calls to <code>pause</code> and
@@ -839,11 +838,11 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
 
     1.  Cancel that task.
     2.  If <var>player</var> has an associated <a>timeline</a> that is not
-        <a title="inactive timeline">inactive</a>, perform the following steps:
+        <a lt="inactive timeline">inactive</a>, perform the following steps:
 
-        1.  Set <var>player</var>'s <a title="player start time">start time</a>
+        1.  Set <var>player</var>'s <a lt="player start time">start time</a>
             to the result of evaluating <code><var>timeline time</var> -
-            <a>hold time</a> / <a title="player playback rate">playback
+            <a>hold time</a> / <a lt="player playback rate">playback
             rate</a></code>
             where <var>timeline time</var> is the current <a>time value</a> of
             the <a>timeline</a> associated with <var>player</var>.
@@ -882,12 +881,12 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
     following steps:
 
     1.  If <var>has pending ready promise</var> is true,
-        <a title="resolve a Promise">resolve</a> <var>player</var>'s <a>current
+        <a lt="resolve a Promise">resolve</a> <var>player</var>'s <a>current
         ready promise</a> with <var>player</var>.
 
     2.  Abort this procedure.
 
-6.  Let <var>player</var>'s <a title="player start time">start time</a> be
+6.  Let <var>player</var>'s <a lt="player start time">start time</a> be
     <a>unresolved</a>.
 
 7.  If <var>has pending ready promise</var> is false,
@@ -898,7 +897,7 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
     The task shall perform the following steps:
 
     1.  <a>Assert</a> that <a>hold time</a> is <a
-        title="unresolved">resolved</a>. (This is because we don't queue this
+        lt="unresolved">resolved</a>. (This is because we don't queue this
         task if <a>hold time</a> is <a>unresolved</a> and anything that causes
         it to become <a>unresolved</a> while this task is queued, should cancel
         this task.)
@@ -910,7 +909,7 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
         playback rate</a></code> for <var>player</var>.
         If the <a>player playback rate</a> is zero, let <var>new start
         time</var> be simply <var>ready time</var>.
-    3.  If <var>player</var>'s <a title="player playback rate">playback rate</a>
+    3.  If <var>player</var>'s <a lt="player playback rate">playback rate</a>
         is not 0, make <var>player</var>'s <a>hold time</a> <a>unresolved</a>.
     4.  Set the <a>player start time</a> of <var>player</var>
         to <var>new start time</var>.
@@ -920,7 +919,7 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
         (This should happen before we resolve the ready promise.)
         </div>
 
-    6.  <a title="resolve a Promise">Resolve</a> <var>player</var>'s <a>current
+    6.  <a lt="resolve a Promise">Resolve</a> <var>player</var>'s <a>current
         ready promise</a> with <var>player</var>.
     7.  Run the procedure to <a>update a player's finished state</a>
         for <var>player</var>.
@@ -945,10 +944,10 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
 
 <h4 id='pausing-a-player-section'>Pausing a player</h4>
 
-Whenever a <a>player</a> has an <a>unresolved</a> <a title="player start
+Whenever a <a>player</a> has an <a>unresolved</a> <a lt="player start
 time">start time</a>, its <a>current time</a> will be suspended.
 
-As with <a title="play a player">playing a player</a>, pausing may not happen
+As with <a lt="play a player">playing a player</a>, pausing may not happen
 instantaneously (see <a href="#waiting-for-source-content" section></a>).
 For example, if animation is performed by a separate process, it may
 be necessary to synchronize the <a>current time</a> to ensure that it
@@ -973,7 +972,7 @@ The procedure to <dfn>pause a player</dfn>, <var>player</var> is as follows:
 
     1.  Set <var>player</var>'s <a>hold time</a> to its <a>current time</a>
         (even if the current time is <a>unresolved</a>).
-    1.  Make <var>player</var>'s <a title="player start time">start time</a>
+    1.  Make <var>player</var>'s <a lt="player start time">start time</a>
         unresolved.
 
     1.
@@ -983,7 +982,7 @@ The procedure to <dfn>pause a player</dfn>, <var>player</var> is as follows:
             resolve the ready promise).
         </div>
 
-    1.  <a title="resolve a Promise">Resolve</a> <var>player</var>'s <a>current
+    1.  <a lt="resolve a Promise">Resolve</a> <var>player</var>'s <a>current
         ready promise</a> with <var>player</var>.
     1.  Run the procedure to <a>update a player's finished state</a>
         for <var>player</var>.
@@ -1061,7 +1060,7 @@ player leaves the <a>finished play state</a>.
 
 <h4 id="updating-the-finished-state">Updating the finished state</h4>
 
-For a player with a positive <a title="player playback rate">playback
+For a player with a positive <a lt="player playback rate">playback
 rate</a>, the <a>current time</a> continues to increase until it
 reaches the <a>source content end</a>.
 
@@ -1070,16 +1069,16 @@ time</a> of the player's <a>source content</a>.
 If the player has no <a>source content</a>, the <a>source content
 end</a> is zero.
 
-A player with a negative <a title="player playback rate">playback
+A player with a negative <a lt="player playback rate">playback
 rate</a>, the <a>current time</a> continues to decrease until it
 reaches zero.
 
 A player that has reached this boundary (or overshot it) and has a
-<a title="unresolved">resolved</a> <a>player start time</a>
-is said to be <a title="finished play state">finished</a>.
+<a lt="unresolved">resolved</a> <a>player start time</a>
+is said to be <a lt="finished play state">finished</a>.
 (If the player has an <a>unresolved</a> <a>player start time</a> it is
-considered to be <a title="paused play state">paused</a> rather than
-<a title="finished play state">finished</a>.)
+considered to be <a lt="paused play state">paused</a> rather than
+<a lt="finished play state">finished</a>.)
 
 The crossing of this boundary is checked on each modification to the
 player object using the procedure for <a>update a player's finished
@@ -1101,8 +1100,8 @@ The procedure to <dfn>update a player's finished state</dfn> for
 
 1.  If both of the following conditions are true,
 
-    *   <var>player</var>'s <a title="player start time">start time</a> is
-        <a title="unresolved">resolved</a>, and
+    *   <var>player</var>'s <a lt="player start time">start time</a> is
+        <a lt="unresolved">resolved</a>, and
     *   <var>player</var> does <em>not</em> have a <a>pending play task</a> or
         a <a>pending pause task</a>,
 
@@ -1112,7 +1111,7 @@ The procedure to <dfn>update a player's finished state</dfn> for
     <div class='switch'>
 
     :   If <a>player playback rate</a> &gt; 0 and
-        <a>current time</a> is <a title="unresolved">resolved</a> and
+        <a>current time</a> is <a lt="unresolved">resolved</a> and
         greater than or equal to <a>source content end</a>,
     ::  let the <a>hold time</a> be the maximum value of
         <a>previous current time</a> and <a>source content end</a>.
@@ -1120,10 +1119,10 @@ The procedure to <dfn>update a player's finished state</dfn> for
         <a>unresolved</a>, let the <a>hold time</a> be <a>source
         content end</a>.
     :   If <a>player playback rate</a> &lt; 0 and
-        <a>current time</a> is <a title="unresolved">resolved</a> and
+        <a>current time</a> is <a lt="unresolved">resolved</a> and
         less than or equal to 0,
     ::  let the <a>hold time</a> be zero.
-    :   If <a>current time</a> is <a title="unresolved">resolved</a>, and
+    :   If <a>current time</a> is <a lt="unresolved">resolved</a>, and
         <a>player playback rate</a> &ne; 0,
     ::  let the <a>hold time</a> be <a>unresolved</a>.
 
@@ -1134,7 +1133,7 @@ The procedure to <dfn>update a player's finished state</dfn> for
     false.
 1.  If <var>current finished state</var> is true and <a>previous
     finished state</a> is false,
-    <a title="resolve a promise">resolve</a> <var>player</var>'s <a>current
+    <a lt="resolve a promise">resolve</a> <var>player</var>'s <a>current
     finished promise</a> object with <var>player</var>.
 1.  If <var>current finished state</var> is false and <a>previous
     finished state</a> is true,
@@ -1179,7 +1178,7 @@ for <var>player</var> defined below:
     </div>
 
 4.  If there is a <a>pending play task</a>, cancel that task and
-    <a title="resolve a Promise">resolve</a> the <a>current ready promise</a> of
+    <a lt="resolve a Promise">resolve</a> the <a>current ready promise</a> of
     <var>player</var> with <var>player</var>.
 
 6.  Run the procedure to <a>update a player's finished state</a>
@@ -1201,12 +1200,12 @@ as follows:
 
 1.  Run the procedure to <a>reset a player's pending tasks</a> on
     <var>player</var>.
-2.  <a title="reject a Promise">Reject</a> the <a>current finished promise</a>
+2.  <a lt="reject a Promise">Reject</a> the <a>current finished promise</a>
     with a DOMException named "AbortError".
 3.  Let <a>current finished promise</a> be a new (pending) <a>Promise</a>
     object.
 4.  Make <var>player</var>'s <a>hold time</a> <a>unresolved</a>.
-5.  Make <var>player</var>'s <a title="player start time">start time</a>
+5.  Make <var>player</var>'s <a lt="player start time">start time</a>
     <a>unresolved</a>.
 7.  Queue a task to call any <a>custom effects</a> associated with
     <a>inclusive descendants</a> of <var>player</var>'s <a>source content</a>
@@ -1230,25 +1229,25 @@ time</a> to decrease at the same rate as the <a>time values</a> from
 its <a>timeline</a> increase.
 
 Note that <a>animation nodes</a> also have a <a
-title="animation node playback rate">playback rate</a> associated
+lt="animation node playback rate">playback rate</a> associated
 with them that behaves differently to that defined here.
 
 </div>
 
-<a>Players</a> have a <dfn title="player playback
+<a>Players</a> have a <dfn lt="player playback
 rate">playback rate</dfn> that provides a scaling factor from the rate
 of change of the associated <a>timeline</a>'s <a>time values</a> to
 the player's <a>current time</a>.
-The <a title="player playback rate">playback rate</a> is initially 1.
+The <a lt="player playback rate">playback rate</a> is initially 1.
 
-Setting a player's <a title="player playback rate">playback rate</a>
+Setting a player's <a lt="player playback rate">playback rate</a>
 to zero effectively pauses the player (however, the <a>play state</a>
-does not necessarily become <a title="paused play state">paused</a>).
+does not necessarily become <a lt="paused play state">paused</a>).
 
 <h5 id="updating-the-playback-rate-of-a-player">
 Updating the playback rate of a player</h5>
 
-Changes to the <a title="player playback rate">playback rate</a>
+Changes to the <a lt="player playback rate">playback rate</a>
 trigger a compensatory seek so that that the player's
 <a>current time</a> is unaffected by the change to the playback
 rate.
@@ -1259,10 +1258,10 @@ is as follows:
 
 1.  Let <var>previous time</var> be the value of the
     <a>current time</a> of <var>player</var> before changing the
-    <a title="player playback rate">playback rate</a>.
-2.  Set the <a title="player playback rate">playback rate</a> to
+    <a lt="player playback rate">playback rate</a>.
+2.  Set the <a lt="player playback rate">playback rate</a> to
     <var>new playback rate</var>.
-3.  If <var>previous time</var> is <a title="unresolved">resolved</a>,
+3.  If <var>previous time</var> is <a lt="unresolved">resolved</a>,
     <a>set the current time</a> of <var>player</var> to
     <var>previous time</var>.
 
@@ -1278,7 +1277,7 @@ The procedure to <dfn>reverse a player</dfn> of <a>player</a>
 <var>player</var> is as follows:
 
 1.  If there is no <a>timeline</a> associated with <var>player</var>, or the
-    associated <a>timeline</a> is <a title="inactive timeline">inactive</a>
+    associated <a>timeline</a> is <a lt="inactive timeline">inactive</a>
     <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> an
     InvalidStateError and abort these steps.
 2.  <a>Silently update the player playback rate</a> of
@@ -1295,24 +1294,24 @@ The procedure to <dfn>reverse a player</dfn> of <a>player</a>
 <h4 id="player-state">Player state</h4>
 
 A <a>player</a> may be described as being in one of the following
-<dfn title="play state">play states</dfn> for each of which, a 
+<dfn lt="play state">play states</dfn> for each of which, a 
 non-normative description is also provided:
 
 <div class=informative-bg>
 
-:   <dfn title="idle play state">idle</dfn>
+:   <dfn lt="idle play state">idle</dfn>
 ::  The <a>current time</a> of the player is <a>unresolved</a> and
     there are no pending tasks.
     In this state the player has no effect.
-:   <dfn title="pending play state">pending</dfn>
+:   <dfn lt="pending play state">pending</dfn>
 ::  The player is waiting on some pending task to complete.
-:   <dfn title="running play state">running</dfn>
+:   <dfn lt="running play state">running</dfn>
 ::  The player has a resolved <a>current time</a> that changes on each
     <a>sample</a> (provided the <a>player playback rate</a> is not zero).
-:   <dfn title="paused play state">paused</dfn>
+:   <dfn lt="paused play state">paused</dfn>
 ::  The player has been suspended and the <a>current time</a>
     is no longer changing.
-:   <dfn title="finished play state">finished</dfn>
+:   <dfn lt="finished play state">finished</dfn>
 ::  The player has reached the natural boundary of its playback range
     and the <a>current time</a> is no longer updating.
 
@@ -1326,21 +1325,21 @@ condition from the following:
 
 :   <var>player</var> has a <a>pending play task</a> or a
     <a>pending pause task</a>,
-::  &rarr; <a title="pending play state">pending</a>
+::  &rarr; <a lt="pending play state">pending</a>
 :   The <a>current time</a> of <var>player</var> is
     <a>unresolved</a>,
-::  &rarr; <a title="idle play state">idle</a>
-:   The <a title="player start time">start time</a> of <var>player</var> is
+::  &rarr; <a lt="idle play state">idle</a>
+:   The <a lt="player start time">start time</a> of <var>player</var> is
     <a>unresolved</a>,
-::  &rarr; <a title="paused play state">paused</a>
+::  &rarr; <a lt="paused play state">paused</a>
 :   For <var>player</var>,
     <a>player playback rate</a> &gt; 0 and
     <a>current time</a> &ge; <a>source content end</a>; or<br>
     <a>player playback rate</a> &lt; 0 and
     <a>current time</a> &le; 0,
-::  &rarr; <a title="finished play state">finished</a>
+::  &rarr; <a lt="finished play state">finished</a>
 :   Otherwise,
-::  &rarr; <a title="running play state">running</a>
+::  &rarr; <a lt="running play state">running</a>
 
 </div>
 
@@ -1350,8 +1349,8 @@ Note that the <a>paused play state</a> effectively
 &ldquo;wins&rdquo; over the <a>finished play state</a>.
 
 However, a player that is paused outside of its natural playback range can
-be converted from a <a title="paused play state">paused</a>
-player into a <a title="finished play state">finished</a> player
+be converted from a <a lt="paused play state">paused</a>
+player into a <a lt="finished play state">finished</a> player
 without restarting by setting the <a>player start time</a> such as below:
 
 <pre class='example lang-javascript'>
@@ -1378,7 +1377,7 @@ the timing hierarchy.
 The <a>source content</a> of a <a>player</a>, if set, is a type of
 <a>animation node</a>.
 The <a>source content</a> of a <a>player</a> is said to be <dfn
-title="directly associated with a player">directly associated</dfn>
+lt="directly associated with a player">directly associated</dfn>
 with that player.
 
 <a>Animation nodes</a> can be combined together into a hierarchy using
@@ -1396,7 +1395,7 @@ is <a>directly associated with a player</a> or if it has an
 <a>ancestor</a> <a>animation group</a> that is <a>directly associated
 with a player</a>.
 At a given moment, an <a>animation node</a> can be <a
-title="associated with a player">associated</a> with at most one
+lt="associated with a player">associated</a> with at most one
 <a>player</a>.
 
 An <a>animation node</a>, <var>node</var>, is <dfn>associated with
@@ -1423,7 +1422,7 @@ called its <a>active interval</a>.
 Each <a>animation node</a> has only one such interval.
 
 The lower bound of the <a>active interval</a> is determined by the
-<a title="animation node start time">start time</a> of the
+<a lt="animation node start time">start time</a> of the
 <a>animation node</a> but may be shifted by a <a>start delay</a> on
 the <a>animation node</a>.
 
@@ -1431,7 +1430,7 @@ The upper bound of the interval is determined by the <a>active
 duration</a>.
 
 The relationship between the <a
-title="animation node start time">start time</a>, <a>start
+lt="animation node start time">start time</a>, <a>start
 delay</a>, and <a>active duration</a> is illustrated below.
 
 <div class="figure">
@@ -1443,7 +1442,7 @@ delay</a>, and <a>active duration</a> is illustrated below.
 Examples of the effect of the <a>start delay</a> on the endpoints of
 the <a>active interval</a>.<br>
 (a) An animation node with no delay; the <a
-title="animation node start time">start time</a> and beginning of
+lt="animation node start time">start time</a> and beginning of
 the <a>active interval</a> are coincident.<br>
 (b) An animation node with a positive delay; the beginning of the
 <a>active interval</a> is deferred by the delay.<br>
@@ -1464,33 +1463,32 @@ effect with the exception of <a>fill modes</a> which apply outside the
 
 The lower bound of the <a>active interval</a> is defined by the
 combination of the animation node's
-<a title="animation node start time">start time</a> and <a>start delay</a>.
+<a lt="animation node start time">start time</a> and <a>start delay</a>.
 
 An <a>animation node</a>'s
-<dfn title="animation node start time">start time</dfn> is the moment at
+<dfn lt="animation node start time">start time</dfn> is the moment at
 which the <a>parent animation group</a>,
 if any, has scheduled the <a>animation node</a> to begin.
 It is expressed in <a>inherited time</a>.
 In most cases, including the case when the <a>animation node</a> has
 no <a>parent animation group</a>,
-the <a title="animation node start time">start time</a> is zero.
+the <a lt="animation node start time">start time</a> is zero.
 The singular exception is <a>animation sequence</a> which set
-the <a title="animation node start time">start times</a> of their
+the <a lt="animation node start time">start times</a> of their
 children as described in <a
 href="#the-start-time-of-children-of-an-animation-sequence" section></a>.
 
-In addition to the <a title="animation node start time">start
+In addition to the <a lt="animation node start time">start
 time</a>, an <a>animation node</a> also has a <dfn>start delay</dfn>
-which is an offset from the <a
-title="animation node start time">start time</a>.
-Unlike the <a title="animation node start time">start time</a> which
+which is an offset from the <a lt="animation node start time">start time</a>.
+Unlike the <a lt="animation node start time">start time</a> which
 is determined by the <a>parent animation group</a>, the <a>start
 delay</a> is a property of the <a>animation node</a> itself.
 
 The lower bound of the <a>active interval</a> of an <a>animation
-node</a>, expressed in <a title="inherited time">inherited time
+node</a>, expressed in <a lt="inherited time">inherited time
 space</a>, is the sum of the <a
-title="animation node start time">start time</a> and the <a>start
+lt="animation node start time">start time</a> and the <a>start
 delay</a>.
 
 These definitions are incorporated in the calculation of the <a>local
@@ -1503,7 +1501,7 @@ href="#calculating-the-active-duration" section></a>.
 
 Similar to the <a>start delay</a>, an <a>animation node</a> also has
 an <dfn>end delay</dfn> which may be used to delay the <a
-title="animation node start time">start time</a> of the <a>next
+lt="animation node start time">start time</a> of the <a>next
 sibling</a> in a <a>animation sequence</a>.
 
 <h4 id="local-time-and-inherited-time">Local time and inherited time</h4>
@@ -1522,7 +1520,7 @@ a coordinate space.
 Just as with coordinate spaces, time spaces can also be nested.
 <a>Animation groups</a> typically perform some
 transformations on the <a>time values</a> they
-receive from their <a title="parent animation group">parent</a> or
+receive from their <a lt="parent animation group">parent</a> or
 <a>player</a> before passing on the transformed <a>time values</a>
 to their children.
 Child <a>animation nodes</a> then operate <em>within</em> that
@@ -1530,8 +1528,8 @@ transformed time space.
 
 Children take the transformed time values from their
 parent&mdash;called the <a>inherited time</a>&mdash;and add their
-<a title="animation node start time">start time</a> to establish
-their own <a title="local time">local time space</a> as illustrated
+<a lt="animation node start time">start time</a> to establish
+their own <a lt="local time">local time space</a> as illustrated
 below.
 
 <div class="figure">
@@ -1542,14 +1540,14 @@ below.
 Inherited time and local time.<br>
 At time <var>t</var>, the <a>inherited time</a> is 2.5.<br>
 For <a>animation node</a> (a) which has a <a
-  title="animation node start time">start time</a> of 1, the
+  lt="animation node start time">start time</a> of 1, the
   <a>local time</a> is 1.5.<br>
 For <a>animation node</a> (b) which has a <a
-  title="animation node start time">start time</a> of 1
+  lt="animation node start time">start time</a> of 1
   and a <a>start delay</a> of 1,
   the <a>local time</a> is also 1.5
   since <a>local time</a> is based on an <a>animation node</a>'s
-  <a title="animation node start time">start time</a> only,
+  <a lt="animation node start time">start time</a> only,
   and not on its <a>start delay</a>.
 </p>
 
@@ -1576,7 +1574,7 @@ following:
 
 The <dfn>local time</dfn> of an <a>animation node</a> is the
 <a>animation node</a>'s <a>inherited time</a> minus its <a
-title="animation node start time">start time</a>.
+lt="animation node start time">start time</a>.
 If the <a>inherited time</a> is <a>unresolved</a> then the local time
 is also <a>unresolved</a>.
 
@@ -1690,7 +1688,7 @@ of the following conditions are met:
 2.  the <a>animation node</a> has a <a>parent animation group</a> that
     is <a>in play</a> or else the <a>animation node</a> is <a>directly
     associated with a player</a> that is not <a
-    title="finished play state">finished</a>.
+    lt="finished play state">finished</a>.
 
 An animation node is <dfn>current</dfn> if it <em>any</em> of the
 following conditions is true:
@@ -1734,7 +1732,7 @@ The effect of each <a>fill mode</a> is as follows:
     or when the animation node is in the <a>active phase</a> but an
     <a>ancestor</a> is in its <a>after phase</a>,
     the animation node will produce the same <a
-    title="transformed time">transformed time value</a> as the last
+    lt="transformed time">transformed time value</a> as the last
     moment it is scheduled to be <a>in play</a>.
 
     For all other times that the animation node is not <a>in play</a>,
@@ -1744,7 +1742,7 @@ The effect of each <a>fill mode</a> is as follows:
     or when the animation node is in the <a>active phase</a> but an
     <a>ancestor</a> is in its <a>before phase</a>,
     the animation node will produce the same <a
-    title="transformed time">transformed time value</a> as the earliest
+    lt="transformed time">transformed time value</a> as the earliest
     moment that it is scheduled to be <a>in play</a>.
 
     For all other times that the animation node is not <a>in play</a>,
@@ -1912,7 +1910,7 @@ Note that values of <a>iteration start</a> greater than or equal to
 one are generally not useful unless used in combination with an
 <a>animation effect</a> that has an <a>iteration composite
 operation</a> of
-<a title="iteration composite operation accumulate">accumulate</a>.
+<a lt="iteration composite operation accumulate">accumulate</a>.
 
 </div>
 
@@ -2021,45 +2019,45 @@ section></a> and is illustrated below.
 <h3 id="animation-node-speed-control">Animation node speed control</h3>
 
 Like <a>players</a>, <a>animation nodes</a> also have a <dfn
-title="animation node playback rate">playback rate</dfn> parameter.
-The <a title="animation node playback rate">playback rate</a> of
+lt="animation node playback rate">playback rate</dfn> parameter.
+The <a lt="animation node playback rate">playback rate</a> of
 an <a>animation node</a> is a finite real number that acts as
 a multiplier when calculating the <a>animation node</a>'s <a>transformed
 time</a> from its <a>local time</a>.
 
-The effect of setting the <a title="animation node playback
+The effect of setting the <a lt="animation node playback
 rate">playback rate</a> of an <a>animation node</a> differs from the
-setting the <a title="player playback rate">playback rate</a> on
+setting the <a lt="player playback rate">playback rate</a> on
 a player.  Its behavior is defined in the timing calculations given in
 <a href="#core-animation-node-calculations" section></a>.
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
-In summary, the behavior of the <a title="animation node playback
+In summary, the behavior of the <a lt="animation node playback
 rate">playback rate</a> of an <a>animation node</a> is as follows:
 
-*   The <a title="animation node playback rate">playback rate</a> is
+*   The <a lt="animation node playback rate">playback rate</a> is
     applied only to the <a>active interval</a> of an <a>animation
     node</a> and not to the time while it is <a
-    title="start delay">delayed</a> or <a title="fill mode">filling</a>.
+    lt="start delay">delayed</a> or <a lt="fill mode">filling</a>.
 
-*   Setting a negative <a title="animation node playback rate">playback
+*   Setting a negative <a lt="animation node playback rate">playback
     rate</a> on an <a>animation node</a> causes the <a>animation
     node</a> to begin at the end of its <a>active interval</a>.
-    This differs from the <a title="player playback rate">playback
+    This differs from the <a lt="player playback rate">playback
     rate</a> on a <a>player</a>.
-    Setting a <a title="player playback rate">playback rate</a> on
+    Setting a <a lt="player playback rate">playback rate</a> on
     a <a>player</a> to a negative value at a moment before the
     <a>player</a>'s </a>source content</a> has begun, will result in the
     <a>source content</a> never playing.
 
-*   Setting the <a title="animation node playback rate">playback
+*   Setting the <a lt="animation node playback rate">playback
     rate</a> of an <a>animation node</a> affects the calculated value of
     the <a>active duration</a> (see <a
     href="#calculating-the-active-duration"
     section></a>).
 
-*   Changing the <a title="animation node playback rate">playback
+*   Changing the <a lt="animation node playback rate">playback
     rate</a> of an <a>animation node</a> whose <a>local time</a> is
     within its <a>active interval</a> will cause it to jump.
     This is because the <a>active duration</a> will be updated but the
@@ -2069,10 +2067,10 @@ rate">playback rate</a> of an <a>animation node</a> is as follows:
     <a>animation node</a>'s <a>active duration</a>, such as sibling
     <a>animation node</a> in a <a>animation sequence</a>, they
     too may jump as a result of setting the <a>animation node</a>'s <a
-    title="animation node playback rate">playback rate</a>.
+    lt="animation node playback rate">playback rate</a>.
 
     For runtime speed control the <a
-    title="player playback rate">playback rate</a> of the
+    lt="player playback rate">playback rate</a> of the
     <a>player</a> should be used.
 
 </div>
@@ -2106,7 +2104,7 @@ This process is illustrated below.
   Calculation of the <a>active duration</a> is based on
   multiplying the <a>iteration duration</a> by the <a>iteration
   count</a> and then dividing by the <a
-  title="animation node playback rate">playback rate</a>.
+  lt="animation node playback rate">playback rate</a>.
 </p>
 <p>
   The process for calculating the <a>active duration</a> is normatively
@@ -2125,11 +2123,11 @@ This process is illustrated below.
 <p class="caption">
   An overview of timing model calculations.<br>
   (1) The <a>inherited time</a> is converted into a <a>local time</a> by
-  incorporating the <a title="animation node start time">start
+  incorporating the <a lt="animation node start time">start
   time</a>.<br>
   (2) The <a>local time</a> is converted into an <a>active time</a> by
   incorporating the <a>start delay</a>.<br>
-  (3) The <a title="animation node playback rate">playback rate</a>
+  (3) The <a lt="animation node playback rate">playback rate</a>
   and <a>iteration start</a> properties are
   applied to the <a>active time</a> to produce the <a>scaled active
   time</a>.<br>
@@ -2175,10 +2173,10 @@ In order to calculate the <a>active duration</a> we first define the
 The <a>active duration</a> is calculated according to the following
 steps:
 
-1.  If the <a title="animation node playback rate">playback rate</a> is
+1.  If the <a lt="animation node playback rate">playback rate</a> is
       zero, return <code>Infinity</code>.
 2.  Otherwise, return <code><a>repeated duration</a> / abs(<a
-      title="animation node playback rate">playback rate</a>)</code>.
+      lt="animation node playback rate">playback rate</a>)</code>.
 
 <h4 id="transforming-the-local-time">Transforming the local time</h4>
 
@@ -2263,7 +2261,7 @@ any, as follows,
 
 Before the <a>active time</a> can be converted to an <a>iteration
 time</a> we must factor in the <a>animation node</a>'s <a
-title="animation node playback rate">playback rate</a> and
+lt="animation node playback rate">playback rate</a> and
 <a>iteration start</a>.
 The result is called the <a>scaled active time</a>.
 
@@ -2291,25 +2289,25 @@ the following steps:
     an <a>unresolved</a> <a>time value</a>.
 
 2.  Return the scaled active time based on the
-    <a title="animation node playback rate">playback rate</a> as
+    <a lt="animation node playback rate">playback rate</a> as
     follows,
 
     <div class="switch">
 
-    :   If the <a title="animation node playback rate">playback
+    :   If the <a lt="animation node playback rate">playback
         rate</a> is less than zero,
     ::  Return <code>(<a>active time</a> -
                     <a>active duration</a>)
-        &times; <a title="animation node playback rate">playback
+        &times; <a lt="animation node playback rate">playback
         rate</a> + <a>start offset</a></code>.
 
-    :   If the <a title="animation node playback rate">playback
+    :   If the <a lt="animation node playback rate">playback
         rate</a> is zero,
     ::  Return <a>start offset</a>.
 
     :   Otherwise,
     ::  Return <code><a>active time</a>
-        &times; <a title="animation node playback rate">playback
+        &times; <a lt="animation node playback rate">playback
         rate</a> + <a>start offset</a></code>.
 
     </div>
@@ -2652,7 +2650,7 @@ step) with the following exception.
 
 When a transition point coincides with the end of the <a>active
 interval</a> extra care must be taken to produce the correct result
-when performing a <a title="fill mode">fill</a>.
+when performing a <a lt="fill mode">fill</a>.
 To achieve this, when a <a>step timing function</a> is
 applied to an <a>animation node</a> or applied to an <a>animation
 effect</a> associated with an <a>animation node</a>, an additional
@@ -2767,7 +2765,7 @@ a player</a>, the <a>animation nodes</a> associated with the
 
 An <dfn>animation group</dfn> is a type of <a>animation node</a> that
 contains an ordered sequence of zero or more <a>animation nodes</a>
-known as <dfn title="child animation node">child animation nodes</dfn>.
+known as <dfn lt="child animation node">child animation nodes</dfn>.
 
 At a given moment, an <a>animation node</a> may be a <a>child animation
 node</a> of at most one <a>animation group</a> known as the <dfn>parent
@@ -2805,7 +2803,7 @@ Note: in applying these definitions to <a>animation nodes</a>, the
     term <em>parent</em> refers exclusively to a <a>parent animation
     group</a> and does <em>not</em> include the <a>player</a> which with
     an <a>animation node</a> may be <a
-    title="directly associated with a player">directly associated</a>
+    lt="directly associated with a player">directly associated</a>
     despite the fact that conceptually the <a>player</a> acts as a parent
     time source.
 
@@ -2882,7 +2880,7 @@ This allows groups to <em>clip</em> the playback of their children.
 Some further consequences of <a>animation group</a> children basing
 their timing on their parent group's <a>transformed time</a> are:
 
-*   Setting the <a title="animation node playback rate">playback
+*   Setting the <a lt="animation node playback rate">playback
     rate</a> of an <a>animation group</a> will speed up or slow down all
     children.
 
@@ -2896,7 +2894,7 @@ their timing on their parent group's <a>transformed time</a> are:
 
 <h4 id="the-start-time-of-children-of-an-animation-group">The start time of children of an animation group</h4>
 
-The <a title="animation node start time">start time</a> of a <a>child
+The <a lt="animation node start time">start time</a> of a <a>child
 animation node</a> of an <a>animation group</a> is zero.
 
 Note that specific types of <a>animation groups</a> may override
@@ -2913,7 +2911,7 @@ the following procedure.
 
     <blockquote>
       <dfn>end time</dfn> =
-      <code><a title="animation node start time">start time</a> +
+      <code><a lt="animation node start time">start time</a> +
       <a>start delay</a> + <a>active duration</a> + <a>end
       delay</a></code>
     </blockquote>
@@ -2989,12 +2987,12 @@ An <dfn>animation sequence</dfn> is a type of <a>animation group</a>
 that schedules its <a>child animation nodes</a> such that they play in
 turn following their order in the group.
 This sequencing is achieved by adjusting the <a
-title="animation node start time">start time</a> of each <a>child
+lt="animation node start time">start time</a> of each <a>child
 animation node</a> in the group.
 
 <h5 id="the-start-time-of-children-of-an-animation-sequence">The start time of children of an animation sequence</h5>
 
-The <a title="animation node start time">start time</a> of
+The <a lt="animation node start time">start time</a> of
 a <a>child animation node</a> of an <a>animation sequence</a> is the
 <a>end time</a> of the child's <a>previous sibling</a>.
 If the child has no <a>previous sibling</a> the start time is zero.
@@ -3002,7 +3000,7 @@ If the child has no <a>previous sibling</a> the start time is zero.
 <div class="note">
 When the <a>active duration</a> is positive infinity the behavior
 for calculating the <a>end time</a> of an <a>animation node</a>
-and the <a title="animation node start time">start time</a> of
+and the <a lt="animation node start time">start time</a> of
 subsequent children follows the usual behavior defined by IEEE
 754-2008.
 As a result, if any of the children of an <a>animation
@@ -3010,18 +3008,18 @@ sequence</a> has an infinite <a>active duration</a>, any children
 that occur later in the sequence will not play.
 
 Similarly, the above definition does not restrict
-<a title="animation node start time">start times</a> to positive
+<a lt="animation node start time">start times</a> to positive
 values and hence some children may not play due to a negative
 <a>start delay</a> on children that occur earlier in the group
 since their <a>active interval</a> may end before the group's <a
-title="animation node start time">start time</a>.
+lt="animation node start time">start time</a>.
 </div>
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
 Because the start of the <a>active interval</a> is based on the
 sum of an <a>animation node</a>'s <a
-title="animation node start time">start time</a> <em>and</em>
+lt="animation node start time">start time</a> <em>and</em>
 <a>start delay</a>, the <a>active intervals</a> of
 children of an <a>animation sequence</a> need not run in strict
 sequence but can be shifted back and forth by using the <a>start
@@ -3041,7 +3039,7 @@ delay</a> as shown in the following diagram.
 A negative <a>start delay</a> can be used to cause the <a>active
 interval</a> of two children to overlap.
 Note that the <a>start delay</a> affects the <a
-title="animation node start time">start time</a> of subsequent
+lt="animation node start time">start time</a> of subsequent
 children in the group.
 
 </div>
@@ -3050,7 +3048,7 @@ children in the group.
 
 The <a>intrinsic iteration duration</a> of an <a>animation
 sequence</a> is equivalent to the <a
-title="animation node start time">start time</a> of a hypothetical
+lt="animation node start time">start time</a> of a hypothetical
 <a>child animation node</a> appended to the group's children
 calculated according to the definition in <a
 href="#the-start-time-of-children-of-an-animation-sequence"
@@ -3139,19 +3137,19 @@ section></a>).
 An <dfn>animation effect</dfn> takes a <a>time fraction</a> and
 a <a>current iteration</a> value and uses them to calculate an
 <a>intermediate animation value</a> for its <a
-title="target property">target properties</a>.  Each <a>animation</a>
+lt="target property">target properties</a>.  Each <a>animation</a>
 may have at most one <a>animation effect</a> associated with it.
 
 Since the result of an <a>animation effect</a> is based on the
 <a>time fraction</a> and <a>current iteration</a> value, it is updated
-whenever the timing model is <a title="sampling">sampled</a>.
+whenever the timing model is <a lt="sampling">sampled</a>.
 
 <h4 id="target-properties">Target properties</h4>
 
 Each <a>animation effect</a> can have zero or more associated
-<dfn title="target property">target properties</dfn>.
+<dfn lt="target property">target properties</dfn>.
 
-<a title="target property">Target properties</a> may be CSS properties
+<a lt="target property">Target properties</a> may be CSS properties
 or DOM attributes.
 If a given <a>animation target</a> has an attribute with the same name
 as a CSS property, any <a>target property</a> of that name is taken to
@@ -3171,7 +3169,7 @@ Unless specifically defined not to be, all properties are considered
 In order to animate a <a>target property</a>, the following procedures
 must be defined.
 
-*   <dfn title="animation interpolation">interpolation</dfn> &mdash;
+*   <dfn lt="animation interpolation">interpolation</dfn> &mdash;
     given two target property values <var>V</var><sub>start</sub> and
     <var>V</var><sub>end</sub>, produces an intermediate value
     <var>V</var><sub>res</sub> at a distance of <var>p</var> along the
@@ -3184,7 +3182,7 @@ must be defined.
     As a result, this procedure must also define extrapolation
     behavior for <var>p</var> outside [0, 1].
 
-*   <dfn title="animation addition">addition</dfn> &mdash; given two
+*   <dfn lt="animation addition">addition</dfn> &mdash; given two
     target property values
     <var>V</var><sub>a</sub> and <var>V</var><sub>b</sub>, returns the
     sum of the two properties, <var>V</var><sub>result</sub>.
@@ -3195,9 +3193,9 @@ must be defined.
 
     <div class='informative-bg'><em>This section is non-normative</em>
 
-    While <a title="animation addition">addition</a> can often be
+    While <a lt="animation addition">addition</a> can often be
     expressed in terms of the same weighted sum function used to
-    define <a title="animation interpolation">interpolation</a>,
+    define <a lt="animation interpolation">interpolation</a>,
     this is not always the case.
     For example, interpolation of transform matrices involves
     decomposing and interpolating the matrix components whilst
@@ -3205,7 +3203,7 @@ must be defined.
 
     </div>
 
-*   <dfn title="animation accumulation">accumulation</dfn> &mdash;
+*   <dfn lt="animation accumulation">accumulation</dfn> &mdash;
     given two target property values
     <var>V</var><sub>a</sub> and <var>V</var><sub>b</sub>, returns the
     result, <var>V</var><sub>result</sub>, of combining
@@ -3219,18 +3217,18 @@ must be defined.
     <div class='informative-bg'><em>This section is non-normative</em>
 
     For many types of animation such as numbers or lengths, <a
-    title="animation accumulation">accumulation</a> is defined to
-    be identical to <a title="animation addition">addition</a>.
+    lt="animation accumulation">accumulation</a> is defined to
+    be identical to <a lt="animation addition">addition</a>.
 
     A common case where the definitions differ is for list-based
-    types where <a title="animation addition">addition</a> may be
+    types where <a lt="animation addition">addition</a> may be
     defined as appending to a list
-    whilst <a title="animation accumulation">accumulation</a> may
+    whilst <a lt="animation accumulation">accumulation</a> may
     be defined as component-based addition.
     For example, the filter list values "blur(2)" and
-    "blur(3)", when <a title="animation addition">added</a>
+    "blur(3)", when <a lt="animation addition">added</a>
     together may produce "blur(2) blur(3)", but when
-    <a title="animation accumulation">accumulated</a>,
+    <a lt="animation accumulation">accumulated</a>,
     may produce "blur(5)".
 
     </div>
@@ -3263,15 +3261,15 @@ Following is a series of pre-defined <a>animation behaviors</a>.
 behaviors</a>.
 
 For <a>animation behaviors</a> that do not define a specific procedure
-for <a title="animation addition">addition</a> or which are defined as
+for <a lt="animation addition">addition</a> or which are defined as
 <dfn>not additive</dfn>, the <a
-title="animation addition">addition procedure</a> is simply
+lt="animation addition">addition procedure</a> is simply
 <var>V</var><sub>res</sub> = <var>V</var><sub>b</sub>.
 
 For <a>animation behaviors</a> that do not define a specific procedure
-for <a title="animation accumulation">accumulation</a>, the <a
-title="animation accumulation">accumulation procedure</a> is identical
-to the <a title="animation addition">addition procedure</a> for that
+for <a lt="animation accumulation">accumulation</a>, the <a
+lt="animation accumulation">accumulation procedure</a> is identical
+to the <a lt="animation addition">addition procedure</a> for that
 behavior.
 
 For <a>animation behaviors</a> that do not define a specific procedure
@@ -3287,8 +3285,8 @@ For example, properties defining animation parameters are <a>not animatable</a>
 since doing so would create complex recursive behavior.
 
 Unlike other <a>animation behaviors</a>, no procedures for
-<a title="animation interpolation">interpolation</a>,
-<a title="animation addition">addition</a> and <a>distance
+<a lt="animation interpolation">interpolation</a>,
+<a lt="animation addition">addition</a> and <a>distance
 computation</a> are defined for properties whose <a>animation
 behavior</a> is <a>not animatable</a> since these
 properties should not be modified.
@@ -3304,7 +3302,7 @@ usual behavior for an <a>animation node</a> such as occupying time in an
 A <a>target property</a> that is <dfn>animatable as string</dfn>
 has the following <a>animation behavior</a>:
 
-*   <a title="animation interpolation">interpolation</a>:
+*   <a lt="animation interpolation">interpolation</a>:
     <div role="math" aria-describedby="math-string-interpolation"
     style="display: inline">
     <math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -3346,11 +3344,11 @@ has the following <a>animation behavior</a>:
 A <a>target property</a> that is <dfn>animatable as real
 number</dfn> has the following <a>animation behavior</a>:
 
-*   <a title="animation interpolation">interpolation</a>:
+*   <a lt="animation interpolation">interpolation</a>:
     <var>V</var><sub>res</sub> =
       (1 - <var>p</var>) &times; <var>V</var><sub>start</sub> +
       <var>p</var> &times; <var>V</var><sub>end</sub>
-*   <a title="animation addition">addition</a>:
+*   <a lt="animation addition">addition</a>:
       <var>V</var><sub>a</sub> + <var>V</var><sub>b</sub>
 *   <a>distance computation</a>:
     <var>distance</var> =
@@ -3362,9 +3360,9 @@ A <a>target property</a> that is <dfn>animatable as length,
 percentage, or calc</dfn> has the following <a>animation
 behavior</a>:
 
-*   <a title="animation interpolation">interpolation</a>:
+*   <a lt="animation interpolation">interpolation</a>:
     as defined in [[CSS3-TRANSITIONS]].
-*   <a title="animation addition">addition</a>:
+*   <a lt="animation addition">addition</a>:
     calc(<var>V</var><sub>a</sub> + <var>V</var><sub>b</sub>)<br>
     (Nested <code>calc()</code> functions are expanded when
     determining the computed value as defined in <a
@@ -3381,9 +3379,9 @@ behavior</a>:
 A <a>target property</a> that is <dfn>animatable as color</dfn> has
 the following <a>animation behavior</a>:
 
-*   <a title="animation interpolation">interpolation</a>:
+*   <a lt="animation interpolation">interpolation</a>:
     as defined in [[CSS3-TRANSITIONS]].
-*   <a title="animation addition">addition</a>:
+*   <a lt="animation addition">addition</a>:
     as with <a>animatable as real number</a> but performed on each
     RGBA color component in premultiplied space.
 
@@ -3458,16 +3456,16 @@ the following <a>animation behavior</a>:
 A <a>target property</a> that is <dfn>animatable as transform
 list</dfn> has the following <a>animation behavior</a>:
 
-*   <a title="animation interpolation">interpolation</a>:
+*   <a lt="animation interpolation">interpolation</a>:
     as defined in <a
     href="http://www.w3.org/TR/css3-transforms/#interpolation-of-transforms">Interpolation
     of Transforms</a> [[CSS3-TRANSFORMS]].
 
-*   <a title="animation addition">addition</a>: performed by
+*   <a lt="animation addition">addition</a>: performed by
     concatenating transform lists as
     &lsquo;<var>V</var><sub>a</sub> <var>V</var><sub>b</sub>&rsquo;.
 
-*   <a title="animation accumulation">accumulation</a>:
+*   <a lt="animation accumulation">accumulation</a>:
 
     1.  Beginning at the end of each list, <var>V</var><sub>a</sub>
         and <var>V</var><sub>b</sub>,
@@ -3497,7 +3495,7 @@ list</dfn> has the following <a>animation behavior</a>:
           Probably need to define unit conversion too.
         </p>
     3.  The result of accumulation is a transform list created by <a
-        title="animation addition">adding</a> the combined result
+        lt="animation addition">adding</a> the combined result
         with the non-matching portions of the two lists as follows:
         &lsquo;<var>V</var><sub>remainder-a</sub>
         <var>V</var><sub>remainder-b</sub>
@@ -3573,7 +3571,7 @@ type of <a>animation effect</a> and is defined subsequently (see <a
 href="#the-intermediate-animation-value-of-a-keyframe-animation-effect"
 section></a>).
 
-Before being applied to the <a title="target property">target
+Before being applied to the <a lt="target property">target
 properties</a>,
 these <a>intermediate animation values</a> are composed together using
 the process defined in <a href="#combining-animations" section></a>.
@@ -3583,12 +3581,12 @@ the process defined in <a href="#combining-animations" section></a>.
 
 After calculating the <a>intermediate animation values</a> for an
 <a>animation effect</a>, they are applied to the <a>animation
-effect</a>'s <a title="target property">target properties</a>.
+effect</a>'s <a lt="target property">target properties</a>.
 
 Since it is possible for multiple <a>in effect</a> <a>animations</a> to target
 the same property it is often necessary to combine the results of several
 <a>animation effects</a> together.
-This process is called <dfn title='composition'>compositing</dfn> and is
+This process is called <dfn lt='composition'>compositing</dfn> and is
 based on establishing an <a>animation stack</a> for each property
 targetted by an <a>in effect</a> <a>animation effect</a>.
 
@@ -3620,7 +3618,7 @@ not specified.
 
 For the first part of this operation&mdash;combining <a>intermediate
 animation values</a> that target the same <a
-title="target property">property</a>&mdash; it is necessary to
+lt="target property">property</a>&mdash; it is necessary to
 determine both
 <em>how</em> the <a>animation effects</a>
 associated with the <a>animations</a> are combined
@@ -3639,7 +3637,7 @@ animated property.
 
 <h4 id="the-animation-stack">The animation stack</h4>
 
-Associated with each property <a title="target property">targetted</a>
+Associated with each property <a lt="target property">targetted</a>
 by one or more <a>animation effects</a> is an <dfn>animation
 stack</dfn> that establishes the relative priority of the <a>animation
 effects</a>.
@@ -3652,7 +3650,7 @@ stack</a> is established by comparing the properties of the
 
 1.  Let the <dfn>associated player of an animation effect</dfn>
     be the <a>player</a> <a
-    title="associated with a player">associated</a> with the
+    lt="associated with a player">associated</a> with the
     <a>animation</a> that is applying the <a>animation
     effect</a> to the property with which this <a>animation stack</a> is
     associated.
@@ -3661,7 +3659,7 @@ stack</a> is established by comparing the properties of the
 
     1.  Sort <var>A</var> and <var>B</var> using any <a>custom
         player priority</a> specified for the <a
-        title="associated player of an animation effect">associated
+        lt="associated player of an animation effect">associated
         player</a> of each of <var>A</var> and
         <var>B</var> so that lower priorities sort first.
     2.  Sort by the <a>player sequence number</a> so that lower
@@ -3731,25 +3729,25 @@ produced the <a>intermediate animation value</a>.
 This specification defines three <a>composite operations</a> as
 follows:
 
-:   <dfn title="composite operation replace">replace</dfn>
+:   <dfn lt="composite operation replace">replace</dfn>
 ::  The result of compositing the <a>intermediate animation value</a>
     with the <a>underlying value</a> is simply the <a>intermediate
     animation value</a>.
-:   <dfn title="composite operation add">add</dfn>
+:   <dfn lt="composite operation add">add</dfn>
 ::  The <a>intermediate animation value</a> is <a
-    title="animation addition">added</a> to the <a>underlying
+    lt="animation addition">added</a> to the <a>underlying
     value</a>.
     For <a>animation behaviors</a> where the
-    <a title="animation addition">addition operation</a> is defined
+    <a lt="animation addition">addition operation</a> is defined
     such that it is not commutative, the order of the operands is
     <code><a>underlying value</a> + <a>intermediate animation
     value</a></code>.
-:   <dfn title="composite operation accumulate">accumulate</dfn></dt>
+:   <dfn lt="composite operation accumulate">accumulate</dfn></dt>
 ::  The <a>intermediate animation value</a> is <a
-    title="animation accumulation">accumulated</a>
+    lt="animation accumulation">accumulated</a>
     onto the <a>underlying value</a>.
     For <a>animation behaviors</a> where the
-    <a title="animation accumulation">accumulation operation</a> is
+    <a lt="animation accumulation">accumulation operation</a> is
     defined such that it is not commutative, the order of the operands
     is <a>underlying value</a> followed by <a>intermediate animation
     value</a>.
@@ -3765,7 +3763,7 @@ Applying a <a>composited value</a> to a CSS <a>target property</a>
 depends on establishing an <a>animation stylesheet</a>.
 
 The <dfn>animation stylesheet</dfn> contains
-<a title="composited value">composited animation values</a>
+<a lt="composited value">composited animation values</a>
 and acts with a higher priority than all other stylesheets.
 However, <code>!important</code> rules from all other stylesheets
 act with a higher priority than the <a>animation stylesheet</a>.
@@ -3837,12 +3835,12 @@ the same <a>animation</a>.
 This specification defines two <a>iteration composite operations</a>
 as follows:
 
-:   <dfn title="iteration composite operation replace">replace</dfn>
+:   <dfn lt="iteration composite operation replace">replace</dfn>
 ::  Each successive iteration is calculated independently of previous
     iterations.
-:   <dfn title="iteration composite operation accumulate">accumulate
+:   <dfn lt="iteration composite operation accumulate">accumulate
 ::  Successive iterations of the animation are <a
-    title="animation accumulation">accumulated</a> with the
+    lt="animation accumulation">accumulated</a> with the
     final value of the previous iteration.
 
     The application of the <a>iteration composite operation</a> is
@@ -3859,7 +3857,7 @@ positioned at fractional offsets.
 Each set of property values indexed by an offset is called
 a <dfn>keyframe</dfn>.
 
-The <dfn title="keyframe offset">offset of a keyframe</dfn> is a value
+The <dfn lt="keyframe offset">offset of a keyframe</dfn> is a value
 in the range [0, 1] or the special value null.
 The list of <a>keyframes</a> for a <a>keyframe animation effect</a> is
 <dfn>loosely sorted by offset</dfn> which means that for each
@@ -3903,7 +3901,7 @@ elem.animate([ { color: 'blue', offset: 0 },
                { color: 'yellow', offset: 1 } ], 2000);</pre>
 
 It should be possible to type the following and allow the user agent
-to calculate the <a title="keyframe offset">offset</a> of each
+to calculate the <a lt="keyframe offset">offset</a> of each
 keyframe:
 
 <pre class='example lang-javascript'>
@@ -3915,11 +3913,11 @@ elem.animate([ { color: 'blue' },
 Web Animations provides spacing modes for this purpose. The default
 spacing mode for keyframe animation effects is
 &ldquo;<a
-title="distribute keyframe spacing mode">distribute</a>&rdquo; which
+lt="distribute keyframe spacing mode">distribute</a>&rdquo; which
 produces the result described above.
 
 The other spacing mode, &ldquo;<a
-title="paced keyframe spacing mode">paced</a>&rdquo;, is useful when
+lt="paced keyframe spacing mode">paced</a>&rdquo;, is useful when
 it is desirable to maintain an even rate of change such as for motion path
 animation.
 
@@ -3941,13 +3939,13 @@ The values are evenly spaced in time but the rate of change differs for each seg
 </div>
 <p class="caption">
 The animated value of the left property over time when applying the
-<a title="distribute keyframe spacing mode">distribute</a> spacing
+<a lt="distribute keyframe spacing mode">distribute</a> spacing
 mode.
 The values are evenly spaced in time but the rate of change differs
 for each segment as indicated the varying slope of the graph.
 </p>
 
-We can use the <a title="paced keyframe spacing mode">paced</a>
+We can use the <a lt="paced keyframe spacing mode">paced</a>
 spacing mode as follows:
 
 <pre class='example lang-javascript'>
@@ -3966,7 +3964,7 @@ The absolute value of the slope is graph is equal for all segments of the animat
 </div>
 <p class="caption">
 The animated value of the left property over time when applying the
-<a title="paced keyframe spacing mode">paced</a> spacing mode.
+<a lt="paced keyframe spacing mode">paced</a> spacing mode.
 The absolute value of the slope is graph is equal for all segments
 of the animation indicating a constant rate of change.
 </p>
@@ -3990,7 +3988,7 @@ The slope of the graph is equal for the first two segments but changes for the l
 </div>
 <p class="caption">
 The animated value of the left property over time when applying the
-<a title="paced keyframe spacing mode">paced</a> spacing mode and
+<a lt="paced keyframe spacing mode">paced</a> spacing mode and
 a fixed <a>keyframe offset</a> that
 puts the 100px value at 0.5.
 The slope of the graph is equal for the first two segments but
@@ -4006,11 +4004,11 @@ The values computed depend on the <dfn>keyframe spacing mode</dfn>
 specified for the <a>keyframe animation effect</a>.
 The keyframe spacing modes are:
 
-:   <dfn title="distribute keyframe spacing mode">distribute</dfn></dt>
+:   <dfn lt="distribute keyframe spacing mode">distribute</dfn></dt>
 ::  Indicates that <a>keyframes</a> with a null <a>keyframe offset</a>
     null are positioned so that the difference between subsequent
     <a>keyframe offsets</a> are equal.
-:   <dfn title="paced keyframe spacing mode">paced</dfn></dt>
+:   <dfn lt="paced keyframe spacing mode">paced</dfn></dt>
 ::  Indicates that <a>keyframes</a> with a null <a>keyframe offset</a>
     null are positioned so that the <em>distance</em> between subsequent
     values of a specified <dfn>paced property</dfn> are equal.
@@ -4034,9 +4032,9 @@ offsets</a> are <em>not</em> null, as follows:
     <var>start</var> and <var>end</var> such that the first keyframe
     after <var>start</var> has an <var>index</var> of 1.
 4.  Set the <a>keyframe offset</a> of <var>keyframe</var> to
-    <a title="offsetk">offset</a><sub><var>start</var></sub> +
-    (<a title="offsetk">offset</a><sub><var>end</var></sub> &minus;
-     <a title="offsetk">offset</a><sub><var>start</var></sub>)
+    <a lt="offsetk">offset</a><sub><var>start</var></sub> +
+    (<a lt="offsetk">offset</a><sub><var>end</var></sub> &minus;
+     <a lt="offsetk">offset</a><sub><var>start</var></sub>)
     &times; <var>index</var> / <var>n</var>.
 
 The computed <a>keyframe offset</a> values of each <a>keyframe</a>
@@ -4069,8 +4067,8 @@ procedure.
 
     <div class="switch">
 
-    :   If the <a title="keyframe spacing mode">spacing mode</a>
-        is <a title="paced keyframe spacing mode">paced</a>,</dt>
+    :   If the <a lt="keyframe spacing mode">spacing mode</a>
+        is <a lt="paced keyframe spacing mode">paced</a>,</dt>
     ::
 
         1.  Define a keyframe as <dfn>paceable</dfn> if it
@@ -4085,7 +4083,7 @@ procedure.
             B</var> let both refer to <var>B</var>.
 
             Note: In this case the spacing behavior degenerates to <a
-            title="distribute keyframe spacing mode">distribute</a> spacing.
+            lt="distribute keyframe spacing mode">distribute</a> spacing.
 
         5.  For each keyframe in the range
             (<var>A</var>, <var>paced A</var>] and
@@ -4111,7 +4109,7 @@ procedure.
             <a>paceable</a>:
 
             1.  Let
-                <dfn title="distk">dist<sub><var>k</var></sub></dfn>
+                <dfn lt="distk">dist<sub><var>k</var></sub></dfn>
                 represent the cumulative distance to a keyframe
                 <var>k</var> from <var>paced A</var>
                 as calculated by applying the <a>distance
@@ -4121,14 +4119,14 @@ procedure.
                 successive <a>paceable</a> keyframes in the range
                 [<var>paced A</var>, <var>k</var>].
             2.  Set the offset of <var>k</var> to
-                <a title="offsetk">offset</a><sub><var>paced
+                <a lt="offsetk">offset</a><sub><var>paced
                   A</var></sub> +
-                (<a title="offsetk">offset</a><sub><var>paced
+                (<a lt="offsetk">offset</a><sub><var>paced
                   B</var></sub> &minus;
-                <a title="offsetk">offset</a><sub><var>paced
+                <a lt="offsetk">offset</a><sub><var>paced
                   A</var></sub>) &times;
-                <a title="distk">dist</a><sub><var>k</var></sub> /
-                <a title="distk">dist</a><sub><var>paced
+                <a lt="distk">dist</a><sub><var>k</var></sub> /
+                <a lt="distk">dist</a><sub><var>paced
                   B</var></sub>
         7.  For each keyframe in the range (<var>paced A</var>,
             <var>paced B</var>) that still has
@@ -4170,7 +4168,7 @@ Issue: The above algorithm is quite complex.
 
 The <a>intermediate animation value</a> of a single property
 referenced by a <a>keyframe animation effect</a> as one of its
-<a title="target property">target properties</a>, for a given
+<a lt="target property">target properties</a>, for a given
 <var>time fraction</var>, <var>current iteration</var> and
 <var>underlying value</var> is calculated as follows.
 
@@ -4181,7 +4179,7 @@ referenced by a <a>keyframe animation effect</a> as one of its
     since the effect cannot be applied.
 3.  Define the <dfn>neutral value for composition</dfn> as a value
     which, when combined with an <a>underlying value</a> using the <a
-    title="composite operation add">add</a> <a>composite
+    lt="composite operation add">add</a> <a>composite
     operation</a>, produces the <a>underlying value</a>.
 4.  Let <var>property-specific keyframes</var> be a copy of the list
     of <a>keyframes</a> specified on the effect.
@@ -4195,7 +4193,7 @@ referenced by a <a>keyframe animation effect</a> as one of its
     0, create a new <a>keyframe</a> with a <a>keyframe offset</a> of
     0, a property value set to the <a>neutral value for
     composition</a>, and a <a>composite operation</a> of <a
-    title="composite operation add">add</a>, and prepend it to the
+    lt="composite operation add">add</a>, and prepend it to the
     beginning of <var>property-specific keyframes</var>.
 8.  Similarly, if there is no <a>keyframe</a> in
     <var>property-specific keyframes</var> with a <a>keyframe
@@ -4203,7 +4201,7 @@ referenced by a <a>keyframe animation effect</a> as one of its
     create a new <a>keyframe</a> with a <a>keyframe offset</a> of 1,
     a property value set to the <a>neutral value for composition</a>,
     and a <a>composite operation</a> of <a
-    title="composite operation add">add</a>, and append it to the
+    lt="composite operation add">add</a>, and append it to the
     end of <var>property-specific keyframes</var>.
 9.  Let <var>interval endpoints</var> be an empty sequence of
     keyframes.
@@ -4244,11 +4242,11 @@ referenced by a <a>keyframe animation effect</a> as one of its
 
     1.  If <var>keyframe</var> has a <a>composite operation</a>
         that is <em>not</em> <a
-        title="composite operation replace">replace</a>, or
+        lt="composite operation replace">replace</a>, or
         <var>keyframe</var> has no <a>composite operation</a>
         and the <a>composite operation</a> of this <a>keyframe
         animation effect</a> is <em>not</em> <a
-        title="composite operation replace">replace</a>, then
+        lt="composite operation replace">replace</a>, then
         perform the following steps:
 
         1.  Let <var>composite operation to use</var> be the
@@ -4268,7 +4266,7 @@ referenced by a <a>keyframe animation effect</a> as one of its
 
     2.  If this <a>keyframe animation effect</a> has an <a>iteration
         composite operation</a> of <a
-        title="iteration composite operation accumulate">accumulate</a>,
+        lt="iteration composite operation accumulate">accumulate</a>,
         apply the following step <var>current iteration</var> times:
 
         *   replace the property value of <var>target property</var>
@@ -4277,7 +4275,7 @@ referenced by a <a>keyframe animation effect</a> as one of its
             property value on the final keyframe in
             <var>property-specific keyframes</var>
             (<var>V</var><sub>b</sub>) using the <a
-            title="animation accumulation">accumulation procedure</a>
+            lt="animation accumulation">accumulation procedure</a>
             defined for <var>target property</var>.
 
         Issue: It seems like this could be done as a separate step at the end
@@ -4294,7 +4292,7 @@ referenced by a <a>keyframe animation effect</a> as one of its
     <code>(<var>time fraction</var> - <var>start offset</var>) /
     (<var>end offset</var> - <var>start offset</var>)</code>
 16. Return the result of applying the <a
-    title="animation interpolation">interpolation procedure</a> defined
+    lt="animation interpolation">interpolation procedure</a> defined
     by the <a>animation behavior</a> of the <var>target property</var>,
     to the values of the <var>target property</var> specified on the
     two keyframes in <var>interval endpoints</var> taking the first such
@@ -4332,7 +4330,7 @@ Note: this procedure permits overlapping <a>keyframes</a>.
     The behavior is that at the point of overlap the output value jumps to
     the value of the last defined <a>keyframe</a> at that offset.
     For overlapping frames at 0 or 1, the output value for <a
-    title="time fraction">time fractions</a> less than 0 or greater than
+    lt="time fraction">time fractions</a> less than 0 or greater than
     or equal to 1 is the value of the first <a>keyframe</a> or the last
     <a>keyframe</a> in <var>keyframes</var> respectively.
 
@@ -4415,7 +4413,7 @@ that is passed timing information when <a>sampling</a> is performed.
 <h4 id="sampling-custom-effects">Sampling custom effects</h4>
 
 <a>Custom effects</a> are called for each referencing <a>animation</a>
-when a <a title='single-sample'>sample</a> is performed based on the 
+when a <a lt='single-sample'>sample</a> is performed based on the 
 following criteria.
 
 1.  If, on the previous sample, the <a>animation</a>
@@ -4444,7 +4442,7 @@ following criteria.
 
         *   <strong>is <a>in effect</a>, and</strong>
         *   <strong>was not <a>in effect</a> in the previous 
-            <a title='single-sample'>sample</a>, or
+            <a lt='single-sample'>sample</a>, or
               was <a>in effect</a> but with a different <a>time
               fraction</a> or <a>current iteration</a>,</strong>
 
@@ -4483,7 +4481,7 @@ Some alternatives under consideration:
 <h4 id="execution-order-of-custom-effects">Execution order of custom effects</h4>
 
 Since <a>custom effects</a>, unlike <a
-title="animation effect">animation effects</a>, are not limited to
+lt="animation effect">animation effects</a>, are not limited to
 a single <a>target property</a>, the steps for assessing their
 order of execution differs from <a>animation effects</a>.f
 
@@ -4499,7 +4497,7 @@ Issue: Need to define this more precisely.
     animation effects and just do it once afterwards?
 
 Within the set of <a>custom effects</a>, the
-order of execution is the same as that defined for <a title="animation
+order of execution is the same as that defined for <a lt="animation
 effect">animation effects</a> in <a href="#the-animation-stack" section></a>.
 Items sorted earlier are executed before those sorted later.
 
@@ -4542,13 +4540,13 @@ interface AnimationTimeline {
 
 :   <dfn attribute for=AnimationTimeline>currentTime</dfn>
 ::  Returns the <a>time value</a> for this timeline or <code>null</code>
-    if this timeline is <a title="inactive timeline">inactive</a>.
+    if this timeline is <a lt="inactive timeline">inactive</a>.
 
 </div>
 
 <div class='methods'>
 
-:   <dfn method for=AnimationTimeline title='play()'>
+:   <dfn method for=AnimationTimeline lt='play()'>
     AnimationPlayer play(optional AnimationNodeReadonly? source = null)</dfn>
 ::  Creates a new {{AnimationPlayer}} object associated with
     this <a>timeline</a> that begins playback as soon as it is
@@ -4575,7 +4573,7 @@ interface AnimationTimeline {
 
     </div>
 
-:   <dfn method for=AnimationTimeline title='getAnimationPlayers()'>
+:   <dfn method for=AnimationTimeline lt='getAnimationPlayers()'>
     sequence&lt;AnimationPlayer&gt; getAnimationPlayers()</dfn>
 ::  Returns the set of {{AnimationPlayer}} objects
     associated with this <a>timeline</a> that have associated
@@ -4627,7 +4625,7 @@ interface AnimationPlayer {
 <div class="constructors">
 
 :   <dfn constructor for=AnimationPlayer
-      title="AnimationPlayer(source, timeline)">AnimationPlayer ()</dfn>
+      lt="AnimationPlayer(source, timeline)">AnimationPlayer ()</dfn>
 ::  Creates a new {{AnimationPlayer}} object using the following procedure.
 
     1.  Let <var>player</var> be a new {{AnimationPlayer}} object.
@@ -4663,7 +4661,7 @@ interface AnimationPlayer {
     Setting this attribute updates the object's <a>timeline</a> using
     the procedure to <a>set the timeline of a player</a>.
 :   <dfn attribute for=AnimationPlayer>startTime</dfn>
-::  Returns the <a title="player start time">start time</a> of this
+::  Returns the <a lt="player start time">start time</a> of this
     player.
     Setting this attribute updates the <a>player start time</a> using
     the procedure to <a>update the player start time</a> of this object
@@ -4680,7 +4678,7 @@ interface AnimationPlayer {
     Setting this attribute follows the procedure to <a>set the current time</a>
     of this object to the new value.
 :   <dfn attribute for=AnimationPlayer>playbackRate</dfn>
-::  The <a title="player playback rate">playback rate</a> of this
+::  The <a lt="player playback rate">playback rate</a> of this
     player.
     Setting this attribute follows the procedure to <a>update the player
     playback rate</a> of this object to the new value.
@@ -4695,10 +4693,10 @@ interface AnimationPlayer {
 
 <div class='methods'>
 
-:   <dfn method for=AnimationPlayer title='cancel()'>void cancel()</dfn>
+:   <dfn method for=AnimationPlayer lt='cancel()'>void cancel()</dfn>
 ::  Clears all effects caused by this player and aborts its playback
     by running the <a>cancel a player</a> procedure for this object.
-:   <dfn method for=AnimationPlayer title='finish()'>void finish()</dfn>
+:   <dfn method for=AnimationPlayer lt='finish()'>void finish()</dfn>
 ::  Seeks the player to the end of the <a>source content</a> in the
     current direction by running the <a>finish a player</a> procedure
     for this object.
@@ -4706,24 +4704,24 @@ interface AnimationPlayer {
     <div class='exceptions'>
 
     :   DOMException of type <code>InvalidStateError</code>
-    ::  Raised if this player's <a title="player playback rate">playback
+    ::  Raised if this player's <a lt="player playback rate">playback
         rate</a> is zero, or if this player's <a
-        title="player playback rate">playback rate</a> is &gt; zero and the
+        lt="player playback rate">playback rate</a> is &gt; zero and the
         <a>end time</a> of this player's <a>source content</a> is infinity.
 
     </div>
 
-:   <dfn method for=AnimationPlayer title='play()'>void play()</dfn>
+:   <dfn method for=AnimationPlayer lt='play()'>void play()</dfn>
 ::  Unpauses the player and rewinds if it has finished playing using
     the procedure to <a>play a player</a> for this object.
-:   <dfn method for=AnimationPlayer title='pause()'>void pause()</dfn>
+:   <dfn method for=AnimationPlayer lt='pause()'>void pause()</dfn>
 ::  Suspends the playback of this player by running the procedure to
     <a>pause a player</a> for this object.
-:   <dfn method for=AnimationPlayer title='reverse()'>void reverse()</dfn>
-::  Inverts the <a title="player playback rate">playback rate</a> of
+:   <dfn method for=AnimationPlayer lt='reverse()'>void reverse()</dfn>
+::  Inverts the <a lt="player playback rate">playback rate</a> of
     this player and plays it using the <a>reverse a player</a> procedure for
     this object.
-    As with <a method for=AnimationPlayer title="play()">play()</a>, this
+    As with <a method for=AnimationPlayer lt="play()">play()</a>, this
     method unpauses the player and, if the player has already finished playing
     in the reversed direction, seeks to the start of the <a>source content</a>.
 
@@ -4826,7 +4824,7 @@ interface AnimationNodeMutable {
 
 <div class='methods'>
 
-:   <dfn method for=AnimationNodeMutable title='before()'>
+:   <dfn method for=AnimationNodeMutable lt='before()'>
     void before (AnimationNodeReadonly... nodes)</dfn>
 ::  Inserts <var>nodes</var> before this <a>animation node</a>.
 
@@ -4836,7 +4834,7 @@ interface AnimationNodeMutable {
         <a>inclusive ancestor</a> of this <a>animation node</a>
         throw a <code>HierarchyRequestError</code> exception and
         terminate these steps.
-    3.  <a title="insert children">Insert</a> <var>nodes</var> before
+    3.  <a lt="insert children">Insert</a> <var>nodes</var> before
         this <a>animation node</a>.
 
     <div class='note'>
@@ -4847,7 +4845,7 @@ interface AnimationNodeMutable {
 node.before(node); // throws HierarchyRequestError</pre></div>
     </div>
 
-:   <dfn method for=AnimationNodeMutable title='after()'>
+:   <dfn method for=AnimationNodeMutable lt='after()'>
     void after(AnimationNodeReadonly... nodes)</dfn>
 ::  Inserts <var>nodes</var> after this <a>animation node</a>.
 
@@ -4858,12 +4856,12 @@ node.before(node); // throws HierarchyRequestError</pre></div>
         throw a <code>HierarchyRequestError</code> exception and
         terminate these steps.
     3.  Let <var>reference child</var> be the <a
-        title="next sibling not included">next sibling of
+        lt="next sibling not included">next sibling of
         this animation node not in <var>nodes</var></a>.
-    4.  <a title="insert children">Insert</a> <var>nodes</var> before
+    4.  <a lt="insert children">Insert</a> <var>nodes</var> before
         <var>reference child</var>.
 
-:   <dfn method for=AnimationNodeMutable title='replace()'>
+:   <dfn method for=AnimationNodeMutable lt='replace()'>
     void replace(AnimationNodeReadonly... nodes)</dfn>
 ::  Replaces this {{AnimationNodeReadonly}} with the passed in
     <var>nodes</var>.
@@ -4875,15 +4873,15 @@ node.before(node); // throws HierarchyRequestError</pre></div>
         throw a <code>HierarchyRequestError</code> exception and
         terminate these steps.
     3.  Let <var>reference child</var> be the <a
-        title="next sibling not included">next sibling of
+        lt="next sibling not included">next sibling of
         this animation node not in <var>nodes</var></a>.
-    4.  <a title="remove an animation node">Remove</a> this
+    4.  <a lt="remove an animation node">Remove</a> this
         <a>animation node</a> from its <a>parent animation group</a>.
-    5.  <a title="insert children">Insert</a> <var>nodes</var> before
+    5.  <a lt="insert children">Insert</a> <var>nodes</var> before
         <var>reference child</var>.
 
-:   <dfn method for=AnimationNodeMutable title='remove()'>void remove()</dfn>
-::  <a title="remove an animation node">Removes</a> this <a>animation
+:   <dfn method for=AnimationNodeMutable lt='remove()'>void remove()</dfn>
+::  <a lt="remove an animation node">Removes</a> this <a>animation
     node</a> from its <a>parent animation group</a> or <a>player</a>.
 
 </div>
@@ -4909,13 +4907,13 @@ interface AnimationTimingReadonly {
 
 :   <dfn attribute for=AnimationTimingReadonly>delay</dfn>
 ::  The <a>start delay</a> which represents the number of milliseconds
-    from an <a>animation node</a>'s <a title="animation node start time">start
+    from an <a>animation node</a>'s <a lt="animation node start time">start
     time</a> to the start of the <a>active interval</a>.
 
 :   <dfn attribute for=AnimationTimingReadonly>endDelay</dfn>
 ::  The <a>end delay</a> which represents the number of milliseconds
     from the end of an <a>animation node</a>'s <a>active interval</a>
-    until the <a title='animation node start time'>start time</a> of any
+    until the <a lt='animation node start time'>start time</a> of any
     <a>animation node</a> that may
     follow, for example, in an <a>animation sequence</a>.
 
@@ -4985,7 +4983,7 @@ interface AnimationTimingReadonly {
 
 :   <dfn attribute for=AnimationTimingReadonly>playbackRate</dfn>
 ::  The <a>animation node</a>'s <a
-    title="animation node playback rate">playback rate</a> property
+    lt="animation node playback rate">playback rate</a> property
     which is a multiplier applied to the <a>local time</a> potentially
     causing the node to run at a different rate to its natural speed.
 
@@ -5178,21 +5176,21 @@ dictionary ComputedTimingProperties : AnimationTimingProperties {
 <div class='attributes'>
 
 :   <dfn dict-member for=ComputedTimingProperties>startTime</dfn>
-::  The <a title='animation node start time'>start time</a> of this
+::  The <a lt='animation node start time'>start time</a> of this
     <a>animation node</a> in milliseconds.
     This is the time at which the <a>parent animation group</a>, if
     any, has scheduled this child to run within its <a
-    title="transformed time">transformed time space</a>, that is, the
-    <a>animation node</a>'s <a title="inherited time">inherited time
+    lt="transformed time">transformed time space</a>, that is, the
+    <a>animation node</a>'s <a lt="inherited time">inherited time
     space</a>.
 
     The start of the <a>active interval</a> is based on the sum of
-    the <a title="animation node start time">start time</a> and
+    the <a lt="animation node start time">start time</a> and
     <a>start delay</a>.
 
 :   <dfn dict-member for=ComputedTimingProperties>endTime</dfn>
 ::  The <a>end time</a> of the <a>animation node</a> expressed in
-    milliseconds in <a title="inherited time">inherited time
+    milliseconds in <a lt="inherited time">inherited time
     space</a>.
     This corresponds to the end of the <a>animation node</a>'s active
     interval plus any <a>end delay</a>.
@@ -5302,7 +5300,7 @@ AnimationGroup implements AnimationGroupMutable;
 <div class="constructors">
 
 :   <dfn constructor for=AnimationGroupReadonly
-      title="AnimationGroupReadonly(children, timing)">
+      lt="AnimationGroupReadonly(children, timing)">
     AnimationGroupReadonly ()</dfn>
 ::  Creates a new {{AnimationGroup}} object using the following
     procedure:
@@ -5316,14 +5314,14 @@ AnimationGroup implements AnimationGroupMutable;
         {{AnimationTimingReadonly}} object whose attributes are assigned the
         value of the member of the same name on <var>timing input</var>.
 
-    4.  <a title="insert children">Insert</a> <var>children</var>
+    4.  <a lt="insert children">Insert</a> <var>children</var>
         before <code>null</code>.
 
     <div class="parameters">
 
     :   <dfn argument
         for="AnimationGroupReadonly/AnimationGroupReadonly(children, timing)"
-        title="children">children</dfn>
+        lt="children">children</dfn>
     ::  A sequence of animation nodes to add as children of this group.
 
         These children are appended in sequence using the same
@@ -5332,14 +5330,14 @@ AnimationGroup implements AnimationGroupMutable;
 
     :   <dfn argument
         for="AnimationGroupReadonly/AnimationGroupReadonly(children, timing)"
-        title="timing">timing</dfn>
+        lt="timing">timing</dfn>
     ::  The timing properties or <a>iteration duration</a> of the new
         animation group.
 
     </div>
 
 :   <dfn constructor for=AnimationGroup
-      title="AnimationGroup(children, timing)">
+      lt="AnimationGroup(children, timing)">
     AnimationGroup ()</dfn>
 ::  Creates a new {{AnimationGroup}} object using the same procedure as with
     the {{AnimationGroupReadonly()}} constructor with the following differences:
@@ -5367,7 +5365,7 @@ AnimationGroup implements AnimationGroupMutable;
 
 <div class="methods">
 
-:   <dfn method for=AnimationGroupMutable title="prepend()">
+:   <dfn method for=AnimationGroupMutable lt="prepend()">
 :   void prepend (AnimationNodeReadonly... nodes)</dfn>
 ::
 
@@ -5375,10 +5373,10 @@ AnimationGroup implements AnimationGroupMutable;
         <a>inclusive ancestor</a> of this <a>animation node</a>
         throw a <code>HierarchyRequestError</code> exception and
         terminate these steps.
-    2.  <a title="insert children">Insert</a> <var>nodes</var> before
+    2.  <a lt="insert children">Insert</a> <var>nodes</var> before
         the <a>first child</a>.
 
-:   <dfn method for=AnimationGroupMutable title="append()">
+:   <dfn method for=AnimationGroupMutable lt="append()">
     void append (AnimationNodeReadonly... nodes)</dfn>
 ::
 
@@ -5386,10 +5384,10 @@ AnimationGroup implements AnimationGroupMutable;
         <a>inclusive ancestor</a> of this <a>animation node</a>
         throw a <code>HierarchyRequestError</code> exception and
         terminate these steps.
-    2.  <a title="insert children">Insert</a> <var>nodes</var> before
+    2.  <a lt="insert children">Insert</a> <var>nodes</var> before
         <code>null</code>.
 
-:   <dfn method for=AnimationGroupReadonly title="clone()">
+:   <dfn method for=AnimationGroupReadonly lt="clone()">
     AnimationGroup clone ()</dfn>
 ::  Creates a deep copy of this {{AnimationGroupReadonly}} object using the
     following procedure.
@@ -5467,7 +5465,7 @@ alert(animA.timing.duration === animB.timing.duration); // Displays 'true'</pre>
 
 <h4 id="definitions-for-manipulating-hierarchies">Definitions for manipulating hierarchies</h4>
 
-The <dfn title="next sibling not included">next sibling of
+The <dfn lt="next sibling not included">next sibling of
 <var>node</var> not included</dfn> in a set of <a>animation
 nodes</a>, <var>nodes</var> is determined using the following
 teps:</p>
@@ -5483,7 +5481,7 @@ teps:</p>
 
 3.  Return <code>null</code>.
 
-To <dfn title="remove an animation node">remove</dfn> a
+To <dfn lt="remove an animation node">remove</dfn> a
 <var>node</var> from its <a>parent animation group</a> or
 <a>player</a>, perform the steps corresponding to the first
 matching condition from below, if any:
@@ -5501,13 +5499,13 @@ matching condition from below, if any:
 </div>
 
 
-To <dfn title="insert children">insert</dfn> a series of zero or
+To <dfn lt="insert children">insert</dfn> a series of zero or
 more <a>animation nodes</a>, <var>nodes</var>, to
 <var>parent</var>'s list of <a>child animation nodes</a> before
 <var>reference child</var> perform the following steps for each
 <var>node</var> in <var>nodes</var>:</p>
 
-1.  <a title="remove an animation node">Remove</a> <var>node</var>
+1.  <a lt="remove an animation node">Remove</a> <var>node</var>
     from its parent.
 2.  Insert <var>node</var> to <var>parent</var>'s list of <a>child
     animation nodes</a> before <var>reference child</var>
@@ -5543,7 +5541,7 @@ interface AnimationNodeList {
 
 <div class="methods">
 
-:   <dfn method for=AnimationNodeList title="item()">
+:   <dfn method for=AnimationNodeList lt="item()">
     getter AnimationNodeReadonly? item(unsigned long index)</dfn>
 ::  Returns the <a>animation node</a> at <code>index</code>.
     If <code>index</code> is greater than or equal to
@@ -5577,18 +5575,17 @@ AnimationSequence implements AnimationGroupMutable;
 
 <div class="contructors">
 
-:   <dfn constructor for=AnimationSequence title="AnimationSequence()">
+:   <dfn constructor for=AnimationSequence lt="AnimationSequence()">
     Constructor (sequence&lt;AnimationNodeReadonly&gt;? children,
     optional (unrestricted double or AnimationTimingProperties) timing)</dfn>
 ::  The meaning and handling of each of the parameters in this
-    constructor is identical to the <a constructor for="AnimationGroup"
-    title="AnimationGroup()">constructor for AnimationGroup</a>.
+    constructor is identical to the {{AnimationGroup()}} constructor.
 
 </div>
 
 <div class="methods">
 
-:   <dfn method for=AnimationSequenceReadonly title="clone()">
+:   <dfn method for=AnimationSequenceReadonly lt="clone()">
     AnimationSequence clone ()</dfn>
 ::  Creates a deep copy of this {{AnimationSequenceReadonly}} object using
     the same procedure as defined for the {{AnimationGroupReadonly/clone()}}
@@ -5624,7 +5621,7 @@ Animation implements AnimationNodeMutable;
 <div class="constructors">
 
 :   <dfn constructor for=AnimationReadonly
-     title="AnimationReadonly(target, effect, timing)">
+     lt="AnimationReadonly(target, effect, timing)">
     AnimationReadonly ()</dfn>
 ::  Creates a new {{AnimationReadonly}} object
     using the following procedure:
@@ -5687,7 +5684,7 @@ Animation implements AnimationNodeMutable;
     ::  The timing properties or <a>iteration duration</a> of the new
         animation.
 
-:   <dfn constructor for=Animation title="Animation(target, effect, timing)">
+:   <dfn constructor for=Animation lt="Animation(target, effect, timing)">
     Animation ()</dfn>
 ::  Creates a new {{Animation}} object using the same procedure as with
     the {{AnimationReadonly()}} constructor with the following differences:
@@ -5724,7 +5721,7 @@ Animation implements AnimationNodeMutable;
 
 <div class="methods">
 
-:   <dfn method for=AnimationReadonly title="clone()">
+:   <dfn method for=AnimationReadonly lt="clone()">
     Animation clone ()</dfn>
 ::  Creates a new {{Animation}} object by copying the properties of the
     {{AnimationReadonly}} object on which it is called as follows:
@@ -5839,7 +5836,7 @@ var animD = new Animation(elem, function(time) {
 The third parameter representing the animation's timing, may
 simply be a number representing the <a>iteration duration</a> in
 milliseconds as above, or, to specify further timing properties such
-as the <a title="animation node playback rate">playback rate</a>,
+as the <a lt="animation node playback rate">playback rate</a>,
 an {{AnimationTimingProperties}} object can be used, as follows:
 
 <pre class='example lang-javascript'>
@@ -5896,7 +5893,7 @@ interface Animatable {
 
 <div class="methods">
 
-:   <dfn method for=Animatable title="animate()">
+:   <dfn method for=Animatable lt="animate()">
     AnimationPlayer animate(object? effect,
         optional (double or AnimationTimingProperties) timing)</dfn>
 ::  Creates a new {{Animation}} object
@@ -5936,7 +5933,7 @@ elem.ownerDocument.timeline.play(anim);</pre></div>
 
     </div>
 
-:   <dfn method for=Animatable title="getAnimationPlayers()">
+:   <dfn method for=Animatable lt="getAnimationPlayers()">
     sequence&lt;AnimationPlayer&gt; getAnimationPlayers()</dfn>
 ::  Returns the set of {{AnimationPlayer}} objects
     whose <a>source content</a> is <a>current</a> or <a>in effect</a> and
@@ -6013,13 +6010,13 @@ enum IterationCompositeOperation {"replace", "accumulate"};
 
 :   <code>replace</code>
 ::  Corresponds to the <a
-    title="iteration composite operation replace">replace</a>
+    lt="iteration composite operation replace">replace</a>
     <a>iteration composite operation</a> value such that the
     <a>intermediate animation value</a> produced is independent of the
     <a>current iteration</a>.
 :   <code>accumulate</code>
 ::  Corresponds to the <a
-    title="iteration composite operation accumulate">accumulate</a>
+    lt="iteration composite operation accumulate">accumulate</a>
     iteration composite operation value such that
     subsequent iterations of an <a>animation</a> build
     on the final value of the previous iteration.
@@ -6036,25 +6033,25 @@ enum CompositeOperation {"replace", "add", "accumulate"};
 
 :   <code>replace</code>
 ::  Corresponds to the <a
-    title="composite operation replace">replace</a>
+    lt="composite operation replace">replace</a>
     <a>composite operation</a> value such that
     the <a>animation effect</a> overrides the <a>underlying value</a> it
     is combined with.
 
 :   <code>add</code>
 ::  Corresponds to the <a
-    title="composite operation add">add</a>
+    lt="composite operation add">add</a>
     <a>composite operation</a> value such that
     the <a>animation effect</a> is <a
-    title="animation addition">added</a> to the <a>underlying value</a>
+    lt="animation addition">added</a> to the <a>underlying value</a>
     with which it is combined.
 
 :   <code>accumulate</code>
 ::  Corresponds to the <a
-    title="composite operation accumulate">accumulate</a>
+    lt="composite operation accumulate">accumulate</a>
     <a>composite operation</a> value such that
     the <a>animation effect</a> is <a
-    title="animation accumulation">accumulated</a> on to the
+    lt="animation accumulation">accumulated</a> on to the
     <a>underlying value</a>.
 
 <h3 id="the-keyframeeffect-interfaces">The <code>KeyframeEffectReadonly</code>
@@ -6089,7 +6086,7 @@ interface KeyframeEffect : KeyframeEffectReadonly {
 <div class="constructors">
 
 :   <dfn constructor for=KeyframeEffectReadonly
-      title="KeyframeEffectReadonly(frames, options)">
+      lt="KeyframeEffectReadonly(frames, options)">
     KeyframeEffectReadonly ()</dfn>
 ::  Creates a new {{KeyframeEffectReadonly}} object for the given set of
     keyframes.
@@ -6098,9 +6095,9 @@ interface KeyframeEffect : KeyframeEffectReadonly {
 
     :   <dfn argument
         for="KeyframeEffectReadonly/KeyframeEffectReadonly(frames, options)"
-        title="frames"><dfn argument
+        lt="frames"><dfn argument
         for="KeyframeEffect/KeyframeEffect(frames, options)"
-        title="frames">object frames</dfn></dfn>
+        lt="frames">object frames</dfn></dfn>
     ::  A {{Keyframe}} object or sequence of {{Keyframe}} objects used for
         calculating animation values for this <a>animation effect</a>.
         The constraints on this parameter and its processing are
@@ -6110,9 +6107,9 @@ interface KeyframeEffect : KeyframeEffectReadonly {
 
     :   <dfn argument
         for="KeyframeEffectReadonly/KeyframeEffectReadonly(frames, options)"
-        title="options"><dfn argument
+        lt="options"><dfn argument
         for="KeyframeEffect/KeyframeEffect(frames, options)"
-        title="options">optional KeyframeEffect options</dfn></dfn>
+        lt="options">optional KeyframeEffect options</dfn></dfn>
     ::  A {{KeyframeEffectOptions}} dictionary defining other aspects
         of the <a>animation effect</a>'s behavior.
         If this parameter is not provided, the default values of the
@@ -6120,7 +6117,7 @@ interface KeyframeEffect : KeyframeEffectReadonly {
 
     </div>
 
-:   <dfn constructor for=KeyframeEffect title="KeyframeEffect(frames, options)">
+:   <dfn constructor for=KeyframeEffect lt="KeyframeEffect(frames, options)">
     KeyframeEffect ()</dfn>
 ::  Creates a new {{KeyframeEffect}} object for the given set of keyframes.
     The meaning and processing of the
@@ -6133,10 +6130,10 @@ interface KeyframeEffect : KeyframeEffectReadonly {
 
 :   <dfn attribute for=KeyframeEffectReadonly>spacing</dfn>
 :   <dfn attribute for=KeyframeEffect>spacing</dfn>
-::  On getting, returns the <a title="keyframe spacing mode">spacing mode</a> to
+::  On getting, returns the <a lt="keyframe spacing mode">spacing mode</a> to
     use for this <a>keyframe animation effect</a>.
 
-    On setting, sets the <a title="keyframe spacing mode">spacing mode</a>
+    On setting, sets the <a lt="keyframe spacing mode">spacing mode</a>
     property of this <a>keyframe animation effect</a> to the provided value.
 
     Recognized values are defined by the following grammar:
@@ -6199,7 +6196,7 @@ interface KeyframeEffect : KeyframeEffectReadonly {
 
 <div class="methods">
 
-:   <dfn method for=KeyframeEffectReadonly title="clone()">
+:   <dfn method for=KeyframeEffectReadonly lt="clone()">
     KeyframeEffect clone ()</dfn>
 ::  Returns a new {{KeyframeEffect}} object whose members have the same values
     as this object using the following procedure.
@@ -6218,7 +6215,7 @@ interface KeyframeEffect : KeyframeEffectReadonly {
          passing <var>frames</var> as the {{KeyframeEffect/setFrames/frames}}
          argument.
 
-:   <dfn method for=KeyframeEffectReadonly title="getFrames()">
+:   <dfn method for=KeyframeEffectReadonly lt="getFrames()">
     sequence&lt;ComputedKeyframe&gt; getFrames()</dfn>
 ::  Returns the <a>keyframes</a> that make up this effect as
     a sequence of {{ComputedKeyframe}} objects.
@@ -6240,14 +6237,14 @@ interface KeyframeEffect : KeyframeEffectReadonly {
         href="#spacing-keyframes" section></a> is stored in
         the {{ComputedKeyframe/computedOffset}} member of each frame.
 
-:   <dfn method for=KeyframeEffect title='setFrames(frames)'>
+:   <dfn method for=KeyframeEffect lt='setFrames(frames)'>
     void setFrames(object frames)</dfn>
 ::  Replaces the set of <a>keyframes</a> that make up this effect.
 
     <div class="parameters">
 
     :   <dfn argument for=KeyframeEffect/setFrames
-        title="frames">object frames</dfn>
+        lt="frames">object frames</dfn>
     ::  A {{Keyframe}} object or sequence of {{Keyframe}} objects used to
         replace the set of <a>keyframes</a> that make up this effect.
 
@@ -6331,7 +6328,7 @@ dictionary KeyframeEffectOptions {
     a <a>composite operation</a>.
 
 :   <dfn dict-member for=KeyframeEffectOptions>spacing</dfn>
-::  The <a title="keyframe spacing mode">spacing mode</a> to apply
+::  The <a lt="keyframe spacing mode">spacing mode</a> to apply
     to this <a>animation effect</a>'s <a>keyframes</a>.
 
     See the {{KeyframeEffect/spacing}} attribute of the
@@ -6622,7 +6619,7 @@ callback EffectCallback = void (double? timeFraction, Animatable currentTarget,
 
 An {{EffectCallback}} is called each time an {{AnimationReadonly}} object
 with which it is
-associated is <a title="sampling">sampled</a>.
+associated is <a lt="sampling">sampled</a>.
 
 <div class="parameters">
 
@@ -6666,7 +6663,7 @@ associated is <a title="sampling">sampled</a>.
 
 <h3 id="extensions-to-the-document-interface">Extensions to the <code>Document</code> interface</h3>
 
-The following extensions are made to the <a title='Document' interface>Document
+The following extensions are made to the <a lt='Document' interface>Document
 interface</a> defined in [[!DOM]].
 
 <pre class="link-defaults">
@@ -6858,7 +6855,7 @@ alert(b - a); // Displays 0</pre></div>
     callbacks</a> for a given <a
     href="http://www.w3.org/TR/html5/browsers.html#top-level-browsing-context"
     class="externalDFN">top-level browsing context</a>,
-    must perform a <a title='single-sample'>sample</a> including 
+    must perform a <a lt='single-sample'>sample</a> including 
     executing any eligible
     <a>custom effects</a> (see <a href="#sampling-custom-effects"
     section></a>) for all <a>animation nodes</a>
@@ -6871,7 +6868,7 @@ alert(b - a); // Displays 0</pre></div>
     of any of its <a
     href="http://www.w3.org/TR/html5/browsers.html#list-of-the-descendant-browsing-contexts"
     class="externalDFN">descendant browsing contexts</a>.
-    When performing this <a title='single-sample'>sample</a>, the 
+    When performing this <a lt='single-sample'>sample</a>, the 
     <a>time value</a> of
     each <a>document timeline</a> must be equal to the <var>time</var>
     passed to animation frame request callbacks for that browsing
