@@ -531,30 +531,38 @@ The procedure to <dfn>set the source content of a player</dfn>,
 
 1.  Let <var>old content</var> be the current <a>source content</a> of
     <var>player</var>, if any.
-2.  If <var>new content</var> is the same object as <var>old content</var>,
+1.  If <var>new content</var> is the same object as <var>old content</var>,
     abort this procedure.
-3.  If <var>new content</var> is null and <var>old content</var> is not null,
+1.  If <var>new content</var> is null and <var>old content</var> is not null,
     run the procedure to <a>reset a player's pending tasks</a> on
     <var>player</var>.
-4.  If <var>player</var> has a <a>pending pause task</a>, reschedule that task
+1.  If <var>player</var> has a <a>pending pause task</a>, reschedule that task
     to run as soon as <var>player</var> is <a>ready</a>.
-5.  If <var>player</var> has a <a>pending play task</a>, reschedule that task
+1.  If <var>player</var> has a <a>pending play task</a>, reschedule that task
     to run as soon as <var>player</var> is <a>ready</a> to play <var>new
     content</var>.
-6.  If <var>new content</var> is not <code>null</code> and
+<!-- @ifdef INCLUDE_GROUPS -->
+1.  If <var>new content</var> is not <code>null</code> and
     if <var>new content</var> has a <a>parent animation group</a>,
     <a lt="remove an animation node">remove</a> <var>new content</var> from
     its <a>parent animation group</a>.
-7.  If <var>new content</var> is not <code>null</code> and
+<!-- @endif -->
+1.  If <var>new content</var> is not <code>null</code> and
     if <var>new content</var> is the <a>source content</a> of another
     <a>player</a>, <var>previous player</var>, run the procedure to <a>set the
     source content of a player</a> (this procedure) on <var>previous
     player</var> passing null as <var>new content</var>.
-8.  Let the <a>source content</a> of <var>player</var> be <var>new
+1.  Let the <a>source content</a> of <var>player</var> be <var>new
     content</var>.
-9.  If <var>old content</var> is not <code>null</code>, queue a task to call any
+1.  If <var>old content</var> is not <code>null</code>, queue a task to call any
+<!-- @ifdef INCLUDE_GROUPS -->
     <a>custom effects</a> associated with <a>inclusive descendants</a> of
-    <var>old content</var> with an <a>unresolved</a> <a>time fraction</a>.
+    <var>old content</var>
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+    <a>custom effect</a> associated with <var>old content</var>
+<!-- @endif -->
+    with an <a>unresolved</a> <a>time fraction</a>.
     <div class="issue">
       This is not quite right. If <var>old content</var> is attached to another
       player in the same task then we should probably not do an extra
@@ -563,7 +571,7 @@ The procedure to <dfn>set the source content of a player</dfn>,
       The definition of when <a>custom effects</a> gets called needs to be
       audited and probably rewritten.
     </div>
-10. Run the procedure to <a>update a player's finished state</a> for
+1.  Run the procedure to <a>update a player's finished state</a> for
     <var>player</var>.
 
 <h4 id="the-current-time-of-a-player">The current time of a player</h4>
@@ -759,7 +767,10 @@ A player is <dfn>ready</dfn> at the first moment where <em>both</em> of the
 following conditions are true:
 
 *   the user agent has completed any setup required to begin the playback of
-    each <a>inclusive descendant</a> of the player's <a>source content</a>
+<!-- @ifdef INCLUDE_GROUPS -->
+    each <a>inclusive descendant</a> of
+<!-- @endif -->
+    the player's <a>source content</a>
     including rendering the first frame of any <a>animation</a> with an
     associated <a>animation effect</a> or executing any <a>custom effects</a>
     associated with such an <a>animation</a>.
@@ -966,8 +977,11 @@ The procedure to <dfn>pause a player</dfn>, <var>player</var> is as follows:
     (pending) <a>Promise</a> object.
 1.  Schedule a task to be executed at the first possible moment after
     the user agent has performed any processing necessary to suspend
-    the playback of any animations that are <a>inclusive
-    descendants</a> of <var>player</var>'s <a>source content</a>, if any.
+    the playback of
+<!-- @ifdef INCLUDE_GROUPS -->
+    any animations that are <a>inclusive descendants</a> of
+<!-- @endif -->
+    <var>player</var>'s <a>source content</a>, if any.
     The task shall perform the following steps:
 
     1.  Set <var>player</var>'s <a>hold time</a> to its <a>current time</a>
@@ -1208,7 +1222,10 @@ as follows:
 5.  Make <var>player</var>'s <a lt="player start time">start time</a>
     <a>unresolved</a>.
 7.  Queue a task to call any <a>custom effects</a> associated with
-    <a>inclusive descendants</a> of <var>player</var>'s <a>source content</a>
+<!-- @ifdef INCLUDE_GROUPS -->
+    <a>inclusive descendants</a> of
+<!-- @endif -->
+    <var>player</var>'s <a>source content</a>
     with an <a>unresolved</a> time fraction.
     <p class="issue">
       The procedures for calling custom effects needs to be reworked.
@@ -1376,6 +1393,7 @@ the timing hierarchy.
 
 The <a>source content</a> of a <a>player</a>, if set, is a type of
 <a>animation node</a>.
+<!-- @ifdef INCLUDE_GROUPS -->
 The <a>source content</a> of a <a>player</a> is said to be <dfn
 lt="directly associated with a player">directly associated</dfn>
 with that player.
@@ -1397,6 +1415,13 @@ with a player</a>.
 At a given moment, an <a>animation node</a> can be <a
 lt="associated with a player">associated</a> with at most one
 <a>player</a>.
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+The <a>source content</a> of a <a>player</a> is said to be <dfn
+lt="associated with a player">associated</dfn> with that player.
+At a given moment, an <a>animation node</a> can be <a
+lt="associated with a player">associated</a> with at most one
+<!-- @endif -->
 
 An <a>animation node</a>, <var>node</var>, is <dfn>associated with
 a timeline</dfn>, <var>timeline</var>, if <var>node</var> is
@@ -1405,10 +1430,19 @@ a timeline</dfn>, <var>timeline</var>, if <var>node</var> is
 
 <h4 id="types-of-animation-nodes">Types of animation nodes</h4>
 
+<!-- @ifdef INCLUDE_GROUPS -->
 This specification defines two types of <a>animation nodes</a>:
 
 * <a>animations</a>, and
 * <a>animation groups</a>.
+
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+This specification defines a single type of <a>animation node</a>:
+<a>animations</a>.
+Subsequent levels of this specification will define further types of
+<a>animation nodes</a>.
+<!-- @endif -->
 
 All types of <a>animation nodes</a> define a number of common
 properties which are described in the following sections.
@@ -1451,8 +1485,11 @@ the <a>active interval</a> are coincident.<br>
 </p>
 
 An <a>end delay</a> may also be specified but is primarily only of
-use when sequencing animations such as by using an
-<a>animation sequence</a>.
+use when sequencing<!-- @ifdef INCLUDE_GROUPS -->
+animations such as by using an <a>animation sequence</a>.
+<!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->
+animations.
+<!-- @endif -->
 
 </div>
 
@@ -1465,25 +1502,36 @@ The lower bound of the <a>active interval</a> is defined by the
 combination of the animation node's
 <a lt="animation node start time">start time</a> and <a>start delay</a>.
 
+<!-- XXX Remove start time when INCLUDE_GROUPS is not defined -->
+<!-- @ifdef INCLUDE_GROUPS -->
 An <a>animation node</a>'s
 <dfn lt="animation node start time">start time</dfn> is the moment at
 which the <a>parent animation group</a>,
 if any, has scheduled the <a>animation node</a> to begin.
 It is expressed in <a>inherited time</a>.
+
 In most cases, including the case when the <a>animation node</a> has
 no <a>parent animation group</a>,
 the <a lt="animation node start time">start time</a> is zero.
-The singular exception is <a>animation sequence</a> which set
+The singular exception is <a>animation sequences</a> which set
 the <a lt="animation node start time">start times</a> of their
 children as described in <a
 href="#the-start-time-of-children-of-an-animation-sequence" section></a>.
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+In the absence of animation groups, the <dfn
+lt="animation node start time">start time</dfn> of an <a>animation node</a> is
+zero.
+<!-- @endif -->
 
 In addition to the <a lt="animation node start time">start
 time</a>, an <a>animation node</a> also has a <dfn>start delay</dfn>
 which is an offset from the <a lt="animation node start time">start time</a>.
+<!-- @ifdef INCLUDE_GROUPS -->
 Unlike the <a lt="animation node start time">start time</a> which
 is determined by the <a>parent animation group</a>, the <a>start
 delay</a> is a property of the <a>animation node</a> itself.
+<!-- @endif -->
 
 The lower bound of the <a>active interval</a> of an <a>animation
 node</a>, expressed in <a lt="inherited time">inherited time
@@ -1500,9 +1548,20 @@ duration</dfn>, the calculation of which is defined in <a
 href="#calculating-the-active-duration" section></a>.
 
 Similar to the <a>start delay</a>, an <a>animation node</a> also has
-an <dfn>end delay</dfn> which may be used to delay the <a
+an <dfn>end delay</dfn> which
+<!-- @ifdef INCLUDE_GROUPS -->
+may be used to delay the <a
 lt="animation node start time">start time</a> of the <a>next
 sibling</a> in a <a>animation sequence</a>.
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+is primarily of use when sequencing animations
+based on the <a>end time</a> of another <a>animation node</a>.
+<!-- @endif -->
+
+The <dfn>end time</dfn> of an <a>animation node</a> is simply the sum of its <a
+lt="animation node start time">start time</a>, <a>start delay</a>, <a>active
+duration</a>, and <a>end delay</a>.
 
 <h4 id="local-time-and-inherited-time">Local time and inherited time</h4>
 
@@ -1517,6 +1576,7 @@ graphics.
 The zero time of a time space is analogous to the origin of
 a coordinate space.
 
+<!-- @ifdef INCLUDE_GROUPS -->
 Just as with coordinate spaces, time spaces can also be nested.
 <a>Animation groups</a> typically perform some
 transformations on the <a>time values</a> they
@@ -1531,6 +1591,7 @@ parent&mdash;called the <a>inherited time</a>&mdash;and add their
 <a lt="animation node start time">start time</a> to establish
 their own <a lt="local time">local time space</a> as illustrated
 below.
+<!-- @endif -->
 
 <div class="figure">
 <img src="img/local-time.svg" width="600"
@@ -1559,12 +1620,17 @@ following:
 
 <div class='switch'>
 
+<!-- @ifdef INCLUDE_GROUPS -->
 :   If the <a>animation node</a> has a <a>parent animation
     group</a>,
 ::  the inherited time is the <a>parent animation group</a>'s current
     <a>transformed time</a>.
-:   If the <a>animation node</a> is directly associated with
-    a <a>player</a>,
+:   If the <a>animation node</a> is <a>directly associated with
+    a player</a>,
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+:   If the <a>animation node</a> is <a>associated with a player</a>,
+<!-- @endif -->
 ::  the inherited time is the <a>current time</a> of the
     <a>player</a>.
 :   Otherwise,
@@ -1623,6 +1689,7 @@ follows:
 :   <a>in play</a>
 ::  Corresponds to an <a>animation node</a> whose <a>active time</a>
     is changing on each sample.
+<!-- @ifdef INCLUDE_GROUPS -->
     This occurs when the <a>animation node</a> <em>and all its
     ancestors</em> are in the <a>active phase</a>.
     <a>Animations</a> only &ldquo;move&rdquo; when
@@ -1636,6 +1703,7 @@ follows:
     same <a>fill mode</a>, the child <a>animation node</a> may be
     effectively be snapshotted within the <a>active phase</a>
     despite no longer being <a>in play</a>.
+<!-- @endif -->
 
 :   <a>current</a>
 ::  Corresponds to an <a>animation node</a> that is either <a>in
@@ -1685,18 +1753,35 @@ An <a>animation node</a> is <dfn>in play</dfn> if <em>all</em>
 of the following conditions are met:
 
 1.  the <a>animation node</a> is in the <a>active phase</a>, and
+<!-- @ifdef INCLUDE_GROUPS -->
 2.  the <a>animation node</a> has a <a>parent animation group</a> that
-    is <a>in play</a> or else the <a>animation node</a> is <a>directly
-    associated with a player</a> that is not <a
+    is <a>in play</a> or else the <a>animation node</a> is
+    <a>directly associated with a player</a> that is not <a
     lt="finished play state">finished</a>.
 
-An animation node is <dfn>current</dfn> if it <em>any</em> of the
-following conditions is true:
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+2.  the <a>animation node</a> is <a>associated with a player</a> that is not
+    <a lt="finished play state">finished</a>.
+
+<!-- @endif -->
+
+An animation node is <dfn>current</dfn> if
+<!-- @ifdef INCLUDE_GROUPS --><em>any</em> <!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS --><em>either</em> <!-- @endif -->
+of the following conditions is true:
 
 *   it is in the <a>before phase</a>, or
+<!-- @ifdef INCLUDE_GROUPS -->
 *   it is <a>in play</a>, or
 *   it has a <a>parent animation group</a> and the
     <a>parent animation group</a> is <a>current</a>.
+
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+*   it is <a>in play</a>.
+
+<!-- @endif -->
 
 An animation node is <dfn>in effect</dfn> if its <a>active time</a> as
 calculated according to the procedure in <a
@@ -1729,8 +1814,10 @@ The effect of each <a>fill mode</a> is as follows:
 ::  The animation node has no effect when it is not <a>in play</a>.
 :   forwards</dt>
 ::  When the animation node is in the <a>after phase</a>,
+<!-- @ifdef INCLUDE_GROUPS -->
     or when the animation node is in the <a>active phase</a> but an
     <a>ancestor</a> is in its <a>after phase</a>,
+<!-- @endif -->
     the animation node will produce the same <a
     lt="transformed time">transformed time value</a> as the last
     moment it is scheduled to be <a>in play</a>.
@@ -1739,8 +1826,10 @@ The effect of each <a>fill mode</a> is as follows:
     it will have no effect.
 :   backwards
 ::  When the animation node is in the <a>before phase</a>,
+<!-- @ifdef INCLUDE_GROUPS -->
     or when the animation node is in the <a>active phase</a> but an
     <a>ancestor</a> is in its <a>before phase</a>,
+<!-- @endif -->
     the animation node will produce the same <a
     lt="transformed time">transformed time value</a> as the earliest
     moment that it is scheduled to be <a>in play</a>.
@@ -1748,13 +1837,17 @@ The effect of each <a>fill mode</a> is as follows:
     For all other times that the animation node is not <a>in play</a>,
     it will have no effect.
 :   both</dt>
-::  When the animation node or an <a>ancestor</a> is in its <a>before
-    phase</a>, <span class="prop-value">backwards</span> fill behavior
-    is used.
+::  When the animation node
+<!-- @ifdef INCLUDE_GROUPS -->
+    or an <a>ancestor</a> is in its <a>before phase</a>,
+<!-- @endif -->
+    <span class="prop-value">backwards</span> fill behavior is used.
 
-    When the animation node or an <a>ancestor</a> is in its <a>after
-    phase</a>, <span class="prop-value">forwards</span> fill behavior is
-    used.
+    When the animation node
+<!-- @ifdef INCLUDE_GROUPS -->
+    or an <a>ancestor</a> is in its <a>after phase</a>,
+<!-- @endif -->
+    <span class="prop-value">forwards</span> fill behavior is used.
 
 Some examples of the these fill modes are illustrated below.
 
@@ -1820,6 +1913,7 @@ The initial <a>iteration duration</a> of an animation node is simply
 its <a>intrinsic iteration duration</a>.
 
 The <dfn>intrinsic iteration duration</dfn> of an animation node is
+<!-- @ifdef INCLUDE_GROUPS -->
 zero, however some specific types of animation node such as
 <a>animation groups</a> override this behavior and provide an
 alternative intrinsic duration (see <a
@@ -1827,6 +1921,10 @@ href="#the-intrinsic-iteration-duration-of-an-animation-group"
 section></a> and <a
 href="#the-intrinsic-iteration-duration-of-an-animation-sequence"
 section></a>).
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+zero.
+<!-- @endif -->
 
 The <a>iteration duration</a> of an <a>animation node</a> may be set
 by the author to represent a value other than the <a>intrinsic
@@ -2063,11 +2161,13 @@ rate">playback rate</a> of an <a>animation node</a> is as follows:
     This is because the <a>active duration</a> will be updated but the
     <a>local time</a> will not.
 
+<!-- @ifdef INCLUDE_GROUPS -->
     Furthermore, if other <a>animation nodes</a> depend on the
     <a>animation node</a>'s <a>active duration</a>, such as sibling
     <a>animation node</a> in a <a>animation sequence</a>, they
     too may jump as a result of setting the <a>animation node</a>'s <a
     lt="animation node playback rate">playback rate</a>.
+<!-- @endif -->
 
     For runtime speed control the <a
     lt="player playback rate">playback rate</a> of the
@@ -2186,8 +2286,11 @@ The <dfn>active time</dfn> is based on the <a>local time</a>
 and <a>start delay</a>.
 However, it is only defined when the <a>animation node</a> should
 produce an output and hence depends on its <a>fill mode</a> and
-phase as well as the phase of its <a>parent animation group</a>, if
-any, as follows,
+phase
+<!-- @ifdef INCLUDE_GROUPS -->
+as well as the phase of its <a>parent animation group</a>, if any,
+<!-- @endif -->
+as follows,
 
 <div class="switch">
 
@@ -2197,10 +2300,12 @@ any, as follows,
 
     <div class="switch">
 
+<!-- @ifdef INCLUDE_GROUPS -->
     :   If the animation node has a <a>parent animation group</a>
         and that parent animation group is in the <a>after
         phase</a>,
     ::  Return an <a>unresolved</a> <a>time value</a>.
+<!-- @endif -->
     :   If the <a>fill mode</a> is <span
         class="prop-mode">backwards</span> or <span
         class="prop-mode">both</span>,
@@ -2211,6 +2316,7 @@ any, as follows,
     </div>
 
 :   If the animation node is in the <a>active phase</a>,
+<!-- @ifdef INCLUDE_GROUPS -->
 ::  The result depends on the first matching condition from the
     following,
 
@@ -2232,6 +2338,10 @@ any, as follows,
     ::  Return <code><a>local time</a> - <a>start delay</a></code>.
 
     </div>
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+::  Return <code><a>local time</a> - <a>start delay</a></code>.
+<!-- @endif -->
 
 :   If the animation node is in the <a>after phase</a>,
 ::  The result depends on the first matching condition from the
@@ -2239,10 +2349,12 @@ any, as follows,
 
     <div class="switch">
 
+<!-- @ifdef INCLUDE_GROUPS -->
     :   If the animation node has a <a>parent animation group</a>
         and that parent animation group is in the <a>before
         phase</a>,
     ::  Return an <a>unresolved</a> <a>time value</a>.
+<!-- @endif -->
     :   If the <a>fill mode</a> is <span
         class="prop-mode">forwards</span> or <span
         class="prop-mode">both</span>,
@@ -2495,6 +2607,7 @@ The <a>linear timing function</a> can be represented by the string
 The range of timing functions that may be applied to a given
 <a>animation node</a> depends on the type of the <a>animation node</a>.
 
+<!-- @ifdef INCLUDE_GROUPS -->
 <div class="issue">
 Currently, the set of <a>timing functions</a> allowed on
 an <a>animation group</a> is not restricted.
@@ -2502,6 +2615,7 @@ This has raised concern about complexity of implementation and also
 complexity of behavior with regards to fill modes.
 As a result, allowing the full set of timing functions on animation
 groups is considered <strong>at risk</strong>.
+<!-- @endif -->
 
 Alternatives are to either restrict timing functions on animation
 groups to the <a>linear timing function</a> or to a set of
@@ -2733,7 +2847,7 @@ The <dfn>transformed time</dfn> is calculated from the
         may be infinity and the result of infinity multiplied by zero is
         undefined according to IEEE 754-2008.
 
-
+<!-- @ifdef INCLUDE_GROUPS -->
 <h3 id="grouping-and-synchronization">Grouping and synchronization</h3>
 
 <div class="informative-bg"><em>This section is non-normative</em>
@@ -2904,37 +3018,25 @@ this definition to provide other kinds of synchronization behavior.
 
 The <a>intrinsic iteration duration</a> of an <a>animation
 group</a> is based on the time when the last <a>child animation
-node</a> completes its <a>active interval</a> and is calculated using
-the following procedure.
+node</a> completes its <a>active interval</a> and depends on the
+number of <a>child animation nodes</a> as follows.
 
-1.  Define the <a>end time</a> of an <a>animation node</a> as:
+<div class="switch">
 
-    <blockquote>
-      <dfn>end time</dfn> =
-      <code><a lt="animation node start time">start time</a> +
-      <a>start delay</a> + <a>active duration</a> + <a>end
-      delay</a></code>
-    </blockquote>
+:   If the group has no <a>child animation nodes</a>,
+::  the <a>intrinsic iteration duration</a> is zero.
 
-2.  The <a>intrinsic iteration duration</a> depends on the number of
-    <a>child animation nodes</a> as follows,
+:   Otherwise,
+::
 
-    <div class="switch">
+    1.  Let <var>maximum end time</var> be the maximum value
+        after calculating the <a>end time</a> of each <a>child
+        animation node</a> in the group.
+    2.  The <a>intrinsic iteration duration</a> is the result of
+        evaluating <code>max(0, <var>maximum end
+        time</var>)</code>.
 
-    :   If the group has no <a>child animation nodes</a>,
-    ::  the <a>intrinsic iteration duration</a> is zero.
-
-    :   Otherwise,
-    ::
-
-        1.  Let <var>maximum end time</var> be the maximum value
-            after calculating the <a>end time</a> of each <a>child
-            animation node</a> in the group.
-        2.  The <a>intrinsic iteration duration</a> is the result of
-            evaluating <code>max(0, <var>maximum end
-            time</var>)</code>.
-
-    </div>
+</div>
 
 This definition of the <a>intrinsic iteration duration</a> may be
 overridden by specific types of <a>animation groups</a>.
@@ -3058,6 +3160,7 @@ which case the <a>intrinsic iteration duration</a> is zero.
 As a result, if the <a>animation sequence</a> has no <a>child
 animation nodes</a> the <a>intrinsic iteration duration</a> will be
 zero.
+<!-- @endif -->
 
 <h3 id="animations">Animations</h3>
 
@@ -3293,9 +3396,11 @@ properties should not be modified.
 
 An <a>animation effect</a> that targets a property that is
 <a>not animatable</a> will still exhibit the
-usual behavior for an <a>animation node</a> such as occupying time in an
-<a>animation sequence</a> and delaying the fulfilment of a <a>player</a>'s
-<a>current finished promise</a>.
+usual behavior for an <a>animation node</a> such as
+<!-- @ifdef INCLUDE_GROUPS -->
+occupying time in an <a>animation sequence</a> and
+<!-- @endif -->
+delaying the fulfilment of a <a>player</a>'s <a>current finished promise</a>.
 
 <h5 id="animatable-as-string-section">Animatable as string</h5>
 
@@ -3664,10 +3769,14 @@ stack</a> is established by comparing the properties of the
         <var>B</var> so that lower priorities sort first.
     2.  Sort by the <a>player sequence number</a> so that lower
         sequence numbers sort first.
+
+<!-- @ifdef INCLUDE_GROUPS -->
     3.  Sort <var>A</var> and <var>B</var> in <a>tree order</a>.
         (By this point, <var>A</var> and <var>B</var> must have the
         same <a>player</a> since otherwise the order would have been
         resolved in the previous step.)
+
+<!-- @endif -->
 
 <a>Animation effects</a> that sort earlier have <em>lower</em>
 priority.
@@ -4749,22 +4858,27 @@ enum AnimationPlayState { "idle", "pending", "running", "paused", "finished" };
 <a>Animation nodes</a> are represented in the Web
 Animations API by the {{AnimationNodeReadonly}} interface.
 
+<!-- @ifdef INCLUDE_GROUPS -->
 Interfaces that inherit from {{AnimationNodeReadonly}} that are intended
 to be mutable must also implement the additional {{AnimationNodeMutable}}
 interface.
+<!-- @endif -->
 
 <pre class='idl'>
 interface AnimationNodeReadonly {
     // Timing
     readonly attribute AnimationTimingReadonly  timing;
     readonly attribute ComputedTimingProperties computedTiming;
+<!-- @ifdef INCLUDE_GROUPS -->
 
     // Timing hierarchy
     readonly attribute AnimationGroupReadonly?  parent;
     readonly attribute AnimationNodeReadonly?   previousSibling;
     readonly attribute AnimationNodeReadonly?   nextSibling;
+<!-- @endif -->
 };
 
+<!-- @ifdef INCLUDE_GROUPS -->
 [NoInterfaceObject]
 interface AnimationNodeMutable {
     void before (AnimationNodeReadonly... nodes);
@@ -4772,6 +4886,7 @@ interface AnimationNodeMutable {
     void replace (AnimationNodeReadonly... nodes);
     void remove ();
 };
+<!-- @endif -->
 </pre>
 
 <div class='attributes'>
@@ -4808,6 +4923,7 @@ interface AnimationNodeMutable {
         of <a>animation node</a> (see <a
         href="#the-fillmode-enumeration" section></a>).
 
+<!-- @ifdef INCLUDE_GROUPS -->
 :   <dfn attribute for=AnimationNodeReadonly>parent</dfn>
 ::  The <a>parent animation group</a> of this <a>animation node</a> or
     <code>null</code> if this <a>animation node</a> does not have
@@ -4820,8 +4936,10 @@ interface AnimationNodeMutable {
 :   <dfn attribute for=AnimationNodeReadonly>nextSibling</dfn>
 ::  The <a>next sibling</a> of this <a>animation node</a>.
 
+<!-- @endif -->
 </div>
 
+<!-- @ifdef INCLUDE_GROUPS -->
 <div class='methods'>
 
 :   <dfn method for=AnimationNodeMutable lt='before()'>
@@ -4885,6 +5003,13 @@ node.before(node); // throws HierarchyRequestError</pre></div>
     node</a> from its <a>parent animation group</a> or <a>player</a>.
 
 </div>
+<!-- @endif -->
+
+<!-- @ifndef INCLUDE_GROUPS -->
+Issue: The <code>remove()</code> method can be used to remove a node from either
+its parent group or player. Should we keep it in level 1 and define it simply as
+removing the animation from its player?
+<!-- @endif -->
 
 
 <h3 id="the-animationtimingreadonly-interface">The <code>AnimationTimingReadonly</code> interface</h3>
@@ -4913,9 +5038,14 @@ interface AnimationTimingReadonly {
 :   <dfn attribute for=AnimationTimingReadonly>endDelay</dfn>
 ::  The <a>end delay</a> which represents the number of milliseconds
     from the end of an <a>animation node</a>'s <a>active interval</a>
+<!-- @ifdef INCLUDE_GROUPS -->
     until the <a lt='animation node start time'>start time</a> of any
     <a>animation node</a> that may
     follow, for example, in an <a>animation sequence</a>.
+<!-- @endif -->
+<!-- @ifdef INCLUDE_GROUPS -->
+    until its <a>end time</a>.
+<!-- @endif -->
 
 :   <dfn attribute for=AnimationTimingReadonly>fill</dfn>
 ::  The <a>fill mode</a> which defines the behavior of the <a>animation node</a>
@@ -5019,8 +5149,13 @@ interface AnimationTimingReadonly {
 
 The {{AnimationTiming}} interface is a mutable subclass of
 {{AnimationTimingReadonly}} returned for the <code>timing</code> attribute of a
-mutable <a>animation node</a> such as {{Animation}}, {{AnimationGroup}}, or
-{{AnimationSequence}}.
+mutable <a>animation node</a> such as
+<!-- @ifdef INCLUDE_GROUPS -->
+{{Animation}}, {{AnimationGroup}}, or {{AnimationSequence}}.
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+{{Animation}}.
+<!-- @endif -->
 
 <pre class='idl'>
 interface AnimationTiming : AnimationTimingReadonly {
@@ -5178,11 +5313,13 @@ dictionary ComputedTimingProperties : AnimationTimingProperties {
 :   <dfn dict-member for=ComputedTimingProperties>startTime</dfn>
 ::  The <a lt='animation node start time'>start time</a> of this
     <a>animation node</a> in milliseconds.
+<!-- @ifdef INCLUDE_GROUPS -->
     This is the time at which the <a>parent animation group</a>, if
     any, has scheduled this child to run within its <a
     lt="transformed time">transformed time space</a>, that is, the
     <a>animation node</a>'s <a lt="inherited time">inherited time
     space</a>.
+<!-- @endif -->
 
     The start of the <a>active interval</a> is based on the sum of
     the <a lt="animation node start time">start time</a> and
@@ -5202,9 +5339,14 @@ dictionary ComputedTimingProperties : AnimationTimingProperties {
 ::  The <a>local time</a> of this <a>animation node</a>.
 
     <code>localTime</code> will be <code>null</code> if this
-    <a>animation node</a> is not <a>associated with a player</a> or if
-    it has a <a>parent animation group</a> that is not <a>in
-    effect</a>.
+    <a>animation node</a> is not
+<!-- @ifdef INCLUDE_GROUPS -->
+    <a>associated with a player</a> or if it has a
+    <a>parent animation group</a> that is not <a>in effect</a>.
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+    <a>associated with a player</a>.
+<!-- @endif -->
 
 :   <dfn dict-member for=ComputedTimingProperties>timeFraction</dfn>
 ::  The current <a>time fraction</a> of this <a>animation node</a>.
@@ -5239,9 +5381,18 @@ enum FillMode { "none", "forwards", "backwards", "both", "auto" };
 ::  Fill backwards and forwards.
 
 :   <code>auto</code>
+<!-- @ifdef INCLUDE_GROUPS -->
 ::  Fill backwards and forwards when applied to an
     {{AnimationGroupReadonly}} and no fill when applied to an
     {{AnimationReadonly}}.
+
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+::  No fill.
+    In a subsequent level of this specification, this will produce different
+    behavior for other types of <a>animation nodes</a>.
+
+<!-- @endif -->
 
 
 <h4 id="the-playbackdirection-enumeration">The <code>PlaybackDirection</code> enumeration</h4>
@@ -5265,6 +5416,7 @@ enum PlaybackDirection { "normal", "reverse", "alternate", "alternate-reverse" }
 ::  Even iterations are played in the reverse direction from the way
     they are specified, odd iterations are played as specified.
 
+<!-- @ifdef INCLUDE_GROUPS -->
 <h3 id="the-animationgroup-interfaces">The <code>AnimationGroupReadonly</code>
   and <code>AnimationGroup</code> interfaces</h3>
 
@@ -5593,6 +5745,7 @@ AnimationSequence implements AnimationGroupMutable;
     {{AnimationSequence}} object is created.
 
 </div>
+<!-- @endif -->
 
 <h3 id="the-animation-interfaces">The <code>AnimationReadonly</code> and
 <code>Animation</code> interfaces</h3>
@@ -5615,7 +5768,9 @@ interface Animation : AnimationReadonly {
     inherit attribute (AnimationEffectReadonly or EffectCallback)? effect;
     inherit attribute Animatable? target;
 };
+<!-- @ifdef INCLUDE_GROUPS -->
 Animation implements AnimationNodeMutable;
+<!-- @endif -->
 </pre>
 
 <div class="constructors">
@@ -5628,8 +5783,34 @@ Animation implements AnimationNodeMutable;
 
     1.  Create a new {{AnimationReadonly}} object, <var>animation</var>.</li>
 
+<!-- @exclude -->
+<!-- When groups are defined, we factor out the handling of the timing parameter
+     to a separate section under the AnimationGroup definition.
+
+     We should probably do something similar when groups aren't defined too.
+     That would be easier if we defined animations before groups but that's a
+     major reshuffling so we'll do it later. -->
+<!-- @endexclude -->
+<!-- @ifdef INCLUDE_GROUPS -->
     2.  Let <var>timing input</var> be the result of applying the
         <a>procedure for processing a timing argument</a> to <var>timing.
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+    2.  Let <var>timing input</var> be the result corresponding to the first
+        matching condition from below.
+
+        :   If <var>timing</var> is an {{AnimationTimingProperties}} object,
+        ::  Let <var>timing input</var> be <var>timing</var>.
+
+        :   If <var>timing</var> is a <code>double</code>,
+        ::  Let <var>timing input</var> be a new {{AnimationTimingProperties}}
+            object with all members set to their default values and
+            {{AnimationTimingProperties/duration}} set to <var>timing</var>.
+
+        :   Otherwise (<var>timing</var> is undefined),
+        ::  Ley <var>timing input</var> be a new {{AnimationTimingProperties}}
+            object with all members set to their default values.
+<!-- @endif -->
 
     3.  Set <code><var>animation</var>.timing</code> to a new
         {{AnimationTimingReadonly}} object whose attributes are assigned the
@@ -6746,9 +6927,11 @@ the Web Animations model is as follows:
 player.currentTime += 2000;
 alert(player.source.computedTiming.localTime); // Displays &lsquo;5000&rsquo;</pre></div>
 
+<!-- @ifdef INCLUDE_GROUPS -->
     The same concept applies to more complex modifications of the
     Web Animations model such as adding and removing children from
     an {{AnimationGroup}}.
+<!-- @endif -->
 
     </div>
 
@@ -6973,6 +7156,7 @@ Animation</a> for their kind generosity and patience in introducing the
 editors to the processes and techniques used producing broadcast
 animations.
 
+<!-- @if LEVEL=1 -->
 <h2 id="changes-since-last-publication">Changes since last publication</h2>
 
 The following changes have been made since the <a
@@ -6994,7 +7178,9 @@ The following changes have been made since the <a
 *   Removed player events.
 *   Rewrote most of the algorithms for <a>players</a> to accommodate
     asynchronous play/pause/reverse operations.
-*   Remove motion path animation effects since this functionality can be
+*   Deferred animation groups to a <a
+    href="http://w3c.github.io/web-animations/level-2/">subsequent level</a>.
+*   Removed motion path animation effects since this functionality can be
     achieved using the <a href="http://dev.w3.org/fxtf/motion-1/">Motion Path
     Module</a>.
 *   Defined that <a>unresolved</a> <a>time values</a> are represented
@@ -7006,18 +7192,13 @@ The following changes have been made since the <a
 *   Added a read-only version of interfaces for <a>animation nodes</a> and
     related interfaces as follows:
     *   <a>Animation nodes</a> are now represented by the
-        {{AnimationNodeReadonly}} interface. Mutable subclasses implement the
-        additional {{AnimationNodeMutable}} interface.
-    *   <a>Animation groups</a> are now represented by the
-        {{AnimationGroupReadonly}} and {{AnimationGroup}} interfaces.
-    *   <a>Animation sequence</a> are now represented by the
-        {{AnimationSequenceReadonly}} and {{AnimationSequence}} interfaces.
+        {{AnimationNodeReadonly}} interface.
     *   <a>Animations</a> are now represented by the
         {{AnimationReadonly}} and {{Animation}} interfaces.
     *   <a>Keyframe animation effects</a> are now represented by the
         {{KeyframeEffectReadonly}} and {{KeyframeEffect}} interfaces.
-    *   A number of references to {{Animation}}, {{AnimationGroup}}, and
-        {{KeyframeEffect}} have been update to refer to their read-only
+    *   A number of references to {{Animation}} and
+        {{KeyframeEffect}} have been updated to refer to their read-only
         equivalents since the read-only interface is the super-interface in each
         case.
         
@@ -7056,6 +7237,7 @@ Changes since the <a
 2013 Working Draft</a> are included in <a
   href="http://www.w3.org/TR/2014/WD-web-animations-20140605/#changes-since-last-publication">Appendix
 C of the 5 June 2014 Working Draft</a>.
+<!-- @endif -->
 
 The <a
   href="https://github.com/w3c/web-animations/commits/master">changelog</a>
