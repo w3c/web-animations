@@ -19,7 +19,8 @@ module.exports = function(grunt) {
       dest: 'Overview.level-2.src.html',
       options: {
         context: {
-          LEVEL: 2
+          LEVEL: 2,
+          INCLUDE_GROUPS: true
         }
       }
     }
