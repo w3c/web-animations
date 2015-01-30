@@ -20,7 +20,8 @@ module.exports = function(grunt) {
       options: {
         context: {
           LEVEL: 2,
-          INCLUDE_GROUPS: true
+          INCLUDE_GROUPS: true,
+          INCLUDE_ANIMATION_NODE_PLAYBACKRATE: true
         }
       }
     }

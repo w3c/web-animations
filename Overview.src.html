@@ -110,8 +110,13 @@ The Web Animations model aims at two broad areas of application:
 <!-- @if LEVEL=2 -->
 <h3 id="changes-since-level-1">Changes since level 1</h3>
 
-This specification introduces <a>animation groups</a> and <a>animation
-sequences</a> that are not present in level 1.
+This specification introduces the following changes since compard to the
+previous leve of this specification:
+
+*   <a>animation groups</a> and <a>animation sequences</a>,
+*   an <a>animation node</a>-specific
+    <a lt="animation node playback rate">playback rate</a>.
+
 <!-- @endif -->
 
 <h3 id="relationship-to-other-specifications">Relationship to other specifications</h3>
@@ -1245,9 +1250,11 @@ Similarly, a playback rate of -1 will cause the player's <a>current
 time</a> to decrease at the same rate as the <a>time values</a> from
 its <a>timeline</a> increase.
 
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 Note that <a>animation nodes</a> also have a <a
 lt="animation node playback rate">playback rate</a> associated
 with them that behaves differently to that defined here.
+<!-- @endif -->
 
 </div>
 
@@ -2114,6 +2121,7 @@ section></a> and is illustrated below.
 
 </div>
 
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 <h3 id="animation-node-speed-control">Animation node speed control</h3>
 
 Like <a>players</a>, <a>animation nodes</a> also have a <dfn
@@ -2161,7 +2169,7 @@ rate">playback rate</a> of an <a>animation node</a> is as follows:
     This is because the <a>active duration</a> will be updated but the
     <a>local time</a> will not.
 
-<!-- @ifdef INCLUDE_GROUPS -->
+<!-- @ifdef INCLUDE_GROUPS-->
     Furthermore, if other <a>animation nodes</a> depend on the
     <a>animation node</a>'s <a>active duration</a>, such as sibling
     <a>animation node</a> in a <a>animation sequence</a>, they
@@ -2174,6 +2182,7 @@ rate">playback rate</a> of an <a>animation node</a> is as follows:
     <a>player</a> should be used.
 
 </div>
+<!-- @endif -->
 
 <h3 id="core-animation-node-calculations">Core animation node calculations</h3>
 
@@ -2202,9 +2211,14 @@ This process is illustrated below.
 </div>
 <p class="caption">
   Calculation of the <a>active duration</a> is based on
-  multiplying the <a>iteration duration</a> by the <a>iteration
-  count</a> and then dividing by the <a
+  multiplying the <a>iteration duration</a> by the
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+  <a>iteration count</a> and then dividing by the <a
   lt="animation node playback rate">playback rate</a>.
+<!-- @endif -->
+<!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+  <a>iteration count</a>.
+<!-- @endif -->
 </p>
 <p>
   The process for calculating the <a>active duration</a> is normatively
@@ -2227,8 +2241,13 @@ This process is illustrated below.
   time</a>.<br>
   (2) The <a>local time</a> is converted into an <a>active time</a> by
   incorporating the <a>start delay</a>.<br>
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
   (3) The <a lt="animation node playback rate">playback rate</a>
   and <a>iteration start</a> properties are
+<!-- @endif -->
+<!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+  (3) The <a>iteration start</a> property is
+<!-- @endif -->
   applied to the <a>active time</a> to produce the <a>scaled active
   time</a>.<br>
   (4) The <a>scaled active time</a> is then converted to an offset
@@ -2270,6 +2289,7 @@ In order to calculate the <a>active duration</a> we first define the
     </p>
 </blockquote>
 
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 The <a>active duration</a> is calculated according to the following
 steps:
 
@@ -2277,6 +2297,11 @@ steps:
       zero, return <code>Infinity</code>.
 2.  Otherwise, return <code><a>repeated duration</a> / abs(<a
       lt="animation node playback rate">playback rate</a>)</code>.
+
+<!-- @endif -->
+<!-- @ifdef -->
+The <a>active duration</a> is simply the <a>repeated duration</a>.
+<!-- @endif -->
 
 <h4 id="transforming-the-local-time">Transforming the local time</h4>
 
@@ -2372,8 +2397,10 @@ as follows,
 <h5 id="calculating-the-scaled-active-time">Calculating the scaled active time</h5>
 
 Before the <a>active time</a> can be converted to an <a>iteration
-time</a> we must factor in the <a>animation node</a>'s <a
-lt="animation node playback rate">playback rate</a> and
+time</a> we must factor in the <a>animation node</a>'s
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+<a lt="animation node playback rate">playback rate</a> and
+<!-- @endif -->
 <a>iteration start</a>.
 The result is called the <a>scaled active time</a>.
 
@@ -2400,6 +2427,7 @@ the following steps:
 1.  If the <a>active time</a> is <a>unresolved</a>, return
     an <a>unresolved</a> <a>time value</a>.
 
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 2.  Return the scaled active time based on the
     <a lt="animation node playback rate">playback rate</a> as
     follows,
@@ -2423,6 +2451,12 @@ the following steps:
         rate</a> + <a>start offset</a></code>.
 
     </div>
+
+<!-- @endif -->
+<!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+2.  Return <code><a>active time</a> + <a>start offset</a></code>.
+
+<!-- @endif -->
 
 <h5 id="calculating-the-iteration-time">Calculating the iteration time</h5>
 
@@ -2778,10 +2812,16 @@ The value of the <a>before flag</a> is determined as follows:
 2.  Determine the <var>current direction</var> using the procedure
     defined in <a href="#calculating-the-directed-time"
     section></a>.
-3.  If either the <var>current direction</var> is <span
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+3.  If <em>either</em> the <var>current direction</var> is <span
     class="prop-value">forwards</span> or the <a>animation node
     playback rate</a> &ge; 0 (but <em>not</em> when both conditions
     are true),
+<!-- @endif -->
+<!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+3.  If the <var>current direction</var> is <span
+    class="prop-value">forwards</span>,
+<!-- @endif -->
     let <var>going forwards</var> be true, otherwise it is false.
 4.  The <a>before flag</a> is set if the animation node is in the
     <a>before phase</a> and <var>going forwards</var> is true;
@@ -2994,6 +3034,9 @@ This allows groups to <em>clip</em> the playback of their children.
 Some further consequences of <a>animation group</a> children basing
 their timing on their parent group's <a>transformed time</a> are:
 
+<!-- We'd like to conditionally exclude the following point based on
+     INCLUDE_ANIMATION_NODE_PLAYBACKRATE but the npm preprocess module
+     seems to be buggy when you have nested @ifdefs -->
 *   Setting the <a lt="animation node playback rate">playback
     rate</a> of an <a>animation group</a> will speed up or slow down all
     children.
@@ -5022,7 +5065,9 @@ interface AnimationTimingReadonly {
     readonly attribute double                             iterationStart;
     readonly attribute unrestricted double                iterations;
     readonly attribute (unrestricted double or DOMString) duration;
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
     readonly attribute double                             playbackRate;
+<!-- @endif -->
     readonly attribute PlaybackDirection                  direction;
     readonly attribute DOMString                          easing;
 };
@@ -5111,12 +5156,14 @@ interface AnimationTimingReadonly {
     <a>iteration duration</a> reflects the animation node's
     <a>intrinsic iteration duration</a>.
 
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 :   <dfn attribute for=AnimationTimingReadonly>playbackRate</dfn>
 ::  The <a>animation node</a>'s <a
     lt="animation node playback rate">playback rate</a> property
     which is a multiplier applied to the <a>local time</a> potentially
     causing the node to run at a different rate to its natural speed.
 
+<!-- @endif -->
 :   <dfn attribute for=AnimationTimingReadonly>direction</dfn>
 ::  The <a>playback direction</a> of the <a>animation node</a> which
     defines whether playback proceeds forwards, backwards, or alternates
@@ -5165,7 +5212,9 @@ interface AnimationTiming : AnimationTimingReadonly {
     inherit attribute double                             iterationStart;
     inherit attribute unrestricted double                iterations;
     inherit attribute (unrestricted double or DOMString) duration;
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
     inherit attribute double                             playbackRate;
+<!-- @endif -->
     inherit attribute PlaybackDirection                  direction;
     inherit attribute DOMString                          easing;
 };
@@ -5207,9 +5256,11 @@ interface AnimationTiming : AnimationTimingReadonly {
     other than the lowercase value <code>auto</code> are treated
     the same as <code>auto</code> for the purpose of timing model
     calculations.
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 :   <dfn attribute for=AnimationTiming>playbackRate</dfn>
 ::  See the {{AnimationTimingReadonly/playbackRate}} attribute of the
     {{AnimationTimingReadonly}} interface.
+<!-- @endif -->
 :   <dfn attribute for=AnimationTiming>direction</dfn>
 ::  See the {{AnimationTimingReadonly/direction}} attribute of the
     {{AnimationTimingReadonly}} interface.
@@ -5245,7 +5296,9 @@ dictionary AnimationTimingProperties {
     double                             iterationStart = 0.0;
     unrestricted double                iterations = 1.0;
     (unrestricted double or DOMString) duration = "auto";
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
     double                             playbackRate = 1.0;
+<!-- @endif -->
     PlaybackDirection                  direction = "normal";
     DOMString                          easing = "linear";
 };
@@ -5277,9 +5330,11 @@ dictionary AnimationTimingProperties {
 ::  See the {{AnimationTiming/duration}}
     attribute of the {{AnimationTiming}} interface.
 
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 :   <dfn dict-member for=AnimationTimingProperties>playbackRate</dfn>
 ::  See the {{AnimationTiming/playbackRate}} attribute
     of the {{AnimationTiming}} interface.
+<!-- @endif -->
 
 :   <dfn dict-member for=AnimationTimingProperties>direction</dfn>
 ::  See the {{AnimationTiming/direction}} attribute
@@ -6017,12 +6072,12 @@ var animD = new Animation(elem, function(time) {
 The third parameter representing the animation's timing, may
 simply be a number representing the <a>iteration duration</a> in
 milliseconds as above, or, to specify further timing properties such
-as the <a lt="animation node playback rate">playback rate</a>,
-an {{AnimationTimingProperties}} object can be used, as follows:
+as the <a>start delay</a>, an {{AnimationTimingProperties}} object can
+be used, as follows:
 
 <pre class='example lang-javascript'>
 var anim =
-  new Animation(elem, { left: '100px' }, { duration: 3000, playbackRate: 2 });</pre>
+  new Animation(elem, { left: '100px' }, { duration: 3000, delay: 2000 });</pre>
 
 If the duration is not specified, the <a>intrinsic iteration
 duration</a> is used which, for an <a>animation</a>, is zero.
@@ -7180,6 +7235,10 @@ The following changes have been made since the <a
     asynchronous play/pause/reverse operations.
 *   Deferred animation groups to a <a
     href="http://w3c.github.io/web-animations/level-2/">subsequent level</a>.
+*   Deferred the <a>animation node</a>-specific playback rate since it was
+    considered to be not particularly useful without animation groups and
+    potentially confusing (since <a>player</a>'s also have a
+    <a>player playback rate</a>).
 *   Removed motion path animation effects since this functionality can be
     achieved using the <a href="http://dev.w3.org/fxtf/motion-1/">Motion Path
     Module</a>.
