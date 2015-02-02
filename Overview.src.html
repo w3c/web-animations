@@ -1550,8 +1550,8 @@ These definitions are incorporated in the calculation of the <a>local
 time</a> (see <a href="#local-time-and-inherited-time" section></a>)
 and <a>active time</a>.
 
-The length of the <a>active interval</a> is called the <dfn>active
-duration</dfn>, the calculation of which is defined in <a
+The length of the <a>active interval</a> is called the <a>active
+duration</a>, the calculation of which is defined in <a
 href="#calculating-the-active-duration" section></a>.
 
 Similar to the <a>start delay</a>, an <a>animation node</a> also has
@@ -2206,19 +2206,19 @@ duration</a>.
 This process is illustrated below.
 
 <div class="figure">
+  <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
   <img src="img/active-duration-calculation.svg" width="650"
     alt="Calculation of the active duration.">
+  <!-- @endif -->
+  <!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+  <img src="img/active-duration-without-playback-rate.svg" width="650"
+    alt="Calculation of the active duration.">
+  <!-- @endif -->
 </div>
 <p class="caption">
   Calculation of the <a>active duration</a> is based on
   multiplying the <a>iteration duration</a> by the
-<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-  <a>iteration count</a> and then dividing by the <a
-  lt="animation node playback rate">playback rate</a>.
-<!-- @endif -->
-<!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-  <a>iteration count</a>.
-<!-- @endif -->
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE --><a>iteration count</a> and then dividing by the <a lt="animation node playback rate">playback rate</a>.<!-- @endif --><!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE --><a>iteration count</a>.<!-- @endif -->
 </p>
 <p>
   The process for calculating the <a>active duration</a> is normatively
@@ -2240,14 +2240,11 @@ This process is illustrated below.
   incorporating the <a lt="animation node start time">start
   time</a>.<br>
   (2) The <a>local time</a> is converted into an <a>active time</a> by
-  incorporating the <a>start delay</a>.<br>
-<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+  incorporating the <a>start delay</a>.<br><!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
   (3) The <a lt="animation node playback rate">playback rate</a>
   and <a>iteration start</a> properties are
-<!-- @endif -->
-<!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-  (3) The <a>iteration start</a> property is
-<!-- @endif -->
+<!-- @endif --><!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+  (3) The <a>iteration start</a> property is<!-- @endif -->
   applied to the <a>active time</a> to produce the <a>scaled active
   time</a>.<br>
   (4) The <a>scaled active time</a> is then converted to an offset
@@ -2272,16 +2269,28 @@ respectively.
 
 <h4 id="calculating-the-active-duration">Calculating the active duration</h4>
 
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 In order to calculate the <a>active duration</a> we first define the
 <a>repeated duration</a> as follows:
 
 <blockquote>
   <dfn>repeated duration</dfn> =
+<!-- @endif -->
+<!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+The <a>active duration</a> is calculated as follows:
+
+<blockquote>
+  <dfn>active duration</dfn> =
+<!-- @endif -->
     <code><a>iteration duration</a> &times;
           <a>iteration count</a></code>
     <p>
       If either the <a>iteration duration</a> or <a>iteration count</a>
-      are zero, the <a>repeated duration</a> is zero.
+      are zero, the<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+      <a>repeated duration</a>
+<!-- @endif --><!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+      <a>active duration</a><!-- @endif -->
+      is zero.
     </p>
     <p class="note">
       This clarification is needed since the result of infinity
@@ -2290,7 +2299,7 @@ In order to calculate the <a>active duration</a> we first define the
 </blockquote>
 
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-The <a>active duration</a> is calculated according to the following
+The <dfn>active duration</dfn> is calculated according to the following
 steps:
 
 1.  If the <a lt="animation node playback rate">playback rate</a> is
@@ -2298,9 +2307,6 @@ steps:
 2.  Otherwise, return <code><a>repeated duration</a> / abs(<a
       lt="animation node playback rate">playback rate</a>)</code>.
 
-<!-- @endif -->
-<!-- @ifdef -->
-The <a>active duration</a> is simply the <a>repeated duration</a>.
 <!-- @endif -->
 
 <h4 id="transforming-the-local-time">Transforming the local time</h4>
@@ -2469,7 +2475,13 @@ following steps:
 2.  If the <a>iteration duration</a> is zero, return zero.
 
 3.  If <code><a>scaled active time</a> - <a>start
-    offset</a></code> is equal to the <a>repeated duration</a>,
+    offset</a></code> is equal to the
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+    <a>repeated duration</a>,
+<!-- @endif -->
+<!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+    <a>active duration</a>,
+<!-- @endif -->
     and <a>iteration count</a> is not zero,
     and <code>(<a>iteration count</a> + <a>iteration start</a>)
     % 1</code> is zero,
