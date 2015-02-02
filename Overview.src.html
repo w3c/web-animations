@@ -495,9 +495,11 @@ to <var>new timeline</var> which may be null, is as follows:
 
 1.  Let <var>old timeline</var> be the current <a>timeline</a> of
     <var>player</var>, if any.
-2.  If <var>new timeline</var> is the same object as <var>old timeline</var>,
+1.  If <var>new timeline</var> is the same object as <var>old timeline</var>,
     abort this procedure.
-3.  If <var>new timeline</var> is null and <var>old timeline</var> is not null,
+1.  Let <var>previous player time</var> be the <a>current time</a> of
+    <var>player</var>.
+1.  If <var>new timeline</var> is null and <var>old timeline</var> is not null,
     run the procedure to <a>reset a player's pending tasks</a> on
     <var>player</var>.
     <p class="note">
@@ -507,18 +509,17 @@ to <var>new timeline</var> which may be null, is as follows:
       <a>player</a> is <a>ready</a> even though this may occur at a different
       moment than it might have done with the old timeline.
     </p>
-6.  Let the <a>timeline</a> of <var>player</var> be <var>new timeline</var>.
-7.  <p class="todo">
+1.  Let the <a>timeline</a> of <var>player</var> be <var>new timeline</var>.
+1.  If <var>previous player time</var> is <a lt=unresolved>resolved</a>,
+    run the procedure to <a>silently set the current time</a> of
+    <var>player</var> to <var>previous player time</a>.
+1.  <p class="todo">
       If <var>new timeline</var> is null, ensure that <a>custom effects</a> get
       called with an <a>unresolved</a> <a>time fraction</a> (unless a subsequent
       change in the same script execution context makes this redundant).
     </p>
-8.  Run the procedure to <a>update a player's finished state</a> for
+1.  Run the procedure to <a>update a player's finished state</a> for
     <var>player</var>.
-
-<p class=todo>
-  Update this to preserve the player's <a>current time</a>.
-</p>
 
 The procedure to <dfn>reset a player's pending tasks</dfn> for <var>player</var>
 is as follows:
