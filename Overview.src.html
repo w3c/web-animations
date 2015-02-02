@@ -1509,7 +1509,6 @@ The lower bound of the <a>active interval</a> is defined by the
 combination of the animation node's
 <a lt="animation node start time">start time</a> and <a>start delay</a>.
 
-<!-- XXX Remove start time when INCLUDE_GROUPS is not defined -->
 <!-- @ifdef INCLUDE_GROUPS -->
 An <a>animation node</a>'s
 <dfn lt="animation node start time">start time</dfn> is the moment at
@@ -1524,11 +1523,15 @@ The singular exception is <a>animation sequences</a> which set
 the <a lt="animation node start time">start times</a> of their
 children as described in <a
 href="#the-start-time-of-children-of-an-animation-sequence" section></a>.
+
 <!-- @endif -->
 <!-- @ifndef INCLUDE_GROUPS -->
-In the absence of animation groups, the <dfn
-lt="animation node start time">start time</dfn> of an <a>animation node</a> is
-zero.
+The <dfn lt="animation node start time">start time</dfn> of an <a>animation
+node</a> is the moment in <a>inherited time</a> when the <a>animation node</a>
+is scheduled to begin.
+In the absence of animation groups, the
+<a lt="animation node start time">start time</a> is always zero.
+
 <!-- @endif -->
 
 In addition to the <a lt="animation node start time">start
@@ -1555,15 +1558,20 @@ duration</a>, the calculation of which is defined in <a
 href="#calculating-the-active-duration" section></a>.
 
 Similar to the <a>start delay</a>, an <a>animation node</a> also has
-an <dfn>end delay</dfn> which
-<!-- @ifdef INCLUDE_GROUPS -->
+an <dfn>end delay</dfn> which <!-- @ifdef INCLUDE_GROUPS -->
 may be used to delay the <a
 lt="animation node start time">start time</a> of the <a>next
 sibling</a> in a <a>animation sequence</a>.
-<!-- @endif -->
-<!-- @ifndef INCLUDE_GROUPS -->
+
+<!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->
 is primarily of use when sequencing animations
 based on the <a>end time</a> of another <a>animation node</a>.
+Although this is typically only useful in combination with animation sequences
+which are introduced in a subsequent level of this specification, it is included
+here for the purpose of representing the <a
+href="http://www.w3.org/TR/SVG/animate.html#MinAttribute"><code>min</code></a>
+attribute in SVG ([[SVG11]], Chapter 19).
+
 <!-- @endif -->
 
 The <dfn>end time</dfn> of an <a>animation node</a> is simply the sum of its <a
@@ -5379,13 +5387,13 @@ dictionary ComputedTimingProperties : AnimationTimingProperties {
 
 :   <dfn dict-member for=ComputedTimingProperties>startTime</dfn>
 ::  The <a lt='animation node start time'>start time</a> of this
-    <a>animation node</a> in milliseconds.
-<!-- @ifdef INCLUDE_GROUPS -->
+    <a>animation node</a> in milliseconds.<!-- @ifdef INCLUDE_GROUPS -->
     This is the time at which the <a>parent animation group</a>, if
     any, has scheduled this child to run within its <a
     lt="transformed time">transformed time space</a>, that is, the
     <a>animation node</a>'s <a lt="inherited time">inherited time
-    space</a>.
+    space</a>.<!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->
+    In this level of the specification, this will always be zero.
 <!-- @endif -->
 
     The start of the <a>active interval</a> is based on the sum of
@@ -5405,13 +5413,11 @@ dictionary ComputedTimingProperties : AnimationTimingProperties {
 :   <dfn dict-member for=ComputedTimingProperties>localTime</dfn>
 ::  The <a>local time</a> of this <a>animation node</a>.
 
-    <code>localTime</code> will be <code>null</code> if this
-    <a>animation node</a> is not
-<!-- @ifdef INCLUDE_GROUPS -->
+    This will be <code>null</code> if this
+    <a>animation node</a> is not <!-- @ifdef INCLUDE_GROUPS -->
     <a>associated with a player</a> or if it has a
     <a>parent animation group</a> that is not <a>in effect</a>.
-<!-- @endif -->
-<!-- @ifndef INCLUDE_GROUPS -->
+<!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->
     <a>associated with a player</a>.
 <!-- @endif -->
 
