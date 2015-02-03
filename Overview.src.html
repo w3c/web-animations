@@ -6360,6 +6360,7 @@ interface KeyframeEffect : KeyframeEffectReadonly {
         lt="frames">object frames</dfn></dfn>
     ::  A {{Keyframe}} object or sequence of {{Keyframe}} objects used for
         calculating animation values for this <a>animation effect</a>.
+
         The constraints on this parameter and its processing are
         identical to those specified for the
         {{KeyframeEffect/setFrames/frames}} argument to
@@ -6529,30 +6530,39 @@ Therefore, we define the processing for handling a parameter
 that may be either a single {{Keyframe}} dictionary object, or
 a sequence of such objects.
 
-The <dfn>procedure for converting an ECMAScript value into
+The <dfn>procedure for converting an ECMAScript object into
 an IDL keyframe or sequence of keyframes</dfn> with parameter
 <var>keyframeOrKeyframeList</var> is as follows:
 
-<div class='switch'>
+1.  If <var>keyframeOrKeyframeList</var> is a native
+    <span class="estype">Date</span> object
+    or a native <span class="estype">RegExp</span> object,
+    <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
+    TypeError.
+1.  Let <var>iteratorMethod</var> be the result of <a
+    href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-getmethod"><code>GetMethod(<var>keyframeOrKeyframeList</var>, @@iterator)</code></a>
+    [[!ECMA-262]].
+1.  <a
+    href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-returnifabrupt"><code>ReturnIfAbrupt(<var>iteratorMethod</var>)</code></a>.
+1.  If <var>iteratorMethod</var> is <span class="esvalue">undefined</span>,
+    return the result of applying the <a>procedure for converting
+    an ECMAScript object to an IDL Keyframe object</a> to
+    <var>keyframeOrKeyframeList</a>.
+1.  Otherwise,
+    return the result of following the steps for <a
+    href="http://heycam.github.io/webidl/#create-sequence-from-iterable">creating
+    a sequence from an iterable</a> [[!WEBIDL]] with:
 
-:   If, using the canonical definition of
-    <code>Array.isArray</code> [[!ECMA-262]],
-    Array.isArray(<var>keyframeOrKeyframeList</var>) is
-    true,
-::  Return the result of following the steps for <a
-    href="http://www.w3.org/TR/WebIDL/#es-sequence">converting an
-    ECMAScript value into an IDL sequence</a> using the <a>procedure
-    for converting an ECMAScript value to an IDL Keyframe object</a>
-    as the procedure for converting <var>E</var> to an IDL value of
-    type <var>T</var>.
-:   Otherwise,
-::  Return the result of applying the <a>procedure for converting
-    an ECMAScript value to an IDL Keyframe object</a> to
-    <var>keyframeOrKeyframeList</a>.<dd>
+    *   <var>keyframeOrKeyframeList</var> as the <span
+        class="param">iterable</span> parameter,
+    *   <var>iteratorMethod</var> as the <span class="param">method</span>
+        parameter, and
+    *   using the <a>procedure for converting an ECMAScript object to an IDL
+        Keyframe object</a> as the procedure for converting <span
+        class="param">nextItem</span> to an IDL value of
+        type <span class="param">T</span>.
 
 </div>
-
-Issue: Should this be defined in terms of <code>IsIterable</code> instead?
 
 
 <h4 id="the-keyframeeffectoptions-dictionary">The <code>KeyframeEffectOptions</code> dictionary</h4>
@@ -6719,7 +6729,7 @@ properties:
 
 </div>
 
-The <dfn>procedure for converting an ECMAScript value to an IDL
+The <dfn>procedure for converting an ECMAScript object to an IDL
 Keyframe object</dfn> with parameter <var>keyframe input</var>
 is as follows:
 
