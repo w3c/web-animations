@@ -6630,33 +6630,15 @@ initiated.
     <var>frames</var> with
     a new sequence with a single item that is the previous value of
     <var>frames</var>.
-2.  If <var>frames</var> is not <a>loosely sorted by offset</a>,
-    then,
-
-    <div class='switch'>
-
-    :   If each {{Keyframe}} has a non-null <code>offset</code>,
-    ::  Sort <var>frames</var> in ascending order by
-        <code>offset</code>.
-    :   Otherwise,</dt>
-    ::  Throw a DOMException of type
-        <code>InvalidModificationError</code>.</dd>
-
-    </div>
-
-3.  If there exist any {{Keyframe}}
-    objects in <var>frames</var> whose <code>offset</code> member is
-    non-null and less than zero, remove all keyframes
-    objects from the start of <var>frames</var> up to and including
-    the keyframe with the largest non-null <code>offset</code>
-    that is still less than zero.
-4.  Likewise, if there exist any {{Keyframe}} objects in
-    <var>frames</var> whose <code>offset</code> member is non-null
-    and greater than one, remove all <a>keyframes</a> from
-    the keyframe with the smallest non-null <code>offset</code>
-    that is still greater than one until the end of
-    <var>frames</var>.
-5.  Remove all property values in <var>frames</var> that are invalid
+1.  If <var>frames</var> is not <a>loosely sorted by offset</a>,
+    <a href="http://heycam.github.io/webidl/#dfn-throw">throw a
+    TypeError</a>.
+1.  If there exist any {{Keyframe}} object in <var>frames</var> whose
+    <code>offset</code> member is non-null and less than zero or
+    greater than one,
+    <a href="http://heycam.github.io/webidl/#dfn-throw">throw a
+    TypeError</a>.
+1.  Remove all property values in <var>frames</var> that are invalid
     or not supported by the implementation.
 
     Issue: Need to define what invalid means here.
