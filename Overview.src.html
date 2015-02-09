@@ -36,8 +36,11 @@ Abstract: This specification defines a model for synchronization and
     for interacting with this model and it is expected that further
     specifications will define declarative means for exposing these
     features.
-Ignored Terms: double, boolean, DOMString, unsigned long, unrestricted double, (animationeffectreadonly or effectcallback), SVGPathSegList, (unrestricted double or DOMString)
+Ignored Terms: double, boolean, DOMString, unsigned long, unrestricted double, (animationeffectreadonly or effectcallback), (unrestricted double or DOMString)
 Link Defaults: dom-core-ls (interface) event, dom-core-ls (interface) document, cssom-1 (interface) pseudoelement
+</pre>
+<pre class="anchors">
+urlPrefix: http://www.w3.org/TR/hr-time/; type: interface; text: DOMHighResTimeStamp
 </pre>
 
 <link href='https://drafts.fxtf.org/default.css' rel='stylesheet' test='text/css'>
@@ -4693,12 +4696,37 @@ timeline</a> are represented in the Web Animations API by the
 {{AnimationTimeline}} interface.
 
 <pre class="idl">
+[Constructor (DOMHighResTimeStamp originTime)]
 interface AnimationTimeline {
     readonly attribute double? currentTime;
     AnimationPlayer            play (optional AnimationNodeReadonly? source = null);
     sequence&lt;AnimationPlayer&gt;  getAnimationPlayers ();
 };
 </pre>
+
+<div class='constructors'>
+
+:   <dfn constructor for=AnimationTimeline
+      lt="AnimationTimeline(originTime)">AnimationTimeline (originTime)</dfn>
+::  Creates a new {{AnimationTimeline}} object.
+
+    <div class='parameters'>
+
+    :   <dfn argument
+        for="AnimationTimeline/AnimationTimeline(originTime)"
+        lt="originTime">originTime</dfn>
+    ::  The <a>zero time</a> for the timeline specified as a real number of
+        milliseconds relative to <a
+        href="http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart">
+        <code>navigationStart</code></a> moment [[!NAVIGATION-TIMING]] of
+        the <a class="externalDFN"
+        href="https://html.spec.whatwg.org/#active-document">active
+        document</a> for the current <a class="externalDFN"
+        href="https://html.spec.whatwg.org/#browsing-context">browsing context</a>.
+
+    </div>
+
+</div>
 
 <div class='attributes'>
 
@@ -4794,7 +4822,7 @@ interface AnimationPlayer {
 <div class="constructors">
 
 :   <dfn constructor for=AnimationPlayer
-      lt="AnimationPlayer(source, timeline)">AnimationPlayer ()</dfn>
+      lt="AnimationPlayer(source, timeline)">AnimationPlayer (source, timeline)</dfn>
 ::  Creates a new {{AnimationPlayer}} object using the following procedure.
 
     1.  Let <var>player</var> be a new {{AnimationPlayer}} object.
@@ -4807,11 +4835,15 @@ interface AnimationPlayer {
 
     <div class="parameters">
 
-    :   source
+    :   <dfn argument
+        for="AnimationPlayer/AnimationPlayer(source, timeline)"
+        lt="source">source</dfn>
     ::  An optional value which, if not null, specifies the <a>source
         content</a> to assign to the newly created <a>player</a>.
 
-    :   timeline
+    :   <dfn argument
+        for="AnimationPlayer/AnimationPlayer(source, timeline)"
+        lt="timeline">timeline</dfn>
     ::  An optional value which, if not null, specifies the <a>timeline</a>
         with which to associate the newly created <a>player</a>.
 
@@ -7122,7 +7154,7 @@ alert(b - a); // Displays 0</pre></div>
     section></a>) for all <a>animation nodes</a>
     <a>associated with a timeline</a> that is the <a>document
     timeline</a> of the
-    <a href="http://www.w3.org/TR/html5/browsers.html#active-document"
+    <a href="https://html.spec.whatwg.org/#active-document"
     class="externalDFN">active document</a> of the <a
     href="http://www.w3.org/TR/html5/browsers.html#top-level-browsing-context"
     class="externalDFN">top-level browsing context</a> or
@@ -7271,6 +7303,7 @@ The following changes have been made since the <a
     Module</a>.
 *   Defined that <a>unresolved</a> <a>time values</a> are represented
     by <code>null</code>.
+*   Added the {{AnimationTimeline()}} constructor.
 *   Made the <code>getAnimationPlayers</code> method on the
     {{AnimationTimeline}} and {{Animatable}} interfaces return all
     <a>players</a> that are <em>either</em> <a>current</a> <em>or</em> <a>in
