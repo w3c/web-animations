@@ -2500,23 +2500,33 @@ following steps:
 The <dfn>current iteration</dfn> can be calculated using the
 following steps:
 
-1.  If the <a>scaled active time</a> is <a>unresolved</a>, return
+1.  If the <a>active time</a> is <a>unresolved</a>, return
     <a>unresolved</a>.
 
-2.  If the <a>scaled active time</a> is zero, return zero.
+1.  If the <a>active time</a> is zero, return <code>floor(<a>iteration
+    start</a>)</code>.
 
-3.  If the <a>iteration duration</a> is zero, return
-    <code>ceil(<a>iteration start</a> + <a>iteration count</a>) -
-    1</code>.
+    <div class="annotation">
+      This is needed so that we report the correct <a>current iteration</a> when
+      doing a backwards fill for an animation with a zero-length <a>iteration
+      duration</a>.
+    </div>
 
-4.  If the <a>iteration time</a> equals the <a>iteration
-    duration</a>, return <code><a>iteration start</a>+
+1.  If the <a>iteration duration</a> is zero,
+
+    1.  If the <a>iteration count</a> is infinity, return infinity.
+
+    1.  Otherwise, return
+        <code>ceil(<a>iteration start</a> + <a>iteration count</a>) - 1</code>.
+
+1.  If the <a>iteration time</a> equals the <a>iteration
+    duration</a>, return <code><a>iteration start</a> +
     <a>iteration count</a> - 1</code>.
 
-5.  Return <code>floor(<a>scaled active time</a> /
+1.  Return <code>floor(<a>scaled active time</a> /
     <a>iteration duration</a>)</code>.
     <p class="note">
-      If the <a>iteration duration</a> is infinite, the
+      If the <a>iteration duration</a> is infinity, the
       result of <code>floor(<a>scaled active time</a> /
       <a>iteration duration</a>)</code> will be zero as defined by
       IEEE 754-2008.
@@ -5405,12 +5415,12 @@ Timing parameters calculated by the timing model are exposed using
 
 <pre class='idl'>
 dictionary ComputedTimingProperties : AnimationTimingProperties {
-    double              startTime;
-    unrestricted double endTime;
-    unrestricted double activeDuration;
-    double?             localTime;
-    unrestricted double timeFraction;
-    unsigned long?      currentIteration;
+    double               startTime;
+    unrestricted double  endTime;
+    unrestricted double  activeDuration;
+    double?              localTime;
+    unrestricted double? timeFraction;
+    unrestricted double? currentIteration;
 };
 </pre>
 
@@ -5459,10 +5469,12 @@ dictionary ComputedTimingProperties : AnimationTimingProperties {
 ::  The <a>current iteration</a> index beginning with zero for the first
     iteration.
 
-    In the case where the <a>current iteration</a> index is infinity,
-    (as can happen with a zero-duration animation that repeats infinite times),
-    the return value to be used in ECMAScript is <code>Infinity</code>.
-    The value for other language bindings is undefined.
+    In most cases this will be a (positive) integer. However, for
+    a zero-duration animation that repeats infinite times, the value
+    will be positive <span class="esvalue">Infinity</span>.
+
+    As with <a>unresolved</a> times, an unresolved <a>current iteration</a> is
+    represented by a <span class="esvalue">null</span> value.
 
 </div>
 
