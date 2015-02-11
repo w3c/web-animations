@@ -649,7 +649,7 @@ pre[class*="language-"] {
    <h1 class="p-name no-ref" id="title">Web Animations</h1>
   
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft,
-    <time class="dt-updated" datetime="2015-02-10">10 February 2015</time></span></h2>
+    <time class="dt-updated" datetime="2015-02-11">11 February 2015</time></span></h2>
   
    <div data-fill-with="spec-metadata">
     <dl>
@@ -681,13 +681,7 @@ pre[class*="language-"] {
   
    <div data-fill-with="warning"></div>
   
-   <p class="copyright" data-fill-with="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2015 <a href="http://www.w3.org/">
-     <acronym title="World Wide Web Consortium">W3C</acronym>
-    </a><sup>®</sup> (<a href="http://www.csail.mit.edu/">
-     <acronym title="Massachusetts Institute of Technology">MIT</acronym>
-    </a>, <a href="http://www.ercim.eu/">
-     <acronym title="European Research Consortium for Informatics and Mathematics">ERCIM</acronym>
-    </a>, <a href="http://www.keio.ac.jp/">Keio</a>, <a href="http://ev.buaa.edu.cn/">Beihang</a>). W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.
+   <p class="copyright" data-fill-with="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2015 <a href="http://www.w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>®</sup> (<a href="http://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>, <a href="http://www.ercim.eu/"><abbr title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>, <a href="http://www.keio.ac.jp/">Keio</a>, <a href="http://ev.buaa.edu.cn/">Beihang</a>). W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.
 </p>
   
    <hr title="Separator for header">
@@ -4154,26 +4148,46 @@ following steps:</p>
 
    <ol>
     <li data-md="">
-     <p>If the <a data-link-type="dfn" href="#scaled-active-time">scaled active time</a> is <a data-link-type="dfn" href="#unresolved">unresolved</a>, return
+     <p>If the <a data-link-type="dfn" href="#active-time">active time</a> is <a data-link-type="dfn" href="#unresolved">unresolved</a>, return
 <a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
      
 
 
     <li data-md="">
-     <p>If the <a data-link-type="dfn" href="#scaled-active-time">scaled active time</a> is zero, return zero.</p>
+     <p>If the <a data-link-type="dfn" href="#active-time">active time</a> is zero, return <code>floor(<a data-link-type="dfn" href="#iteration-start">iteration
+start</a>)</code>.</p>
+     
+
+
+     <div class="annotation">
+  This is needed so that we report the correct <a data-link-type="dfn" href="#current-iteration">current iteration</a> when
+  doing a backwards fill for an animation with a zero-length <a data-link-type="dfn" href="#iteration-duration">iteration
+  duration</a>.
+</div>
      
 
 
     <li data-md="">
-     <p>If the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is zero, return
-<code>ceil(<a data-link-type="dfn" href="#iteration-start">iteration start</a> + <a data-link-type="dfn" href="#iteration-count">iteration count</a>) -
-1</code>.</p>
+     <p>If the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is zero,</p>
      
 
+
+     <ol>
+      <li data-md="">
+       <p>If the <a data-link-type="dfn" href="#iteration-count">iteration count</a> is infinity, return infinity.</p>
+       
+
+
+      <li data-md="">
+       <p>Otherwise, return
+<code>ceil(<a data-link-type="dfn" href="#iteration-start">iteration start</a> + <a data-link-type="dfn" href="#iteration-count">iteration count</a>) - 1</code>.</p>
+       
+</ol>
+     
 
     <li data-md="">
      <p>If the <a data-link-type="dfn" href="#iteration-time">iteration time</a> equals the <a data-link-type="dfn" href="#iteration-duration">iteration
-duration</a>, return <code><a data-link-type="dfn" href="#iteration-start">iteration start</a>+
+duration</a>, return <code><a data-link-type="dfn" href="#iteration-start">iteration start</a> +
 <a data-link-type="dfn" href="#iteration-count">iteration count</a> - 1</code>.</p>
      
 
@@ -4184,7 +4198,7 @@ duration</a>, return <code><a data-link-type="dfn" href="#iteration-start">itera
      
 
      <p class="note" role="note">
-  If the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is infinite, the
+  If the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is infinity, the
   result of <code>floor(<a data-link-type="dfn" href="#scaled-active-time">scaled active time</a> /
   <a data-link-type="dfn" href="#iteration-duration">iteration duration</a>)</code> will be zero as defined by
   IEEE 754-2008.
@@ -8023,12 +8037,12 @@ of the <code class="idl"><a data-link-type="idl" href="#animationtiming">Animati
 
 
     <pre class="idl">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" data-global-name="" id="dictdef-computedtimingproperties">ComputedTimingProperties<a class="self-link" href="#dictdef-computedtimingproperties"></a></dfn> : <a data-link-type="idl-name" href="#dictdef-animationtimingproperties">AnimationTimingProperties</a> {
-    double              <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/startTime<dict-member>" data-link-type="dict-member" data-type="double              " href="#dom-computedtimingproperties-starttime">startTime</a>;
-    unrestricted double <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/endTime<dict-member>" data-link-type="dict-member" data-type="unrestricted double " href="#dom-computedtimingproperties-endtime">endTime</a>;
-    unrestricted double <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/activeDuration<dict-member>" data-link-type="dict-member" data-type="unrestricted double " href="#dom-computedtimingproperties-activeduration">activeDuration</a>;
-    double?             <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/localTime<dict-member>" data-link-type="dict-member" data-type="double?             " href="#dom-computedtimingproperties-localtime">localTime</a>;
-    unrestricted double <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/timeFraction<dict-member>" data-link-type="dict-member" data-type="unrestricted double " href="#dom-computedtimingproperties-timefraction">timeFraction</a>;
-    unsigned long?      <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/currentIteration<dict-member>" data-link-type="dict-member" data-type="unsigned long?      " href="#dom-computedtimingproperties-currentiteration">currentIteration</a>;
+    double               <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/startTime<dict-member>" data-link-type="dict-member" data-type="double               " href="#dom-computedtimingproperties-starttime">startTime</a>;
+    unrestricted double  <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/endTime<dict-member>" data-link-type="dict-member" data-type="unrestricted double  " href="#dom-computedtimingproperties-endtime">endTime</a>;
+    unrestricted double  <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/activeDuration<dict-member>" data-link-type="dict-member" data-type="unrestricted double  " href="#dom-computedtimingproperties-activeduration">activeDuration</a>;
+    double?              <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/localTime<dict-member>" data-link-type="dict-member" data-type="double?              " href="#dom-computedtimingproperties-localtime">localTime</a>;
+    unrestricted double? <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/timeFraction<dict-member>" data-link-type="dict-member" data-type="unrestricted double? " href="#dom-computedtimingproperties-timefraction">timeFraction</a>;
+    unrestricted double? <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/currentIteration<dict-member>" data-link-type="dict-member" data-type="unrestricted double? " href="#dom-computedtimingproperties-currentiteration">currentIteration</a>;
 };
 </pre>
 
@@ -8088,7 +8102,7 @@ interval plus any <a data-link-type="dfn" href="#end-delay">end delay</a>.</p>
        
 
       <dt data-md="">
-       <p><dfn class="idl-code" data-dfn-for="ComputedTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-computedtimingproperties-timefraction">timeFraction<a class="self-link" href="#dom-computedtimingproperties-timefraction"></a></dfn>, <span> of type <a data-link-type="idl-name">unrestricted double</a></span></p>
+       <p><dfn class="idl-code" data-dfn-for="ComputedTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-computedtimingproperties-timefraction">timeFraction<a class="self-link" href="#dom-computedtimingproperties-timefraction"></a></dfn>, <span> of type <a data-link-type="idl-name">unrestricted double</a>, nullable</span></p>
        
 
       <dd data-md="">
@@ -8097,7 +8111,7 @@ interval plus any <a data-link-type="dfn" href="#end-delay">end delay</a>.</p>
 
 
       <dt data-md="">
-       <p><dfn class="idl-code" data-dfn-for="ComputedTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-computedtimingproperties-currentiteration">currentIteration<a class="self-link" href="#dom-computedtimingproperties-currentiteration"></a></dfn>, <span> of type <a data-link-type="idl-name">unsigned long</a>, nullable</span></p>
+       <p><dfn class="idl-code" data-dfn-for="ComputedTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-computedtimingproperties-currentiteration">currentIteration<a class="self-link" href="#dom-computedtimingproperties-currentiteration"></a></dfn>, <span> of type <a data-link-type="idl-name">unrestricted double</a>, nullable</span></p>
        
 
       <dd data-md="">
@@ -8106,10 +8120,14 @@ iteration.</p>
        
 
 
-       <p>In the case where the <a data-link-type="dfn" href="#current-iteration">current iteration</a> index is infinity,
-(as can happen with a zero-duration animation that repeats infinite times),
-the return value to be used in ECMAScript is <code>Infinity</code>.
-The value for other language bindings is undefined.</p>
+       <p>In most cases this will be a (positive) integer. However, for
+a zero-duration animation that repeats infinite times, the value
+will be positive <span class="esvalue">Infinity</span>.</p>
+       
+
+
+       <p>As with <a data-link-type="dfn" href="#unresolved">unresolved</a> times, an unresolved <a data-link-type="dfn" href="#current-iteration">current iteration</a> is
+represented by a <span class="esvalue">null</span> value.</p>
        
 </dl>
 </div>
@@ -11074,12 +11092,12 @@ dictionary <a data-global-name="" href="#dictdef-animationtimingproperties">Anim
 };
 
 dictionary <a data-global-name="" href="#dictdef-computedtimingproperties">ComputedTimingProperties</a> : <a data-link-type="idl-name" href="#dictdef-animationtimingproperties">AnimationTimingProperties</a> {
-    double              <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/startTime<dict-member>" data-link-type="dict-member" data-type="double              " href="#dom-computedtimingproperties-starttime">startTime</a>;
-    unrestricted double <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/endTime<dict-member>" data-link-type="dict-member" data-type="unrestricted double " href="#dom-computedtimingproperties-endtime">endTime</a>;
-    unrestricted double <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/activeDuration<dict-member>" data-link-type="dict-member" data-type="unrestricted double " href="#dom-computedtimingproperties-activeduration">activeDuration</a>;
-    double?             <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/localTime<dict-member>" data-link-type="dict-member" data-type="double?             " href="#dom-computedtimingproperties-localtime">localTime</a>;
-    unrestricted double <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/timeFraction<dict-member>" data-link-type="dict-member" data-type="unrestricted double " href="#dom-computedtimingproperties-timefraction">timeFraction</a>;
-    unsigned long?      <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/currentIteration<dict-member>" data-link-type="dict-member" data-type="unsigned long?      " href="#dom-computedtimingproperties-currentiteration">currentIteration</a>;
+    double               <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/startTime<dict-member>" data-link-type="dict-member" data-type="double               " href="#dom-computedtimingproperties-starttime">startTime</a>;
+    unrestricted double  <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/endTime<dict-member>" data-link-type="dict-member" data-type="unrestricted double  " href="#dom-computedtimingproperties-endtime">endTime</a>;
+    unrestricted double  <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/activeDuration<dict-member>" data-link-type="dict-member" data-type="unrestricted double  " href="#dom-computedtimingproperties-activeduration">activeDuration</a>;
+    double?              <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/localTime<dict-member>" data-link-type="dict-member" data-type="double?              " href="#dom-computedtimingproperties-localtime">localTime</a>;
+    unrestricted double? <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/timeFraction<dict-member>" data-link-type="dict-member" data-type="unrestricted double? " href="#dom-computedtimingproperties-timefraction">timeFraction</a>;
+    unrestricted double? <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/currentIteration<dict-member>" data-link-type="dict-member" data-type="unrestricted double? " href="#dom-computedtimingproperties-currentiteration">currentIteration</a>;
 };
 
 enum <a data-global-name="" href="#enumdef-fillmode">FillMode</a> { "none", "forwards", "backwards", "both", "auto" };
