@@ -3554,6 +3554,43 @@ behavior</a>:
     value</a> [[!CSS21]] for <var>V</var><sub>start</sub> and
     <var>V</var><sub>end</sub>.
 
+    When there is insufficient context to calculate a used value for all
+    possible values of <var>V</var><sub>start</sub> and
+    <var>V</var><sub>end</sub>, the result of the <a>distance computation</a>
+    calculation is 1 (i.e. the behavior degenerates to <a>not paceable</a>).
+
+    <div class="example">
+      For example, for a <a>keyframe animation effect</a> that is not associated
+      with an <a>animation</a> with an <a>animation target</a>, there is no
+      containing block for resolving percentage values against.
+      As a result, the following code snippet falls back to <a>not paceable</a>
+      <a>animation behavior</a>.
+
+      <pre class='lang-javascript'>
+var effect =
+  new KeyframeEffect([ { top: '10%' },
+                       { top: '20%' },
+                       { top: '50%' } ],
+                     { spacing: 'paced(top)'});
+// Prints '0, 0.5, 1'
+effect.getFrames().map(frame => frame.computedOffset).join(', ');
+      </pre>
+
+      For consistency, this definition applies even when a used value
+      could be calculated for each of the animation values in question.
+      As such, the following code fragment produces the same result.
+
+      <pre class='lang-javascript'>
+var effect =
+  new KeyframeEffect([ { top: '10px' },
+                       { top: '20px' },
+                       { top: '50px' } ],
+                     { spacing: 'paced(top)'});
+// Prints '0, 0.5, 1'
+effect.getFrames().map(frame => frame.computedOffset).join(', ');
+      </pre>
+    </div>
+
 <h5 id="animatable-as-color-section">Animatable as color</h5>
 
 A <a>target property</a> that is <dfn>animatable as color</dfn> has
