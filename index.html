@@ -649,7 +649,7 @@ pre[class*="language-"] {
    <h1 class="p-name no-ref" id="title">Web Animations</h1>
   
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft,
-    <time class="dt-updated" datetime="2015-02-12">12 February 2015</time></span></h2>
+    <time class="dt-updated" datetime="2015-02-13">13 February 2015</time></span></h2>
   
    <div data-fill-with="spec-metadata">
     <dl>
@@ -5261,6 +5261,48 @@ Values and Units</a> <a data-link-type="biblio" href="#biblio-css3val">[CSS3VAL]
 number</a> but using the <a href="http://www.w3.org/TR/CSS2/cascade.html#used-value">used
 value</a> <a data-link-type="biblio" href="#biblio-css21">[CSS21]</a> for <var>V</var><sub>start</sub> and
 <var>V</var><sub>end</sub>.</p>
+     
+
+
+     <p>When there is insufficient context to calculate a used value for all
+possible values of <var>V</var><sub>start</sub> and
+<var>V</var><sub>end</sub>, the result of the <a data-link-type="dfn" href="#distance-computation">distance computation</a>
+calculation is 1 (i.e. the behavior degenerates to <a data-link-type="dfn" href="#not-paceable">not paceable</a>).</p>
+     
+
+
+     <div class="example">
+  For example, for a <a data-link-type="dfn" href="#keyframe-animation-effect">keyframe animation effect</a> that is not associated
+  with an <a data-link-type="dfn" href="#concept-animation">animation</a> with an <a data-link-type="dfn" href="#animation-target">animation target</a>, there is no
+  containing block for resolving percentage values against.
+  As a result, the following code snippet falls back to <a data-link-type="dfn" href="#not-paceable">not paceable</a>
+  <a data-link-type="dfn" href="#animation-behavior">animation behavior</a>.
+
+      
+      <pre class="lang-javascript">var effect =
+  new KeyframeEffect([ { top: '10%' },
+                       { top: '20%' },
+                       { top: '50%' } ],
+                     { spacing: 'paced(top)'});
+// Prints '0, 0.5, 1'
+effect.getFrames().map(frame => frame.computedOffset).join(', ');
+</pre>
+
+
+      <p>For consistency, this definition applies even when a used value
+  could be calculated for each of the animation values in question.
+  As such, the following code fragment produces the same result.</p>
+
+      
+      <pre class="lang-javascript">var effect =
+  new KeyframeEffect([ { top: '10px' },
+                       { top: '20px' },
+                       { top: '50px' } ],
+                     { spacing: 'paced(top)'});
+// Prints '0, 0.5, 1'
+effect.getFrames().map(frame => frame.computedOffset).join(', ');
+</pre>
+</div>
      
 </ul>
 
