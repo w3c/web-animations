@@ -782,9 +782,9 @@ following conditions are true:
     each <a>inclusive descendant</a> of
 <!-- @endif -->
     the player's <a>source content</a>
-    including rendering the first frame of any <a>animation</a> with an
-    associated <a>animation effect</a> or executing any <a>custom effects</a>
-    associated with such an <a>animation</a>.
+    including rendering the first frame of any <a>keyframe animation effect</a>
+    or executing any <a>custom effects</a> associated with an
+    <a>animation effect</a>.
 
 *   the player is associated with a <a>timeline</a> that is not
     <a lt="inactive timeline">inactive</a>.
@@ -1443,13 +1443,13 @@ a timeline</dfn>, <var>timeline</var>, if <var>effect</var> is
 <!-- @ifdef INCLUDE_GROUPS -->
 This specification defines two types of <a>animation effects</a>:
 
-* <a>animations</a>, and
+* <a>keyframe animation effects</a>, and
 * <a>animation groups</a>.
 
 <!-- @endif -->
 <!-- @ifndef INCLUDE_GROUPS -->
 This specification defines a single type of <a>animation effect</a>:
-<a>animations</a>.
+<a>keyframe animation effects</a>.
 Subsequent levels of this specification will define further types of
 <a>animation effects</a>.
 <!-- @endif -->
@@ -1711,7 +1711,7 @@ follows:
 <!-- @ifdef INCLUDE_GROUPS -->
     This occurs when the <a>animation effect</a> <em>and all its
     ancestors</em> are in the <a>active phase</a>.
-    <a>Animations</a> only &ldquo;move&rdquo; when
+    <a>Animation effects</a> only &ldquo;move&rdquo; when
     they are <a>in play</a>.
 
     It is possible for an <a>animation effect</a> to be in the
@@ -1741,7 +1741,7 @@ follows:
     a time where the effect's <a>fill mode</a> (see <a
     href="#fill-behavior" section></a>) causes its
     <a>active time</a> to be resolved.
-    Only <a>in effect</a> <a>animations</a> apply
+    Only <a>in effect</a> <a>animation effects</a> apply
     a result to their target.
 
 The normative definition of each of these states follows.
@@ -3305,7 +3305,7 @@ section></a>).
 
 </div>
 
-<h3 id="animations">Keyframe effects</h3>
+<h3 id="keyframe-effects">Keyframe effects</h3>
 
 <dfn>Keyframe effects</a> are a kind of <a>animation effect</a> that
 use the output of the timing model to update CSS properties and DOM attributes
@@ -3316,13 +3316,13 @@ target</dfn>.
 It does this by calculating an <a>intermediate animation value</a> for each of
 its <a>target properties</a>.
 
-Since the result of a <a>keyframe effect</a> is based on the
+Since the result of a <a>keyframe animation effect</a> is based on the
 <a>time fraction</a> and <a>current iteration</a> value, it is updated
 whenever the timing model is <a lt="sampling">sampled</a>.
 
 <h4 id="target-properties">Target properties</h4>
 
-Each <a>keyframe effect</a> can have zero or more associated
+Each <a>keyframe animation effect</a> can have zero or more associated
 <dfn lt="target property">target properties</dfn>.
 
 <a lt="target property">Target properties</a> may be CSS properties
@@ -3558,9 +3558,9 @@ behavior</a>:
     calculation is 1 (i.e. the behavior degenerates to <a>not paceable</a>).
 
     <div class="example">
-      For example, for a <a>keyframe animation effect</a> that is not associated
-      with an <a>animation</a> with an <a>animation target</a>, there is no
-      containing block for resolving percentage values against.
+      For example, for a <a>keyframe animation effect</a> that does not have
+      an <a>animation target</a>, there is no containing block for resolving
+      percentage values against.
       As a result, the following code snippet falls back to <a>not paceable</a>
       <a>animation behavior</a>.
 
@@ -3798,8 +3798,8 @@ After calculating the <a>intermediate animation values</a> for an
 <a>animation effect</a>, they are applied to the <a>animation
 effect</a>'s <a lt="target property">target properties</a>.
 
-Since it is possible for multiple <a>in effect</a> <a>animations</a> to target
-the same property it is often necessary to combine the results of several
+Since it is possible for multiple <a>in effect</a> <a>animation effects</a> to
+target the same property it is often necessary to combine the results of several
 <a>animation effects</a> together.
 This process is called <dfn lt='composition'>compositing</dfn> and is
 based on establishing an <a>animation stack</a> for each property
@@ -3835,9 +3835,8 @@ For the first part of this operation&mdash;combining <a>intermediate
 animation values</a> that target the same <a
 lt="target property">property</a>&mdash; it is necessary to
 determine both
-<em>how</em> the <a>animation effects</a>
-associated with the <a>animations</a> are combined
-with one another,
+<em>how</em> <a>animation effects</a>
+are combined with one another,
 as well as the <em>order</em> in which they are applied, that is,
 their relative <em>priority</em>.
 
@@ -3859,14 +3858,12 @@ effects</a>.
 
 The relative priority of any two <a>animation
 effects</a>, <var>A</var> and <var>B</var>, within an <a>animation
-stack</a> is established by comparing the properties of the
-<a>animations</a> applying <var>A</var> and
-<var>B</var> as follows:
+stack</a> is established by comparing their properties as follows:
 
 1.  Let the <dfn>associated player of an animation effect</dfn>
     be the <a>player</a> <a
     lt="associated with a player">associated</a> with the
-    <a>animation</a> that is applying the <a>animation
+    <a>animation effect</a> that is applying the <a>animation
     effect</a> to the property with which this <a>animation stack</a> is
     associated.
 2.  Sort <var>A</var> and <var>B</var> by applying the following
@@ -4049,7 +4046,7 @@ Similar to the compositing performed between <a>intermediate animation
 values</a> (see <a href="#animation-composition"
 section></a>), the <dfn>iteration composite operation</dfn>
 determines how values are combined between successive iterations of
-the same <a>animation</a>.
+the same <a>animation effect</a>.
 
 This specification defines two <a>iteration composite operations</a>
 as follows:
@@ -4631,11 +4628,11 @@ that is passed timing information when <a>sampling</a> is performed.
 
 <h4 id="sampling-custom-effects">Sampling custom effects</h4>
 
-<a>Custom effects</a> are called for each referencing <a>animation</a>
+<a>Custom effects</a> are called for each referencing <a>animation effect</a>
 when a <a lt='single-sample'>sample</a> is performed based on the 
 following criteria.
 
-1.  If, on the previous sample, the <a>animation</a>
+1.  If, on the previous sample, the <a>animation effect</a>
     referencing the <a>custom effect</a>:
 
     *   was <a>in effect</a>, and
@@ -4650,12 +4647,12 @@ following criteria.
 
     <div class="switch">
 
-    :   If the <a>animation</a> referencing the custom
+    :   If the <a>animation effect</a> referencing the custom
         effect is not <a>in effect</a> but was <a>in effect</a> in the previous
         sample,
     ::  Call the callback passing an <a>unresolved</a> <a>time fraction</a> and
         the current <a>animation target</a> as parameters to the callback.
-    :   Otherwise, if the <a>animation</a> referencing
+    :   Otherwise, if the <a>animation effect</a> referencing
         the custom effect:
     ::
 
@@ -4666,7 +4663,7 @@ following criteria.
               fraction</a> or <a>current iteration</a>,</strong>
 
     ::   Call the callback passing with the referencing
-        <a>animation</a>'s current <a>time
+         <a>animation effect</a>'s current <a>time
         fraction</a> and <a>animation target</a> as parameters to the callback.
 
     </div>
@@ -4837,7 +4834,7 @@ interface AnimationTimeline {
 
     Issue: Both this method and {{Animatable/getAnimationPlayers()}} on the
            {{Animatable}} interface require retaining forwards-filling
-           <a>animations</a> and their <a>players</a>
+           <a>animation effects</a> and their <a>players</a>
            such that a document that
            repeatedly produces forwards-filling animations will consume memory
            in an unbounded fashion.
@@ -5208,7 +5205,7 @@ interface AnimationTimingReadonly {
     <div class="switch">
 
     :   If the <a>animation effect</a> to which the fill mode is being is
-        applied is an <a>animation</a>,
+        applied is a <a>keyframe animation effect</a>,
     ::  Use <span class="enum-value">none</span> as the <a>fill
         mode</a>.
     :   Otherwise,
@@ -5856,7 +5853,7 @@ interface AnimationNodeList {
 
 :   <dfn method for=AnimationNodeList lt="item()">
     getter AnimationNodeReadonly? item(unsigned long index)</dfn>
-::  Returns the <a>animation node</a> at <code>index</code>.
+::  Returns the <a>animation effect</a> at <code>index</code>.
     If <code>index</code> is greater than or equal to
     <code>length</code> returns <code>null</code>.
 
@@ -5911,8 +5908,8 @@ AnimationSequence implements AnimationGroupMutable;
 <h3 id="the-animation-interfaces">The <code>AnimationReadonly</code> and
 <code>Animation</code> interfaces</h3>
 
-<a>Animations</a> are represented by the {{AnimationReadonly}} interface.
-Mutable <a>animations</a> are represented by the {{Animation}} interface.
+<a>Animation effects</a> are represented by the {{AnimationReadonly}} interface.
+Mutable <a>animation effects</a> are represented by the {{Animation}} interface.
 
 <pre class='idl'>
 [Constructor (Animatable? target, object? effect,
@@ -6200,15 +6197,14 @@ var anim =
   new Animation(elem, { left: '100px' }, { duration: 3000, delay: 2000 });</pre>
 
 If the duration is not specified, the <a>intrinsic iteration
-duration</a> is used which, for an <a>animation</a>, is zero.
+duration</a> is used which, for a <a>keyframe animation effect</a>, is zero.
 It is possible to create an animation that simply sets a property
 without any interpolation as follows:
 
 <pre class='example lang-javascript'>
 new Animation(elem, { display: 'none' }, { fill: 'forwards' });</pre>
 
-This is particularly useful in combination with other <a>animations</a> or
-<a>animation effects</a>.
+This is particularly useful in combination with other <a>animation effects</a>.
 For example, fading an element before switching
 &lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
 follows,
@@ -6294,13 +6290,12 @@ elem.ownerDocument.timeline.play(anim);</pre></div>
     sequence&lt;AnimationPlayer&gt; getAnimationPlayers()</dfn>
 ::  Returns the set of {{AnimationPlayer}} objects
     whose <a>source content</a> is <a>current</a> or <a>in effect</a> and
-    contains at least one <a>animation</a> whose
-    <a>animation target</a> is this
-    object.
+    contains at least one <a>animation effect</a> whose
+    <a>animation target</a> is this object.
 
 <!-- @ifdef INCLUDE_GROUPS -->
     If this object is the <a>animation target</a> of two or more
-    <a>animations</a> which are associated with the
+    <a>animation effects</a> which are associated with the
     same <a>player</a>, the corresponding {{AnimationPlayer}}
     object will still only appear in the returned list once.
 <!-- @endif -->
@@ -6379,7 +6374,7 @@ enum IterationCompositeOperation {"replace", "accumulate"};
 ::  Corresponds to the <a
     lt="iteration composite operation accumulate">accumulate</a>
     iteration composite operation value such that
-    subsequent iterations of an <a>animation</a> build
+    subsequent iterations of an <a>animation effect</a> build
     on the final value of the previous iteration.
 
 <h3 id="the-compositeoperation-enumeration">The <code>CompositeOperation</code> enumeration</h3>
@@ -7056,7 +7051,7 @@ elem.animate({ color: 'red' }, 2000);</pre>
 
 <h3 id="extensions-to-the-pseudoelement-interface">Extensions to the <code>PseudoElement</code> interface</h3>
 
-Since <a>animations</a> may also target
+Since <a>keyframe animation effects</a> may also target
 pseudo-elements, the <a class="externalDFN"
 href="http://www.w3.org/TR/cssom/#the-pseudoelement-interface"><code>PseudoElement</code></a>
 interface [[!CSSOM]] is also defined to be animatable.
@@ -7349,13 +7344,13 @@ The following changes have been made since the <a
 *   Deferred animation groups to a <a
     href="https://w3c.github.io/web-animations/level-2/">subsequent level</a>.
     Deferring this feature also lead to the following simplifications.
-    *   Deferred the <a>animation node</a>-specific playback rate since it was
+    *   Deferred the <a>animation effect</a>-specific playback rate since it was
         considered to be not particularly useful without animation groups and
         potentially confusing (since <a>player</a>'s also have a
         <a>player playback rate</a>).
     *   Removed the &lsquo;repeated duration&rsquo; definition since it is
-        redundant in the absence of the <a>animation node</a>-specific playback
-        rate.
+        redundant in the absence of the <a>animation effect</a>-specific
+        playback rate.
 *   Removed motion path animation effects since this functionality can be
     achieved using the <a href="http://dev.w3.org/fxtf/motion-1/">Motion Path
     Module</a>.
@@ -7370,7 +7365,7 @@ The following changes have been made since the <a
     related interfaces as follows:
     *   <a>Animation effects</a> are now represented by the
         {{AnimationNodeReadonly}} interface.
-    *   <a>Animations</a> are now represented by the
+    *   <a>Animation effects</a> are now represented by the
         {{AnimationReadonly}} and {{Animation}} interfaces.
     *   <a>Keyframe animation effects</a> are now represented by the
         {{KeyframeEffectReadonly}} and {{KeyframeEffect}} interfaces.
