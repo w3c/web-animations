@@ -3240,19 +3240,12 @@ animation effects</a> the <a>intrinsic iteration duration</a> will be
 zero.
 <!-- @endif -->
 
-<h3 id="animations">Animations</h3>
-
-<dfn id="concept-animation">Animations</dfn> are a kind of <a>animation
-effect</a> that apply an <a>animation effect</a> or a <a>custom effect</a>
-to an element or pseudo-element such as <code>::before</code> or
-<code>::after</code> [[!SELECT]] referred to as the <dfn>animation
-target</dfn>.
-
 <h4 id="calculating-the-time-fraction">Calculating the time fraction</h4>
 
-Before passing the <a>transformed time</a> of an <a>animation</a> to
-its <a>animation effect</a> it is converted to a <em>time
-fraction</em>.
+Before the <a>transformed time</a> is passed to the animation model, it is
+normalized to represent a fraction of the <a>iteration duration</a>, known as a
+<em>time fraction</em>.
+
 The <dfn>time fraction</dfn> of an <a>animation effect</a> is calculated
 by running the steps corresponding to the first matching condition from
 the following:
@@ -3300,34 +3293,36 @@ Note: Since <a>timing functions</a> are allowed to produce output times
 
 <div class='informative-bg'><em>This section is non-normative</em>
 
-The Web Animations <em>animation model</em> takes the <a>time
-fractions</a> and <a>current iteration</a> values produced by the
-<em>timing model</em> for a given <a>animation</a> and
-applies it as the input to the <a>animation</a>'s
-<a>animation effect</a>.
+For some kinds of <a>animation effects</a>, the Web Animations <em>animation
+model</em> takes the <a>time fraction</a> and <a>current iteration</a> values
+produced by the <em>timing model</em> and uses them to calculate a corresponding
+output.
 
-The output of each <a>animation effect</a> is then combined with other
-<a>animation effects</a> using an <a>animation stack</a> before being
+The output of each such animation effect is then combined with other
+that of others using an <a>animation stack</a> before being
 applied to the target properties (see <a href="#combining-animations"
 section></a>).
 
 </div>
 
-<h3 id="animation-effects">Animation effects</h3>
+<h3 id="animations">Keyframe effects</h3>
 
-An <dfn>animation effect</dfn> takes a <a>time fraction</a> and
-a <a>current iteration</a> value and uses them to calculate an
-<a>intermediate animation value</a> for its <a
-lt="target property">target properties</a>.  Each <a>animation</a>
-may have at most one <a>animation effect</a> associated with it.
+<dfn>Keyframe effects</a> are a kind of <a>animation effect</a> that
+use the output of the timing model to update CSS properties and DOM attributes
+of an element or pseudo-element such as <code>::before</code> or
+<code>::after</code> [[!SELECT]] referred to as the <dfn>animation
+target</dfn>.
 
-Since the result of an <a>animation effect</a> is based on the
+It does this by calculating an <a>intermediate animation value</a> for each of
+its <a>target properties</a>.
+
+Since the result of a <a>keyframe effect</a> is based on the
 <a>time fraction</a> and <a>current iteration</a> value, it is updated
 whenever the timing model is <a lt="sampling">sampled</a>.
 
 <h4 id="target-properties">Target properties</h4>
 
-Each <a>animation effect</a> can have zero or more associated
+Each <a>keyframe effect</a> can have zero or more associated
 <dfn lt="target property">target properties</dfn>.
 
 <a lt="target property">Target properties</a> may be CSS properties
