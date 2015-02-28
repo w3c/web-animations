@@ -118,8 +118,8 @@ This specification introduces the following changes since compard to the
 previous leve of this specification:
 
 *   <a>animation groups</a> and <a>animation sequences</a>,
-*   an <a>animation node</a>-specific
-    <a lt="animation node playback rate">playback rate</a>.
+*   an <a>animation effect</a>-specific
+    <a lt="animation effect playback rate">playback rate</a>.
 
 <!-- @endif -->
 
@@ -455,17 +455,17 @@ href="#script-execution-and-live-updates-to-the-model" section></a>.
 <div class="informative-bg"><em>This section is non-normative</em>
 
 The children of a <a>timeline</a> are called <em>players</em>.
-A player takes an <a>animation node</a> which is a static
+A player takes an <a>animation effect</a> which is a static
 description of some timed behavior and binds it to a <a>timeline</a>
 so that it runs.
 A player also allows run-time control of the connection between the
-<a>animation node</a> and its <a>timeline</a> by providing pausing,
+<a>animation effect</a> and its <a>timeline</a> by providing pausing,
 seeking, and speed control.
-The relationship between a player and an <a>animation node</a> is
+The relationship between a player and an <a>animation effect</a> is
 analogous to that of a DVD player and a DVD.
 </div>
 
-A <dfn>player</dfn> connects a single <a>animation node</a>, called
+A <dfn>player</dfn> connects a single <a>animation effect</a>, called
 its <dfn>source content</dfn>, to a <a>timeline</a> and provides
 playback control.
 Both of these associations are optional and configurable such that
@@ -558,7 +558,7 @@ The procedure to <dfn>set the source content of a player</dfn>,
 <!-- @ifdef INCLUDE_GROUPS -->
 1.  If <var>new content</var> is not <code>null</code> and
     if <var>new content</var> has a <a>parent animation group</a>,
-    <a lt="remove an animation node">remove</a> <var>new content</var> from
+    <a lt="remove an animation effect">remove</a> <var>new content</var> from
     its <a>parent animation group</a>.
 <!-- @endif -->
 1.  If <var>new content</var> is not <code>null</code> and
@@ -1259,8 +1259,8 @@ time</a> to decrease at the same rate as the <a>time values</a> from
 its <a>timeline</a> increase.
 
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-Note that <a>animation nodes</a> also have a <a
-lt="animation node playback rate">playback rate</a> associated
+Note that <a>animation effects</a> also have a <a
+lt="animation effect playback rate">playback rate</a> associated
 with them that behaves differently to that defined here.
 <!-- @endif -->
 
@@ -1399,82 +1399,82 @@ player.ready.then(function() {
 
 </div>
 
-<h3 id="animation-nodes">Animation nodes</h3>
+<h3 id="animation-effects">Animation effects</h3>
 
-An <dfn>animation node</dfn> is an abstract term referring to an item in
+An <dfn>animation effect</dfn> is an abstract term referring to an item in
 the timing hierarchy.
 
-<h4 id="animation-nodes-and-players">Relationship between animation nodes and players</h4>
+<h4 id="animation-effects-and-players">Relationship between animation effects and players</h4>
 
 The <a>source content</a> of a <a>player</a>, if set, is a type of
-<a>animation node</a>.
+<a>animation effect</a>.
 <!-- @ifdef INCLUDE_GROUPS -->
 The <a>source content</a> of a <a>player</a> is said to be <dfn
 lt="directly associated with a player">directly associated</dfn>
 with that player.
 
-<a>Animation nodes</a> can be combined together into a hierarchy using
+<a>Animation effects</a> can be combined together into a hierarchy using
 <a>animation groups</a> (see <a href="#grouping-and-synchronization"
 section></a>).
-Only the <a>root</a> <a>animation node</a> of such a hierarchy can be
+Only the <a>root</a> <a>animation effect</a> of such a hierarchy can be
 <a>directly associated with a player</a>.
-If an <a>animation node</a> that has a <a>parent animation group</a>
+If an <a>animation effect</a> that has a <a>parent animation group</a>
 is designated as the <a>source content</a> of a <a>player</a>, the
-<a>animation node</a> is removed from its <a>parent animation
+<a>animation effect</a> is removed from its <a>parent animation
 group</a> before being associated with the <a>player</a>.
 
-An <a>animation node</a> is <dfn>associated with a player</dfn> if it
+An <a>animation effect</a> is <dfn>associated with a player</dfn> if it
 is <a>directly associated with a player</a> or if it has an
 <a>ancestor</a> <a>animation group</a> that is <a>directly associated
 with a player</a>.<!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->The
 <a>source content</a> of a <a>player</a> is said to be <dfn
 lt="associated with a player">associated</dfn> with that player.
-<!-- @endif -->At a given moment, an <a>animation node</a> can be <a
+<!-- @endif -->At a given moment, an <a>animation effect</a> can be <a
 lt="associated with a player">associated</a> with at most one
 <a>player</a>.
 
-An <a>animation node</a>, <var>node</var>, is <dfn>associated with
-a timeline</dfn>, <var>timeline</var>, if <var>node</var> is
+An <a>animation effect</a>, <var>effect</var>, is <dfn>associated with
+a timeline</dfn>, <var>timeline</var>, if <var>effect</var> is
 <a>associated with a player</a> which, in turn, is associated with
 <var>timeline</var>.
 
-<h4 id="types-of-animation-nodes">Types of animation nodes</h4>
+<h4 id="types-of-animation-effects">Types of animation effects</h4>
 
 <!-- @ifdef INCLUDE_GROUPS -->
-This specification defines two types of <a>animation nodes</a>:
+This specification defines two types of <a>animation effects</a>:
 
 * <a>animations</a>, and
 * <a>animation groups</a>.
 
 <!-- @endif -->
 <!-- @ifndef INCLUDE_GROUPS -->
-This specification defines a single type of <a>animation node</a>:
+This specification defines a single type of <a>animation effect</a>:
 <a>animations</a>.
 Subsequent levels of this specification will define further types of
-<a>animation nodes</a>.
+<a>animation effects</a>.
 <!-- @endif -->
 
-All types of <a>animation nodes</a> define a number of common
+All types of <a>animation effects</a> define a number of common
 properties which are described in the following sections.
 
 <h4 id="the-active-interval">The active interval</h4>
 
 <div class="informative-bg">
 
-The period that an <a>animation node</a> is scheduled to run is
+The period that an <a>animation effect</a> is scheduled to run is
 called its <a>active interval</a>.
-Each <a>animation node</a> has only one such interval.
+Each <a>animation effect</a> has only one such interval.
 
 The lower bound of the <a>active interval</a> is determined by the
-<a lt="animation node start time">start time</a> of the
-<a>animation node</a> but may be shifted by a <a>start delay</a> on
-the <a>animation node</a>.
+<a lt="animation effect start time">start time</a> of the
+<a>animation effect</a> but may be shifted by a <a>start delay</a> on
+the <a>animation effect</a>.
 
 The upper bound of the interval is determined by the <a>active
 duration</a>.
 
 The relationship between the <a
-lt="animation node start time">start time</a>, <a>start
+lt="animation effect start time">start time</a>, <a>start
 delay</a>, and <a>active duration</a> is illustrated below.
 
 <div class="figure">
@@ -1485,12 +1485,12 @@ delay</a>, and <a>active duration</a> is illustrated below.
 <p class="caption">
 Examples of the effect of the <a>start delay</a> on the endpoints of
 the <a>active interval</a>.<br>
-(a) An animation node with no delay; the <a
-lt="animation node start time">start time</a> and beginning of
+(a) An animation effect with no delay; the <a
+lt="animation effect start time">start time</a> and beginning of
 the <a>active interval</a> are coincident.<br>
-(b) An animation node with a positive delay; the beginning of the
+(b) An animation effect with a positive delay; the beginning of the
 <a>active interval</a> is deferred by the delay.<br>
-(c) An animation node with a negative delay; the beginning of the
+(c) An animation effect with a negative delay; the beginning of the
 <a>active interval</a> is brought forward by the delay.
 </p>
 
@@ -1503,53 +1503,53 @@ animations.
 
 </div>
 
-<a>Animation nodes</a> define an <dfn>active interval</dfn> which is
-the period of time during which the node is scheduled to produce its
+<a>Animation effects</a> define an <dfn>active interval</dfn> which is
+the period of time during which the effect is scheduled to produce its
 effect with the exception of <a>fill modes</a> which apply outside the
 <a>active interval</a>.
 
 The lower bound of the <a>active interval</a> is defined by the
-combination of the animation node's
-<a lt="animation node start time">start time</a> and <a>start delay</a>.
+combination of the animation effect's
+<a lt="animation effect start time">start time</a> and <a>start delay</a>.
 
 <!-- @ifdef INCLUDE_GROUPS -->
-An <a>animation node</a>'s
-<dfn lt="animation node start time">start time</dfn> is the moment at
+An <a>animation effect</a>'s
+<dfn lt="animation effect start time">start time</dfn> is the moment at
 which the <a>parent animation group</a>,
-if any, has scheduled the <a>animation node</a> to begin.
+if any, has scheduled the <a>animation effect</a> to begin.
 It is expressed in <a>inherited time</a>.
 
-In most cases, including the case when the <a>animation node</a> has
+In most cases, including the case when the <a>animation effect</a> has
 no <a>parent animation group</a>,
-the <a lt="animation node start time">start time</a> is zero.
+the <a lt="animation effect start time">start time</a> is zero.
 The singular exception is <a>animation sequences</a> which set
-the <a lt="animation node start time">start times</a> of their
+the <a lt="animation effect start time">start times</a> of their
 children as described in <a
 href="#the-start-time-of-children-of-an-animation-sequence" section></a>.
 
 <!-- @endif -->
 <!-- @ifndef INCLUDE_GROUPS -->
-The <dfn lt="animation node start time">start time</dfn> of an <a>animation
-node</a> is the moment in <a>inherited time</a> when the <a>animation node</a>
-is scheduled to begin.
+The <dfn lt="animation effect start time">start time</dfn> of an <a>animation
+effect</a> is the moment in <a>inherited time</a> when the <a>animation
+effect</a> is scheduled to begin.
 In the absence of animation groups, the
-<a lt="animation node start time">start time</a> is always zero.
+<a lt="animation effect start time">start time</a> is always zero.
 
 <!-- @endif -->
 
-In addition to the <a lt="animation node start time">start
-time</a>, an <a>animation node</a> also has a <dfn>start delay</dfn>
-which is an offset from the <a lt="animation node start time">start time</a>.
+In addition to the <a lt="animation effect start time">start
+time</a>, an <a>animation effect</a> also has a <dfn>start delay</dfn>
+which is an offset from the <a lt="animation effect start time">start time</a>.
 <!-- @ifdef INCLUDE_GROUPS -->
-Unlike the <a lt="animation node start time">start time</a> which
+Unlike the <a lt="animation effect start time">start time</a> which
 is determined by the <a>parent animation group</a>, the <a>start
-delay</a> is a property of the <a>animation node</a> itself.
+delay</a> is a property of the <a>animation effect</a> itself.
 <!-- @endif -->
 
 The lower bound of the <a>active interval</a> of an <a>animation
-node</a>, expressed in <a lt="inherited time">inherited time
+effect</a>, expressed in <a lt="inherited time">inherited time
 space</a>, is the sum of the <a
-lt="animation node start time">start time</a> and the <a>start
+lt="animation effect start time">start time</a> and the <a>start
 delay</a>.
 
 These definitions are incorporated in the calculation of the <a>local
@@ -1560,15 +1560,15 @@ The length of the <a>active interval</a> is called the <a>active
 duration</a>, the calculation of which is defined in <a
 href="#calculating-the-active-duration" section></a>.
 
-Similar to the <a>start delay</a>, an <a>animation node</a> also has
+Similar to the <a>start delay</a>, an <a>animation effect</a> also has
 an <dfn>end delay</dfn> which <!-- @ifdef INCLUDE_GROUPS -->
  may be used to delay the <a
-lt="animation node start time">start time</a> of the <a>next
+lt="animation effect start time">start time</a> of the <a>next
 sibling</a> in a <a>animation sequence</a>.
 
 <!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->
 is primarily of use when sequencing animations
-based on the <a>end time</a> of another <a>animation node</a>.
+based on the <a>end time</a> of another <a>animation effect</a>.
 Although this is typically only useful in combination with animation sequences
 which are introduced in a subsequent level of this specification, it is included
 here for the purpose of representing the <a
@@ -1577,9 +1577,9 @@ attribute in SVG ([[SVG11]], Chapter 19).
 
 <!-- @endif -->
 
-The <dfn>end time</dfn> of an <a>animation node</a> is simply the sum of its <a
-lt="animation node start time">start time</a>, <a>start delay</a>, <a>active
-duration</a>, and <a>end delay</a>.
+The <dfn>end time</dfn> of an <a>animation effect</a> is simply the sum of its
+<a lt="animation effect start time">start time</a>, <a>start delay</a>,
+<a>active duration</a>, and <a>end delay</a>.
 
 <h4 id="local-time-and-inherited-time">Local time and inherited time</h4>
 
@@ -1601,12 +1601,12 @@ transformations on the <a>time values</a> they
 receive from their <a lt="parent animation group">parent</a> or
 <a>player</a> before passing on the transformed <a>time values</a>
 to their children.
-Child <a>animation nodes</a> then operate <em>within</em> that
+Child <a>animation effects</a> then operate <em>within</em> that
 transformed time space.
 
 Children take the transformed time values from their
 parent&mdash;called the <a>inherited time</a>&mdash;and add their
-<a lt="animation node start time">start time</a> to establish
+<a lt="animation effect start time">start time</a> to establish
 their own <a lt="local time">local time space</a> as illustrated
 below.
 <!-- @endif -->
@@ -1618,36 +1618,36 @@ below.
 <p class="caption">
 Inherited time and local time.<br>
 At time <var>t</var>, the <a>inherited time</a> is 2.5.<br>
-For <a>animation node</a> (a) which has a <a
-  lt="animation node start time">start time</a> of 1, the
+For <a>animation effect</a> (a) which has a <a
+  lt="animation effect start time">start time</a> of 1, the
   <a>local time</a> is 1.5.<br>
-For <a>animation node</a> (b) which has a <a
-  lt="animation node start time">start time</a> of 1
+For <a>animation effect</a> (b) which has a <a
+  lt="animation effect start time">start time</a> of 1
   and a <a>start delay</a> of 1,
   the <a>local time</a> is also 1.5
-  since <a>local time</a> is based on an <a>animation node</a>'s
-  <a lt="animation node start time">start time</a> only,
+  since <a>local time</a> is based on an <a>animation effect</a>'s
+  <a lt="animation effect start time">start time</a> only,
   and not on its <a>start delay</a>.
 </p>
 
 </div>
 
-For an <a>animation node</a>, the <dfn>inherited time</dfn> at
+For an <a>animation effect</a>, the <dfn>inherited time</dfn> at
 a given moment is based on the first matching condition from the
 following:
 
 <div class='switch'>
 
 <!-- @ifdef INCLUDE_GROUPS -->
-:   If the <a>animation node</a> has a <a>parent animation
+:   If the <a>animation effect</a> has a <a>parent animation
     group</a>,
 ::  the inherited time is the <a>parent animation group</a>'s current
     <a>transformed time</a>.
-:   If the <a>animation node</a> is <a>directly associated with
+:   If the <a>animation effect</a> is <a>directly associated with
     a player</a>,
 <!-- @endif -->
 <!-- @ifndef INCLUDE_GROUPS -->
-:   If the <a>animation node</a> is <a>associated with a player</a>,
+:   If the <a>animation effect</a> is <a>associated with a player</a>,
 <!-- @endif -->
 ::  the inherited time is the <a>current time</a> of the
     <a>player</a>.
@@ -1656,46 +1656,47 @@ following:
 
 </div>
 
-The <dfn>local time</dfn> of an <a>animation node</a> is the
-<a>animation node</a>'s <a>inherited time</a> minus its <a
-lt="animation node start time">start time</a>.
+The <dfn>local time</dfn> of an <a>animation effect</a> is the
+<a>animation effect</a>'s <a>inherited time</a> minus its <a
+lt="animation effect start time">start time</a>.
 If the <a>inherited time</a> is <a>unresolved</a> then the local time
 is also <a>unresolved</a>.
 
-<h4 id="animation-node-phases-and-states">Animation node phases and states</h4>
+<h4 id="animation-effect-phases-and-states">Animation effect phases and
+states</h4>
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
-At a given moment, an <a>animation node</a> may be in one of three
+At a given moment, an <a>animation effect</a> may be in one of three
 possible <em>phases</em>.
-If an <a>animation node</a> has an <a>unresolved</a> <a>local
+If an <a>animation effect</a> has an <a>unresolved</a> <a>local
 time</a> it will not be in any phase.
 
 The different phases are illustrated below.
 
 <div class="figure">
-<img src="img/animation-node-phases-and-states.svg" width="700"
+<img src="img/animation-effect-phases-and-states.svg" width="700"
     alt="An example of the different phases and states used to
-         describe an animation node.">
+         describe an animation effect.">
 </div>
 <p class="caption">
 An example of the different phases and states used to describe
-an <a>animation node</a>.
+an <a>animation effect</a>.
 </p>
 
 The phases are as follows:
 
 :   <a>before phase</a>
-::  The <a>animation node</a>'s <a>local time</a> falls before the
-    node's <a>active interval</a>.
+::  The <a>animation effect</a>'s <a>local time</a> falls before the
+    effect's <a>active interval</a>.
 :   <a>active phase</a>
-::  The <a>animation node</a>'s <a>local time</a> falls inside the
-    node's <a>active interval</a>.
+::  The <a>animation effect</a>'s <a>local time</a> falls inside the
+    effect's <a>active interval</a>.
 :   <a>after phase</a>
-::  The <a>animation node</a>'s <a>local time</a> falls after the
-    node's <a>active interval</a>.
+::  The <a>animation effect</a>'s <a>local time</a> falls after the
+    effect's <a>active interval</a>.
 
-In addition to these phases, an <a>animation node</a> may also be
+In addition to these phases, an <a>animation effect</a> may also be
 described as being in one of several overlapping <em>states</em>.
 These states are only established for the duration of a single
 sample and are primarily a convenience for describing stative parts
@@ -1705,39 +1706,39 @@ These states and their useage within the model are summarised as
 follows:
 
 :   <a>in play</a>
-::  Corresponds to an <a>animation node</a> whose <a>active time</a>
+::  Corresponds to an <a>animation effect</a> whose <a>active time</a>
     is changing on each sample.
 <!-- @ifdef INCLUDE_GROUPS -->
-    This occurs when the <a>animation node</a> <em>and all its
+    This occurs when the <a>animation effect</a> <em>and all its
     ancestors</em> are in the <a>active phase</a>.
     <a>Animations</a> only &ldquo;move&rdquo; when
     they are <a>in play</a>.
 
-    It is possible for an <a>animation node</a> to be in the
+    It is possible for an <a>animation effect</a> to be in the
     <a>active phase</a> but not <a>in play</a>.
-    For example, if an <a>animation node</a> has a <a>parent
-    animation group</a> that causes the animation node's <a>active
+    For example, if an <a>animation effect</a> has a <a>parent
+    animation group</a> that causes the animation effect's <a>active
     interval</a> to be clipped and both parent and child apply the
-    same <a>fill mode</a>, the child <a>animation node</a> may be
+    same <a>fill mode</a>, the child <a>animation effect</a> may be
     effectively be snapshotted within the <a>active phase</a>
     despite no longer being <a>in play</a>.
 <!-- @endif -->
 
 :   <a>current</a>
-::  Corresponds to an <a>animation node</a> that is either <a>in
+::  Corresponds to an <a>animation effect</a> that is either <a>in
     play</a> or may become <a>in play</a> in the future.
-    This will be the case if the <a>animation node</a> is <a>in
+    This will be the case if the <a>animation effect</a> is <a>in
     play</a> or in its <a>before phase</a>, <em>or</em> it has an
     ancestor for which this is true thereby opening up the
-    possibility that this <a>animation node</a> might play again
+    possibility that this <a>animation effect</a> might play again
     (e.g. due to repeating).
 
 :   <a>in effect</a>
-::  Corresponds to an <a>animation node</a> that has a resolved
+::  Corresponds to an <a>animation effect</a> that has a resolved
     <a>active time</a>.
-    This occurs when either the <a>animation node</a> is in its
+    This occurs when either the <a>animation effect</a> is in its
     <a>active phase</a> or outside the <a>active interval</a> but at
-    a time where the node's <a>fill mode</a> (see <a
+    a time where the effect's <a>fill mode</a> (see <a
     href="#fill-behavior" section></a>) causes its
     <a>active time</a> to be resolved.
     Only <a>in effect</a> <a>animations</a> apply
@@ -1747,44 +1748,44 @@ The normative definition of each of these states follows.
 
 </div>
 
-An <a>animation node</a> is in the <dfn>before phase</dfn> if the
-animation node's <a>local time</a> is not <a>unresolved</a> and is
-less than the node's <a>start delay</a>.
+An <a>animation effect</a> is in the <dfn>before phase</dfn> if the
+animation effect's <a>local time</a> is not <a>unresolved</a> and is
+less than the effect's <a>start delay</a>.
 
-An <a>animation node</a> is in the <dfn>active phase</dfn> if
+An <a>animation effect</a> is in the <dfn>active phase</dfn> if
 <em>all</em> of the following conditions are met:
 
-1.  the <a>animation node</a>'s <a>local time</a> is not
+1.  the <a>animation effect</a>'s <a>local time</a> is not
     <a>unresolved</a>, and
-2.  the <a>animation node</a>'s <a>local time</a> is <em>greater than
+2.  the <a>animation effect</a>'s <a>local time</a> is <em>greater than
     or equal</em> to its <a>start delay</a>, and
-3.  the <a>animation node</a>'s <a>local time</a> is <em>less
+3.  the <a>animation effect</a>'s <a>local time</a> is <em>less
     than</em> the sum of its <a>start delay</a> and <a>active
     duration</a>.
 
-An <a>animation node</a> is in the <dfn>after phase</dfn> if the
-animation node's <a>local time</a> is not <a>unresolved</a> and is
+An <a>animation effect</a> is in the <dfn>after phase</dfn> if the
+animation effect's <a>local time</a> is not <a>unresolved</a> and is
 <em>greater than or equal</em> to the sum of its <a>start delay</a>
 and <a>active duration</a>.
 
-An <a>animation node</a> is <dfn>in play</dfn> if <em>all</em>
+An <a>animation effect</a> is <dfn>in play</dfn> if <em>all</em>
 of the following conditions are met:
 
-1.  the <a>animation node</a> is in the <a>active phase</a>, and
+1.  the <a>animation effect</a> is in the <a>active phase</a>, and
 <!-- @ifdef INCLUDE_GROUPS -->
-2.  the <a>animation node</a> has a <a>parent animation group</a> that
-    is <a>in play</a> or else the <a>animation node</a> is
+2.  the <a>animation effect</a> has a <a>parent animation group</a> that
+    is <a>in play</a> or else the <a>animation effect</a> is
     <a>directly associated with a player</a> that is not <a
     lt="finished play state">finished</a>.
 
 <!-- @endif -->
 <!-- @ifndef INCLUDE_GROUPS -->
-2.  the <a>animation node</a> is <a>associated with a player</a> that is not
+2.  the <a>animation effect</a> is <a>associated with a player</a> that is not
     <a lt="finished play state">finished</a>.
 
 <!-- @endif -->
 
-An animation node is <dfn>current</dfn> if
+An animation effect is <dfn>current</dfn> if
 <!-- @ifdef INCLUDE_GROUPS --><em>any</em> <!-- @endif -->
 <!-- @ifndef INCLUDE_GROUPS --><em>either</em> <!-- @endif -->
 of the following conditions is true:
@@ -1801,14 +1802,14 @@ of the following conditions is true:
 
 <!-- @endif -->
 
-An animation node is <dfn>in effect</dfn> if its <a>active time</a> as
+An animation effect is <dfn>in effect</dfn> if its <a>active time</a> as
 calculated according to the procedure in <a
 href="#calculating-the-active-time" section></a> is not
 <a>unresolved</a>.
 
 <h3 id="fill-behavior">Fill behavior</h3>
 
-The effect of an <a>animation node</a> when it is not <a>in play</a> is
+The effect of an <a>animation effect</a> when it is not <a>in play</a> is
 determined by its <dfn>fill mode</dfn>.
 
 The possible <a>fill modes</a> are:
@@ -1829,39 +1830,39 @@ href="#calculating-the-active-time" section></a>.
 The effect of each <a>fill mode</a> is as follows:
 
 :   none
-::  The animation node has no effect when it is not <a>in play</a>.
+::  The animation effect has no effect when it is not <a>in play</a>.
 :   forwards</dt>
-::  When the animation node is in the <a>after phase</a>,
+::  When the animation effect is in the <a>after phase</a>,
 <!-- @ifdef INCLUDE_GROUPS -->
-    or when the animation node is in the <a>active phase</a> but an
+    or when the animation effect is in the <a>active phase</a> but an
     <a>ancestor</a> is in its <a>after phase</a>,
 <!-- @endif -->
-    the animation node will produce the same <a
+    the animation effect will produce the same <a
     lt="transformed time">transformed time value</a> as the last
     moment it is scheduled to be <a>in play</a>.
 
-    For all other times that the animation node is not <a>in play</a>,
+    For all other times that the animation effect is not <a>in play</a>,
     it will have no effect.
 :   backwards
-::  When the animation node is in the <a>before phase</a>,
+::  When the animation effect is in the <a>before phase</a>,
 <!-- @ifdef INCLUDE_GROUPS -->
-    or when the animation node is in the <a>active phase</a> but an
+    or when the animation effect is in the <a>active phase</a> but an
     <a>ancestor</a> is in its <a>before phase</a>,
 <!-- @endif -->
-    the animation node will produce the same <a
+    the animation effect will produce the same <a
     lt="transformed time">transformed time value</a> as the earliest
     moment that it is scheduled to be <a>in play</a>.
 
-    For all other times that the animation node is not <a>in play</a>,
+    For all other times that the animation effect is not <a>in play</a>,
     it will have no effect.
 :   both</dt>
-::  When the animation node
+::  When the animation effect
 <!-- @ifdef INCLUDE_GROUPS -->
     or an <a>ancestor</a> is in its <a>before phase</a>,
 <!-- @endif -->
     <span class="prop-value">backwards</span> fill behavior is used.
 
-    When the animation node
+    When the animation effect
 <!-- @ifdef INCLUDE_GROUPS -->
     or an <a>ancestor</a> is in its <a>after phase</a>,
 <!-- @endif -->
@@ -1875,21 +1876,21 @@ Some examples of the these fill modes are illustrated below.
 </div>
 <p class="caption">
   Examples of various fill modes and the states produced.<br>
-  (a) fill mode &lsquo;none&rsquo;. The animation node has no effect
+  (a) fill mode &lsquo;none&rsquo;. The animation effect has no effect
       outside its active interval.<br>
   (b) fill mode &lsquo;forwards&rsquo;. After the active interval has
       finished, the timed value continues to maintain a fill value.<br>
-  (c) fill mode &lsquo;backwards&rsquo;. The animation node produces
+  (c) fill mode &lsquo;backwards&rsquo;. The animation effect produces
       a fill value until the start of the active interval.<br>
   (d) fill mode &lsquo;both&rsquo;. Both before and after the active
-      interval the animation node produces a fill value.
+      interval the animation effect produces a fill value.
 </p>
 
 Note: setting a fill mode has no bearing on the endpoints of the
     <a>active interval</a>.
     However, the fill mode <em>does</em> have an effect on various other
     properties of the timing model since the <a>active time</a> of an
-    animation node is only defined (that is, not <a>unresolved</a>) inside
+    animation effect is only defined (that is, not <a>unresolved</a>) inside
     the <a>active interval</a> <em>or</em> when a fill is applied.
 
 <div class="issue">
@@ -1915,24 +1916,24 @@ href='http://lists.w3.org/Archives/Public/public-fx/2013AprJun/0184.html'>sectio
 
 <h4 id="iteration-intervals">Iteration intervals</h4>
 
-It is possible to specify that an animation node should repeat
+It is possible to specify that an animation effect should repeat
 a fixed number of times or indefinitely.
 This repetition occurs <em>within</em> the <a>active interval</a>.
 The span of time during which a single repetition takes place is
 called an <dfn>iteration interval</dfn>.
 
-Unlike the <a>active interval</a>, an animation node can have multiple
+Unlike the <a>active interval</a>, an animation effect can have multiple
 <a>iteration intervals</a> although typically only the interval
 corresponding to the <a>current iteration</a> is of interest.
 
 The length of a single iteration is called the <dfn>iteration
 duration</dfn>.
-The initial <a>iteration duration</a> of an animation node is simply
+The initial <a>iteration duration</a> of an animation effect is simply
 its <a>intrinsic iteration duration</a>.
 
-The <dfn>intrinsic iteration duration</dfn> of an animation node is
+The <dfn>intrinsic iteration duration</dfn> of an animation effect is
 <!-- @ifdef INCLUDE_GROUPS -->
-zero, however some specific types of animation node such as
+zero, however some specific types of animation effect such as
 <a>animation groups</a> override this behavior and provide an
 alternative intrinsic duration (see <a
 href="#the-intrinsic-iteration-duration-of-an-animation-group"
@@ -1942,7 +1943,7 @@ section></a>).
 <!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->zero.
 <!-- @endif -->
 
-The <a>iteration duration</a> of an <a>animation node</a> may be set
+The <a>iteration duration</a> of an <a>animation effect</a> may be set
 by the author to represent a value other than the <a>intrinsic
 iteration duration</a>.
 
@@ -1952,10 +1953,10 @@ Comparing the <a>iteration duration</a> and the <a>active
 duration</a> we have:
 
 :   Iteration duration
-::  The time taken for a single iteration of the animation node to
+::  The time taken for a single iteration of the animation effect to
     complete.
 :   Active duration
-::  The time taken for the entire animation node to complete,
+::  The time taken for the entire animation effect to complete,
     including repetitions.
     This may be longer or shorter than the <a>iteration duration</a>.
 
@@ -1968,7 +1969,7 @@ duration</a> is illustrated below.
 </div>
 <p class="caption">
   A comparison of the <a>iteration duration</a> and <a>active
-  duration</a> of an animation node with an <a>iteration count</a> of
+  duration</a> of an animation effect with an <a>iteration count</a> of
   2.5.
   Note that the <a>iteration duration</a> for the final iteration does
   not change, it is simply cut-off by the <a>active duration</a>.
@@ -1978,22 +1979,22 @@ duration</a> is illustrated below.
 
 <h4 id="controlling-iteration">Controlling iteration</h4>
 
-The number of times an <a>animation node</a> repeats is called its
+The number of times an <a>animation effect</a> repeats is called its
 <dfn>iteration count</dfn>.
 The <a>iteration count</a> is a real number greater than or equal to
 zero.
 The <a>iteration count</a> may also be positive infinity to represent
-that the <a>animation node</a> repeats indefinitely.
+that the <a>animation effect</a> repeats indefinitely.
 
-In addition to the <a>iteration count</a>, <a>animation nodes</a> also
+In addition to the <a>iteration count</a>, <a>animation effects</a> also
 have an <dfn>iteration start</dfn> property which specifies an offset
-into the series of iterations at which the <a>animation node</a>
+into the series of iterations at which the <a>animation effect</a>
 should begin.
 The <a>iteration start</a> is a finite real number greater than or
 equal to zero.
 
 The behavior of these parameters is defined in the calculations in <a
-href="#core-animation-node-calculations" section></a>.
+href="#core-animation-effect-calculations" section></a>.
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
@@ -2012,7 +2013,7 @@ parameters is illustrated below.
   interval</a>.<br>
   The second case is the same but with an <a>iteration start</a> of
   0.5.
-  This causes the <a>animation node</a> to begin half way through the
+  This causes the <a>animation effect</a> to begin half way through the
   first iteration.
 </p>
 
@@ -2040,7 +2041,7 @@ space.
 
 
 <em>Iteration time space</em> is a time space whose zero time is the
-beginning of an animation node's current iteration.
+beginning of an animation effect's current iteration.
 
 
 Within the Web Animations model we also refer to <a>active
@@ -2084,7 +2085,7 @@ document</a>.
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
-When an animation node repeats we must define the behavior at the
+When an animation effect repeats we must define the behavior at the
 iteration boundaries.
 For this and indeed for all interval-timing, Web Animations uses an
 endpoint-exclusive timing model.
@@ -2095,9 +2096,9 @@ This model provides sensible behavior when intervals are repeated and
 sequenced since there is no overlap between the intervals.
 
 
-In the examples below, for the repeated node, at local time 1s,
+In the examples below, for the repeated effect, at local time 1s,
 the iteration time is 0.
-For the sequenced nodes, at inherited time 1s, only node B will be
+For the sequenced effects, at inherited time 1s, only effect B will be
 <a>in play</a>; there is no overlap.
 
 <div class="figure">
@@ -2106,7 +2107,7 @@ For the sequenced nodes, at inherited time 1s, only node B will be
 </div>
 <p class="caption">
   Illustration of end-point exclusive timing. For both repeated and
-  sequenced animation nodes there is no overlap at the boundaries
+  sequenced animation effects there is no overlap at the boundaries
   between intervals.
 </p>
 
@@ -2124,41 +2125,41 @@ section></a> and is illustrated below.
 <p class="caption">
   After one iteration, the iteration time is 0, but after two iterations
   (and thereonwards), the iteration time is equal to the iteration
-  duration due to the special behavior defined when an animation node
+  duration due to the special behavior defined when an animation effect
   fills.
 </p>
 
 </div>
 
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-<h3 id="animation-node-speed-control">Animation node speed control</h3>
+<h3 id="animation-effect-speed-control">Animation effect speed control</h3>
 
-Like <a>players</a>, <a>animation nodes</a> also have a <dfn
-lt="animation node playback rate">playback rate</dfn> parameter.
-The <a lt="animation node playback rate">playback rate</a> of
-an <a>animation node</a> is a finite real number that acts as
-a multiplier when calculating the <a>animation node</a>'s <a>transformed
+Like <a>players</a>, <a>animation effects</a> also have a <dfn
+lt="animation effect playback rate">playback rate</dfn> parameter.
+The <a lt="animation effect playback rate">playback rate</a> of
+an <a>animation effect</a> is a finite real number that acts as
+a multiplier when calculating the <a>animation effect</a>'s <a>transformed
 time</a> from its <a>local time</a>.
 
-The effect of setting the <a lt="animation node playback
-rate">playback rate</a> of an <a>animation node</a> differs from the
+The effect of setting the <a lt="animation effect playback
+rate">playback rate</a> of an <a>animation effect</a> differs from the
 setting the <a lt="player playback rate">playback rate</a> on
 a player.  Its behavior is defined in the timing calculations given in
-<a href="#core-animation-node-calculations" section></a>.
+<a href="#core-animation-effect-calculations" section></a>.
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
-In summary, the behavior of the <a lt="animation node playback
-rate">playback rate</a> of an <a>animation node</a> is as follows:
+In summary, the behavior of the <a lt="animation effect playback
+rate">playback rate</a> of an <a>animation effect</a> is as follows:
 
-*   The <a lt="animation node playback rate">playback rate</a> is
+*   The <a lt="animation effect playback rate">playback rate</a> is
     applied only to the <a>active interval</a> of an <a>animation
-    node</a> and not to the time while it is <a
+    effect</a> and not to the time while it is <a
     lt="start delay">delayed</a> or <a lt="fill mode">filling</a>.
 
-*   Setting a negative <a lt="animation node playback rate">playback
-    rate</a> on an <a>animation node</a> causes the <a>animation
-    node</a> to begin at the end of its <a>active interval</a>.
+*   Setting a negative <a lt="animation effect playback rate">playback
+    rate</a> on an <a>animation effect</a> causes the <a>animation
+    effect</a> to begin at the end of its <a>active interval</a>.
     This differs from the <a lt="player playback rate">playback
     rate</a> on a <a>player</a>.
     Setting a <a lt="player playback rate">playback rate</a> on
@@ -2166,24 +2167,24 @@ rate">playback rate</a> of an <a>animation node</a> is as follows:
     <a>player</a>'s </a>source content</a> has begun, will result in the
     <a>source content</a> never playing.
 
-*   Setting the <a lt="animation node playback rate">playback
-    rate</a> of an <a>animation node</a> affects the calculated value of
+*   Setting the <a lt="animation effect playback rate">playback
+    rate</a> of an <a>animation effect</a> affects the calculated value of
     the <a>active duration</a> (see <a
     href="#calculating-the-active-duration"
     section></a>).
 
-*   Changing the <a lt="animation node playback rate">playback
-    rate</a> of an <a>animation node</a> whose <a>local time</a> is
+*   Changing the <a lt="animation effect playback rate">playback
+    rate</a> of an <a>animation effect</a> whose <a>local time</a> is
     within its <a>active interval</a> will cause it to jump.
     This is because the <a>active duration</a> will be updated but the
     <a>local time</a> will not.
 
 <!-- @ifdef INCLUDE_GROUPS-->
-    Furthermore, if other <a>animation nodes</a> depend on the
-    <a>animation node</a>'s <a>active duration</a>, such as sibling
-    <a>animation node</a> in a <a>animation sequence</a>, they
-    too may jump as a result of setting the <a>animation node</a>'s <a
-    lt="animation node playback rate">playback rate</a>.
+    Furthermore, if other <a>animation effects</a> depend on the
+    <a>animation effect</a>'s <a>active duration</a>, such as sibling
+    <a>animation effect</a> in a <a>animation sequence</a>, they
+    too may jump as a result of setting the <a>animation effect</a>'s <a
+    lt="animation effect playback rate">playback rate</a>.
 <!-- @endif -->
 
     For runtime speed control the <a
@@ -2193,7 +2194,8 @@ rate">playback rate</a> of an <a>animation node</a> is as follows:
 </div>
 <!-- @endif -->
 
-<h3 id="core-animation-node-calculations">Core animation node calculations</h3>
+<h3 id="core-animation-effect-calculations">Core animation effect
+calculations</h3>
 
 <h4 id="overview">Overview</h4>
 
@@ -2227,7 +2229,8 @@ This process is illustrated below.
 <p class="caption">
   Calculation of the <a>active duration</a> is based on
   multiplying the <a>iteration duration</a> by the
-<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE --><a>iteration count</a> and then dividing by the <a lt="animation node playback rate">playback rate</a>.<!-- @endif --><!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE --><a>iteration count</a>.<!-- @endif -->
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE --><a>iteration count</a> and
+then dividing by the <a lt="animation effect playback rate">playback rate</a>.<!-- @endif --><!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE --><a>iteration count</a>.<!-- @endif -->
 </p>
 <p>
   The process for calculating the <a>active duration</a> is normatively
@@ -2236,7 +2239,7 @@ This process is illustrated below.
 </p>
 <p>
   Having established the <a>active duration</a>, the process for
-  transforming an <a>animation node</a>'s <a>inherited time</a> into its
+  transforming an <a>animation effect</a>'s <a>inherited time</a> into its
   <a>transformed time</a> is illustrated below.
 </p>
 <div class="figure">
@@ -2251,11 +2254,11 @@ This process is illustrated below.
 <p class="caption">
   An overview of timing model calculations.<br>
   (1) The <a>inherited time</a> is converted into a <a>local time</a> by
-  incorporating the <a lt="animation node start time">start
+  incorporating the <a lt="animation effect start time">start
   time</a>.<br>
   (2) The <a>local time</a> is converted into an <a>active time</a> by
   incorporating the <a>start delay</a>.<br><!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-  (3) The <a lt="animation node playback rate">playback rate</a>
+  (3) The <a lt="animation effect playback rate">playback rate</a>
   and <a>iteration start</a> properties are
 <!-- @endif --><!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
   (3) The <a>iteration start</a> property is<!-- @endif -->
@@ -2316,10 +2319,10 @@ The <a>active duration</a> is calculated as follows:
 The <dfn>active duration</dfn> is calculated according to the following
 steps:
 
-1.  If the <a lt="animation node playback rate">playback rate</a> is
+1.  If the <a lt="animation effect playback rate">playback rate</a> is
       zero, return <code>Infinity</code>.
 2.  Otherwise, return <code><a>repeated duration</a> / abs(<a
-      lt="animation node playback rate">playback rate</a>)</code>.
+      lt="animation effect playback rate">playback rate</a>)</code>.
 
 <!-- @endif -->
 
@@ -2329,7 +2332,7 @@ steps:
 
 The <dfn>active time</dfn> is based on the <a>local time</a>
 and <a>start delay</a>.
-However, it is only defined when the <a>animation node</a> should
+However, it is only defined when the <a>animation effect</a> should
 produce an output and hence depends on its <a>fill mode</a> and
 phase
 <!-- @ifdef INCLUDE_GROUPS -->
@@ -2339,14 +2342,14 @@ as follows,
 
 <div class="switch">
 
-:   If the animation node is in the <a>before phase</a>,
+:   If the animation effect is in the <a>before phase</a>,
 ::  The result depends on the first matching condition from the
     following,
 
     <div class="switch">
 
 <!-- @ifdef INCLUDE_GROUPS -->
-    :   If the animation node has a <a>parent animation group</a>
+    :   If the animation effect has a <a>parent animation group</a>
         and that parent animation group is in the <a>after
         phase</a>,
     ::  Return an <a>unresolved</a> <a>time value</a>.
@@ -2360,22 +2363,22 @@ as follows,
 
     </div>
 
-:   If the animation node is in the <a>active phase</a>,
+:   If the animation effect is in the <a>active phase</a>,
 <!-- @ifdef INCLUDE_GROUPS -->
 ::  The result depends on the first matching condition from the
     following,
 
     <div class="switch">
 
-    :   If the animation node has a <a>parent animation group</a>
+    :   If the animation effect has a <a>parent animation group</a>
         and that parent animation group is in the <a>before
-        phase</a>, and the <a>fill mode</a> of this animation node
+        phase</a>, and the <a>fill mode</a> of this animation effect
         is <span class="prop-value">none</span> or <span
         class="prop-value">forwards</a>,
     ::  Return an <a>unresolved</a> <a>time value</a>.
-    :   If the animation node has a <a>parent animation group</a>
+    :   If the animation effect has a <a>parent animation group</a>
         and that parent animation group is in the <a>after
-        phase</a>, and the <a>fill mode</a> of this animation node
+        phase</a>, and the <a>fill mode</a> of this animation effect
         is <span class="prop-value">none</span> or <span
         class="prop-value">backwards</a>,
     ::  Return an <a>unresolved</a> <a>time value</a>.
@@ -2388,14 +2391,14 @@ as follows,
 ::  Return <code><a>local time</a> - <a>start delay</a></code>.
 <!-- @endif -->
 
-:   If the animation node is in the <a>after phase</a>,
+:   If the animation effect is in the <a>after phase</a>,
 ::  The result depends on the first matching condition from the
     following,
 
     <div class="switch">
 
 <!-- @ifdef INCLUDE_GROUPS -->
-    :   If the animation node has a <a>parent animation group</a>
+    :   If the animation effect has a <a>parent animation group</a>
         and that parent animation group is in the <a>before
         phase</a>,
     ::  Return an <a>unresolved</a> <a>time value</a>.
@@ -2417,9 +2420,9 @@ as follows,
 <h5 id="calculating-the-scaled-active-time">Calculating the scaled active time</h5>
 
 Before the <a>active time</a> can be converted to an <a>iteration
-time</a> we must factor in the <a>animation node</a>'s
+time</a> we must factor in the <a>animation effect</a>'s
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-<a lt="animation node playback rate">playback rate</a> and
+<a lt="animation effect playback rate">playback rate</a> and
 <!-- @endif -->
 <a>iteration start</a>.
 The result is called the <a>scaled active time</a>.
@@ -2449,25 +2452,25 @@ the following steps:
 
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 2.  Return the scaled active time based on the
-    <a lt="animation node playback rate">playback rate</a> as
+    <a lt="animation effect playback rate">playback rate</a> as
     follows,
 
     <div class="switch">
 
-    :   If the <a lt="animation node playback rate">playback
+    :   If the <a lt="animation effect playback rate">playback
         rate</a> is less than zero,
     ::  Return <code>(<a>active time</a> -
                     <a>active duration</a>)
-        &times; <a lt="animation node playback rate">playback
+        &times; <a lt="animation effect playback rate">playback
         rate</a> + <a>start offset</a></code>.
 
-    :   If the <a lt="animation node playback rate">playback
+    :   If the <a lt="animation effect playback rate">playback
         rate</a> is zero,
     ::  Return <a>start offset</a>.
 
     :   Otherwise,
     ::  Return <code><a>active time</a>
-        &times; <a lt="animation node playback rate">playback
+        &times; <a lt="animation effect playback rate">playback
         rate</a> + <a>start offset</a></code>.
 
     </div>
@@ -2538,9 +2541,9 @@ following steps:
 
 <h3 id="direction-control">Direction control</h3>
 
-<a>Animation nodes</a> may also be configured to run iterations in
+<a>Animation effects</a> may also be configured to run iterations in
 alternative directions using direction control.
-For this purpose, <a>animation nodes</a> have a <dfn>playback
+For this purpose, <a>animation effects</a> have a <dfn>playback
 direction</dfn> parameter which takes one of the following values:
 
 *   normal,
@@ -2600,7 +2603,7 @@ A non-normative definition of these values is as follows:
               <var>d</var> by 1.
 
           3.  Issue: There used to be a step here which seemed to be adding
-              special handling for filling when the node ends on
+              special handling for filling when the effect ends on
               a repeat boundary but it seems like that is taken care
               of by the calcuation of <a>iteration time</a> and
               <a>current iteration</a>.
@@ -2626,16 +2629,16 @@ A non-normative definition of these values is as follows:
 <div class="informative-bg"><em>This section is non-normative</em>
 
 It is often desirable to control the rate at which an <a>animation
-node</a> progresses.
+effect</a> progresses.
 For example, easing the rate of animation can create a sense of
 momentum and produce a more natural effect.
 Conversely, in other situations such as when modelling a discrete
 change, a smooth transition is undesirable and instead it is necessary
-for the <a>animation node</a> to progress in a series of distinct
+for the <a>animation effect</a> to progress in a series of distinct
 steps.
 
 For such situations Web Animations provides <a>timing functions</a>
-that scale the progress of an <a>animation node</a>.
+that scale the progress of an <a>animation effect</a>.
 
 <a>Timing functions</a> take an input time fraction and produce
 a scaled output time fraction.
@@ -2653,7 +2656,7 @@ a scaled output time fraction.
 </p>
 
 <a>Timing functions</a> are applied to an iteration of an <a>animation
-node</a>.
+effect</a>.
 
 </div>
 
@@ -2663,7 +2666,7 @@ A <dfn>timing function</dfn> takes an input time fraction in the range
 [0, 1] and produces an output time fraction whose range is unbounded
 (i.e. positive and negative infinity are permitted).
 
-<a>Animation nodes</a> have one <a>timing function</a> associated with
+<a>Animation effects</a> have one <a>timing function</a> associated with
 them.
 The default <a>timing function</a> is the <dfn>linear timing
 function</dfn> whose output is identical to its input.
@@ -2671,7 +2674,7 @@ The <a>linear timing function</a> can be represented by the string
 &ldquo;linear&rdquo;.
 
 The range of timing functions that may be applied to a given
-<a>animation node</a> depends on the type of the <a>animation node</a>.
+<a>animation effects</a> depends on the type of the <a>animation effects</a>.
 
 <!-- @ifdef INCLUDE_GROUPS -->
 <div class="issue">
@@ -2794,8 +2797,8 @@ map arbitrary curves (e.g. bounce functions) to timing functions.
 <h4 id="timing-in-discrete-steps">Timing in discrete steps</h4>
 
 <div class="informative-bg"><em>This section is non-normative</em>
-It is possible to scale an animation node's timing so that the animation node
-occurs in a series of discrete steps using a stepping function.
+It is possible to scale an animation effect's timing so that the animation
+effect occurs in a series of discrete steps using a stepping function.
 
 Some example step timing functions are illustrated below.
 
@@ -2832,13 +2835,13 @@ When a transition point coincides with the end of the <a>active
 interval</a> extra care must be taken to produce the correct result
 when performing a <a lt="fill mode">fill</a>.
 To achieve this, when a <a>step timing function</a> is
-applied to an <a>animation node</a> or applied to an <a>animation
-effect</a> associated with an <a>animation node</a>, an additional
+applied to an <a>animation effect</a> or applied to an <a>animation
+effect</a> associated with an <a>animation effect</a>, an additional
 <dfn>before flag</dfn> is passed.
 The value of the <a>before flag</a> is determined as follows:
 
 
-1.  If the <a>active time</a> of the animation node is
+1.  If the <a>active time</a> of the animation effect is
     <a>unresolved</a>, the <a>before flag</a> is not set and these
     steps should be aborted.
 2.  Determine the <var>current direction</var> using the procedure
@@ -2846,7 +2849,7 @@ The value of the <a>before flag</a> is determined as follows:
     section></a>.
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 3.  If <em>either</em> the <var>current direction</var> is <span
-    class="prop-value">forwards</span> or the <a>animation node
+    class="prop-value">forwards</span> or the <a>animation effect
     playback rate</a> &ge; 0 (but <em>not</em> when both conditions
     are true),
 <!-- @endif -->
@@ -2855,9 +2858,9 @@ The value of the <a>before flag</a> is determined as follows:
     class="prop-value">forwards</span>,
 <!-- @endif -->
     let <var>going forwards</var> be true, otherwise it is false.
-4.  The <a>before flag</a> is set if the animation node is in the
+4.  The <a>before flag</a> is set if the animation effect is in the
     <a>before phase</a> and <var>going forwards</var> is true;
-    or if the animation node is in the <a>after phase</a> and
+    or if the animation effect is in the <a>after phase</a> and
     <var>going forwards</var> is false.
 
 When a step timing function is evaluated at a transition point, if
@@ -2907,7 +2910,7 @@ The <dfn>transformed time</dfn> is calculated from the
     zero, in which case let <var>iteration fraction</var> be
     zero.
 4.  Let <var>scaled fraction</var> be the result of
-    evaluating the <a>animation node</a>'s <a>timing function</a>
+    evaluating the <a>animation effect</a>'s <a>timing function</a>
     with <var>iteration fraction</var> as the input time
     fraction.
 5.  Return the result of evaluating <code><var>scaled
@@ -2925,8 +2928,8 @@ The <dfn>transformed time</dfn> is calculated from the
 <div class="informative-bg"><em>This section is non-normative</em>
 
 While it is possible to set the timing properties of <a>animation
-nodes</a> individually, it is often useful to synchronize <a>animation
-nodes</a> so that they share common timing properties and maintain
+effects</a> individually, it is often useful to synchronize <a>animation
+effects</a> so that they share common timing properties and maintain
 their temporal relationship.  This is achieved using an <a>animation
 group</a>.
 
@@ -2943,21 +2946,21 @@ A simple example is illustrated below.
 </p>
 
 When an <a>animation group</a> is <a>directly associated with
-a player</a>, the <a>animation nodes</a> associated with the
+a player</a>, the <a>animation effect</a> associated with the
 <a>animation group</a> can be seeked, paused, and stopped as a unit.
 </p>
 
 </div>
 
-An <dfn>animation group</dfn> is a type of <a>animation node</a> that
-contains an ordered sequence of zero or more <a>animation nodes</a>
-known as <dfn lt="child animation node">child animation nodes</dfn>.
+An <dfn>animation group</dfn> is a type of <a>animation effect</a> that
+contains an ordered sequence of zero or more <a>animation effects</a>
+known as <dfn lt="child animation effect">child animation effects</dfn>.
 
-At a given moment, an <a>animation node</a> may be a <a>child animation
-node</a> of at most one <a>animation group</a> known as the <dfn>parent
+At a given moment, an <a>animation effect</a> may be a <a>child animation
+effect</a> of at most one <a>animation group</a> known as the <dfn>parent
 animation group</dfn>.
 The <a>parent animation group</a> cannot be the same <a>animation
-node</a> as the <a>child animation node</a> itself.
+effect</a> as the <a>child animation effect</a> itself.
 
 By nesting <a>animation groups</a> it is possible to create hierarchical
 tree structures.
@@ -2985,15 +2988,15 @@ such structures and are defined in [[!DOM]]:
 *   <dfn><a href="http://www.w3.org/TR/dom/#concept-tree-last-child">
     last child</a></dfn>
 
-Note: in applying these definitions to <a>animation nodes</a>, the
+Note: in applying these definitions to <a>animation effects</a>, the
     term <em>parent</em> refers exclusively to a <a>parent animation
     group</a> and does <em>not</em> include the <a>player</a> which with
-    an <a>animation node</a> may be <a
+    an <a>animation effect</a> may be <a
     lt="directly associated with a player">directly associated</a>
     despite the fact that conceptually the <a>player</a> acts as a parent
     time source.
 
-The temporal relationship between a <a>child animation node</a> and its
+The temporal relationship between a <a>child animation effect</a> and its
 <a>parent animation group</a> is incorporated in the definition of
 <a>inherited time</a> (see <a href="#local-time-and-inherited-time"
 section></a>).
@@ -3023,7 +3026,7 @@ since they effectively play <em>inside</em> the group's iterations.
   children play again.
 </p>
 
-Note that even in this case, the child <a>animation nodes</a> still
+Note that even in this case, the child <a>animation effects</a> still
 have only <em>one</em> <a>active interval</a>.
 However, as a result of the parent's timing, the <a>active
 interval</a> is played twice.
@@ -3055,11 +3058,11 @@ This allows groups to <em>clip</em> the playback of their children.
     alt="Groups clip the active interval of contained children.">
 </div>
 <p class="caption">
-  In the first instance, an <a>animation node</a> has a negative delay
+  In the first instance, an <a>animation effect</a> has a negative delay
   and an infinite <a>iteration count</a>.<br>
-  However, when a similar <a>animation node</a> is placed inside
+  However, when a similar <a>animation effect</a> is placed inside
   an <a>animation group</a> with a specified <a>iteration duration</a>
-  it has the effect of clipping the child <a>animation node</a>'s
+  it has the effect of clipping the child <a>animation effect</a>'s
   <a>active interval</a>.
 </p>
 
@@ -3069,7 +3072,7 @@ their timing on their parent group's <a>transformed time</a> are:
 <!-- We'd like to conditionally exclude the following point based on
      INCLUDE_ANIMATION_NODE_PLAYBACKRATE but the npm preprocess module
      seems to be buggy when you have nested @ifdefs -->
-*   Setting the <a lt="animation node playback rate">playback
+*   Setting the <a lt="animation effect playback rate">playback
     rate</a> of an <a>animation group</a> will speed up or slow down all
     children.
 
@@ -3083,8 +3086,8 @@ their timing on their parent group's <a>transformed time</a> are:
 
 <h4 id="the-start-time-of-children-of-an-animation-group">The start time of children of an animation group</h4>
 
-The <a lt="animation node start time">start time</a> of a <a>child
-animation node</a> of an <a>animation group</a> is zero.
+The <a lt="animation effect start time">start time</a> of a <a>child
+animation effect</a> of an <a>animation group</a> is zero.
 
 Note that specific types of <a>animation groups</a> may override
 this definition to provide other kinds of synchronization behavior.
@@ -3093,12 +3096,12 @@ this definition to provide other kinds of synchronization behavior.
 
 The <a>intrinsic iteration duration</a> of an <a>animation
 group</a> is based on the time when the last <a>child animation
-node</a> completes its <a>active interval</a> and depends on the
-number of <a>child animation nodes</a> as follows.
+effect</a> completes its <a>active interval</a> and depends on the
+number of <a>child animation effects</a> as follows.
 
 <div class="switch">
 
-:   If the group has no <a>child animation nodes</a>,
+:   If the group has no <a>child animation effects</a>,
 ::  the <a>intrinsic iteration duration</a> is zero.
 
 :   Otherwise,
@@ -3106,7 +3109,7 @@ number of <a>child animation nodes</a> as follows.
 
     1.  Let <var>maximum end time</var> be the maximum value
         after calculating the <a>end time</a> of each <a>child
-        animation node</a> in the group.
+        animation effect</a> in the group.
     2.  The <a>intrinsic iteration duration</a> is the result of
         evaluating <code>max(0, <var>maximum end
         time</var>)</code>.
@@ -3161,23 +3164,23 @@ different types of groups as illustrated below.
 </div>
 
 An <dfn>animation sequence</dfn> is a type of <a>animation group</a>
-that schedules its <a>child animation nodes</a> such that they play in
+that schedules its <a>child animation effects</a> such that they play in
 turn following their order in the group.
 This sequencing is achieved by adjusting the <a
-lt="animation node start time">start time</a> of each <a>child
-animation node</a> in the group.
+lt="animation effect start time">start time</a> of each <a>child
+animation effect</a> in the group.
 
 <h5 id="the-start-time-of-children-of-an-animation-sequence">The start time of children of an animation sequence</h5>
 
-The <a lt="animation node start time">start time</a> of
-a <a>child animation node</a> of an <a>animation sequence</a> is the
+The <a lt="animation effect start time">start time</a> of
+a <a>child animation effect</a> of an <a>animation sequence</a> is the
 <a>end time</a> of the child's <a>previous sibling</a>.
 If the child has no <a>previous sibling</a> the start time is zero.
 
 <div class="note">
 When the <a>active duration</a> is positive infinity the behavior
-for calculating the <a>end time</a> of an <a>animation node</a>
-and the <a lt="animation node start time">start time</a> of
+for calculating the <a>end time</a> of an <a>animation effect</a>
+and the <a lt="animation effect start time">start time</a> of
 subsequent children follows the usual behavior defined by IEEE
 754-2008.
 As a result, if any of the children of an <a>animation
@@ -3185,18 +3188,18 @@ sequence</a> has an infinite <a>active duration</a>, any children
 that occur later in the sequence will not play.
 
 Similarly, the above definition does not restrict
-<a lt="animation node start time">start times</a> to positive
+<a lt="animation effect start time">start times</a> to positive
 values and hence some children may not play due to a negative
 <a>start delay</a> on children that occur earlier in the group
 since their <a>active interval</a> may end before the group's <a
-lt="animation node start time">start time</a>.
+lt="animation effect start time">start time</a>.
 </div>
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
 Because the start of the <a>active interval</a> is based on the
-sum of an <a>animation node</a>'s <a
-lt="animation node start time">start time</a> <em>and</em>
+sum of an <a>animation effect</a>'s <a
+lt="animation effect start time">start time</a> <em>and</em>
 <a>start delay</a>, the <a>active intervals</a> of
 children of an <a>animation sequence</a> need not run in strict
 sequence but can be shifted back and forth by using the <a>start
@@ -3216,7 +3219,7 @@ delay</a> as shown in the following diagram.
 A negative <a>start delay</a> can be used to cause the <a>active
 interval</a> of two children to overlap.
 Note that the <a>start delay</a> affects the <a
-lt="animation node start time">start time</a> of subsequent
+lt="animation effect start time">start time</a> of subsequent
 children in the group.
 
 </div>
@@ -3225,22 +3228,22 @@ children in the group.
 
 The <a>intrinsic iteration duration</a> of an <a>animation
 sequence</a> is equivalent to the <a
-lt="animation node start time">start time</a> of a hypothetical
-<a>child animation node</a> appended to the group's children
+lt="animation effect start time">start time</a> of a hypothetical
+<a>child animation effect</a> appended to the group's children
 calculated according to the definition in <a
 href="#the-start-time-of-children-of-an-animation-sequence"
 section></a> unless that produces a negative value, in
 which case the <a>intrinsic iteration duration</a> is zero.
 
 As a result, if the <a>animation sequence</a> has no <a>child
-animation nodes</a> the <a>intrinsic iteration duration</a> will be
+animation effects</a> the <a>intrinsic iteration duration</a> will be
 zero.
 <!-- @endif -->
 
 <h3 id="animations">Animations</h3>
 
 <dfn id="concept-animation">Animations</dfn> are a kind of <a>animation
-node</a> that apply an <a>animation effect</a> or a <a>custom effect</a>
+effect</a> that apply an <a>animation effect</a> or a <a>custom effect</a>
 to an element or pseudo-element such as <code>::before</code> or
 <code>::after</code> [[!SELECT]] referred to as the <dfn>animation
 target</dfn>.
@@ -3250,7 +3253,7 @@ target</dfn>.
 Before passing the <a>transformed time</a> of an <a>animation</a> to
 its <a>animation effect</a> it is converted to a <em>time
 fraction</em>.
-The <dfn>time fraction</dfn> of an <a>animation node</a> is calculated
+The <dfn>time fraction</dfn> of an <a>animation effect</a> is calculated
 by running the steps corresponding to the first matching condition from
 the following:
 
@@ -3471,7 +3474,7 @@ properties should not be modified.
 
 An <a>animation effect</a> that targets a property that is
 <a>not animatable</a> will still exhibit the
-usual behavior for an <a>animation node</a> such as
+usual behavior for an <a>animation effect</a> such as
 <!-- @ifdef INCLUDE_GROUPS -->
 occupying time in an <a>animation sequence</a> and
 <!-- @endif -->
@@ -4690,7 +4693,7 @@ Some alternatives under consideration:
     was a time between the previous and current sample times that
     aligned with the custom effect.
 *   Instead of adding special calling conditions to custom effects,
-    a new type of animation node, Trigger, could be introduced. The
+    a new type of animation effect, Trigger, could be introduced. The
     trigger would only ever act as a zero-width custom effect as
     described above, its constructor would take a callback function,
     but not require a target or timing. It could also specify other
@@ -5001,7 +5004,7 @@ enum AnimationPlayState { "idle", "pending", "running", "paused", "finished" };
 
 <h3 id="the-animationnode-interface">The <code>AnimationNodeReadonly</code> interface</h3>
 
-<a>Animation nodes</a> are represented in the Web
+<a>Animation effects</a> are represented in the Web
 Animations API by the {{AnimationNodeReadonly}} interface.
 
 <!-- @ifdef INCLUDE_GROUPS -->
@@ -5027,9 +5030,9 @@ interface AnimationNodeReadonly {
 <!-- @ifdef INCLUDE_GROUPS -->
 [NoInterfaceObject]
 interface AnimationNodeMutable {
-    void before (AnimationNodeReadonly... nodes);
-    void after (AnimationNodeReadonly... nodes);
-    void replace (AnimationNodeReadonly... nodes);
+    void before (AnimationNodeReadonly... effects);
+    void after (AnimationNodeReadonly... effects);
+    void replace (AnimationNodeReadonly... effects);
     void remove ();
 };
 <!-- @endif -->
@@ -5039,13 +5042,13 @@ interface AnimationNodeMutable {
 
 :   <dfn attribute for=AnimationNodeReadonly>timing</dfn>
 ::  Returns the input timing properties specified for this
-    <a>animation node</a>.
+    <a>animation effect</a>.
     This is comparable to the specified style on an Element,
     <code>elem.style</code>.
 
 :   <dfn attribute for=AnimationNodeReadonly>computedTiming</dfn>
 ::  Returns the calculated timing properties for this <a>animation
-    node</a>.
+    effect</a>.
     This is comparable to the computed style of an Element,
     <code>window.getComputedStyle(elem)</code>.
 
@@ -5066,21 +5069,21 @@ interface AnimationNodeMutable {
         <a>intrinsic iteration duration</a>.
     *   <code>fill</code> &ndash; the <code>auto</code> value is
         replaced with the specific <a enum>FillMode</a> depending on the type
-        of <a>animation node</a> (see <a
+        of <a>animation effect</a> (see <a
         href="#the-fillmode-enumeration" section></a>).
 
 <!-- @ifdef INCLUDE_GROUPS -->
 :   <dfn attribute for=AnimationNodeReadonly>parent</dfn>
-::  The <a>parent animation group</a> of this <a>animation node</a> or
-    <code>null</code> if this <a>animation node</a> does not have
+::  The <a>parent animation group</a> of this <a>animation effect</a> or
+    <code>null</code> if this <a>animation effect</a> does not have
     a <a>parent animation group</a>.
 
     Issue: Should this be <code>parentGroup</code>?
 
 :   <dfn attribute for=AnimationNodeReadonly>previousSibling</dfn>
-::  The <a>previous sibling</a> of this <a>animation node</a>.
+::  The <a>previous sibling</a> of this <a>animation effect</a>.
 :   <dfn attribute for=AnimationNodeReadonly>nextSibling</dfn>
-::  The <a>next sibling</a> of this <a>animation node</a>.
+::  The <a>next sibling</a> of this <a>animation effect</a>.
 
 <!-- @endif -->
 </div>
@@ -5089,75 +5092,75 @@ interface AnimationNodeMutable {
 <div class='methods'>
 
 :   <dfn method for=AnimationNodeMutable lt='before()'>
-    void before (AnimationNodeReadonly... nodes)</dfn>
-::  Inserts <var>nodes</var> before this <a>animation node</a>.
+    void before (AnimationNodeReadonly... effects)</dfn>
+::  Inserts <var>effects</var> before this <a>animation effect</a>.
 
     1.  If there is no <a>parent animation group</a>, terminate these
         steps.
-    2.  If any of the <a>animation nodes</a> in <var>nodes</var> is an
-        <a>inclusive ancestor</a> of this <a>animation node</a>,
+    2.  If any of the <a>animation effects</a> in <var>effects</var> is an
+        <a>inclusive ancestor</a> of this <a>animation effect</a>,
         <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
         <span class=exceptionname>HierarchyRequestError</span> exception and
         terminate these steps.
-    3.  <a lt="insert children">Insert</a> <var>nodes</var> before
-        this <a>animation node</a>.
+    3.  <a lt="insert children">Insert</a> <var>effects</var> before
+        this <a>animation effect</a>.
 
     <div class='note'>
         Note that this definition precludes the following usage since
-        <code>node</code> is an <a>inclusive ancestor</a> of itself:
+        <code>effect</code> is an <a>inclusive ancestor</a> of itself:
 
         <div><pre class="example lang-javascript">
-node.before(node); // throws HierarchyRequestError</pre></div>
+effect.before(effect); // throws HierarchyRequestError</pre></div>
     </div>
 
 :   <dfn method for=AnimationNodeMutable lt='after()'>
-    void after(AnimationNodeReadonly... nodes)</dfn>
-::  Inserts <var>nodes</var> after this <a>animation node</a>.
+    void after(AnimationNodeReadonly... effects)</dfn>
+::  Inserts <var>effects</var> after this <a>animation effect</a>.
 
     1.  If there is no <a>parent animation group</a>, terminate these
         steps.
-    2.  If any of the <a>animation nodes</a> in <var>nodes</var> is an
-        <a>inclusive ancestor</a> of this <a>animation node</a>,
+    2.  If any of the <a>animation effects</a> in <var>effects</var> is an
+        <a>inclusive ancestor</a> of this <a>animation effect</a>,
         <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
         <span class=exceptionname>HierarchyRequestError</span> exception and
         terminate these steps.
     3.  Let <var>reference child</var> be the <a
         lt="next sibling not included">next sibling of
-        this animation node not in <var>nodes</var></a>.
-    4.  <a lt="insert children">Insert</a> <var>nodes</var> before
+        this animation effect not in <var>effects</var></a>.
+    4.  <a lt="insert children">Insert</a> <var>effects</var> before
         <var>reference child</var>.
 
 :   <dfn method for=AnimationNodeMutable lt='replace()'>
-    void replace(AnimationNodeReadonly... nodes)</dfn>
+    void replace(AnimationNodeReadonly... effects)</dfn>
 ::  Replaces this {{AnimationNodeReadonly}} with the passed in
-    <var>nodes</var>.
+    <var>effects</var>.
 
     1.  If there is no <a>parent animation group</a>, terminate these
         steps.
-    2.  If any of the <a>animation nodes</a> in <var>nodes</var> is an
+    2.  If any of the <a>animation effects</a> in <var>effects</var> is an
         <a>inclusive ancestor</a> of the <a>parent animation group</a>
         <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
         <span class=exceptionname>HierarchyRequestError</span> exception and
         terminate these steps.
     3.  Let <var>reference child</var> be the <a
         lt="next sibling not included">next sibling of
-        this animation node not in <var>nodes</var></a>.
-    4.  <a lt="remove an animation node">Remove</a> this
-        <a>animation node</a> from its <a>parent animation group</a>.
-    5.  <a lt="insert children">Insert</a> <var>nodes</var> before
+        this animation effect not in <var>effects</var></a>.
+    4.  <a lt="remove an animation effect">Remove</a> this
+        <a>animation effect</a> from its <a>parent animation group</a>.
+    5.  <a lt="insert children">Insert</a> <var>effects</var> before
         <var>reference child</var>.
 
 :   <dfn method for=AnimationNodeMutable lt='remove()'>void remove()</dfn>
-::  <a lt="remove an animation node">Removes</a> this <a>animation
-    node</a> from its <a>parent animation group</a> or <a>player</a>.
+::  <a lt="remove an animation effect">Removes</a> this <a>animation
+    effect</a> from its <a>parent animation group</a> or <a>player</a>.
 
 </div>
 <!-- @endif -->
 
 <!-- @ifndef INCLUDE_GROUPS -->
-Issue: The <code>remove()</code> method can be used to remove a node from either
-its parent group or player. Should we keep it in level 1 and define it simply as
-removing the animation from its player?
+Issue: The <code>remove()</code> method can be used to remove an effect from
+either its parent group or player. Should we keep it in level 1 and define it
+simply as removing the animation from its player?
 <!-- @endif -->
 
 
@@ -5183,15 +5186,15 @@ interface AnimationTimingReadonly {
 
 :   <dfn attribute for=AnimationTimingReadonly>delay</dfn>
 ::  The <a>start delay</a> which represents the number of milliseconds
-    from an <a>animation node</a>'s <a lt="animation node start time">start
+    from an <a>animation effect</a>'s <a lt="animation effect start time">start
     time</a> to the start of the <a>active interval</a>.
 
 :   <dfn attribute for=AnimationTimingReadonly>endDelay</dfn>
 ::  The <a>end delay</a> which represents the number of milliseconds
-    from the end of an <a>animation node</a>'s <a>active interval</a>
+    from the end of an <a>animation effect</a>'s <a>active interval</a>
 <!-- @ifdef INCLUDE_GROUPS -->
-    until the <a lt='animation node start time'>start time</a> of any
-    <a>animation node</a> that may
+    until the <a lt='animation effect start time'>start time</a> of any
+    <a>animation effect</a> that may
     follow, for example, in an <a>animation sequence</a>.
 <!-- @endif -->
 <!-- @ifdef INCLUDE_GROUPS -->
@@ -5199,8 +5202,8 @@ interface AnimationTimingReadonly {
 <!-- @endif -->
 
 :   <dfn attribute for=AnimationTimingReadonly>fill</dfn>
-::  The <a>fill mode</a> which defines the behavior of the <a>animation node</a>
-    outside its <a>active interval</a>.
+::  The <a>fill mode</a> which defines the behavior of the <a>animation
+    effect</a> outside its <a>active interval</a>.
 
     When performing timing calculations the special value <span
     class="enum-value">auto</span> is expanded
@@ -5209,7 +5212,7 @@ interface AnimationTimingReadonly {
 
     <div class="switch">
 
-    :   If the <a>animation node</a> to which the fill mode is being is
+    :   If the <a>animation effect</a> to which the fill mode is being is
         applied is an <a>animation</a>,
     ::  Use <span class="enum-value">none</span> as the <a>fill
         mode</a>.
@@ -5220,19 +5223,19 @@ interface AnimationTimingReadonly {
     </div>
 
 :   <dfn attribute for=AnimationTimingReadonly>iterationStart</dfn>
-::  The <a>animation node</a>'s <a>iteration start</a> property which is a
+::  The <a>animation effect</a>'s <a>iteration start</a> property which is a
     finite real number greater than or equal to zero representing the iteration
-    index at which the animation node begins and its progress through that
+    index at which the animation effect begins and its progress through that
     iteration.
 
-    For example, a value of 0.5 indicates that the animation node begins half
-    way through its first iteration. A value of 1.2 indicates the animation node
-    begins 20% of the way through its second iteration.
+    For example, a value of 0.5 indicates that the animation effect begins half
+    way through its first iteration. A value of 1.2 indicates the animation
+    effect begins 20% of the way through its second iteration.
 
     <div class="note">
     Note that the value of {{AnimationTimingReadonly/iterations}} is effectively
     <em>added</em> to the {{AnimationTimingReadonly/iterationStart}} such that
-    an animation node with an {{AnimationTimingReadonly/iterationStart}} of
+    an animation effect with an {{AnimationTimingReadonly/iterationStart}} of
     &lsquo;0.5&rsquo; and {{AnimationTimingReadonly/iterations}} of
     &lsquo;2&rsquo; will still repeat twice however it will begin
     and end half-way through the its <a>iteration interval</a>.
@@ -5245,33 +5248,33 @@ interface AnimationTimingReadonly {
     </div>
 
 :   <dfn attribute for=AnimationTimingReadonly>iterations</dfn>
-::  The <a>animation node</a>'s <a>iteration count</a> property which is
+::  The <a>animation effect</a>'s <a>iteration count</a> property which is
     a real number greater than or equal to zero (including positive
-    infinity) representing the number of times to the animation node repeats.
+    infinity) representing the number of times to the animation effect repeats.
 
-    A value of positive infinity indicates that the animation node repeats
+    A value of positive infinity indicates that the animation effect repeats
     forever.
 
 :   <dfn attribute for=AnimationTimingReadonly>duration</dfn>
 ::  The <a>iteration duration</a> which is a real number greater than
     or equal to zero (including positive infinity) representing the
     time taken to complete a single iteration of the <a>animation
-    node</a>.
+    effect</a>.
 
     The string value <code>auto</code> is used to indicate that the
-    <a>iteration duration</a> reflects the animation node's
+    <a>iteration duration</a> reflects the animation effect's
     <a>intrinsic iteration duration</a>.
 
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 :   <dfn attribute for=AnimationTimingReadonly>playbackRate</dfn>
-::  The <a>animation node</a>'s <a
-    lt="animation node playback rate">playback rate</a> property
+::  The <a>animation effect</a>'s <a
+    lt="animation effect playback rate">playback rate</a> property
     which is a multiplier applied to the <a>local time</a> potentially
-    causing the node to run at a different rate to its natural speed.
+    causing the effect to run at a different rate to its natural speed.
 
 <!-- @endif -->
 :   <dfn attribute for=AnimationTimingReadonly>direction</dfn>
-::  The <a>playback direction</a> of the <a>animation node</a> which
+::  The <a>playback direction</a> of the <a>animation effect</a> which
     defines whether playback proceeds forwards, backwards, or alternates
     on each iteration.
 
@@ -5302,7 +5305,7 @@ interface AnimationTimingReadonly {
 
 The {{AnimationTiming}} interface is a mutable subclass of
 {{AnimationTimingReadonly}} returned for the <code>timing</code> attribute of a
-mutable <a>animation node</a> such as
+mutable <a>animation effect</a> such as
 <!-- @ifdef INCLUDE_GROUPS -->
 {{Animation}}, {{AnimationGroup}}, or {{AnimationSequence}}.
 <!-- @endif -->
@@ -5349,7 +5352,7 @@ interface AnimationTiming : AnimationTimingReadonly {
     {{AnimationTimingReadonly}} interface.
 
     This may be set to <code class="esvalue">+Infinity</code> to cause
-    the <a>animation node</a> to repeat indefinitely.
+    the <a>animation effect</a> to repeat indefinitely.
 
     Values less than zero and <code class="esvalue">NaN</code> values are
     treated as the value 1.0 for the purpose of timing model calculations.
@@ -5376,7 +5379,7 @@ interface AnimationTiming : AnimationTimingReadonly {
 
     Invalid values, unrecognized values, or values that correspond to
     a <a>timing function</a> that is not supported for the type of
-    <a>animation node</a> to which this property is applied,
+    <a>animation effect</a> to which this property is applied,
     are treated as if the <code>linear</code> keyword was specified
     for the purpose of timing model calculations.
 
@@ -5472,35 +5475,35 @@ dictionary ComputedTimingProperties : AnimationTimingProperties {
 <div class='attributes'>
 
 :   <dfn dict-member for=ComputedTimingProperties>startTime</dfn>
-::  The <a lt='animation node start time'>start time</a> of this
-    <a>animation node</a> in milliseconds.<!-- @ifdef INCLUDE_GROUPS -->
+::  The <a lt='animation effect start time'>start time</a> of this
+    <a>animation effect</a> in milliseconds.<!-- @ifdef INCLUDE_GROUPS -->
     This is the time at which the <a>parent animation group</a>, if
     any, has scheduled this child to run within its <a
     lt="transformed time">transformed time space</a>, that is, the
-    <a>animation node</a>'s <a lt="inherited time">inherited time
+    <a>animation effect</a>'s <a lt="inherited time">inherited time
     space</a>.<!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->
     In this level of the specification, this will always be zero.
 <!-- @endif -->
 
     The start of the <a>active interval</a> is based on the sum of
-    the <a lt="animation node start time">start time</a> and
+    the <a lt="animation effect start time">start time</a> and
     <a>start delay</a>.
 
 :   <dfn dict-member for=ComputedTimingProperties>endTime</dfn>
-::  The <a>end time</a> of the <a>animation node</a> expressed in
+::  The <a>end time</a> of the <a>animation effect</a> expressed in
     milliseconds in <a lt="inherited time">inherited time
     space</a>.
-    This corresponds to the end of the <a>animation node</a>'s active
+    This corresponds to the end of the <a>animation effect</a>'s active
     interval plus any <a>end delay</a>.
 
 :   <dfn dict-member for=ComputedTimingProperties>activeDuration</dfn>
-::  The <a>active duration</a> of this <a>animation node</a>.
+::  The <a>active duration</a> of this <a>animation effect</a>.
 
 :   <dfn dict-member for=ComputedTimingProperties>localTime</dfn>
-::  The <a>local time</a> of this <a>animation node</a>.
+::  The <a>local time</a> of this <a>animation effect</a>.
 
     This will be <code>null</code> if this
-    <a>animation node</a> is not <!-- @ifdef INCLUDE_GROUPS -->
+    <a>animation effect</a> is not <!-- @ifdef INCLUDE_GROUPS -->
     <a>associated with a player</a> or if it has a
     <a>parent animation group</a> that is not <a>in effect</a>.
 <!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->
@@ -5508,7 +5511,7 @@ dictionary ComputedTimingProperties : AnimationTimingProperties {
 <!-- @endif -->
 
 :   <dfn dict-member for=ComputedTimingProperties>timeFraction</dfn>
-::  The current <a>time fraction</a> of this <a>animation node</a>.
+::  The current <a>time fraction</a> of this <a>animation effect</a>.
 
 :   <dfn dict-member for=ComputedTimingProperties>currentIteration</dfn>
 ::  The <a>current iteration</a> index beginning with zero for the first
@@ -5551,7 +5554,7 @@ enum FillMode { "none", "forwards", "backwards", "both", "auto" };
 <!-- @ifndef INCLUDE_GROUPS -->
 ::  No fill.
     In a subsequent level of this specification, this will produce different
-    behavior for other types of <a>animation nodes</a>.
+    behavior for other types of <a>animation effects</a>.
 
 <!-- @endif -->
 
@@ -5598,8 +5601,8 @@ interface AnimationGroupReadonly : AnimationNodeReadonly {
 
 [NoInterfaceObject]
 interface AnimationGroupMutable {
-  void prepend (AnimationNodeReadonly... nodes);
-  void append (AnimationNodeReadonly... nodes);
+  void prepend (AnimationNodeReadonly... effects);
+  void append (AnimationNodeReadonly... effects);
 };
 
 [Constructor (sequence<AnimationNodeReadonly>? children,
@@ -5635,7 +5638,7 @@ AnimationGroup implements AnimationGroupMutable;
     :   <dfn argument
         for="AnimationGroupReadonly/AnimationGroupReadonly(children, timing)"
         lt="children">children</dfn>
-    ::  A sequence of animation nodes to add as children of this group.
+    ::  A sequence of animation effects to add as children of this group.
 
         These children are appended in sequence using the same
         semantics as the {{AnimationGroupMutable/append()}} method of the
@@ -5666,7 +5669,7 @@ AnimationGroup implements AnimationGroupMutable;
 <div class="attributes">
 
 :   <dfn attribute for=AnimationGroupReadonly>children</dfn>
-::  The list of <a>child animation nodes</a> in the group.
+::  The list of <a>child animation effects</a> in the group.
 
 :   <dfn attribute for=AnimationGroupReadonly>firstChild</dfn>
 ::  The <a>first child</a> of this <a>animation group</a>.
@@ -5679,27 +5682,27 @@ AnimationGroup implements AnimationGroupMutable;
 <div class="methods">
 
 :   <dfn method for=AnimationGroupMutable lt="prepend()">
-:   void prepend (AnimationNodeReadonly... nodes)</dfn>
+:   void prepend (AnimationNodeReadonly... effects)</dfn>
 ::
 
-    1.  If any of the <a>animation nodes</a> in <var>nodes</var> is an
-        <a>inclusive ancestor</a> of this <a>animation node</a>,
+    1.  If any of the <a>animation effects</a> in <var>effects</var> is an
+        <a>inclusive ancestor</a> of this <a>animation effect</a>,
         <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
         <span class=exceptionname>HierarchyRequestError</span> exception and
         terminate these steps.
-    2.  <a lt="insert children">Insert</a> <var>nodes</var> before
+    2.  <a lt="insert children">Insert</a> <var>effects</var> before
         the <a>first child</a>.
 
 :   <dfn method for=AnimationGroupMutable lt="append()">
-    void append (AnimationNodeReadonly... nodes)</dfn>
+    void append (AnimationNodeReadonly... effects)</dfn>
 ::
 
-    1.  If any of the <a>animation nodes</a> in <var>nodes</var> is an
-        <a>inclusive ancestor</a> of this <a>animation node</a>,
+    1.  If any of the <a>animation effects</a> in <var>effects</var> is an
+        <a>inclusive ancestor</a> of this <a>animation effect</a>,
         <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
         <span class=exceptionname>HierarchyRequestError</span> exception and
         terminate these steps.
-    2.  <a lt="insert children">Insert</a> <var>nodes</var> before
+    2.  <a lt="insert children">Insert</a> <var>effects</var> before
         <code>null</code>.
 
 :   <dfn method for=AnimationGroupReadonly lt="clone()">
@@ -5735,7 +5738,7 @@ AnimationGroup implements AnimationGroupMutable;
 <p>The <var>timing</var> parameter passed to the {{AnimationGroupReadonly()}},
 {{AnimationGroup()}}, {{AnimationReadonly()}}, or {{Animation()}} constructor
 may be an {{AnimationTimingProperties}} object, a double representing the
-duration of the <a>animation node</a> in milliseconds, or undefined.</p>
+duration of the <a>animation effect</a> in milliseconds, or undefined.</p>
 
 <p>The following <dfn>procedure for processing a timing argument</dfn>,
 <var>timing</var>, normalizes the above inputs into
@@ -5781,53 +5784,53 @@ alert(animA.timing.duration === animB.timing.duration); // Displays 'true'</pre>
 <h4 id="definitions-for-manipulating-hierarchies">Definitions for manipulating hierarchies</h4>
 
 The <dfn lt="next sibling not included">next sibling of
-<var>node</var> not included</dfn> in a set of <a>animation
-nodes</a>, <var>nodes</var> is determined using the following
+<var>effect</var> not included</dfn> in a set of <a>animation
+effects</a>, <var>effects</var> is determined using the following
 teps:</p>
 
-1.  Let <var>context node</var> be <var>node</var>.
-2.  While the <a>next sibling</a> of <var>context node</var> is not
+1.  Let <var>context effect</var> be <var>effect</var>.
+2.  While the <a>next sibling</a> of <var>context effect</var> is not
     <code>null</code> perform the following steps:
 
-    1.  Let <var>context node</var> be the <a>next sibling</a> of
-        <var>context node</var>.
-    2.  If <var>context node</var> is not in <var>nodes</var> return
-        <var>context node</var> and terminate these steps.
+    1.  Let <var>context effect</var> be the <a>next sibling</a> of
+        <var>context effect</var>.
+    2.  If <var>context effect</var> is not in <var>effects</var> return
+        <var>context effect</var> and terminate these steps.
 
 3.  Return <code>null</code>.
 
-To <dfn lt="remove an animation node">remove</dfn> a
-<var>node</var> from its <a>parent animation group</a> or
+To <dfn lt="remove an animation effect">remove</dfn> a
+<var>effect</var> from its <a>parent animation group</a> or
 <a>player</a>, perform the steps corresponding to the first
 matching condition from below, if any:
 
 <div class="switch">
 
-:   If <var>node</var> has a <a>parent animation group</a>,
-::  Remove <var>node</var> from the <a>parent animation group</a>'s
-    list of <a>child animation nodes</a>.
+:   If <var>effect</var> has a <a>parent animation group</a>,
+::  Remove <var>effect</var> from the <a>parent animation group</a>'s
+    list of <a>child animation effects</a>.
 
-:   If <var>node</var> is <a>directly associated with
+:   If <var>effect</var> is <a>directly associated with
     a player</a>,
-::  Disassociate <var>node</var> from the <a>player</a>.
+::  Disassociate <var>effect</var> from the <a>player</a>.
 
 </div>
 
 
 To <dfn lt="insert children">insert</dfn> a series of zero or
-more <a>animation nodes</a>, <var>nodes</var>, to
-<var>parent</var>'s list of <a>child animation nodes</a> before
+more <a>animation effects</a>, <var>effects</var>, to
+<var>parent</var>'s list of <a>child animation effects</a> before
 <var>reference child</var> perform the following steps for each
-<var>node</var> in <var>nodes</var>:</p>
+<var>effect</var> in <var>effects</var>:</p>
 
-1.  <a lt="remove an animation node">Remove</a> <var>node</var>
+1.  <a lt="remove an animation effect">Remove</a> <var>effect</var>
     from its parent.
-2.  Insert <var>node</var> to <var>parent</var>'s list of <a>child
-    animation nodes</a> before <var>reference child</var>
+2.  Insert <var>effect</var> to <var>parent</var>'s list of <a>child
+    animation effects</a> before <var>reference child</var>
 
 <h3 id="the-animationnodelist-interface">The <code>AnimationNodeList</code> interface</h3>
 
-A list of <a>animation nodes</a> may be represented by
+A list of <a>animation effects</a> may be represented by
 an {{AnimationNodeList}}.
 
 The <code>AnimationNodeList</code> interface supports indexed
@@ -5850,7 +5853,7 @@ interface AnimationNodeList {
 <div class="attributes">
 
 :   <dfn attribute for=AnimationNodeList>length</dfn>
-::  The number of <a>animation nodes</a> in the list.
+::  The number of <a>animation effects</a> in the list.
 
 </div>
 
@@ -6210,7 +6213,7 @@ without any interpolation as follows:
 new Animation(elem, { display: 'none' }, { fill: 'forwards' });</pre>
 
 This is particularly useful in combination with other <a>animations</a> or
-<a>animation nodes</a>.
+<a>animation effects</a>.
 For example, fading an element before switching
 &lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
 follows,
@@ -7215,7 +7218,7 @@ alert(b - a); // Displays 0</pre></div>
     must perform a <a lt='single-sample'>sample</a> including 
     executing any eligible
     <a>custom effects</a> (see <a href="#sampling-custom-effects"
-    section></a>) for all <a>animation nodes</a>
+    section></a>) for all <a>animation effects</a>
     <a>associated with a timeline</a> that is the <a>document
     timeline</a> of the
     <a href="https://html.spec.whatwg.org/#active-document"
@@ -7368,9 +7371,9 @@ The following changes have been made since the <a
     {{AnimationTimeline}} and {{Animatable}} interfaces return all
     <a>players</a> that are <em>either</em> <a>current</a> <em>or</em> <a>in
     effect</a>.
-*   Added a read-only version of interfaces for <a>animation nodes</a> and
+*   Added a read-only version of interfaces for <a>animation effects</a> and
     related interfaces as follows:
-    *   <a>Animation nodes</a> are now represented by the
+    *   <a>Animation effects</a> are now represented by the
         {{AnimationNodeReadonly}} interface.
     *   <a>Animations</a> are now represented by the
         {{AnimationReadonly}} and {{Animation}} interfaces.
