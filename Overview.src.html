@@ -5634,7 +5634,7 @@ GroupEffect implements GroupEffectMutable;
     1.  Create a new {{GroupEffectReadonly}} object, <var>group</var>.
 
     2.  Let <var>timing input</var> be the result of applying the
-        <a>procedure for processing a timing argument</a> to <var>timing.
+        <a>procedure for processing a timing argument</a> to <var>timing</var>.
 
     3.  Set <code><var>group</var>.timing</code> to a new
         {{AnimationEffectTimingReadonly}} object whose attributes are assigned
@@ -5746,9 +5746,10 @@ GroupEffect implements GroupEffectMutable;
 <h4 id="processing-a-timing-argument">Processing a <var>timing</var> argument</h4>
 
 <p>The <var>timing</var> parameter passed to the {{GroupEffectReadonly()}},
-{{GroupEffect()}}, {{KeyframeEffectReadonly()}}, or {{Animation()}} constructor
-may be an {{AnimationEffectTimingProperties}} object, a double representing the
-duration of the <a>animation effect</a> in milliseconds, or undefined.</p>
+{{GroupEffect()}}, {{SequenceEffectReadonly()}}, or {{SequenceEffect()}}
+constructor may be an {{AnimationEffectTimingProperties}} object, a double
+representing the duration of the <a>animation effect</a> in milliseconds, or
+undefined.</p>
 
 <p>The following <dfn>procedure for processing a timing argument</dfn>,
 <var>timing</var>, normalizes the above inputs into
@@ -5903,9 +5904,10 @@ SequenceEffect implements GroupEffectMutable;
 
 <div class="contructors">
 
-:   <dfn constructor for=SequenceEffect lt="SequenceEffect()">
+:   <dfn constructor for=SequenceEffect lt="SequenceEffect()"><dfn
+      constructor for=SequenceEffectReadonly lt="SequenceEffectReadonly()">
     Constructor (sequence&lt;AnimationEffectReadonly&gt;? children,
-    optional (unrestricted double or AnimationEffectTimingProperties) timing)</dfn>
+    optional (unrestricted double or AnimationEffectTimingProperties) timing)</dfn></dfn>
 ::  The meaning and handling of each of the parameters in this
     constructor is identical to the {{GroupEffect()}} constructor.
 
@@ -5933,8 +5935,8 @@ Mutable <a>keyframe effects</a> are represented by the
 
 <pre class='idl'>
 [Constructor (Animatable? target,
-              object? frames,
-              optional (unrestricted double or AnimationEffectTimingProperties) timing)]
+              (Keyframe or sequence&lt;Keyframe&gt;) frames,
+              optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffectReadonly : AnimationEffectReadonly {
     readonly attribute Animatable?                 target;
     readonly attribute DOMString                   name;
@@ -5946,15 +5948,15 @@ interface KeyframeEffectReadonly : AnimationEffectReadonly {
 };
 
 [Constructor (Animatable? target,
-              object? frames,
-              optional (unrestricted double or AnimationEffectTimingProperties) timing)]
+              (Keyframe or sequence&lt;Keyframe&gt;) frames,
+              optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffect : KeyframeEffectReadonly {
     inherit attribute Animatable?                 target;
     inherit attribute DOMString                   name;
     inherit attribute IterationCompositeOperation iterationComposite;
     inherit attribute CompositeOperation          composite;
     inherit attribute DOMString                   spacing;
-    void setFrames (object frames);
+    void setFrames ((Keyframe or sequence&lt;Keyframe&gt;) frames);
 };
 <!-- @ifdef INCLUDE_GROUPS -->
 KeyframeEffect implements AnimationEffectMutable;
@@ -5964,7 +5966,7 @@ KeyframeEffect implements AnimationEffectMutable;
 <div class="constructors">
 
 :   <dfn constructor for=KeyframeEffectReadonly
-     lt="KeyframeEffectReadonly(target, frames, timing)">
+     lt="KeyframeEffectReadonly(target, frames, options)">
     KeyframeEffectReadonly ()</dfn>
 ::  Creates a new {{KeyframeEffectReadonly}} object
     using the following procedure:
@@ -5972,48 +5974,41 @@ KeyframeEffect implements AnimationEffectMutable;
     1.  Create a new {{KeyframeEffectReadonly}} object,
         <var>effect</var>.</li>
 
-<!-- @exclude -->
-<!-- When groups are defined, we factor out the handling of the timing parameter
-     to a separate section under the GroupEffect definition.
-
-     We should probably do something similar when groups aren't defined too.
-     That would be easier if we defined animations before groups but that's a
-     major reshuffling so we'll do it later. -->
-<!-- @endexclude -->
-<!-- @ifdef INCLUDE_GROUPS -->
-    1.  Let <var>timing input</var> be the result of applying the
-        <a>procedure for processing a timing argument</a> to <var>timing</var>.
-<!-- @endif -->
-<!-- @ifndef INCLUDE_GROUPS -->
     1.  Let <var>timing input</var> be the result corresponding to the first
         matching condition from below.
 
-        :   If <var>timing</var> is an {{AnimationEffectTimingProperties}}
-            object,
+        :   If <var>options</var> is a {{KeyframeEffectOptions}} object,
         ::  Let <var>timing input</var> be <var>timing</var>.
 
-        :   If <var>timing</var> is a <code>double</code>,
+        :   If <var>options</var> is a <code>double</code>,
         ::  Let <var>timing input</var> be a new
             {{AnimationEffectTimingProperties}}
             object with all members set to their default values and
             {{AnimationEffectTimingProperties/duration}} set to
             <var>timing</var>.
 
-        :   Otherwise (<var>timing</var> is undefined),
+        :   Otherwise (<var>options</var> is undefined),
         ::  Let <var>timing input</var> be a new
             {{AnimationEffectTimingProperties}}
             object with all members set to their default values.
-<!-- @endif -->
 
     1.  Set <code><var>effect</var>.timing</code> to a new
         {{AnimationEffectTimingReadonly}} object whose attributes are assigned
         the value of the member of the same name on <var>timing input</var>.
 
+        Issue: Make a constructor for {{AnimationEffectTimingReadonly}} and call
+        that here.
+
+    1.  If <var>options</var> is a {{KeyframeEffectOptions}} object,
+        set the {{KeyframeEffectReadonly/name}},
+        {{KeyframeEffectReadonly/iterationComposite}},
+        {{KeyframeEffectReadonly/composite}}, and
+        {{KeyframeEffectReadonly/spacing}} properties of <var>effect</var> to
+        the corresponding value from <var>options</var>.
+
     1.  Initialize the set of <a>keyframes</a> by performing the procedure
         defined for {{KeyframeEffect/setFrames()}} passing
         <var>frames</var> as the input.
-
-    Issue: Replace this with a <code>frames</code> attribute.
 
     <div class="parameters">
 
@@ -6027,53 +6022,23 @@ KeyframeEffect implements AnimationEffectMutable;
         a specific element.
 
     :   <dfn argument
-        for="KeyframeEffectReadonly/KeyframeEffectReadonly(target, frames, timing)"
+        for="KeyframeEffectReadonly/KeyframeEffectReadonly(target, frames, options)"
         lt="frames"><dfn argument
-        for="KeyframeEffect/KeyframeEffect(target, frames, timing)"
-        lt="frames">object? effect</dfn></dfn>
-    ::  The animation effect used to set the <code>effect</code>
-        attribute of the newly-created {{Animation}} object.
+        for="KeyframeEffect/KeyframeEffect(target, frames, options)"
+        lt="frames">(Keyframe or sequence&lt;Keyframe&gt;) frames</dfn></dfn>
+    ::  The set of <a>keyframes</a> to use.
 
-        The processing of this parameter is defined normatively in <a
-        href="#processing-the-effect-parameter"
-        section></a>.
-        Following is a non-normative summary of this handing.
-
-        <var>frames</var> may be one of the following:
-
-        *   A single {{Keyframe}} object,
-        *   A sequence of {{Keyframe}} objects, or
-        *   null
-
-        Issue: Introduce a shareable KeyframeList object here.
-
-        If this parameter is an {{AnimationEffectReadonly}} object or
-        {{EffectCallback}} object, it will be shared with any
-        other {{Animation}} objects referring to the same
-        {{AnimationEffectReadonly}} or {{EffectCallback}} object.
-        It will <em>not</em> be copied.
-
-        If this parameter is of type {{Keyframe}} or
-        <code>sequence&lt;<a dictionary>Keyframe</a>&gt;</code>,
-        the <a>animation effect</a> of the newly-created {{Animation}} will be
-        a newly-created {{KeyframeEffect}} object
-        initialized by using this object as the list of
-        <a>keyframes</a> and with all other parameters set to their
-        default values.
-
-        If this parameter is <code>null</code>, the newly-created
-        {{Animation}} will also have a <code>null</code> animation effect.
     :   <dfn argument
-        for="KeyframeEffectReadonly/KeyframeEffectReadonly(target, frames, timing)"
-        lt="timing"><dfn argument
-        for="KeyframeEffect/KeyframeEffect(target, frames, timing)"
-        lt="timing">optional (unrestricted double or AnimationEffectTimingProperties)
-        timing</dfn></dfn>
-    ::  The timing properties or <a>iteration duration</a> of the new
-        animation.
+        for="KeyframeEffectReadonly/KeyframeEffectReadonly(target, frames, options)"
+        lt="options"><dfn argument
+        for="KeyframeEffect/KeyframeEffect(target, frames, options)"
+        lt="options">optional KeyframeEffectOptions options</dfn></dfn>
+    ::  Either a number specifying the <a>iteration duration</a> of the effect,
+        or a collection of properties specifying the timing and behavior of
+        the effect.
 
 :   <dfn constructor for=KeyframeEffect
-    lt="KeyframeEffect(target, frames, timing)">
+    lt="KeyframeEffect(target, frames, options)">
     KeyframeEffect ()</dfn>
 ::  Creates a new {{KeyframeEffect}} object using the same procedure as with
     the {{KeyframeEffectReadonly()}} constructor with the following differences:
@@ -6206,8 +6171,10 @@ KeyframeEffect implements AnimationEffectMutable;
         href="#spacing-keyframes" section></a> is stored in
         the {{ComputedKeyframe/computedOffset}} member of each frame.
 
+    Issue: Replace this with a <code>frames</code> attribute.
+
 :   <dfn method for=KeyframeEffect lt='setFrames(frames)'>
-    void setFrames(object frames)</dfn>
+    void setFrames((Keyframe or sequence&lt;Keyframe&gt;) frames)</dfn>
 ::  Replaces the set of <a>keyframes</a> that make up this effect.
 
     <div class="parameters">
@@ -6217,9 +6184,8 @@ KeyframeEffect implements AnimationEffectMutable;
     ::  A {{Keyframe}} object or sequence of {{Keyframe}} objects used to
         replace the set of <a>keyframes</a> that make up this effect.
 
-        The processing of the <var>frames</var> parameter is defined in <a
-        href="#processing-a-sequence-of-keyframe-objects-or-a-single-item"
-        section></a>.
+        If only a single {{Keyframe}} object is provided, it is treated as
+        a single-item sequence.
 
         Subsequently, the resulting sequence of {{Keyframe}} objects is
         normalized using the procedure in <a
@@ -6227,296 +6193,6 @@ KeyframeEffect implements AnimationEffectMutable;
 
     </div>
 
-
-</div>
-
-<h4 id="processing-the-effect-parameter">Processing the <var>effect</var> parameter</h4>
-
-The <var>effect</var> parameter, an ECMAScript value passed to the
-{{KeyframeEffectReadonly()}} constructor, the {{KeyframeEffect()}} constructor,
-or to the {{Animatable/animate()}} operation of the {{Animatable}} interface,
-may specify an {{EffectCallback}}, an {{AnimationEffectReadonly}},
-a {{Keyframe}}, a sequence of {{Keyframe}}s, or <span
-class="esvalue">null</span>.
-However, since callback functions and dictionaries are not
-distinguishable in WebIDL, we define the processing of this
-parameter for ECMAScript here in prose.
-
-The <dfn>procedure for converting an effect to an IDL value</dfn>
-with parameter <var>effect</var> is as follows:
-
-<div class="switch">
-
-:   If <var>effect</var> is <span class="esvalue">null</span>,
-::  Return <span class="idlvalue">null</span>.
-
-:   If <var>effect</var> is a <a spec='webidl' status='TR'>platform
-    object</a> that implements {{AnimationEffectReadonly}},
-::  return the IDL value that is a reference to the that platform
-    object.
-
-:   If IsCallable(<var>effect</var>) is true,
-::  Return the result of applying the <a
-    href="http://www.w3.org/TR/WebIDL/#es-callback-function">procedure
-    for converting an ECMAScript value to an IDL callback function
-    type</a> to <var>effect</var> using {{EffectCallback}} as the
-    callback function type.
-
-:   Otherwise,
-::  Return a new {{KeyframeEffect}} object constructed passing
-    <var>effect</var> as the <var>frames</var> parameter.
-
-</div>
-
-Note: since the processing of this parameter is defined in prose, the
-    above steps will take place after any coercion is applied to other
-    parameters passed to the same operation.
-
-<h4 id="creating-a-new-keyframeeffect-object">Creating a new <code>KeyframeEffect</code> object</h4>
-
-<div class='informative-bg'><em>This section is non-normative</em>
-
-The {{KeyframeEffectReadonly()}} and {{KeyframeEffect()}} constructors offer
-a number of approaches to creating a new {{KeyframeEffectReadonly}} and
-{{KeyframeEffect}} objects.
-
-At its simplest, an {{KeyframeEffect}} object that changes the
-&lsquo;left&rsquo; property of <var>elem</var> to 100px over three
-seconds can be constructed as follows:
-
-<pre class='example lang-javascript'>
-var effect = new KeyframeEffect(elem, { left: '100px' }, 3000);</pre>
-
-The second parameter, representing the list of keyframes, may
-specify multiple properties.
-
-<pre class='example lang-javascript'>
-// Specify multiple properties at once
-var effectA = new KeyframeEffect(elem, { left: '100px', top: '300px' }, 3000);
-
-// Specify multiple frames
-var effectB = new KeyframeEffect(elem, [ { left: '100px' }, { left: '300px' } ], 3000);</pre>
-
-The third parameter, representing the animation's timing, may
-simply be a number representing the <a>iteration duration</a> in
-milliseconds as above, or, to specify further timing properties such
-as the <a>start delay</a>, an {{AnimationEffectTimingProperties}} object can
-be used, as follows:
-
-<pre class='example lang-javascript'>
-var effect =
-  new KeyframeEffect(elem, { left: '100px' }, { duration: 3000, delay: 2000 });</pre>
-
-If the duration is not specified, the <a>intrinsic iteration
-duration</a> is used which, for a <a>keyframe effect</a>, is zero.
-It is possible to create an animation that simply sets a property
-without any interpolation as follows:
-
-<pre class='example lang-javascript'>
-var effect = new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' });</pre>
-
-
-<!-- @ifdef INCLUDE_GROUPS -->
-This is particularly useful in combination with other <a>animation effects</a>.
-For example, fading an element before switching
-&lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
-follows,
-
-<pre class='example lang-javascript'>
-new SequenceEffect(
-  [
-    new KeyframeEffect(elem, { opacity: 0 }, 1000),
-    new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' })
-  ]
-);</pre>
-<!-- @endif -->
-
-Having created a {{KeyframeEffect}}, it can be played using
-<code>document.timeline.play(<var>effect</var>)</code>.
-For simple effects, however, the <a
-href="#extensions-to-the-element-interface"><code>Element.animate</code></a>
-shortcut is more convenient since it performs this last step
-automatically. For example,
-
-<pre class='example lang-javascript'>
-elem.animate({ left: '100px' }, 3000);</pre>
-
-</div>
-
-<h3 id="the-animatable-interface">The <code>Animatable</code> interface</h3>
-
-Objects that may be the target of an {{KeyframeEffectReadonly}} object implement
-the {{Animatable}} interface.
-
-<pre class='idl'>
-[NoInterfaceObject]
-interface Animatable {
-    Animation           animate (object? frames,
-                                 optional (double or AnimationEffectTimingProperties) timing);
-    sequence&lt;Animation&gt; getAnimations ();
-};
-</pre>
-
-<div class="methods">
-
-:   <dfn method for=Animatable lt="animate(frames, timing)">Animation animate(object? frames, optional (double or AnimationEffectTimingProperties) timing)</dfn>
-::  Creates a new {{KeyframeEffect}} object
-    whose <a>target element</a> is the object on which the method is
-    called, and calls the {{AnimationTimeline/play()}} method of the
-    {{AnimationTimeline}} object of the <a>document timeline</a> of the <a
-    href="http://www.w3.org/TR/dom/#concept-node-document">node
-    document</a> [[!DOM]] of the element, passing the newly created
-    {{KeyframeEffect}} as the argument to the method.
-
-    The following code fragment:
-
-    <div><pre class="example lang-javascript">
-var animation = elem.animate({ opacity: 0 }, 2000);</pre></div>
-
-    is equivalent to:
-
-    <div><pre class="example lang-javascript">
-var effect = new KeyframeEffect(elem, { opacity: 0 }, 2000);
-elem.ownerDocument.timeline.play(effect);</pre></div>
-
-    Returns the {{Animation}} object returned by the
-    {{AnimationTimeline/play()}} method of the {{AnimationTimeline}}.
-
-    <div class="parameters">
-
-    :   <dfn argument for="Animatable/animate" lt="frames">object? frames</dfn>
-    ::  The keyframes to use.
-        This value is passed to the {{KeyframeEffect()}} constructor 
-        as the <var>frames</var> parameter and has the
-        same interpretation as defined for that constructor.
-    :   <dfn argument for="Animatable/animate" lt="timing">optional (double or
-        AnimationEffectTimingProperties) timing</dfn>
-    ::  The timing parameters of the animation.
-        This value is passed to the {{KeyframeEffect()}} constructor
-        as the <var>timing</var> parameter and has the
-        same interpretation as defined for that constructor.
-
-    </div>
-
-:   <dfn method for=Animatable lt="getAnimations()">
-    sequence&lt;Animation&gt; getAnimations()</dfn>
-::  Returns the set of {{Animation}} objects
-    whose <a>target effect</a> is <a>current</a> or <a>in effect</a> and
-    contains at least one <a>animation effect</a> whose
-    <a>target element</a> is this object.
-
-<!-- @ifdef INCLUDE_GROUPS -->
-    If this object is the <a>target element</a> of two or more
-    <a>animation effects</a> which are associated with the
-    same <a>animation</a>, the corresponding {{Animation}}
-    object will still only appear in the returned list once.
-<!-- @endif -->
-
-    The returned list is sorted in increasing order by <a>animation
-    sequence number</a>.
-
-    The returned list reflects the state <em>after</em> applying any pending
-    changes to animation such as changes to animation-related style properties
-    that have yet to be processed.
-
-</div>
-
-<h3 id="the-iterationcompositeoperation-enumeration">The <code>IterationCompositeOperation</code> enumeration</h3>
-
-The possible values of an <a>animation effect</a>'s
-<a>iteration composite operation</a> are represented by the
-<dfn>IterationCompositeOperation</dfn> enumeration.
-
-<pre class='idl'>
-enum IterationCompositeOperation {"replace", "accumulate"};
-</pre>
-
-:   <code>replace</code>
-::  Corresponds to the <a
-    lt="iteration composite operation replace">replace</a>
-    <a>iteration composite operation</a> value such that the
-    <a>intermediate effect value</a> produced is independent of the
-    <a>current iteration</a>.
-:   <code>accumulate</code>
-::  Corresponds to the <a
-    lt="iteration composite operation accumulate">accumulate</a>
-    iteration composite operation value such that
-    subsequent iterations of an <a>animation effect</a> build
-    on the final value of the previous iteration.
-
-<h3 id="the-compositeoperation-enumeration">The <code>CompositeOperation</code> enumeration</h3>
-
-The possible values of an <a>animation effect</a>'s
-composition behavior are represented by the
-<dfn>CompositeOperation</dfn> enumeration.
-
-<pre class='idl'>
-enum CompositeOperation {"replace", "add", "accumulate"};
-</pre>
-
-:   <code>replace</code>
-::  Corresponds to the <a
-    lt="composite operation replace">replace</a>
-    <a>composite operation</a> value such that
-    the <a>animation effect</a> overrides the <a>underlying value</a> it
-    is combined with.
-
-:   <code>add</code>
-::  Corresponds to the <a
-    lt="composite operation add">add</a>
-    <a>composite operation</a> value such that
-    the <a>animation effect</a> is <a
-    lt="animation addition">added</a> to the <a>underlying value</a>
-    with which it is combined.
-
-:   <code>accumulate</code>
-::  Corresponds to the <a
-    lt="composite operation accumulate">accumulate</a>
-    <a>composite operation</a> value such that
-    the <a>animation effect</a> is <a
-    lt="animation accumulation">accumulated</a> on to the
-    <a>underlying value</a>.
-
-<h4 id="processing-a-sequence-of-keyframe-objects-or-a-single-item">Processing a sequence of <code>Keyframe</code> objects or a single item</h4>
-
-WebIDL does not currently make a dictionary and a sequence
-distinguishable but for ease of use, the {{Animatable/animate()}} operation
-on the {{Animatable}} interface allows both.
-Therefore, we define the processing for handling a parameter
-that may be either a single {{Keyframe}} dictionary object, or
-a sequence of such objects.
-
-The <dfn>procedure for converting an ECMAScript object into
-an IDL keyframe or sequence of keyframes</dfn> with parameter
-<var>keyframeOrKeyframeList</var> is as follows:
-
-1.  If <var>keyframeOrKeyframeList</var> is a native
-    <span class="estype">Date</span> object
-    or a native <span class="estype">RegExp</span> object,
-    <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
-    <span class=exceptionname>TypeError</a>.
-1.  Let <var>iteratorMethod</var> be the result of <a
-    href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-getmethod"><code>GetMethod(<var>keyframeOrKeyframeList</var>, @@iterator)</code></a>
-    [[!ECMA-262]].
-1.  <a
-    href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-returnifabrupt"><code>ReturnIfAbrupt(<var>iteratorMethod</var>)</code></a>.
-1.  If <var>iteratorMethod</var> is <span class="esvalue">undefined</span>,
-    return the result of applying the <a>procedure for converting
-    an ECMAScript object to an IDL Keyframe object</a> to
-    <var>keyframeOrKeyframeList</a>.
-1.  Otherwise,
-    return the result of following the steps for <a
-    href="http://heycam.github.io/webidl/#create-sequence-from-iterable">creating
-    a sequence from an iterable</a> [[!WEBIDL]] with:
-
-    *   <var>keyframeOrKeyframeList</var> as the <span
-        class="param">iterable</span> parameter,
-    *   <var>iteratorMethod</var> as the <span class="param">method</span>
-        parameter, and
-    *   using the <a>procedure for converting an ECMAScript object to an IDL
-        Keyframe object</a> as the procedure for converting <span
-        class="param">nextItem</span> to an IDL value of
-        type <span class="param">T</span>.
 
 </div>
 
@@ -6596,6 +6272,135 @@ initiated.
     or not supported by the implementation.
 
     Issue: Need to define what invalid means here.
+
+
+<h4 id="creating-a-new-keyframeeffect-object">Creating a new <code>KeyframeEffect</code> object</h4>
+
+<div class='informative-bg'><em>This section is non-normative</em>
+
+The {{KeyframeEffectReadonly()}} and {{KeyframeEffect()}} constructors offer
+a number of approaches to creating a new {{KeyframeEffectReadonly}} and
+{{KeyframeEffect}} objects.
+
+At its simplest, an {{KeyframeEffect}} object that changes the
+&lsquo;left&rsquo; property of <var>elem</var> to 100px over three
+seconds can be constructed as follows:
+
+<pre class='example lang-javascript'>
+var effect = new KeyframeEffect(elem, { left: '100px' }, 3000);</pre>
+
+The second parameter, representing the list of keyframes, may
+specify multiple properties.
+
+<pre class='example lang-javascript'>
+// Specify multiple properties at once
+var effectA = new KeyframeEffect(elem, { left: '100px', top: '300px' }, 3000);
+
+// Specify multiple frames
+var effectB = new KeyframeEffect(elem, [ { left: '100px' }, { left: '300px' } ], 3000);</pre>
+
+The third parameter, representing the animation's timing, may
+simply be a number representing the <a>iteration duration</a> in
+milliseconds as above, or, to specify further timing properties such
+as the <a>start delay</a>, an {{AnimationEffectTimingProperties}} object can
+be used, as follows:
+
+<pre class='example lang-javascript'>
+var effect =
+  new KeyframeEffect(elem, { left: '100px' }, { duration: 3000, delay: 2000 });</pre>
+
+If the duration is not specified, the <a>intrinsic iteration
+duration</a> is used which, for a <a>keyframe effect</a>, is zero.
+It is possible to create an animation that simply sets a property
+without any interpolation as follows:
+
+<pre class='example lang-javascript'>
+var effect = new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' });</pre>
+
+
+<!-- @ifdef INCLUDE_GROUPS -->
+This is particularly useful in combination with other <a>animation effects</a>.
+For example, fading an element before switching
+&lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
+follows,
+
+<pre class='example lang-javascript'>
+new SequenceEffect(
+  [
+    new KeyframeEffect(elem, { opacity: 0 }, 1000),
+    new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' })
+  ]
+);</pre>
+<!-- @endif -->
+
+Having created a {{KeyframeEffect}}, it can be played using
+<code>document.timeline.play(<var>effect</var>)</code>.
+For simple effects, however, the <a
+href="#extensions-to-the-element-interface"><code>Element.animate</code></a>
+shortcut is more convenient since it performs this last step
+automatically. For example,
+
+<pre class='example lang-javascript'>
+elem.animate({ left: '100px' }, 3000);</pre>
+
+</div>
+
+<h3 id="the-iterationcompositeoperation-enumeration">The <code>IterationCompositeOperation</code> enumeration</h3>
+
+The possible values of an <a>animation effect</a>'s
+<a>iteration composite operation</a> are represented by the
+<dfn>IterationCompositeOperation</dfn> enumeration.
+
+<pre class='idl'>
+enum IterationCompositeOperation {"replace", "accumulate"};
+</pre>
+
+:   <code>replace</code>
+::  Corresponds to the <a
+    lt="iteration composite operation replace">replace</a>
+    <a>iteration composite operation</a> value such that the
+    <a>intermediate effect value</a> produced is independent of the
+    <a>current iteration</a>.
+:   <code>accumulate</code>
+::  Corresponds to the <a
+    lt="iteration composite operation accumulate">accumulate</a>
+    iteration composite operation value such that
+    subsequent iterations of an <a>animation effect</a> build
+    on the final value of the previous iteration.
+
+<h3 id="the-compositeoperation-enumeration">The <code>CompositeOperation</code> enumeration</h3>
+
+The possible values of an <a>animation effect</a>'s
+composition behavior are represented by the
+<dfn>CompositeOperation</dfn> enumeration.
+
+<pre class='idl'>
+enum CompositeOperation {"replace", "add", "accumulate"};
+</pre>
+
+:   <code>replace</code>
+::  Corresponds to the <a
+    lt="composite operation replace">replace</a>
+    <a>composite operation</a> value such that
+    the <a>animation effect</a> overrides the <a>underlying value</a> it
+    is combined with.
+
+:   <code>add</code>
+::  Corresponds to the <a
+    lt="composite operation add">add</a>
+    <a>composite operation</a> value such that
+    the <a>animation effect</a> is <a
+    lt="animation addition">added</a> to the <a>underlying value</a>
+    with which it is combined.
+
+:   <code>accumulate</code>
+::  Corresponds to the <a
+    lt="composite operation accumulate">accumulate</a>
+    <a>composite operation</a> value such that
+    the <a>animation effect</a> is <a
+    lt="animation accumulation">accumulated</a> on to the
+    <a>underlying value</a>.
+
 
 <h3 id="the-keyframe-dictionary">The <code>Keyframe</code> dictionary</h3>
 
@@ -6866,6 +6671,84 @@ associated is <a lt="sampling">sampled</a>.
   <code>"Multiple possible 'idl' local refs for 'animation'.
     Arbitrarily chose the one with type 'interface' and for ''."</code>
 </div>
+
+</div>
+
+<h3 id="the-animatable-interface">The <code>Animatable</code> interface</h3>
+
+Objects that may be the target of an {{KeyframeEffectReadonly}} object implement
+the {{Animatable}} interface.
+
+<pre class='idl'>
+[NoInterfaceObject]
+interface Animatable {
+    Animation           animate (object? frames,
+                                 optional (double or AnimationEffectTimingProperties) timing);
+    sequence&lt;Animation&gt; getAnimations ();
+};
+</pre>
+
+<div class="methods">
+
+:   <dfn method for=Animatable lt="animate(frames, timing)">Animation animate(object? frames, optional (double or AnimationEffectTimingProperties) timing)</dfn>
+::  Creates a new {{KeyframeEffect}} object
+    whose <a>target element</a> is the object on which the method is
+    called, and calls the {{AnimationTimeline/play()}} method of the
+    {{AnimationTimeline}} object of the <a>document timeline</a> of the <a
+    href="http://www.w3.org/TR/dom/#concept-node-document">node
+    document</a> [[!DOM]] of the element, passing the newly created
+    {{KeyframeEffect}} as the argument to the method.
+
+    The following code fragment:
+
+    <div><pre class="example lang-javascript">
+var animation = elem.animate({ opacity: 0 }, 2000);</pre></div>
+
+    is equivalent to:
+
+    <div><pre class="example lang-javascript">
+var effect = new KeyframeEffect(elem, { opacity: 0 }, 2000);
+elem.ownerDocument.timeline.play(effect);</pre></div>
+
+    Returns the {{Animation}} object returned by the
+    {{AnimationTimeline/play()}} method of the {{AnimationTimeline}}.
+
+    <div class="parameters">
+
+    :   <dfn argument for="Animatable/animate" lt="frames">object? frames</dfn>
+    ::  The keyframes to use.
+        This value is passed to the {{KeyframeEffect()}} constructor 
+        as the <var>frames</var> parameter and has the
+        same interpretation as defined for that constructor.
+    :   <dfn argument for="Animatable/animate" lt="timing">optional (double or
+        AnimationEffectTimingProperties) timing</dfn>
+    ::  The timing parameters of the animation.
+        This value is passed to the {{KeyframeEffect()}} constructor
+        as the <var>timing</var> parameter and has the
+        same interpretation as defined for that constructor.
+
+    </div>
+
+:   <dfn method for=Animatable lt="getAnimations()">
+    sequence&lt;Animation&gt; getAnimations()</dfn>
+::  Returns the set of {{Animation}} objects
+    whose <a>target effect</a> is <a>current</a> or <a>in effect</a> and
+    contains at least one <a>animation effect</a> whose
+    <a>target element</a> is this object.
+
+<!-- @ifdef INCLUDE_GROUPS -->
+    If this object is the <a>target element</a> of two or more
+    <a>animation effects</a> which are associated with the
+    same <a>animation</a>, the corresponding {{Animation}}
+    object will still only appear in the returned list once.
+<!-- @endif -->
+
+    The returned list is sorted in increasing order by <a>animation
+    sequence number</a>.
+
+    The returned list reflects the state <em>after</em> applying any pending
+    changes to animation such as changes to animation-related style properties
+    that have yet to be processed.
 
 </div>
 
