@@ -3313,7 +3313,7 @@ produced by the <em>timing model</em> and uses them to calculate a corresponding
 output.
 
 The output of each such animation effect is then combined with
-that of others using an <a>animation stack</a> before being
+that of others using an <a>effect stack</a> before being
 applied to the target properties (see <a href="#combining-effects"
 section></a>).
 
@@ -3816,7 +3816,7 @@ Since it is possible for multiple <a>in effect</a> <a>animation effects</a> to
 target the same property it is often necessary to combine the results of several
 <a>animation effects</a> together.
 This process is called <dfn lt='composition'>compositing</dfn> and is
-based on establishing an <a>animation stack</a> for each property
+based on establishing an <a>effect stack</a> for each property
 targetted by an <a>in effect</a> <a>animation effect</a>.
 
 After compositing the results of <a>animation
@@ -3834,7 +3834,7 @@ to their target properties">
 Overview of the application of <a>intermediate effect values</a> to
 their <a>target properties</a>.<br>
 The results of <a>animation effects</a> targetting the same property
-are composited together using an <a>animation stack</a>.<br>
+are composited together using an <a>effect stack</a>.<br>
 The result of this composition is written to an animation stylesheet
 that is more important than other stylesheets but less than any
 <code>!important</code> rules.
@@ -3859,26 +3859,26 @@ combined is governed by the <a>composite operation</a> of
 the corresponding <a>animation effects</a>.
 
 The relative <em>priority</em> of <a>intermediate effect values</a>
-is determined by an <a>animation stack</a> established for each
+is determined by an <a>effect stack</a> established for each
 animated property.
 </div>
 
-<h4 id="the-animation-stack">The animation stack</h4>
+<h4 id="the-effect-stack">The effect stack</h4>
 
 Associated with each property <a lt="target property">targetted</a>
-by one or more <a>animation effects</a> is an <dfn>animation
+by one or more <a>animation effects</a> is an <dfn>effect
 stack</dfn> that establishes the relative priority of the <a>animation
 effects</a>.
 
 The relative priority of any two <a>animation
-effects</a>, <var>A</var> and <var>B</var>, within an <a>animation
+effects</a>, <var>A</var> and <var>B</var>, within an <a>effect
 stack</a> is established by comparing their properties as follows:
 
 1.  Let the <dfn>associated animation of an animation effect</dfn>
     be the <a>animation</a> <a
     lt="associated with an animation">associated</a> with the
     <a>animation effect</a> that is applying the <a>animation
-    effect</a> to the property with which this <a>animation stack</a> is
+    effect</a> to the property with which this <a>effect stack</a> is
     associated.
 2.  Sort <var>A</var> and <var>B</var> by applying the following
     conditions in turn until the order is resolved,
@@ -3927,14 +3927,14 @@ are created.
 
 </div>
 
-<h4 id="calculating-the-result-of-an-animation-stack">Calculating the result of an animation stack</h4>
+<h4 id="calculating-the-result-of-an-effect-stack">Calculating the result of an effect stack</h4>
 
-In order to calculate the final value of an <a>animation stack</a>,
+In order to calculate the final value of an <a>effect stack</a>,
 the <a>intermediate effect values</a> of each
 <a>animation effect</a> in the stack are combined in order of priority
 from lowest to highest priority.
 
-Each step in the process of evaluating an <a>animation stack</a> takes
+Each step in the process of evaluating an <a>effect stack</a> takes
 an <dfn>underlying value</dfn> as input.
 
 For each <a>animation effect</a> in the stack, the appropriate
@@ -3943,7 +3943,7 @@ is combined with the <a>underlying value</a> to produce a new value.
 This resulting value becomes the <a>underlying value</a> for combining
 the next <a>animation effect</a> in the stack.
 
-The final value of an <a>animation stack</a>, called the
+The final value of an <a>effect stack</a>, called the
 <dfn>composited value</dfn>, is simply the result of combining the
 <a>intermediate effect value</a> of the final (highest priority)
 <a>animation effect</a> in the stack with the <a>underlying value</a>
@@ -4009,12 +4009,12 @@ property</a> is applied using the following process.
     href="http://www.w3.org/TR/CSS2/cascade.html#used-value">used
     value</a> [[!CSS21]] for that property in the absence of the
     <a>animation stylesheet</a>.
-2.  Establish the <a>animation stack</a> for the property (see <a
-    href="#the-animation-stack" section></a>).
-3.  Calculate the <a>composited value</a> of the <a>animation
+2.  Establish the <a>effect stack</a> for the property (see <a
+    href="#the-effect-stack" section></a>).
+3.  Calculate the <a>composited value</a> of the <a>effect
     stack</a> passing in the <var>base value</var> of the property
     as the initial <a>underlying value</a> (see <a
-    href="#calculating-the-result-of-an-animation-stack"
+    href="#calculating-the-result-of-an-effect-stack"
     section></a>).
 4.  Insert the <a>composited value</a> into the <a>animation
     stylesheet</a>.
@@ -4037,12 +4037,12 @@ property</a> is applied using the following process.
     specified for attribute in the DOM or,
     if the attribute value is not specified in the DOM, the
     <a>lacuna value</a> for that attribute.
-2.  Establish the <a>animation stack</a> for the property (see <a
-    href="#the-animation-stack" section></a>).</li>
-3.  Calculate the <a>composited value</a> of the <a>animation
+2.  Establish the <a>effect stack</a> for the property (see <a
+    href="#the-effect-stack" section></a>).</li>
+3.  Calculate the <a>composited value</a> of the <a>effect
     stack</a> passing in the <var>base value</var> of the attribute
     as the initial <a>underlying value</a> (see <a
-    href="#calculating-the-result-of-an-animation-stack"
+    href="#calculating-the-result-of-an-effect-stack"
     section></a>).</li>
 4.  Record the <a>composited value</a> as the <dfn>animated
     attribute value</dfn> of the attribute.
@@ -4726,7 +4726,7 @@ Issue: Need to define this more precisely.
 
 Within the set of <a>custom effects</a>, the
 order of execution is the same as that defined for <a>animation effects</a> in
-<a href="#the-animation-stack" section></a>.
+<a href="#the-effect-stack" section></a>.
 Items sorted earlier are executed before those sorted later.
 
 <!-- End of animation model -->
@@ -6123,7 +6123,7 @@ KeyframeEffect implements AnimationEffectMutable;
 :   <dfn attribute for=KeyframeEffectReadonly><dfn attribute
     for=KeyframeEffect>composite</dfn></dfn>
 ::  The <a>composite operation</a> used to composite this
-    <a>keyframe effect</a> with the <a>animation stack</a>, as
+    <a>keyframe effect</a> with the <a>effect stack</a>, as
     specified by one of the <a>CompositeOperation</a> enumeration
     values.
 
@@ -6565,7 +6565,7 @@ dictionary KeyframeEffectOptions {
 
 :   <dfn dict-member for=KeyframeEffectOptions>composite</dfn>
 ::  The <a>composite operation</a> used to composite this
-    animation with the <a>animation stack</a>, as specified by one
+    animation with the <a>effect stack</a>, as specified by one
     of the <a>CompositeOperation</a> enumeration values.
     This is used for all <a>keyframes</a> that do not specify
     a <a>composite operation</a>.
