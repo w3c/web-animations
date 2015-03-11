@@ -5783,10 +5783,10 @@ will effectively be cloned, not shared.
 For example, the timing of two animations may be aligned as follows:
 
 <pre class="lang-javascript">
-var animA = elem.animate({ opacity: 0 }, 1000).source;
-var animB = elem.animate({ width: '0px' }, animA.timing).source;
-alert(animA.timing !== animB.timing); // Displays 'true'
-alert(animA.timing.duration === animB.timing.duration); // Displays 'true'</pre>
+var effectA = elem.animate({ opacity: 0 }, 1000).effect;
+var effectB = elem.animate({ width: '0px' }, effectA.timing).effect;
+alert(effectA.timing !== effectB.timing); // Displays 'true'
+alert(effectA.timing.duration === effectB.timing.duration); // Displays 'true'</pre>
 </div>
 
 </div>
@@ -6287,9 +6287,8 @@ seconds can be constructed as follows:
 <pre class='example lang-javascript'>
 var effect = new KeyframeEffect(elem, { left: '100px' }, 3000);</pre>
 
-The second parameter, representing the <a>animation effect</a>, may
-specify multiple properties, an {{AnimationEffectReadonly}} object, or
-even a callback function.
+The second parameter, representing the list of keyframes, may
+specify multiple properties.
 
 <pre class='example lang-javascript'>
 // Specify multiple properties at once
@@ -6298,17 +6297,7 @@ var effectA = new KeyframeEffect(elem, { left: '100px', top: '300px' }, 3000);
 // Specify multiple frames
 var effectB = new KeyframeEffect(elem, [ { left: '100px' }, { left: '300px' } ], 3000);
 
-// Share the animation effect of another animation
-var effectC = new KeyframeEffect(elem, animB.effect, 3000);
-
-// Supply a custom script-based animation effect
-var effectD = new KeyframeEffect(elem, function(time) {
-    // (Normally we should check for time===null, but in this case it produces
-    //  the correct result anyway)
-    document.documentElement.currentScale = 1.0 + time * 2.0;
-  }, 3000);</pre>
-
-The third parameter representing the animation's timing, may
+The third parameter, representing the animation's timing, may
 simply be a number representing the <a>iteration duration</a> in
 milliseconds as above, or, to specify further timing properties such
 as the <a>start delay</a>, an {{AnimationEffectTimingProperties}} object can
@@ -6362,7 +6351,7 @@ the {{Animatable}} interface.
 <pre class='idl'>
 [NoInterfaceObject]
 interface Animatable {
-    Animation           animate (object? effect,
+    Animation           animate (object? frames,
                                  optional (double or AnimationEffectTimingProperties) timing);
     sequence&lt;Animation&gt; getAnimations ();
 };
@@ -6370,8 +6359,8 @@ interface Animatable {
 
 <div class="methods">
 
-:   <dfn method for=Animatable lt="animate(effect, timing)">
-    Animation animate(object? effect,
+:   <dfn method for=Animatable lt="animate(frames, timing)">
+    Animation animate(object? frames,
         optional (double or AnimationEffectTimingProperties) timing)</dfn>
 ::  Creates a new {{KeyframeEffect}} object
     whose <a>target element</a> is the object on which the method is
@@ -6384,7 +6373,7 @@ interface Animatable {
     The following code fragment:
 
     <div><pre class="example lang-javascript">
-var anim = elem.animate({ opacity: 0 }, 2000);</pre></div>
+var animation = elem.animate({ opacity: 0 }, 2000);</pre></div>
 
     is equivalent to:
 
