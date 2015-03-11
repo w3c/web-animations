@@ -3350,7 +3350,7 @@ Note: If there ever exists a situation where we need to animate an attribute
 
 <h4 id="procedures-for-animating-properties">Procedures for animating properties</h4>
 
-Unless specifically defined not to be, all properties are considered
+Unless specifically defined otherwise, all properties are considered
 <dfn id="concept-animatable">animatable</dfn>.
 In order to animate a <a>target property</a>, the following procedures
 must be defined.
@@ -3787,295 +3787,15 @@ Values and Replaced Content</a>
 
 <h4 id="intermediate-effect-values">Intermediate effect values</h4>
 
+Issue: Now that we've renamed this from &ldquo;intermediate animation
+value&rdquo;, would it be ok to rename this to simply &ldquo;effect
+value&rdquo;?
+
 Given a <a>time fraction</a>, a <a>current iteration</a>, and an
-<a>underlying value</a>, an <a>animation effect</a> produces
+<a>underlying value</a>, a <a>keyframe effect</a> produces
 an <dfn>intermediate effect value</dfn> for each <a>animatable</a>
-<a>target property</a>.
-The procedure for calculating this value depends on the specific
-type of <a>animation effect</a> and is defined subsequently (see <a
-href="#the-intermediate-effect-value-of-a-keyframe-animation-effect"
-section></a>).
-
-Before being applied to the <a lt="target property">target
-properties</a>,
-these <a>intermediate effect values</a> are composed together using
-the process defined in <a href="#combining-effects" section></a>.
-
-<h3 id="combining-effects">Combining effects</h3>
-<div class='informative-bg'><em>This section is non-normative</em>
-
-Issue: Recent changes in CSS Animations and CSS Transitions mean this
-  description is no longer accurate. This section needs to be significantly
-  reworked.
-
-After calculating the <a>intermediate effect values</a> for an
-<a>animation effect</a>, they are applied to the <a>animation
-effect</a>'s <a lt="target property">target properties</a>.
-
-Since it is possible for multiple <a>in effect</a> <a>animation effects</a> to
-target the same property it is often necessary to combine the results of several
-<a>animation effects</a> together.
-This process is called <dfn lt='composition'>compositing</dfn> and is
-based on establishing an <a>effect stack</a> for each property
-targetted by an <a>in effect</a> <a>animation effect</a>.
-
-After compositing the results of <a>animation
-effects</a> together, the composited result is combined with other
-values specified for the <a>target property</a>.
-
-For a CSS <a>target property</a> the arrangement is illustrated below:
-
-<div class="figure">
-<img src="img/animation-cascade.svg" width="450"
-alt="Overview of the application of intermediate effect values
-to their target properties">
-</div>
-<p class="caption">
-Overview of the application of <a>intermediate effect values</a> to
-their <a>target properties</a>.<br>
-The results of <a>animation effects</a> targetting the same property
-are composited together using an <a>effect stack</a>.<br>
-The result of this composition is written to an animation stylesheet
-that is more important than other stylesheets but less than any
-<code>!important</code> rules.
-</p>
-
-For a <a>target property</a> that specifies a DOM attribute, the
-composited result is combined with the value of the attribute
-specified in the DOM or the lacuna value for that attribute if it is
-not specified.
-
-For the first part of this operation&mdash;combining <a>intermediate
-effect values</a> that target the same <a
-lt="target property">property</a>&mdash; it is necessary to
-determine both
-<em>how</em> <a>animation effects</a>
-are combined with one another,
-as well as the <em>order</em> in which they are applied, that is,
-their relative <em>priority</em>.
-
-The matter of <em>how</em> <a>intermediate effect values</a> are
-combined is governed by the <a>composite operation</a> of
-the corresponding <a>animation effects</a>.
-
-The relative <em>priority</em> of <a>intermediate effect values</a>
-is determined by an <a>effect stack</a> established for each
-animated property.
-</div>
-
-<h4 id="the-effect-stack">The effect stack</h4>
-
-Associated with each property <a lt="target property">targetted</a>
-by one or more <a>animation effects</a> is an <dfn>effect
-stack</dfn> that establishes the relative priority of the <a>animation
-effects</a>.
-
-The relative priority of any two <a>animation
-effects</a>, <var>A</var> and <var>B</var>, within an <a>effect
-stack</a> is established by comparing their properties as follows:
-
-1.  Let the <dfn>associated animation of an animation effect</dfn>
-    be the <a>animation</a> <a
-    lt="associated with an animation">associated</a> with the
-    <a>animation effect</a> that is applying the <a>animation
-    effect</a> to the property with which this <a>effect stack</a> is
-    associated.
-2.  Sort <var>A</var> and <var>B</var> by applying the following
-    conditions in turn until the order is resolved,
-
-    1.  Sort <var>A</var> and <var>B</var> using any <a>custom
-        animation priority</a> specified for the <a
-        lt="associated animation of an animation effect">associated
-        animation</a> of each of <var>A</var> and
-        <var>B</var> so that lower priorities sort first.
-    2.  Sort by the <a>animation sequence number</a> so that lower
-        sequence numbers sort first.
-
-<!-- @ifdef INCLUDE_GROUPS -->
-    3.  Sort <var>A</var> and <var>B</var> in <a>tree order</a>.
-        (By this point, <var>A</var> and <var>B</var> must have the
-        same <a>animation</a> since otherwise the order would have been
-        resolved in the previous step.)
-
-<!-- @endif -->
-
-<a>Animation effects</a> that sort earlier have <em>lower</em>
-priority.
-
-<h5 id="the-custom-animation-priority">The custom animation priority</h5>
-
-Each <a>animation</a> has an associated numeric <dfn>custom animation
-priority</dfn> that is used to provide high-level control of
-animation priority for specifications layered on top of Web
-Animations.
-The initial value of the <a>custom animation priority</a> is zero.
-
-<div class="note">
-
-Note that the <a>custom animation priority</a> is primarily
-intended to be used to prioritize animations at
-a high-level, such as to prioritize animations <em>by type</em>.
-For example, it can be used to ensure that CSS Animations always
-override CSS Transitions.
-
-It is possible to control animation priority at a lower-level by
-setting the <a>animation start time</a> appropriately,
-(possibly after making compensatory adjustments to the <a>start
-delay</a> of the <a>target effect</a>) or influencing the
-<a>animation sequence number</a> by controlling when <a>animations</a>
-are created.
-
-</div>
-
-<h4 id="calculating-the-result-of-an-effect-stack">Calculating the result of an effect stack</h4>
-
-In order to calculate the final value of an <a>effect stack</a>,
-the <a>intermediate effect values</a> of each
-<a>animation effect</a> in the stack are combined in order of priority
-from lowest to highest priority.
-
-Each step in the process of evaluating an <a>effect stack</a> takes
-an <dfn>underlying value</dfn> as input.
-
-For each <a>animation effect</a> in the stack, the appropriate
-<a>intermediate effect value</a> from the <a>animation effect</a>
-is combined with the <a>underlying value</a> to produce a new value.
-This resulting value becomes the <a>underlying value</a> for combining
-the next <a>animation effect</a> in the stack.
-
-The final value of an <a>effect stack</a>, called the
-<dfn>composited value</dfn>, is simply the result of combining the
-<a>intermediate effect value</a> of the final (highest priority)
-<a>animation effect</a> in the stack with the <a>underlying value</a>
-at that point.
-
-<h4 id="effect-composition">Effect composition</h4>
-
-The specific operation used to combine an <a>intermediate effect
-value</a> with an <a>underlying value</a> is determined by the
-<dfn>composite operation</dfn> of the <a>animation effect</a> that
-produced the <a>intermediate effect value</a>.
-
-This specification defines three <a>composite operations</a> as
-follows:
-
-:   <dfn lt="composite operation replace">replace</dfn>
-::  The result of compositing the <a>intermediate effect value</a>
-    with the <a>underlying value</a> is simply the <a>intermediate
-    effect value</a>.
-:   <dfn lt="composite operation add">add</dfn>
-::  The <a>intermediate effect value</a> is <a
-    lt="animation addition">added</a> to the <a>underlying
-    value</a>.
-    For <a>animation behaviors</a> where the
-    <a lt="animation addition">addition operation</a> is defined
-    such that it is not commutative, the order of the operands is
-    <code><a>underlying value</a> + <a>intermediate effect
-    value</a></code>.
-:   <dfn lt="composite operation accumulate">accumulate</dfn></dt>
-::  The <a>intermediate effect value</a> is <a
-    lt="animation accumulation">accumulated</a>
-    onto the <a>underlying value</a>.
-    For <a>animation behaviors</a> where the
-    <a lt="animation accumulation">accumulation operation</a> is
-    defined such that it is not commutative, the order of the operands
-    is <a>underlying value</a> followed by <a>intermediate effect
-    value</a>.
-
-<h4 id="applying-the-composited-result">Applying the composited result</h4>
-
-The process for applying a <a>composited value</a> depends on if the
-<a>target property</a> refers to a CSS property or a DOM attribute.
-
-<h5 id="applying-the-result-to-a-css-property">Applying the composited result to a CSS property</h5>
-
-Applying a <a>composited value</a> to a CSS <a>target property</a>
-depends on establishing an <a>animation stylesheet</a>.
-
-The <dfn>animation stylesheet</dfn> contains
-<a lt="composited value">composited animation values</a>
-and acts with a higher priority than all other stylesheets.
-However, <code>!important</code> rules from all other stylesheets
-act with a higher priority than the <a>animation stylesheet</a>.
-The <a>animation stylesheet</a> is regenerated each time the
-animation model is updated (see <a href="#animation-effects"
-section></a>).
-
-The <a>composited value</a> calculated for a CSS <a>target
-property</a> is applied using the following process.
-
-1.  Calculate the <var>base value</var> of the property as
-    the value generated for that property by computing the <a
-    href="http://www.w3.org/TR/CSS2/cascade.html#used-value">used
-    value</a> [[!CSS21]] for that property in the absence of the
-    <a>animation stylesheet</a>.
-2.  Establish the <a>effect stack</a> for the property (see <a
-    href="#the-effect-stack" section></a>).
-3.  Calculate the <a>composited value</a> of the <a>effect
-    stack</a> passing in the <var>base value</var> of the property
-    as the initial <a>underlying value</a> (see <a
-    href="#calculating-the-result-of-an-effect-stack"
-    section></a>).
-4.  Insert the <a>composited value</a> into the <a>animation
-    stylesheet</a>.
-
-<h5 id="applying-the-composited-result-to-a-dom-attribute">Applying the composited result to a DOM attribute</h5>
-
-DOM attributes are, unless otherwise specified, <a>not animatable</a>.
-For each attribute that has a specific <a>animation behavior</a>
-associated with it, an attribute value to use when the attribute is
-not specified or in error must be defined, referred to as the
-<dfn>lacuna value</dfn>.
-For example, SVG2 ([[SVG2]]) defines <a
-href="http://www.w3.org/TR/SVG2/intro.html#TermLacunaValue">lacunae
-values</a> for its attributes.
-
-The <a>composited value</a> calculated for a DOM attribute <a>target
-property</a> is applied using the following process.
-
-1.  Let the <var>base value</var> of the property be the value
-    specified for attribute in the DOM or,
-    if the attribute value is not specified in the DOM, the
-    <a>lacuna value</a> for that attribute.
-2.  Establish the <a>effect stack</a> for the property (see <a
-    href="#the-effect-stack" section></a>).</li>
-3.  Calculate the <a>composited value</a> of the <a>effect
-    stack</a> passing in the <var>base value</var> of the attribute
-    as the initial <a>underlying value</a> (see <a
-    href="#calculating-the-result-of-an-effect-stack"
-    section></a>).</li>
-4.  Record the <a>composited value</a> as the <dfn>animated
-    attribute value</dfn> of the attribute.
-
-The <a>animated attribute value</a> does not replace the value of
-the attribute in the DOM although it may be accessible via some
-other interface.
-For all intents and purposes other than querying attributes values
-using DOM interfaces, user agents must treat the <a>animated attribute
-value</a> as the attribute value.
-
-<h4 id="effect-accumulation-section">Effect accumulation</h4>
-
-Similar to the compositing performed between <a>intermediate effect
-values</a> (see <a href="#effect-composition"
-section></a>), the <dfn>iteration composite operation</dfn>
-determines how values are combined between successive iterations of
-the same <a>animation effect</a>.
-
-This specification defines two <a>iteration composite operations</a>
-as follows:
-
-:   <dfn lt="iteration composite operation replace">replace</dfn>
-::  Each successive iteration is calculated independently of previous
-    iterations.
-:   <dfn lt="iteration composite operation accumulate">accumulate
-::  Successive iterations of the animation are <a
-    lt="animation accumulation">accumulated</a> with the
-    final value of the previous iteration.
-
-    The application of the <a>iteration composite operation</a> is
-    incorporated in the calculation of the <a>intermediate effect
-    value</a> for each type of <a>animation effect</a>.
+<a>target property</a> by applying the <a>animation behavior</a>
+appropriate to the property.
 
 <h3 id="keyframes-section">Keyframes</h3>
 
@@ -4105,13 +3825,15 @@ is specified and the <em>next</em> keyframe in the list.
 The <a>timing function</a> specified on the last keyframe in the
 list is never applied.
 
-In addition to the <a>composite operation</a> specified on the
-<a>animation effect</a>, each <a>keyframe</a> may also have an
-associated <a>composite operation</a> that is applied to all values
+Each <a>keyframe</a> may also have a <dfn>keyframe-specific composite
+operation</dfn> that is applied to all values
 specified in that <a>keyframe</a>.
-If no <a>composite operation</a> is specified for a <a>keyframe</a>,
-the <a>composite operation</a> specified for the <a>animation
-effect</a> is used.
+The possible operations and their meanings are identical to those defined
+for the <a>composite operation</a> associated with the <a>keyframe effect</a>
+as a whole in <a href="#effect-composition" section></a>.
+If no <a>keyframe-specific composite operation</a> is specified for
+a <a>keyframe</a>, the <a>composite operation</a> specified for the
+<a>keyframe effect</a> as a whole is used for values specified in that keyframe.
 
 <h4 id="spacing-keyframes">Spacing keyframes</h4>
 <div class="informative-bg"><em>This section is non-normative.</em>
@@ -4225,7 +3947,7 @@ offset.
 </p>
 </div>
 
-Before calculating animation values from a <a>keyframe effect</a>,
+Before calculating effect values from a <a>keyframe effect</a>,
 an absolute value must be computed for the <a>keyframe offset</a> of each
 <a>keyframe</a> with a null offset.
 The values computed depend on the <dfn>keyframe spacing mode</dfn>
@@ -4373,15 +4095,6 @@ procedure.
         <var>start</var> and <var>end</var> keyframes respectively.
 
     </div>
-
-Note: although the above procedure defines computing keyframe
-    offsets in terms of overwriting null values, user agents that
-    implement the <a href="#programming-interface">programming
-    interface</a> are required to maintain the original null values as
-    well as calculating the computed offsets.
-    This is because the {{KeyframeEffectReadonly/getFrames()}} method of the
-    {{KeyframeEffect}} interface returns keyframe offsets both
-    before and after applying spacing.
 
 Issue: The above algorithm is quite complex.
     It attempts to cover all possible combinations of input where
@@ -4592,6 +4305,289 @@ Note: this procedure permits overlapping <a>keyframes</a>.
     4 (Keyframe offsets outside [0, 1]) of minuted discussion from Tokyo
       2013 F2F</a>.
 </div>
+
+
+<h3 id="combining-effects">Combining effects</h3>
+<div class='informative-bg'><em>This section is non-normative</em>
+
+Issue: Recent changes in CSS Animations and CSS Transitions mean this
+  description is no longer accurate. This section needs to be significantly
+  reworked.
+
+After calculating the <a>intermediate effect values</a> for a
+<a>keyframe effect</a>, they are applied to the <a>animation
+effect</a>'s <a lt="target property">target properties</a>.
+
+Since it is possible for multiple <a>in effect</a> <a>keyframe effects</a> to
+target the same property it is often necessary to combine the results of several
+<a>keyframe effects</a> together.
+This process is called <dfn lt='composition'>compositing</dfn> and is
+based on establishing an <a>effect stack</a> for each property
+targetted by an <a>in effect</a> <a>animation effect</a>.
+
+After compositing the results of <a>keyframe
+effects</a> together, the composited result is combined with other
+values specified for the <a>target property</a>.
+
+For a CSS <a>target property</a> the arrangement is illustrated below:
+
+<div class="figure">
+<img src="img/animation-cascade.svg" width="450"
+alt="Overview of the application of intermediate effect values
+to their target properties">
+</div>
+<p class="caption">
+Overview of the application of <a>intermediate effect values</a> to
+their <a>target properties</a>.<br>
+The results of <a>keyframe effects</a> targetting the same property
+are composited together using an <a>effect stack</a>.<br>
+The result of this composition is written to an animation stylesheet
+that is more important than other stylesheets but less than any
+<code>!important</code> rules.
+</p>
+
+For a <a>target property</a> that specifies a DOM attribute, the
+composited result is combined with the value of the attribute
+specified in the DOM or the lacuna value for that attribute if it is
+not specified.
+
+For the first part of this operation&mdash;combining <a>intermediate
+effect values</a> that target the same <a
+lt="target property">property</a>&mdash; it is necessary to
+determine both
+<em>how</em> <a>keyframe effects</a>
+are combined with one another,
+as well as the <em>order</em> in which they are applied, that is,
+their relative <em>priority</em>.
+
+The matter of <em>how</em> <a>intermediate effect values</a> are
+combined is governed by the <a>composite operation</a> of
+the corresponding <a>keyframe effects</a>.
+
+The relative <em>priority</em> of <a>intermediate effect values</a>
+is determined by an <a>effect stack</a> established for each
+animated property.
+</div>
+
+<h4 id="the-effect-stack">The effect stack</h4>
+
+Associated with each property <a lt="target property">targetted</a>
+by one or more <a>keyframe effects</a> is an <dfn>effect
+stack</dfn> that establishes the relative priority of the <a>keyframe
+effects</a>.
+
+The relative priority of any two <a>keyframe
+effects</a>, <var>A</var> and <var>B</var>, within an <a>effect
+stack</a> is established by comparing their properties as follows:
+
+1.  Let the <dfn>associated animation of an animation effect</dfn>
+    be the <a>animation</a> <a
+    lt="associated with an animation">associated</a> with the
+    <a>animation effect</a> that affecting the property with which this
+    <a>effect stack</a> is associated.
+2.  Sort <var>A</var> and <var>B</var> by applying the following
+    conditions in turn until the order is resolved,
+
+    1.  Sort <var>A</var> and <var>B</var> using any <a>custom
+        animation priority</a> specified for the <a
+        lt="associated animation of an animation effect">associated
+        animation</a> of each of <var>A</var> and
+        <var>B</var> so that lower priorities sort first.
+    2.  Sort by the <a>animation sequence number</a> so that lower
+        sequence numbers sort first.
+
+<!-- @ifdef INCLUDE_GROUPS -->
+    3.  Sort <var>A</var> and <var>B</var> in <a>tree order</a>.
+        (By this point, <var>A</var> and <var>B</var> must have the
+        same <a>animation</a> since otherwise the order would have been
+        resolved in the previous step.)
+
+<!-- @endif -->
+
+<a>Animation effects</a> that sort earlier have <em>lower</em>
+priority.
+
+<h5 id="the-custom-animation-priority">The custom animation priority</h5>
+
+Issue: This needs to be reworked since the interaction between CSS Animations
+and CSS Transitions is more complex than this arrangement allows.
+
+Each <a>animation</a> has an associated numeric <dfn>custom animation
+priority</dfn> that is used to provide high-level control of
+animation priority for specifications layered on top of Web
+Animations.
+The initial value of the <a>custom animation priority</a> is zero.
+
+<div class="note">
+
+Note that the <a>custom animation priority</a> is primarily
+intended to be used to prioritize animations at
+a high-level, such as to prioritize animations <em>by type</em>.
+For example, it can be used to ensure that CSS Animations always
+override CSS Transitions.
+
+It is possible to control animation priority at a lower-level by
+setting the <a>animation start time</a> appropriately,
+(possibly after making compensatory adjustments to the <a>start
+delay</a> of the <a>target effect</a>) or influencing the
+<a>animation sequence number</a> by controlling when <a>animations</a>
+are created.
+
+</div>
+
+<h4 id="calculating-the-result-of-an-effect-stack">Calculating the result of an effect stack</h4>
+
+In order to calculate the final value of an <a>effect stack</a>,
+the <a>intermediate effect values</a> of each
+<a>keyframe effect</a> in the stack are combined in order of priority
+from lowest to highest priority.
+
+Each step in the process of evaluating an <a>effect stack</a> takes
+an <dfn>underlying value</dfn> as input.
+
+For each <a>keyframe effect</a> in the stack, the appropriate
+<a>intermediate effect value</a> from the <a>keyframe effect</a>
+is combined with the <a>underlying value</a> to produce a new value.
+This resulting value becomes the <a>underlying value</a> for combining
+the next <a>keyframe effect</a> in the stack.
+
+The final value of an <a>effect stack</a>, called the
+<dfn>composited value</dfn>, is simply the result of combining the
+<a>intermediate effect value</a> of the final (highest priority)
+<a>keyframe effect</a> in the stack with the <a>underlying value</a>
+at that point.
+
+<h4 id="effect-composition">Effect composition</h4>
+
+The specific operation used to combine an <a>intermediate effect
+value</a> with an <a>underlying value</a> is determined by the
+<dfn>composite operation</dfn> of the <a>keyframe effect</a> that
+produced the <a>intermediate effect value</a>.
+
+This specification defines three <a>composite operations</a> as
+follows:
+
+:   <dfn lt="composite operation replace">replace</dfn>
+::  The result of compositing the <a>intermediate effect value</a>
+    with the <a>underlying value</a> is simply the <a>intermediate
+    effect value</a>.
+:   <dfn lt="composite operation add">add</dfn>
+::  The <a>intermediate effect value</a> is <a
+    lt="animation addition">added</a> to the <a>underlying
+    value</a>.
+    For <a>animation behaviors</a> where the
+    <a lt="animation addition">addition operation</a> is defined
+    such that it is not commutative, the order of the operands is
+    <code><a>underlying value</a> + <a>intermediate effect
+    value</a></code>.
+:   <dfn lt="composite operation accumulate">accumulate</dfn></dt>
+::  The <a>intermediate effect value</a> is <a
+    lt="animation accumulation">accumulated</a>
+    onto the <a>underlying value</a>.
+    For <a>animation behaviors</a> where the
+    <a lt="animation accumulation">accumulation operation</a> is
+    defined such that it is not commutative, the order of the operands
+    is <a>underlying value</a> followed by <a>intermediate effect
+    value</a>.
+
+<h4 id="applying-the-composited-result">Applying the composited result</h4>
+
+The process for applying a <a>composited value</a> depends on if the
+<a>target property</a> refers to a CSS property or a DOM attribute.
+
+<h5 id="applying-the-result-to-a-css-property">Applying the composited result to a CSS property</h5>
+
+Issue: This is probably no longer accurate.
+
+Applying a <a>composited value</a> to a CSS <a>target property</a>
+depends on establishing an <a>animation stylesheet</a>.
+
+The <dfn>animation stylesheet</dfn> contains
+<a lt="composited value">composited animation values</a>
+and acts with a higher priority than all other stylesheets.
+However, <code>!important</code> rules from all other stylesheets
+act with a higher priority than the <a>animation stylesheet</a>.
+The <a>animation stylesheet</a> is regenerated each time the
+animation model is updated (see <a href="#animation-effects"
+section></a>).
+
+The <a>composited value</a> calculated for a CSS <a>target
+property</a> is applied using the following process.
+
+1.  Calculate the <var>base value</var> of the property as
+    the value generated for that property by computing the <a
+    href="http://www.w3.org/TR/CSS2/cascade.html#used-value">used
+    value</a> [[!CSS21]] for that property in the absence of the
+    <a>animation stylesheet</a>.
+2.  Establish the <a>effect stack</a> for the property (see <a
+    href="#the-effect-stack" section></a>).
+3.  Calculate the <a>composited value</a> of the <a>effect
+    stack</a> passing in the <var>base value</var> of the property
+    as the initial <a>underlying value</a> (see <a
+    href="#calculating-the-result-of-an-effect-stack"
+    section></a>).
+4.  Insert the <a>composited value</a> into the <a>animation
+    stylesheet</a>.
+
+<h5 id="applying-the-composited-result-to-a-dom-attribute">Applying the composited result to a DOM attribute</h5>
+
+DOM attributes are, unless otherwise specified, <a>not animatable</a>.
+For each attribute that has a specific <a>animation behavior</a>
+associated with it, an attribute value to use when the attribute is
+not specified or in error must be defined, referred to as the
+<dfn>lacuna value</dfn>.
+For example, SVG2 ([[SVG2]]) defines <a
+href="http://www.w3.org/TR/SVG2/intro.html#TermLacunaValue">lacunae
+values</a> for its attributes.
+
+The <a>composited value</a> calculated for a DOM attribute <a>target
+property</a> is applied using the following process.
+
+1.  Let the <var>base value</var> of the property be the value
+    specified for attribute in the DOM or,
+    if the attribute value is not specified in the DOM, the
+    <a>lacuna value</a> for that attribute.
+2.  Establish the <a>effect stack</a> for the property (see <a
+    href="#the-effect-stack" section></a>).</li>
+3.  Calculate the <a>composited value</a> of the <a>effect
+    stack</a> passing in the <var>base value</var> of the attribute
+    as the initial <a>underlying value</a> (see <a
+    href="#calculating-the-result-of-an-effect-stack"
+    section></a>).</li>
+4.  Record the <a>composited value</a> as the <dfn>animated
+    attribute value</dfn> of the attribute.
+
+The <a>animated attribute value</a> does not replace the value of
+the attribute in the DOM although it may be accessible via some
+other interface.
+For all intents and purposes other than querying attributes values
+using DOM interfaces, user agents must treat the <a>animated attribute
+value</a> as the attribute value.
+
+<h4 id="effect-accumulation-section">Effect accumulation</h4>
+
+Similar to the compositing performed between <a>intermediate effect
+values</a> (see <a href="#effect-composition"
+section></a>), the <dfn>iteration composite operation</dfn>
+determines how values are combined between successive iterations of
+the same <a>keyframe effect</a>.
+
+This specification defines two <a>iteration composite operations</a>
+as follows:
+
+:   <dfn lt="iteration composite operation replace">replace</dfn>
+::  Each successive iteration is calculated independently of previous
+    iterations.
+:   <dfn lt="iteration composite operation accumulate">accumulate
+::  Successive iterations of the animation are <a
+    lt="animation accumulation">accumulated</a> with the
+    final value of the previous iteration.
+
+    The application of the <a>iteration composite operation</a> is
+    incorporated in the calculation of the <a>intermediate effect
+    value</a> in <a
+    href="#the-intermediate-effect-value-of-a-keyframe-animation-effect"
+    section></a>.
 
 <h3 id="custom-effects">Custom effects</h3>
 
