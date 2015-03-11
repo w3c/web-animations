@@ -3899,11 +3899,11 @@ We can use the <a lt="paced keyframe spacing mode">paced</a>
 spacing mode as follows:
 
 <pre class='example lang-javascript'>
-elem.animate(
-  new KeyframeEffect([ { left: '0px' },
-                       { left: '-20px' },
-                       { left: '100px' },
-                       { left: '50px' } ], { spacing: "paced(left)" }), 1000);</pre>
+elem.animate([ { left: '0px' },
+               { left: '-20px' },
+               { left: '100px' },
+               { left: '50px' } ],
+             { duration: 1000, spacing: "paced(left)" });</pre>
 
 The result is illustrated below:
 
@@ -3923,11 +3923,11 @@ It is also possible to combine fixed <a>keyframe offsets</a> with
 spacing modes as follows:
 
 <pre class='example lang-javascript'>
-elem.animate(
-  new KeyframeEffect([ { left: '0px' },
-                       { left: '-20px' },
-                       { left: '100px', offset: 0.5 },
-                       { left: '50px' } ], { spacing: "paced(left)" }), 1000);</pre>
+elem.animate([ { left: '0px' },
+               { left: '-20px' },
+               { left: '100px', offset: 0.5 },
+               { left: '50px' } ],
+             { duration: 1000, spacing: "paced(left)" });</pre>
 
 The result is illustrated below:
 
@@ -6682,15 +6682,15 @@ the {{Animatable}} interface.
 <pre class='idl'>
 [NoInterfaceObject]
 interface Animatable {
-    Animation           animate (object? frames,
-                                 optional (double or AnimationEffectTimingProperties) timing);
+    Animation           animate ((Keyframe or sequence&lt;Keyframe&gt;) frames,
+                                 optional (double or KeyframeEffectOptions) options);
     sequence&lt;Animation&gt; getAnimations ();
 };
 </pre>
 
 <div class="methods">
 
-:   <dfn method for=Animatable lt="animate(frames, timing)">Animation animate(object? frames, optional (double or AnimationEffectTimingProperties) timing)</dfn>
+:   <dfn method for=Animatable lt="animate(frames, options)">Animation animate(frames, options)</dfn>
 ::  Creates a new {{KeyframeEffect}} object
     whose <a>target element</a> is the object on which the method is
     called, and calls the {{AnimationTimeline/play()}} method of the
@@ -6715,17 +6715,17 @@ elem.ownerDocument.timeline.play(effect);</pre></div>
 
     <div class="parameters">
 
-    :   <dfn argument for="Animatable/animate" lt="frames">object? frames</dfn>
-    ::  The keyframes to use.
-        This value is passed to the {{KeyframeEffect()}} constructor 
-        as the <var>frames</var> parameter and has the
+    :   <dfn argument for="Animatable/animate" lt="frames">(Keyframe or sequence&lt;Keyframe&gt;) frames</dfn>
+    ::  The <a>keyframes</a> to use.
+        This value is passed to the {{KeyframeEffect()}}
+        constructor as the <var>frames</var> parameter and has the
         same interpretation as defined for that constructor.
-    :   <dfn argument for="Animatable/animate" lt="timing">optional (double or
-        AnimationEffectTimingProperties) timing</dfn>
-    ::  The timing parameters of the animation.
-        This value is passed to the {{KeyframeEffect()}} constructor
-        as the <var>timing</var> parameter and has the
-        same interpretation as defined for that constructor.
+    :   <dfn argument for="Animatable/animate" lt="options">optional (double or
+        KeyframeEffectOptions) options</dfn>
+    ::  The timing and animation options for the created {{KeyframeEffect}}.
+        This value is passed to the {{KeyframeEffect()}} constructor as the
+        <var>options</var> parameter and has the same interpretation as
+        defined for that constructor.
 
     </div>
 
