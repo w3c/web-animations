@@ -1529,7 +1529,7 @@ the <a lt="animation effect start time">start time</a> is zero.
 The singular exception is <a>sequence effects</a> which set
 the <a lt="animation effect start time">start times</a> of their
 children as described in <a
-href="#the-start-time-of-children-of-an-animation-sequence" section></a>.
+href="#the-start-time-of-children-of-a-sequence-effect" section></a>.
 
 <!-- @endif -->
 <!-- @ifndef INCLUDE_GROUPS -->
@@ -1940,9 +1940,9 @@ The <dfn>intrinsic iteration duration</dfn> of an animation effect is
 zero, however some specific types of animation effect such as
 <a>group effects</a> override this behavior and provide an
 alternative intrinsic duration (see <a
-href="#the-intrinsic-iteration-duration-of-an-animation-group"
+href="#the-intrinsic-iteration-duration-of-a-group-effect"
 section></a> and <a
-href="#the-intrinsic-iteration-duration-of-an-animation-sequence"
+href="#the-intrinsic-iteration-duration-of-a-sequence-effect"
 section></a>).
 <!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->zero.
 <!-- @endif -->
@@ -3239,7 +3239,7 @@ effect</a> is equivalent to the <a
 lt="animation effect start time">start time</a> of a hypothetical
 <a>child effect</a> appended to the group's children
 calculated according to the definition in <a
-href="#the-start-time-of-children-of-an-animation-sequence"
+href="#the-start-time-of-children-of-a-sequence-effect"
 section></a> unless that produces a negative value, in
 which case the <a>intrinsic iteration duration</a> is zero.
 
@@ -3306,7 +3306,7 @@ model</em> takes the <a>time fraction</a> and <a>current iteration</a> values
 produced by the <em>timing model</em> and uses them to calculate a corresponding
 output.
 
-The output of each such animation effect is then combined with other
+The output of each such animation effect is then combined with
 that of others using an <a>animation stack</a> before being
 applied to the target properties (see <a href="#combining-animations"
 section></a>).
@@ -5018,9 +5018,9 @@ interface AnimationEffectReadonly {
 <!-- @ifdef INCLUDE_GROUPS -->
 
     // Timing hierarchy
-    readonly attribute AnimationGroupReadonly?  parent;
-    readonly attribute AnimationEffectReadonly?   previousSibling;
-    readonly attribute AnimationEffectReadonly?   nextSibling;
+    readonly attribute GroupEffectReadonly?     parent;
+    readonly attribute AnimationEffectReadonly? previousSibling;
+    readonly attribute AnimationEffectReadonly? nextSibling;
 <!-- @endif -->
 };
 <!-- @ifdef INCLUDE_GROUPS -->
@@ -5555,7 +5555,7 @@ enum FillMode { "none", "forwards", "backwards", "both", "auto" };
 :   <code>auto</code>
 <!-- @ifdef INCLUDE_GROUPS -->
 ::  Fill backwards and forwards when applied to an
-    {{AnimationGroupReadonly}} and no fill when applied to an
+    {{GroupEffectReadonly}} and no fill when applied to an
     {{KeyframeEffectReadonly}}.
 
 <!-- @endif -->
@@ -5589,47 +5589,47 @@ enum PlaybackDirection { "normal", "reverse", "alternate", "alternate-reverse" }
     they are specified, odd iterations are played as specified.
 
 <!-- @ifdef INCLUDE_GROUPS -->
-<h3 id="the-animationgroup-interfaces">The <code>AnimationGroupReadonly</code>
-  and <code>AnimationGroup</code> interfaces</h3>
+<h3 id="the-animationgroup-interfaces">The <code>GroupEffectReadonly</code>
+  and <code>GroupEffect</code> interfaces</h3>
 
-<a>Group effects</a> are represented by the {{AnimationGroupReadonly}}
+<a>Group effects</a> are represented by the {{GroupEffectReadonly}}
 interface.
-Mutable <a>group effects</a> are represented by the {{AnimationGroup}}
+Mutable <a>group effects</a> are represented by the {{GroupEffect}}
 interface.
 
 <pre class='idl'>
 [Constructor (sequence<AnimationEffectReadonly>? children,
               optional (unrestricted double or AnimationEffectTimingProperties) timing)]
-interface AnimationGroupReadonly : AnimationEffectReadonly {
+interface GroupEffectReadonly : AnimationEffectReadonly {
     readonly attribute AnimationNodeList      children;
     readonly attribute AnimationEffectReadonly? firstChild;
     readonly attribute AnimationEffectReadonly? lastChild;
-    AnimationGroup clone ();
+    GroupEffect clone ();
 };
 
 [NoInterfaceObject]
-interface AnimationGroupMutable {
+interface GroupEffectMutable {
   void prepend (AnimationEffectReadonly... effects);
   void append (AnimationEffectReadonly... effects);
 };
 
 [Constructor (sequence<AnimationEffectReadonly>? children,
               optional (unrestricted double or AnimationEffectTimingProperties) timing)]
-interface AnimationGroup : AnimationGroupReadonly {
+interface GroupEffect : GroupEffectReadonly {
 };
-AnimationGroup implements AnimationEffectMutable;
-AnimationGroup implements AnimationGroupMutable;
+GroupEffect implements AnimationEffectMutable;
+GroupEffect implements GroupEffectMutable;
 </pre>
 
 <div class="constructors">
 
-:   <dfn constructor for=AnimationGroupReadonly
-      lt="AnimationGroupReadonly(children, timing)">
-    AnimationGroupReadonly ()</dfn>
-::  Creates a new {{AnimationGroup}} object using the following
+:   <dfn constructor for=GroupEffectReadonly
+      lt="GroupEffectReadonly(children, timing)">
+    GroupEffectReadonly ()</dfn>
+::  Creates a new {{GroupEffectReadonly}} object using the following
     procedure:
 
-    1.  Create a new {{AnimationGroup}} object, <var>group</var>.
+    1.  Create a new {{GroupEffectReadonly}} object, <var>group</var>.
 
     2.  Let <var>timing input</var> be the result of applying the
         <a>procedure for processing a timing argument</a> to <var>timing.
@@ -5644,30 +5644,30 @@ AnimationGroup implements AnimationGroupMutable;
     <div class="parameters">
 
     :   <dfn argument
-        for="AnimationGroupReadonly/AnimationGroupReadonly(children, timing)"
+        for="GroupEffectReadonly/GroupEffectReadonly(children, timing)"
         lt="children">children</dfn>
     ::  A sequence of animation effects to add as children of this group.
 
         These children are appended in sequence using the same
-        semantics as the {{AnimationGroupMutable/append()}} method of the
-        {{AnimationGroupMutable}} interface.
+        semantics as the {{GroupEffectMutable/append()}} method of the
+        {{GroupEffectMutable}} interface.
 
     :   <dfn argument
-        for="AnimationGroupReadonly/AnimationGroupReadonly(children, timing)"
+        for="GroupEffectReadonly/GroupEffectReadonly(children, timing)"
         lt="timing">timing</dfn>
     ::  The timing properties or <a>iteration duration</a> of the new
         group effect.
 
     </div>
 
-:   <dfn constructor for=AnimationGroup
-      lt="AnimationGroup(children, timing)">
-    AnimationGroup ()</dfn>
-::  Creates a new {{AnimationGroup}} object using the same procedure as with
-    the {{AnimationGroupReadonly()}} constructor with the following differences:
+:   <dfn constructor for=GroupEffect
+      lt="GroupEffect(children, timing)">
+    GroupEffect ()</dfn>
+::  Creates a new {{GroupEffect}} object using the same procedure as with
+    the {{GroupEffectReadonly()}} constructor with the following differences:
 
-    *   <var>group</var> is initialized to a new {{AnimationGroup}} object
-        rather than a new {{AnimationGroupReadonly}} object.
+    *   <var>group</var> is initialized to a new {{GroupEffect}} object
+        rather than a new {{GroupEffectReadonly}} object.
     *   <code><var>group</var>.timing</code> is set to a new
         {{AnimationEffectTiming}} object rather than a new {{AnimationEffectTimingReadonly}}
         object.
@@ -5676,20 +5676,20 @@ AnimationGroup implements AnimationGroupMutable;
 
 <div class="attributes">
 
-:   <dfn attribute for=AnimationGroupReadonly>children</dfn>
+:   <dfn attribute for=GroupEffectReadonly>children</dfn>
 ::  The list of <a>child effects</a> in the group.
 
-:   <dfn attribute for=AnimationGroupReadonly>firstChild</dfn>
+:   <dfn attribute for=GroupEffectReadonly>firstChild</dfn>
 ::  The <a>first child</a> of this <a>group effect</a>.
 
-:   <dfn attribute for=AnimationGroupReadonly>lastChild</dfn>
+:   <dfn attribute for=GroupEffectReadonly>lastChild</dfn>
 ::  The <a>last child</a> of this <a>group effect</a>.
 
 </div>
 
 <div class="methods">
 
-:   <dfn method for=AnimationGroupMutable lt="prepend()">
+:   <dfn method for=GroupEffectMutable lt="prepend()">
 :   void prepend (AnimationEffectReadonly... effects)</dfn>
 ::
 
@@ -5701,7 +5701,7 @@ AnimationGroup implements AnimationGroupMutable;
     2.  <a lt="insert children">Insert</a> <var>effects</var> before
         the <a>first child</a>.
 
-:   <dfn method for=AnimationGroupMutable lt="append()">
+:   <dfn method for=GroupEffectMutable lt="append()">
     void append (AnimationEffectReadonly... effects)</dfn>
 ::
 
@@ -5713,12 +5713,12 @@ AnimationGroup implements AnimationGroupMutable;
     2.  <a lt="insert children">Insert</a> <var>effects</var> before
         <code>null</code>.
 
-:   <dfn method for=AnimationGroupReadonly lt="clone()">
-    AnimationGroup clone ()</dfn>
-::  Creates a deep copy of this {{AnimationGroupReadonly}} object using the
+:   <dfn method for=GroupEffectReadonly lt="clone()">
+    GroupEffect clone ()</dfn>
+::  Creates a deep copy of this {{GroupEffectReadonly}} object using the
     following procedure.
 
-    1.  Let <var>source</var> be this {{AnimationGroupReadonly}} object,
+    1.  Let <var>source</var> be this {{GroupEffectReadonly}} object,
         the object to be cloned.
 
     2.  Let <var>cloned timing</var> be a new
@@ -5734,17 +5734,17 @@ AnimationGroup implements AnimationGroupMutable;
         of calling <code><var>child</var>.clone()</code>
         to <var>cloned children</var>.
 
-    5.  Return a new {{AnimationGroup}} object created by
-        calling the {{AnimationGroup()}} constructor with parameters
-        <code>AnimationGroup(<var>cloned children</var>,
+    5.  Return a new {{GroupEffect}} object created by
+        calling the {{GroupEffect()}} constructor with parameters
+        <code>GroupEffect(<var>cloned children</var>,
         <var>cloned timing</var>)</code>.
 
 </div>
 
 <h4 id="processing-a-timing-argument">Processing a <var>timing</var> argument</h4>
 
-<p>The <var>timing</var> parameter passed to the {{AnimationGroupReadonly()}},
-{{AnimationGroup()}}, {{KeyframeEffectReadonly()}}, or {{Animation()}} constructor
+<p>The <var>timing</var> parameter passed to the {{GroupEffectReadonly()}},
+{{GroupEffect()}}, {{KeyframeEffectReadonly()}}, or {{Animation()}} constructor
 may be an {{AnimationEffectTimingProperties}} object, a double representing the
 duration of the <a>animation effect</a> in milliseconds, or undefined.</p>
 
@@ -5876,47 +5876,47 @@ interface AnimationNodeList {
 </div>
 
 <h3 id="the-animationsequence-interfaces">The
-<code>AnimationSequenceReadonly</code> and <code>AnimationSequence</code>
+<code>SequenceEffectReadonly</code> and <code>SequenceEffect</code>
 interfaces</h3>
 
-<a>Sequence effects</a> are represented by the {{AnimationSequenceReadonly}}
+<a>Sequence effects</a> are represented by the {{SequenceEffectReadonly}}
 interface.
-Mutable <a>sequence effects</a> are represented by the {{AnimationSequence}}
+Mutable <a>sequence effects</a> are represented by the {{SequenceEffect}}
 interface.
 
 <pre class='idl'>
 [Constructor (sequence<AnimationEffectReadonly>? children,
               optional (unrestricted double or AnimationEffectTimingProperties) timing)]
-interface AnimationSequenceReadonly : AnimationGroupReadonly {
-    AnimationSequence clone ();
+interface SequenceEffectReadonly : GroupEffectReadonly {
+    SequenceEffect clone ();
 };
 
 [Constructor (sequence<AnimationEffectReadonly>? children,
               optional (unrestricted double or AnimationEffectTimingProperties) timing)]
-interface AnimationSequence : AnimationSequenceReadonly {
+interface SequenceEffect : SequenceEffectReadonly {
 };
-AnimationSequence implements AnimationEffectMutable;
-AnimationSequence implements AnimationGroupMutable;
+SequenceEffect implements AnimationEffectMutable;
+SequenceEffect implements GroupEffectMutable;
 </pre>
 
 <div class="contructors">
 
-:   <dfn constructor for=AnimationSequence lt="AnimationSequence()">
+:   <dfn constructor for=SequenceEffect lt="SequenceEffect()">
     Constructor (sequence&lt;AnimationEffectReadonly&gt;? children,
     optional (unrestricted double or AnimationEffectTimingProperties) timing)</dfn>
 ::  The meaning and handling of each of the parameters in this
-    constructor is identical to the {{AnimationGroup()}} constructor.
+    constructor is identical to the {{GroupEffect()}} constructor.
 
 </div>
 
 <div class="methods">
 
-:   <dfn method for=AnimationSequenceReadonly lt="clone()">
-    AnimationSequence clone ()</dfn>
-::  Creates a deep copy of this {{AnimationSequenceReadonly}} object using
-    the same procedure as defined for the {{AnimationGroupReadonly/clone()}}
-    method of the {{AnimationGroupReadonly}} interface except that a new
-    {{AnimationSequence}} object is created.
+:   <dfn method for=SequenceEffectReadonly lt="clone()">
+    SequenceEffect clone ()</dfn>
+::  Creates a deep copy of this {{SequenceEffectReadonly}} object using
+    the same procedure as defined for the {{GroupEffectReadonly/clone()}}
+    method of the {{GroupEffectReadonly}} interface except that a new
+    {{SequenceEffect}} object is created.
 
 </div>
 <!-- @endif -->
@@ -5972,7 +5972,7 @@ KeyframeEffect implements AnimationEffectMutable;
 
 <!-- @exclude -->
 <!-- When groups are defined, we factor out the handling of the timing parameter
-     to a separate section under the AnimationGroup definition.
+     to a separate section under the GroupEffect definition.
 
      We should probably do something similar when groups aren't defined too.
      That would be easier if we defined animations before groups but that's a
@@ -6332,7 +6332,7 @@ For example, fading an element before switching
 follows,
 
 <pre class='example lang-javascript'>
-new AnimationSequence(
+new SequenceEffect(
   [
     new KeyframeEffect(elem, { opacity: 0 }, 1000),
     new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' })
@@ -6968,7 +6968,7 @@ alert(animation.effect.computedTiming.localTime); // Displays &lsquo;5000&rsquo;
 <!-- @ifdef INCLUDE_GROUPS -->
     The same concept applies to more complex modifications of the
     Web Animations model such as adding and removing children from
-    an {{AnimationGroup}}.
+    an {{GroupEffect}}.
 <!-- @endif -->
 
     </div>
