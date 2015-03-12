@@ -517,11 +517,10 @@ to <var>new timeline</var> which may be null, is as follows:
 1.  If <var>previous player time</var> is <a lt=unresolved>resolved</a>,
     run the procedure to <a>silently set the current time</a> of
     <var>player</var> to <var>previous player time</a>.
-1.  <p class="todo">
-      If <var>new timeline</var> is null, ensure that <a>custom effects</a> get
-      called with an <a>unresolved</a> <a>time fraction</a> (unless a subsequent
-      change in the same script execution context makes this redundant).
-    </p>
+1.  Issue: If <var>new timeline</var> is null, we should ensure that <a>custom
+    effects</a> get called with an <a>unresolved</a> <a>time fraction</a>
+    (unless a subsequent change in the same script execution context makes this
+    redundant).
 1.  Run the procedure to <a>update a player's finished state</a> for
     <var>player</var>.
 
@@ -941,12 +940,8 @@ The procedure to <dfn>play a player</dfn>, <var>player</var>, is as follows:
         is not 0, make <var>player</var>'s <a>hold time</a> <a>unresolved</a>.
     4.  Set the <a>player start time</a> of <var>player</var>
         to <var>new start time</var>.
-    5.
-
-        <div class="todo">Queue a task here for sampling custom effects.
+    5.  Issue: We should queue a task here for sampling custom effects.
         (This should happen before we resolve the ready promise.)
-        </div>
-
     6.  <a lt="resolve a Promise">Resolve</a> <var>player</var>'s <a>current
         ready promise</a> with <var>player</var>.
     7.  Run the procedure to <a>update a player's finished state</a>
@@ -1005,14 +1000,9 @@ The procedure to <dfn>pause a player</dfn>, <var>player</var> is as follows:
         (even if the current time is <a>unresolved</a>).
     1.  Make <var>player</var>'s <a lt="player start time">start time</a>
         unresolved.
-
-    1.
-
-        <div class="todo">Queue a task here for sampling custom effects
-            with the final current time.  (This should happen before we
-            resolve the ready promise).
-        </div>
-
+    1.  Issue: We should queue a task here for sampling custom effects
+        with the final current time.
+        (This should happen before we resolve the ready promise).
     1.  <a lt="resolve a Promise">Resolve</a> <var>player</var>'s <a>current
         ready promise</a> with <var>player</var>.
     1.  Run the procedure to <a>update a player's finished state</a>
@@ -1122,11 +1112,9 @@ time</dfn> <a>time value</a> that is originally <a>unresolved</a>,
 and a <dfn>previous finished state</dfn> boolean flag that is
 initially false.
 
-<div class='todo'>
-    Mention that this gets run at the end of each sample as well.
-    And at the end of any update to the timing of the <a>source
-    content</a>.
-</div>
+Issue: We should mention that this gets run at the end of each sample as well.
+       Likewise at the end of any update to the timing of the <a>source
+       content</a>.
 
 The procedure to <dfn>update a player's finished state</dfn> for
 <var>player</var> is as follows:
@@ -3724,8 +3712,7 @@ list</dfn> has the following <a>animation behavior</a>:
         <var>V</var><sub>remainder-b</sub>
         <var>V</var><sub>combined</sub>&rsquo;.
 
-*   <a>distance computation</a>: <span class="todo">See issue
-    below</span>
+*   <a>distance computation</a>: See issue below.
 
 <div class="issue">
 
