@@ -7058,10 +7058,14 @@ The following changes have been made since the <a
 
 *   Added definition of <a>unresolved</a> <a>time values</a>.
 *   Renamed &ldquo;not started&rdquo; timelines as <a>inactive timelines</a>.
+*   Renamed animation players to <a>animations</a> (what were previously
+    referred to as animations are now <a>keyframe effects</a>).
 *   Made the association between an <a>animation</a> and a <a>timeline</a>
     optional.
 *   Removed the concepts of effective timeline time and effective
     current time.
+*   Renamed the source content of an <a>animation</a> (previously, player),
+    to its <a>target effect</a>.
 *   Removed the non-normative description of seeking behavior.
 *   Added the <a>current finished promise</a> and <a>current ready
     promise</a> objects to <a>animations</a>.
@@ -7071,7 +7075,9 @@ The following changes have been made since the <a
 *   Removed player events.
 *   Rewrote most of the algorithms for <a>animations</a> to accommodate
     asynchronous play/pause/reverse operations.
-*   Deferred group effects to a <a
+*   Renamed animation nodes to <a>animation effects</a> and what were previously
+    known as an animations to <a>keyframe effects</a>.
+*   Deferred group effects (previously known as animation groups) to a <a
     href="https://w3c.github.io/web-animations/level-2/">subsequent level</a>.
     Deferring this feature also lead to the following simplifications.
     *   Deferred the <a>animation effect</a>-specific playback rate since it was
@@ -7081,16 +7087,34 @@ The following changes have been made since the <a
     *   Removed the &lsquo;repeated duration&rsquo; definition since it is
         redundant in the absence of the <a>animation effect</a>-specific
         playback rate.
+*   Renamed intermediate animation values to <a>intermediate effect values</a>.
 *   Removed motion path animation effects since this functionality can be
     achieved using the <a href="http://dev.w3.org/fxtf/motion-1/">Motion Path
     Module</a>.
 *   Defined that <a>unresolved</a> <a>time values</a> are represented
     by <code>null</code>.
 *   Added the {{AnimationTimeline()}} constructor.
-*   Made the <code>getAnimations</code> method on the
+*   Renamed the <code>getAnimationPlayers</code> method of the
+    {{AnimationTimeline}} interface to
+    {{AnimationTimeline/getAnimations()}}.
+*   Made the {{AnimationTimeline/getAnimations()}} method on the
     {{AnimationTimeline}} and {{Animatable}} interfaces return all
     <a>animations</a> that are <em>either</em> <a>current</a> <em>or</em> <a>in
     effect</a>.
+*   Renamed the <code>AnimationPlayer</code> interface to {{Animation}}.
+*   Updated the {{Animation}} interface:
+
+    *   Added the {{Animation()}} constructor.
+    *   Made {{Animation/startTime}} nullable.
+    *   Added the {{Animation/playState}} member and corresponding
+        {{AnimationPlayState}} enum.
+    *   Added the {{Animation/ready}} and {{Animation/finished}} Promise
+        attributes.
+    *   Removed the <code>paused</code> and <code>finished</code>
+        boolean attributes.
+    *   Removed the <code>onfinish</code> attribute.
+    *   Renamed the <code>source</code> member to {{Animation/effect}}.
+
 *   Added a read-only version of interfaces for <a>animation effects</a> and
     related interfaces as follows:
     *   <a>Animation effects</a> are now represented by the
@@ -7104,18 +7128,6 @@ The following changes have been made since the <a
         equivalents since the read-only interface is the super-interface in each
         case
 
-*   Updated the {{Animation}} interface:
-
-    *   Added the {{Animation()}} constructor.
-    *   Made <code>startTime</code> nullable.
-    *   Added the <code>playState</code> member and corresponding
-        {{AnimationPlayState}} enum.
-    *   Added the <code>ready</code> and <code>finished</code> Promise
-        attributes.
-    *   Removed the <code>paused</code> and <code>finished</code>
-        boolean attributes.
-    *   Removed the <code>onfinish</code> attribute.
-
 *   Fixed the grammar for <a>&lt;cubic-bezier-timing-function&gt;</a> to
     match CSS Transitions.
 *   Introduced the {{ComputedTimingProperties}} dictionary and
@@ -7126,7 +7138,7 @@ The following changes have been made since the <a
 *   Removed the <code>player</code> attribute from the
     {{AnimationEffectReadonly}} interface.
 *   Exposed the <a>time fraction</a> to script as
-    <code>node.computedTiming.timeFraction</code>.
+    <code>effect.computedTiming.timeFraction</code>.
 *   Removed <code>paced</code> as a valid value for {{KeyframeEffect}}'s
     {{KeyframeEffect/spacing}} attribute.
 *   Made the procedure defined in <a
