@@ -390,6 +390,12 @@ Note: The <a>global clock</a> is not exposed in the <a
 A <dfn>timeline</dfn> provides a source of <a>time values</a> for the
 purpose of synchronization.
 
+A <a>timeline</a> is <dfn>associated with
+a document</dfn>, the <a href="https://html.spec.whatwg.org/#active-document"
+    class="externalDFN">active document</a> of the
+<a href="https://html.spec.whatwg.org/#browsing-context"
+    class="externalDFN">browsing context</a> where it is created.
+
 Typically, a <a>timeline</a> is tied to the <a>global clock</a> such
 that its absolute time is calculated as a fixed offset from the time of
 the <a>global clock</a>.
@@ -400,19 +406,20 @@ At subsequent moments, the <a>time value</a> of the timeline is
 calculated as the difference between the current <a>time value</a> of
 the <a>global clock</a> and the value recorded at the <a>zero time</a>.
 
-<p class="annotation">
-  Note that we anticipate that other types of timelines may be introduced
+Note: We anticipate that other types of timelines may be introduced
   in the future that are not tied to the global clock.
   For example, a timeline whose time values are related to the progress of
   a UI gesture.
-</p>
 
 Since a <a>timeline</a> may be defined relative to a moment that has yet
 to occur, it may not always be able to return a meaningful <a>time
 value</a>, but only an <a>unresolved</a> time value.
 A <a>timeline</a> is considered to be
 <dfn lt="inactive timeline">inactive</dfn>
-when its <a>time value</a> is <a>unresolved</a>.
+when its <a>time value</a> is <a>unresolved</a>, or when it is
+<a>associated with a document</a> which is not an
+<a href="https://html.spec.whatwg.org/#active-document"
+    class="externalDFN">active document</a>.
 
 <h4 id="the-document-timeline">The document timeline</h4>
 
@@ -6939,9 +6946,8 @@ alert(b - a); // Displays 0</pre></div>
     executing any eligible
     <a>custom effects</a> (see <a href="#sampling-custom-effects"
     section></a>) for all <a>animation effects</a>
-    <a>associated with a timeline</a> that is the <a>document
-    timeline</a> of the
-    <a href="https://html.spec.whatwg.org/#active-document"
+    <a>associated with a timeline</a> that is <a>associated with a document</a>
+    which is the <a href="https://html.spec.whatwg.org/#active-document"
     class="externalDFN">active document</a> of the <a
     href="http://www.w3.org/TR/html5/browsers.html#top-level-browsing-context"
     class="externalDFN">top-level browsing context</a> or
