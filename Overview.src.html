@@ -5922,7 +5922,7 @@ Mutable <a>keyframe effects</a> are represented by the
 
 <pre class='idl'>
 [Constructor (Animatable? target,
-              (Keyframe or sequence&lt;Keyframe&gt; or KeyframeList) frames,
+              (Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
               optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffectReadonly : AnimationEffectReadonly {
     readonly attribute Animatable?                 target;
@@ -5935,7 +5935,7 @@ interface KeyframeEffectReadonly : AnimationEffectReadonly {
 };
 
 [Constructor (Animatable? target,
-              (Keyframe or sequence&lt;Keyframe&gt; or KeyframeList) frames,
+              (Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
               optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffect : KeyframeEffectReadonly {
     inherit attribute Animatable?                 target;
@@ -5943,7 +5943,7 @@ interface KeyframeEffect : KeyframeEffectReadonly {
     inherit attribute IterationCompositeOperation iterationComposite;
     inherit attribute CompositeOperation          composite;
     inherit attribute DOMString                   spacing;
-    void setFrames ((Keyframe or sequence&lt;Keyframe&gt; or KeyframeList) frames);
+    void setFrames ((Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames);
 };
 <!-- @ifdef INCLUDE_GROUPS -->
 KeyframeEffect implements AnimationEffectMutable;
@@ -6243,9 +6243,9 @@ value defined in <a href="#processing-a-keyframe-object"
 section></a> is performed before this operation is
 initiated.
 
-1.  If <var>frames</var> is a {{KeyframeList}} object, then
+1.  If <var>frames</var> is a {{SharedKeyframeList}} object, then
     replace <var>frames</var> with the {{Keyframe}} or
-    sequence used to construct the {{KeyframeList}}.
+    sequence used to construct the {{SharedKeyframeList}}.
 1.  If <var>frames</var> is a single {{Keyframe}} object, replace
     <var>frames</var> with
     a new sequence with a single item that is the previous value of
@@ -6586,21 +6586,22 @@ We have a few options:
 
 </div>
 
-<h3 id="the-keyframelist-interface">The <code>KeyframeList</code> interface</h3>
+<h3 id="the-sharedkeyframelist-interface">The <code>SharedKeyframeList</code> interface</h3>
 
-The {{KeyframeList}} interface allows lists of {{Keyframe}} dictionaries
+The {{SharedKeyframeList}} interface allows lists of {{Keyframe}} dictionaries
 to be represented.
 
 Note: This means that multiple {{KeyframeEffect}} objects can re-use the same
 {{Keyframe}}s without paying the cost of parsing them multiple times.
 
-If constructed from a {{Keyframe}} or a sequence, the provided parameter is cloned
-and stored internally. If constructed from another {{KeyframeList}}, then a
-reference to the internal {{Keyframe}} or sequence is stored.
+If constructed from a {{Keyframe}} or a sequence, the provided parameter is
+cloned and stored internally. If constructed from another 
+{{SharedKeyframeList}}, then a reference to the internal {{Keyframe}} or
+sequence is stored.
 
 <pre class='idl'>
-[Constructor (Keyframe or sequence&lt;Keyframe&gt; or KeyframeList) frames)]
-interface KeyframeList {
+[Constructor (Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames)]
+interface SharedKeyframeList {
 };
 </pre>
 
@@ -7146,7 +7147,7 @@ The following changes have been made since the <a
         equivalents since the read-only interface is the super-interface in each
         case
 
-*   Added an opaque, immutable representation of {{KeyframeList}}s.
+*   Added an opaque, immutable representation of {{SharedKeyframeList}}s.
 *   Fixed the grammar for <a>&lt;cubic-bezier-timing-function&gt;</a> to
     match CSS Transitions.
 *   Introduced the {{ComputedTimingProperties}} dictionary and
