@@ -3953,7 +3953,8 @@ The keyframe spacing modes are:
     procedure defined by the <a>animation behavior</a> associated
     with the <a>paced property</a>.
 
-<h5 id="applying-spacing-to-keyframes">Applying spacing to keyframes</h5>
+<h5 id="applying-spacing-to-keyframes">
+Applying spacing to keyframes</h5>
 
 We define a generic procedure for <dfn>evenly distributing
 a keyframe</dfn>, <var>keyframe</var>, between two reference
@@ -4091,6 +4092,100 @@ Issue: The above algorithm is quite complex.
     with either pacing or distribute spacing.
     We await implementation experience to determine if the complexity
     is justified.
+
+<h4 id="property-indexed-keyframes-section">Property indexed keyframes</h4>
+
+<a>Keyframe effects</a> can also be constructed using
+<dfn>Property indexed keyframes</dfn>, which are sets of properties
+with a list of values associated with each property.
+
+For each property, the values in the associated list are inserted into an 
+implicitly created keyframe, and <a>keyframe offsets</a> are calculated by
+<a lt="distribute keyframe spacing mode">distributing</a> or 
+<a lt="paced keyframe spacing mode">pacing</a> the keyframes
+thus defined.
+
+A <a>keyframe-specific composite operation</a> can be defined for all
+implicitly generated <a>keyframes</a> by setting the <code>composite</code> 
+property of the <a>property indexed keyframe</a>. If no
+<a>keyframe-specific composite operation</a> is defined, the 
+<a>composite operation</a> specified for the <a>keyframe effect</a>
+is used for all implictly generated <a>keyframes</a>.
+
+Property indexed keyframes and explicitly defined keyframes can not be mixed
+for a single <a>keyframe effect</a>.
+
+<div class='informative-bg'><em>This section is non-normative.</em>
+
+Property indexed keyframes make it easy to create regularly spaced
+animations. Although quite limited, this approach covers the majority of
+animations including simple to-animations and animations with only start
+and end keyframes. For example: 
+
+<pre class='example lang-javascript'>
+// equivalent
+elem.animate([ { color: 'red' } ], 1000);
+elem.animate({ color: ['red'] }, 1000);
+elem.animate({ color: 'red' }, 1000);
+
+// equivalent
+elem.animate([ {color: 'red', color: 'blue'} ], 1000);
+elem.animate({ color: ['red', 'blue'] }, 1000);
+
+//equivalent
+elem.animate([ { color: 'blue' },
+               { color: 'green' },
+               { color: 'red' },
+               { color: 'yellow' } ], 2000);
+elem.animate({ color: ['blue', 'green', 'red', 'yellow'] }, 2000);
+
+//equivalent
+elem.animate([ { color: 'blue', left: '0px' },
+               { color: 'green', left: '-20px' },
+               { color: 'red', left: '100px' },
+               { color: 'yellow', left: '50px'} ], 2000);
+elem.animate({ color: ['blue', 'green', 'red', 'yellow'],
+               left: ['0px', '-20px', '100px', '50px'] }, 2000);
+
+</pre>
+
+</div>
+
+Issue: This feature is gated on implementation experience - it is currently
+unknown whether the additional complexity introduced by the feature is 
+warranted by the improvement in usability.
+
+<h5 id="generating-keyframes-from-property-indexed-keyframes">
+Generating keyframes from property indexed keyframes</h5>
+
+A set of <a>keyframes</a> <var>all keyframes</var> is generated from a <a>property indexed keyframe</a>
+specification using the following procedure.
+
+1.  Let <var>all keyframes</var> initially be an empty list.
+2.  Let <var>composite operation</var> be the value associated with
+    the <code>composite</code> property if present, or undefined otherwise.
+3.  For each property <var>p</var> in the <a>property indexed keyframe</a>:
+
+    1.  Let <var>property keyframes</var> be an empty list.
+    2.  For each value <var>v</var> in the list indexed by <var>p</var>:
+
+        1.  Construct an empty <a>keyframe</a> <var>k</var>.
+        2.  Associate value <var>v</var> with property <var>p</var> in 
+            <var>k</var>.
+        3.  If <var>composite operation</var> is defined, associate
+            <var>composite operation</var> with <code>composite</code> in 
+            <var>k</var>.
+        4.  Append <var>k</var> to <var>property keyframes</var>.
+
+    3.  Apply the procedure for 
+        <a href="#applying-spacing-to-keyframes" section></a> to the
+        <var>property keyframes</var> list.
+    4.  Add the <a>keyframes</a> in <var>property keyframes</var> to
+        <var>all keyframes</var>.
+
+4.  Sort <var>all keyframes</var> by offset, in increasing order.
+5.  Merge adjacent <a>keyframes</a> in <var>all keyframes</var> when
+    they have equal offsets.
 
 <h4 id="the-intermediate-effect-value-of-a-keyframe-animation-effect">The intermediate effect value of a keyframe effect</h4>
 
@@ -6246,18 +6341,43 @@ initiated.
 1.  If <var>frames</var> is a {{KeyframeList}} object, then
     replace <var>frames</var> with the {{Keyframe}} or
     sequence used to construct the {{KeyframeList}}.
-1.  If <var>frames</var> is a single {{Keyframe}} object, replace
-    <var>frames</var> with
-    a new sequence with a single item that is the previous value of
-    <var>frames</var>.
-1.  If <var>frames</var> is not <a>loosely sorted by offset</a>,
-    <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
-    <span class=exceptionname>TypeError</span>.
-1.  If there exist any {{Keyframe}} object in <var>frames</var> whose
-    {{Keyframe/offset}} member is non-null and less than zero or
-    greater than one,
-    <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
-    <span class=exceptionname>TypeError</span>.
+
+1.  Normalization depends on the type of keyframes object provided:
+
+    <div class='switch'>
+    
+    :   If <var>frames</var> is not a list of objects (i.e. it is either a 
+        {{Keyframe}} or a <a>property indexed keyframe</a>)
+    ::  
+
+        1.  If <code>offset</code> is specified in <var>frames</var>, 
+            <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
+            <span class=exceptionname>TypeError</span>.
+        1.  Follow the procedure for 
+            <a href="#generating-keyframes-from-property-indexed-keyframes"
+            section></a>.
+
+        Note: if <var>frames</var> is a {{Keyframe}}, this is equivalent to
+        replacing <var>frames</var> with a new sequence containing a single
+        item that is the previous value of <var>frames</var> and then
+        normalizing.
+
+    :   else
+    ::
+
+        1.  If <var>frames</var> is not <a>loosely sorted by offset</a>,
+            <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
+            <span class=exceptionname>TypeError</span>.
+        1.  If there exist any {{Keyframe}} object in <var>frames</var> whose
+            {{Keyframe/offset}} member is non-null and less than zero or
+            greater than one,
+            <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
+            <span class=exceptionname>TypeError</span>.
+        1.  Follow the procedure for
+            <a href='#applying-spacing-to-keyframes' section></a>
+
+    </div>
+
 1.  Remove all property values in <var>frames</var> that are invalid
     or not supported by the implementation.
 
