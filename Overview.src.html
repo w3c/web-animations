@@ -60,56 +60,129 @@ for scripting.
 
 <h3 id="use-cases">Use cases</h3>
 
-The Web Animations model aims at two broad areas of application:
+The Web Animations model is intended to provide the features necessary
+for expressing CSS Transitions [[CSS3-TRANSITIONS]],
+CSS Animations [[CSS3-ANIMATIONS]], and
+SVG [[SVG11]].
+As such, the use cases of Web Animations model is the union of use cases for
+those three specifications.
 
-:   User interface effects
-::  Animation can be used to give visual clues and feedback to make
-    a user interface more readily comprehensible.
+The use cases for the programming interface include the following:
 
-    For example, a user action results in a table row being
-    removed to represent an item being removed from a shopping cart.cd -
-    In such a case, fading the row to transparent and then shifting
-    the subsequent rows up to fill the space over a few hundred
-    milliseconds provides the user with clear feedback as to the
-    results of their action as opposed to instantly removing the row
-    from the DOM.
+:   Inspecting running animations
+::  Often Web applications must wait for certain animated effects to complete
+    before updating some state.
+    The programming interface in this specification allows such applications
+    to wait for all currently running animation to complete,
+    regardless of whether they are defined by CSS Transitions, CSS Animations,
+    SVG animations, or created directly using the programming interface.
 
-    To support this scenario not only are the animated effects of
-    fading and shifting required, but so is synchronization, both
-    between the animations, and between animations and scripted
-    actions (removing the table row from the DOM after the animations
-    have completed).
+<pre class='example lang-javascript'>
+// Wait until all animations have finished before removing the element
+Promise.all(
+  elem.getAnimations().map(animation =&gt; animation.finished)
+).then(() =&gt; elem.remove());
+</pre>
 
-:   Storytelling and visualization
-::  Another type of animation uses the animated effect to convey
-    a story or represent some information.
-    Unlike user interface effects which are largely a presentational
-    adjunct to the content, these animations form an essential part of
-    the content presented to the user.
+    Alternatively, applications may wish to query the playback state of
+    animations without waiting.
 
-    For example, in an animated cartoon two cats fly through space
-    to another planet leaving a rainbow trail behind them.
-    After arriving at the planet a change of scene occurs and the user
-    should decide whether or not the cats enter a magic mountain by
-    selecting one of two preset destinations in the scene.
+<pre class='example lang-javascript'>
+var isAnimating = elem.getAnimations().some(
+  animation =&gt; animation.playState == 'running'
+);
+</pre>
 
-    This scenario requires the following features:
+:   Controlling running animations
+::  It is sometimes useful to perform playback control on animations
+    so that they can respond to external inputs.
+    For example, it may be necessary to pause all existing animations before
+    displaying a modal dialog so that they do not distract the user's
+    attention.
 
-    *   animated effects for moving characters along a path as well as
-        warping a path (the rainbow trail),
-    *   synchronization that allows some actions to happen
-        simultaneously (the two cats moving) and others in sequence
-        (the change of scene),
-    *   play control to allow rewinding the cartoon, or changing its
-        playback rate to accommodate particular learning or
-        accessibility needs,
-    *   the ability to trigger animations in response to user input
+<pre class='example lang-javascript'>
+// Pause all existing animations in the document
+document.timeline.getAnimations().forEach(
+  animation =&gt; animation.pause()
+);
+</pre>
 
-    Similar use cases in this category include visualising physical
-    phenomena such as spring motion for educational purposes,
-    or visualising data such as the prevalence of a disease over
-    a geographical space over a year whereby animation is used to
-    present the time-based component of the data.
+:   Creating animations from script
+::  While it is possible to use ECMAScript to perform animation using
+    <code>requestAnimationFrame</code> [[ANIMATION-TIMING]],
+    such animations behave differently to declarative animation in terms of
+    how they are represented in the CSS cascade and the performance
+    optimizations that are possible such as performing the animation on a
+    separate thread.
+    Using the Web Animations programming interface, it is possible to
+    create animations from script that have the same behavior and performance
+    characteristics as declarative animations.
+
+<pre class='example lang-javascript'>
+// Fade out quickly
+elem.animate({ transform: 'scale(0)', opacity: 0 }, 300);
+</pre>
+
+:   Animation debugging
+::  In a complex application, it may be difficult to determine how an
+    element arrived in its present state.
+    The Web Animations programming interface may be used to inspect
+    running animations to answer questions such as,
+    &ldquo;Why is the opacity of this element changing?&rdquo;
+
+<pre class='example lang-javascript'>
+// Print the name of any opacity animations on elem
+elem.getAnimations().filter(
+  animation =&gt;
+    animation.effect instanceof KeyframeEffect &&
+    animation.effect.getFrames().some(
+      frame =&gt; frame.hasOwnProperty('opacity')
+    )
+).forEach(animation =&gt; console.log(animation.effect.name));
+</pre>
+
+    Likewise, in order to fine tune animations, it is often necessary to
+    reduce their playback rate and replay them.
+
+<pre class='example lang-javascript'>
+// Slow down and replay any transform animations
+elem.getAnimations().filter(
+  animation =&gt;
+    animation.effect instanceof KeyframeEffect &&
+    animation.effect.getFrames().some(
+      frame =&gt; frame.hasOwnProperty('transform')
+    )
+).forEach(animation =&gt; {
+  animation.currentTime = 0;
+  animation.playbackRate = 0.5;
+});
+</pre>
+
+:   Testing animations
+::  In order to test applications that make use of animations it is often
+    impractical to wait for such animations to run to completion.
+    Rather, it is desirable to seek the animations to specific times.
+
+<pre class='example lang-javascript'>
+// Seek to the half-way point of an animation and check that the opacity is 50%
+elem.getAnimations().forEach(
+  animation =&gt;
+    animation.currentTime =
+      animation.effect.computedTiming.delay +
+      animation.effect.computedTiming.activeDuration / 2;
+);
+assert_equals(getComputedStyle(elem).opacity, 0.5);
+
+// Check that the loading screen is hidden after the animations finish
+elem.getAnimations().forEach(
+  animation =&gt; animation.finish()
+);
+// Wait one frame so that event handlers have a chance to run
+requestAnimationFrame(() =&gt; {
+  assert_equals(
+    getComputedStyle(document.querySelector('#loading')).display, 'none');
+});
+</pre>
 
 <!-- @if LEVEL=2 -->
 <h3 id="changes-since-level-1">Changes since level 1</h3>
@@ -3569,7 +3642,7 @@ var effect =
                        { top: '50%' } ],
                      { spacing: 'paced(top)'});
 // Prints '0, 0.5, 1'
-effect.getFrames().map(frame => frame.computedOffset).join(', ');
+effect.getFrames().map(frame =&gt; frame.computedOffset).join(', ');
       </pre>
 
       For consistency, this definition applies even when a used value
@@ -3583,7 +3656,7 @@ var effect =
                        { top: '50px' } ],
                      { spacing: 'paced(top)'});
 // Prints '0, 0.5, 1'
-effect.getFrames().map(frame => frame.computedOffset).join(', ');
+effect.getFrames().map(frame =&gt; frame.computedOffset).join(', ');
       </pre>
     </div>
 
@@ -7056,6 +7129,9 @@ The following changes have been made since the <a
   href="http://www.w3.org/TR/2013/WD-web-animations-20140605/">5 June
 2014 Working Draft</a>:
 
+*   Rewrote <a href="#use-cases" section></a> to provide specific
+    code examples and describe scenarios that do not involve using timing groups
+    which have been deferred to a subsequent level of this specification.
 *   Added definition of <a>unresolved</a> <a>time values</a>.
 *   Renamed &ldquo;not started&rdquo; timelines as <a>inactive timelines</a>.
 *   Renamed animation players to <a>animations</a> (what were previously
