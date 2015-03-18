@@ -6245,7 +6245,8 @@ initiated.
 
 1.  If <var>frames</var> is a {{SharedKeyframeList}} object, then
     replace <var>frames</var> with the {{Keyframe}} or
-    sequence used to construct the {{SharedKeyframeList}}.
+    sequence of {{Keyframe}} objects used to construct the 
+    {{SharedKeyframeList}}.
 1.  If <var>frames</var> is a single {{Keyframe}} object, replace
     <var>frames</var> with
     a new sequence with a single item that is the previous value of
@@ -6591,19 +6592,34 @@ We have a few options:
 The {{SharedKeyframeList}} interface allows lists of {{Keyframe}} dictionaries
 to be represented.
 
-Note: This means that multiple {{KeyframeEffect}} objects can re-use the same
+<div class='note'>
+This means that multiple {{KeyframeEffect}} objects can re-use the same
 {{Keyframe}}s without paying the cost of parsing them multiple times.
 
-If constructed from a {{Keyframe}} or a sequence, the provided parameter is
-cloned and stored internally. If constructed from another 
-{{SharedKeyframeList}}, then a reference to the internal {{Keyframe}} or
-sequence is stored.
+For example:
+<pre class="example lang-javascript">
+var keyframes = new SharedKeyframeList([
+ { left: '100px', backgroundColor: 'red' },
+ { left: '200px', backgroundColor: 'green', offset: 0.4 },
+ { left: '400px', backgroundColor: 'blue' } ]);
+var player1 = element1.animate(keyframes, 1000);
+var player2 = element2.animate(keyframes, {duration: 1000, delay: 1000});
+</pre>
+
+</div>
 
 <pre class='idl'>
 [Constructor (Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames)]
 interface SharedKeyframeList {
 };
 </pre>
+
+<h4 id='creating-a-new-sharedkeyframelist-object'>Creating a new {{SharedKeyframeList}} object</h4>
+
+If constructed from a {{Keyframe}} or a sequence, the provided parameter is
+cloned and stored internally. If constructed from another 
+{{SharedKeyframeList}}, then a reference to the internal {{Keyframe}} or
+sequence is stored.
 
 <h3 id="the-computedkeyframe-dictionary">The <code>ComputedKeyframe</code> dictionary</h3>
 
@@ -6688,7 +6704,7 @@ the {{Animatable}} interface.
 <pre class='idl'>
 [NoInterfaceObject]
 interface Animatable {
-    Animation           animate ((Keyframe or sequence&lt;Keyframe&gt;) frames,
+    Animation           animate ((Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
                                  optional (double or KeyframeEffectOptions) options);
     sequence&lt;Animation&gt; getAnimations ();
 };
