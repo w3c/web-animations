@@ -1999,11 +1999,10 @@ corresponding to the <a>current iteration</a> is of interest.
 
 The length of a single iteration is called the <dfn>iteration
 duration</dfn>.
-The initial <a>iteration duration</a> of an animation effect is simply
-its <a>intrinsic iteration duration</a>.
+<!-- @ifdef INCLUDE_GROUPS -->The initial <a>iteration duration</a> of an
+animation effect is simply its <a>intrinsic iteration duration</a>.
 
 The <dfn>intrinsic iteration duration</dfn> of an animation effect is
-<!-- @ifdef INCLUDE_GROUPS -->
 zero, however some specific types of animation effect such as
 <a>group effects</a> override this behavior and provide an
 alternative intrinsic duration (see <a
@@ -2011,12 +2010,16 @@ href="#the-intrinsic-iteration-duration-of-a-group-effect"
 section></a> and <a
 href="#the-intrinsic-iteration-duration-of-a-sequence-effect"
 section></a>).
-<!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->zero.
-<!-- @endif -->
 
 The <a>iteration duration</a> of an <a>animation effect</a> may be set
 by the author to represent a value other than the <a>intrinsic
 iteration duration</a>.
+
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->The initial <a>iteration duration</a> of an
+animation effect is zero.
+
+<!-- @endif -->
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
@@ -5131,8 +5134,13 @@ apart from the timing model.
     *   <code>duration</code> &ndash; returns the calculated value of
         the <a>iteration duration</a>. If <code>timing.duration</code>
         is the string <code>auto</code> or any unsupported value, this
-        attribute will return the current calculated value of the
+        attribute will return
+<!-- @ifdef INCLUDE_GROUPS -->        the current calculated value of the
         <a>intrinsic iteration duration</a>.
+
+<!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->        zero.
+
+<!-- @endif -->
     *   <code>fill</code> &ndash; the <code>auto</code> value is
         replaced with the specific <a enum>FillMode</a> depending on the type
         of <a>animation effect</a> (see <a
@@ -5328,10 +5336,21 @@ interface AnimationEffectTimingReadonly {
     or equal to zero (including positive infinity) representing the
     time taken to complete a single iteration of the <a>animation
     effect</a>.
-
+<!-- @ifdef INCLUDE_GROUPS -->
     The string value <code>auto</code> is used to indicate that the
     <a>iteration duration</a> reflects the animation effect's
     <a>intrinsic iteration duration</a>.
+
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+    In this level of this specification, the string value <code>auto</code>
+    is equivalent to zero.
+    This is a forwards-compatiblity measure since a future level of this
+    specification will introduce group effects where the
+    <code>auto</code> value expands to include the duration of the child
+    effects.
+
+<!-- @endif -->
 
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 :   <dfn attribute for=AnimationEffectTimingReadonly>playbackRate</dfn>
@@ -5341,6 +5360,7 @@ interface AnimationEffectTimingReadonly {
     causing the effect to run at a different rate to its natural speed.
 
 <!-- @endif -->
+
 :   <dfn attribute for=AnimationEffectTimingReadonly>direction</dfn>
 ::  The <a>playback direction</a> of the <a>animation effect</a> which
     defines whether playback proceeds forwards, backwards, or alternates
@@ -6372,8 +6392,13 @@ be used, as follows:
 var effect =
   new KeyframeEffect(elem, { left: '100px' }, { duration: 3000, delay: 2000 });</pre>
 
+<!-- @ifdef INCLUDE_GROUPS -->
 If the duration is not specified, the <a>intrinsic iteration
 duration</a> is used which, for a <a>keyframe effect</a>, is zero.
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+If the duration is not specified, a value of zero is used.
+<!-- @endif -->
 It is possible to create an animation that simply sets a property
 without any interpolation as follows:
 
