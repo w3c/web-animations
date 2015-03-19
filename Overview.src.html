@@ -4747,42 +4747,16 @@ represented by the value <code>null</code>.
 
 <h3 id="the-animationtimeline-interface">The <code>AnimationTimeline</code> interface</h3>
 
-<a>Timelines</a>, including the <a>document
-timeline</a> are represented in the Web Animations API by the
+<a>Timelines</a> are represented in the Web Animations API by the
 {{AnimationTimeline}} interface.
 
 <pre class="idl">
-[Constructor (DOMHighResTimeStamp originTime)]
 interface AnimationTimeline {
     readonly attribute double? currentTime;
     Animation           play (optional AnimationEffectReadonly? effect = null);
     sequence&lt;Animation&gt; getAnimations();
 };
 </pre>
-
-<div class='constructors'>
-
-:   <dfn constructor for=AnimationTimeline
-      lt="AnimationTimeline(originTime)">AnimationTimeline (originTime)</dfn>
-::  Creates a new {{AnimationTimeline}} object.
-
-    <div class='parameters'>
-
-    :   <dfn argument
-        for="AnimationTimeline/AnimationTimeline(originTime)"
-        lt="originTime">originTime</dfn>
-    ::  The <a>zero time</a> for the timeline specified as a real number of
-        milliseconds relative to <a
-        href="http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart">
-        <code>navigationStart</code></a> moment [[!NAVIGATION-TIMING]] of
-        the <a class="externalDFN"
-        href="https://html.spec.whatwg.org/#active-document">active
-        document</a> for the current <a class="externalDFN"
-        href="https://html.spec.whatwg.org/#browsing-context">browsing context</a>.
-
-    </div>
-
-</div>
 
 <div class='attributes'>
 
@@ -4849,6 +4823,42 @@ interface AnimationTimeline {
            only returned animations whose <a>target effect</a> was
            <a>current</a>) or provide a loophole for implementations to discard
            old animations in such conditions.
+
+<h3 id="the-documenttimeline-interface">The <code>DocumentTimeline</code> interface</h3>
+
+<a>Document timelines</a>, including the <a>document's default
+timeline</a> are represented in the Web Animations API by the
+{{DocumentTimeline}} interface.
+
+<pre class="idl">
+[Constructor (DOMHighResTimeStamp originTime)]
+interface DocumentTimeline : AnimationTimeline {
+};
+</pre>
+
+<div class='constructors'>
+
+:   <dfn constructor for=DocumentTimeline
+      lt="DocumentTimeline(originTime)">DocumentTimeline (originTime)</dfn>
+::  Creates a new {{DocumentTimeline}} object.
+
+    <div class='parameters'>
+
+    :   <dfn argument
+        for="DocumentTimeline/DocumentTimeline(originTime)"
+        lt="originTime">originTime</dfn>
+    ::  The <a>zero time</a> for the timeline specified as a real number of
+        milliseconds relative to <a
+        href="http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart">
+        <code>navigationStart</code></a> moment [[!NAVIGATION-TIMING]] of
+        the <a class="externalDFN"
+        href="https://html.spec.whatwg.org/#active-document">active
+        document</a> for the current <a class="externalDFN"
+        href="https://html.spec.whatwg.org/#browsing-context">browsing context</a>.
+
+    </div>
+
+</div>
 
 <h3 id="the-animation-interface">The <code>Animation</code> interface</h3>
 
@@ -6762,14 +6772,14 @@ spec:dom-core-ls; type:interface; text:Document
 
 <pre class="idl">
 partial interface Document {
-    readonly attribute AnimationTimeline timeline;
+    readonly attribute DocumentTimeline timeline;
 };
 </pre>
 
 <div class="attributes">
 
 :   <dfn attribute for=Document>timeline</dfn>
-::  The {{AnimationTimeline}} object representing
+::  The {{DocumentTimeline}} object representing
     the <a>document's default timeline</a>.
 
 </div>
@@ -7067,6 +7077,8 @@ The following changes have been made since the <a
   href="http://www.w3.org/TR/2013/WD-web-animations-20140605/">5 June
 2014 Working Draft</a>:
 
+*   Moved the constructor of {{AnimationTimeline}} to a new interface,
+    {{DocumentTimeline}}.
 *   Added definition of <a>unresolved</a> <a>time values</a>.
 *   Renamed &ldquo;not started&rdquo; timelines as <a>inactive timelines</a>.
 *   Renamed animation players to <a>animations</a> (what were previously
@@ -7104,7 +7116,7 @@ The following changes have been made since the <a
     Module</a>.
 *   Defined that <a>unresolved</a> <a>time values</a> are represented
     by <code>null</code>.
-*   Added the {{AnimationTimeline()}} constructor.
+*   Added the <code>AnimationTimeline()</code> constructor.
 *   Renamed the <code>getAnimationPlayers</code> method of the
     {{AnimationTimeline}} interface to
     {{AnimationTimeline/getAnimations()}}.
