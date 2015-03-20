@@ -6597,18 +6597,24 @@ is as follows:
     <code>offset</code>, <code>easing</code> and
     <code>composite</code> attributes set to the default dictionary
     values.
-2.  Create a list, <var>supported properties</var>, of property
+1.  Create a list, <var>supported properties</var>, of property
     names and attribute names that can be animated by the
     implementation.
-3.  Convert each property name in <var>supported properties</var>
+1.  Convert each property name in <var>supported properties</var>
     to the equivalent IDL attribute by applying the <a
     href="http://dev.w3.org/csswg/cssom/#css-property-to-idl-attribute">CSS
     property to IDL attribute</a> algorithm [[!CSSOM]].
-4.  If the user agent supports animation of the 'float'
+1.  If the user agent supports animation of the 'float'
     CSS property, replace "float" in
     <var>supported properties</var> with "cssFloat".
-5.  Let <var>animation properties</var> be an empty sequence.
-6.  Use the internal \[[Enumerate]] operation on <var>keyframe
+1.  If the user agent supports animation of the <a
+    href="http://www.w3.org/TR/SVG2/pservers.html#StopElementOffsetAttribute"
+    class="externalDFN">offset</a> attribute
+    of <a href="http://www.w3.org/TR/SVG2/pservers.html#StopElement"
+      class="externalDFN">SVG stop elements</a> [[!SVG2]], replace "offset" in
+    <var>supported properties</var> with "svgOffset".
+1.  Let <var>animation properties</var> be an empty sequence.
+1.  Use the internal \[[Enumerate]] operation on <var>keyframe
     input</var> to iterate over its properties.
     For each <var>property</var> perform the step corresponding to
     the first matching condition from below, if any.
@@ -6667,17 +6673,17 @@ is as follows:
 
     </div>
 
-7.  For user agents that support both a prefixed and an
+1.  For user agents that support both a prefixed and an
     unprefixed version of some CSS properties, remove all
     prefixed properties from <var>animation properties</var>
     where the corresponding unprefixed version is also
     present in <var>animation properties</var>.
 
-    Note: I'd like to remove this step. Prefixes are history.
+    Issue: I'd like to remove this step. Prefixes are history.
 
-8.  Sort <var>animation properties</var> lexicographically by
+1.  Sort <var>animation properties</var> lexicographically by
     the Unicode codepoints that define each element.
-9.  Iterate over <var>animation properties</var> from beginning to
+1.  Iterate over <var>animation properties</var> from beginning to
     end and for each <var>name</var> in <var>animation
     properties</var> add a new member pair to <var>keyframe
     result</var> as follows:
@@ -6696,12 +6702,12 @@ is as follows:
         If \[[Get]] returns null or undefined, let the member
         value be an empty string.
 
-10. Return <var>keyframe result</var>.
+1.  Return <var>keyframe result</var>.
 
 <div class="issue">
 
 The above algorithm gives special meaning to the property names
-"offset", "computedOffset", "easing", and "composite".
+"offset", "easing", and "composite".
 If a CSS property called "offset" or "composite" is ever
 introduced it will clash with the meaning here.
 
@@ -7319,12 +7325,14 @@ The following changes have been made since the <a
     {{AnimationEffectReadonly}} interface.
 *   Exposed the <a>time fraction</a> to script as
     <code>effect.computedTiming.timeFraction</code>.
-*   Removed <code>paced</code> as a valid value for {{KeyframeEffect}}'s
-    {{KeyframeEffect/spacing}} attribute.
 *   Made the procedure defined in <a
     href="#normalizing-a-sequence-of-keyframes" section></a> throw an exception
     if the keyframes are not <a>loosely sorted by offset</a> or if there are any
     keyframes with an offset outside the range [0, 1].
+*   Removed <code>paced</code> as a valid value for {{KeyframeEffect}}'s
+    {{KeyframeEffect/spacing}} attribute.
+*   Added special handling for animating SVG's offset attribute on stop elements
+    by using the &lsquo;svgOffset&rsquo; property name.
 *   Removed the <code>MotionPathEffect</code> interface now that motion path
     animation effects have been removed.
 *   Removed the <code>getCurrentAnimations</code> method from the {{Animatable}}
