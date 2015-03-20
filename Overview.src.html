@@ -473,12 +473,10 @@ At subsequent moments, the <a>time value</a> of the timeline is
 calculated as the difference between the current <a>time value</a> of
 the <a>global clock</a> and the value recorded at the <a>zero time</a>.
 
-<p class="annotation">
-  Note that we anticipate that other types of timelines may be introduced
+Note: We anticipate that other types of timelines may be introduced
   in the future that are not tied to the global clock.
   For example, a timeline whose time values are related to the progress of
   a UI gesture.
-</p>
 
 Since a <a>timeline</a> may be defined relative to a moment that has yet
 to occur, it may not always be able to return a meaningful <a>time
@@ -487,31 +485,45 @@ A <a>timeline</a> is considered to be
 <dfn lt="inactive timeline">inactive</dfn>
 when its <a>time value</a> is <a>unresolved</a>.
 
-<h4 id="the-document-timeline">The document timeline</h4>
+<h4 id="document-timelines">Document Timelines</h4>
+
+A <dfn>document timeline</dfn> is a <a>timeline</a> <dfn>associated with
+a document</dfn>, the <a href="https://html.spec.whatwg.org/#active-document"
+    class="externalDFN">active document</a> of the
+<a href="https://html.spec.whatwg.org/#browsing-context"
+    class="externalDFN">browsing context</a> where it is created.
+
+A <a>document timeline</a> is considered to be
+<a href="#inactive-timeline">inactive</a> when it is
+<a>associated with a document</a> which is not an
+<a href="https://html.spec.whatwg.org/#active-document"
+    class="externalDFN">active document</a>.
+
+<h4 id="the-documents-default-timeline">The document's default timeline</h4>
 
 Each <a href="https://dom.spec.whatwg.org/#concept-document">document</a>
-([[!DOM]]) has a <a>timeline</a> called the <dfn>document timeline</dfn>.
-The <a>document timeline</a> is unique to each document and persists for the
+([[!DOM]]) has a <a>timeline</a> called the <dfn>document's default timeline</dfn>.
+The <a>document's default timeline</a> is unique to each document and persists for the
 lifetime of the document including calls to <a
   href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-document-open"><code>document.open()</code></a> [[!HTML5]].
 
-The <a>time values</a> of the <a>document timeline</a> are calculated
+The <a>time values</a> of the <a>document's default timeline</a> are calculated
 as a fixed offset from the <a>global clock</a> such that the <a>zero
 time</a> corresponds to the <a
 href="http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart">
 <code>navigationStart</code></a> moment [[!NAVIGATION-TIMING]].
-Prior to this moment, the <a>document timeline</a> is
+Prior to this moment, the <a>document's default timeline</a> is
 <a lt="inactive timeline">inactive</a>.
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
-Since the <a>document timeline</a> is tied to the <a>global
+Since the <a>document's default timeline</a> is tied to the <a>global
 clock</a> by a fixed offset, <a>time values</a> reported by the
-<a>document timeline</a> increase monotonically.
+<a>document's default timeline</a> increase monotonically.
 Furthermore, since no scaling is applied, these <a>time values</a>
 are proportional to wall-clock milliseconds.
 
-Since the <a>time values</a> of the <a>document timeline</a> are
+Since the <a>time values</a> of the <a>document's default timeline</a> are
 relative to the <code>navigationStart</code> time,
 <code>document.timeline.currentTime</code> will roughly correspond to
 <a href="http://www.w3.org/TR/hr-time/#dom-performance-now">
@@ -2149,7 +2161,7 @@ Note: While the time spaces themselves are not bounded, Web
 
 In addition to these time spaces we can also refer to the
 <em>document time space</em> which is time space of the <a>time
-values</a> of the <a>document timeline</a> of the <a
+values</a> of the <a>document's default timeline</a> of the <a
 href="http://www.w3.org/TR/html5/browsers.html#active-document">active
 document</a>.
 
@@ -4811,42 +4823,16 @@ represented by the value <code>null</code>.
 
 <h3 id="the-animationtimeline-interface">The <code>AnimationTimeline</code> interface</h3>
 
-<a>Timelines</a>, including the <a>document
-timeline</a> are represented in the Web Animations API by the
+<a>Timelines</a> are represented in the Web Animations API by the
 {{AnimationTimeline}} interface.
 
 <pre class="idl">
-[Constructor (DOMHighResTimeStamp originTime)]
 interface AnimationTimeline {
     readonly attribute double? currentTime;
     Animation           play (optional AnimationEffectReadonly? effect = null);
     sequence&lt;Animation&gt; getAnimations();
 };
 </pre>
-
-<div class='constructors'>
-
-:   <dfn constructor for=AnimationTimeline
-      lt="AnimationTimeline(originTime)">AnimationTimeline (originTime)</dfn>
-::  Creates a new {{AnimationTimeline}} object.
-
-    <div class='parameters'>
-
-    :   <dfn argument
-        for="AnimationTimeline/AnimationTimeline(originTime)"
-        lt="originTime">originTime</dfn>
-    ::  The <a>zero time</a> for the timeline specified as a real number of
-        milliseconds relative to <a
-        href="http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart">
-        <code>navigationStart</code></a> moment [[!NAVIGATION-TIMING]] of
-        the <a class="externalDFN"
-        href="https://html.spec.whatwg.org/#active-document">active
-        document</a> for the current <a class="externalDFN"
-        href="https://html.spec.whatwg.org/#browsing-context">browsing context</a>.
-
-    </div>
-
-</div>
 
 <div class='attributes'>
 
@@ -4913,6 +4899,42 @@ interface AnimationTimeline {
            only returned animations whose <a>target effect</a> was
            <a>current</a>) or provide a loophole for implementations to discard
            old animations in such conditions.
+
+<h3 id="the-documenttimeline-interface">The <code>DocumentTimeline</code> interface</h3>
+
+<a>Document timelines</a>, including the <a>document's default
+timeline</a> are represented in the Web Animations API by the
+{{DocumentTimeline}} interface.
+
+<pre class="idl">
+[Constructor (DOMHighResTimeStamp originTime)]
+interface DocumentTimeline : AnimationTimeline {
+};
+</pre>
+
+<div class='constructors'>
+
+:   <dfn constructor for=DocumentTimeline
+      lt="DocumentTimeline(originTime)">DocumentTimeline (originTime)</dfn>
+::  Creates a new {{DocumentTimeline}} object.
+
+    <div class='parameters'>
+
+    :   <dfn argument
+        for="DocumentTimeline/DocumentTimeline(originTime)"
+        lt="originTime">originTime</dfn>
+    ::  The <a>zero time</a> for the timeline specified as a real number of
+        milliseconds relative to <a
+        href="http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart">
+        <code>navigationStart</code></a> moment [[!NAVIGATION-TIMING]] of
+        the <a class="externalDFN"
+        href="https://html.spec.whatwg.org/#active-document">active
+        document</a> for the current <a class="externalDFN"
+        href="https://html.spec.whatwg.org/#browsing-context">browsing context</a>.
+
+    </div>
+
+</div>
 
 <h3 id="the-animation-interface">The <code>Animation</code> interface</h3>
 
@@ -6831,7 +6853,7 @@ interface Animatable {
 ::  Creates a new {{KeyframeEffect}} object
     whose <a>target element</a> is the object on which the method is
     called, and calls the {{AnimationTimeline/play()}} method of the
-    {{AnimationTimeline}} object of the <a>document timeline</a> of the <a
+    {{AnimationTimeline}} object of the <a>document's default timeline</a> of the <a
     href="http://www.w3.org/TR/dom/#concept-node-document">node
     document</a> [[!DOM]] of the element, passing the newly created
     {{KeyframeEffect}} as the argument to the method.
@@ -6900,15 +6922,15 @@ spec:dom-core-ls; type:interface; text:Document
 
 <pre class="idl">
 partial interface Document {
-    readonly attribute AnimationTimeline timeline;
+    readonly attribute DocumentTimeline timeline;
 };
 </pre>
 
 <div class="attributes">
 
 :   <dfn attribute for=Document>timeline</dfn>
-::  The {{AnimationTimeline}} object representing
-    the <a>document timeline</a>.
+::  The {{DocumentTimeline}} object representing
+    the <a>document's default timeline</a>.
 
 </div>
 
@@ -7089,9 +7111,8 @@ alert(b - a); // Displays 0</pre></div>
     executing any eligible
     <a>custom effects</a> (see <a href="#sampling-custom-effects"
     section></a>) for all <a>animation effects</a>
-    <a>associated with a timeline</a> that is the <a>document
-    timeline</a> of the
-    <a href="https://html.spec.whatwg.org/#active-document"
+    <a>associated with a timeline</a> that is <a>associated with a document</a>
+    which is the <a href="https://html.spec.whatwg.org/#active-document"
     class="externalDFN">active document</a> of the <a
     href="http://www.w3.org/TR/html5/browsers.html#top-level-browsing-context"
     class="externalDFN">top-level browsing context</a> or
@@ -7210,6 +7231,7 @@ The following changes have been made since the <a
     code examples and describe scenarios that do not involve using timing groups
     which have been deferred to a subsequent level of this specification.
 *   Added definition of <a>unresolved</a> <a>time values</a>.
+*   Introduced <a>document timelines</a>.
 *   Renamed &ldquo;not started&rdquo; timelines as <a>inactive timelines</a>.
 *   Renamed animation players to <a>animations</a> (what were previously
     referred to as animations are now <a>keyframe effects</a>).
@@ -7246,7 +7268,7 @@ The following changes have been made since the <a
     Module</a>.
 *   Defined that <a>unresolved</a> <a>time values</a> are represented
     by <code>null</code>.
-*   Added the {{AnimationTimeline()}} constructor.
+*   Added the {{DocumentTimeline}} interface.
 *   Renamed the <code>getAnimationPlayers</code> method of the
     {{AnimationTimeline}} interface to
     {{AnimationTimeline/getAnimations()}}.
