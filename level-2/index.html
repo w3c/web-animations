@@ -921,11 +921,11 @@ interfaces</span></a>
        </ul>
       <li><a href="#the-iterationcompositeoperation-enumeration"><span class="secno">5.14</span> <span class="content">The <code>IterationCompositeOperation</code> enumeration</span></a>
       <li><a href="#the-compositeoperation-enumeration"><span class="secno">5.15</span> <span class="content">The <code>CompositeOperation</code> enumeration</span></a>
-      <li><a href="#the-keyframe-dictionary"><span class="secno">5.16</span> <span class="content">The <code>Keyframe</code> dictionary</span></a>
+      <li><a href="#the-sharedkeyframelist-interface"><span class="secno">5.16</span> <span class="content">The <code>SharedKeyframeList</code> interface</span></a>
+      <li><a href="#the-keyframe-dictionary"><span class="secno">5.17</span> <span class="content">The <code>Keyframe</code> dictionary</span></a>
        <ul class="toc">
-        <li><a href="#processing-a-keyframe-object"><span class="secno">5.16.1</span> <span class="content">Processing a <code>Keyframe</code> object</span></a>
+        <li><a href="#processing-a-keyframe-object"><span class="secno">5.17.1</span> <span class="content">Processing a <code>Keyframe</code> object</span></a>
        </ul>
-      <li><a href="#the-sharedkeyframelist-interface"><span class="secno">5.17</span> <span class="content">The <code>SharedKeyframeList</code> interface</span></a>
       <li><a href="#the-computedkeyframe-dictionary"><span class="secno">5.18</span> <span class="content">The <code>ComputedKeyframe</code> dictionary</span></a>
       <li><a href="#the-effectcallback-callback-function"><span class="secno">5.19</span> <span class="content">The <code>EffectCallback</code> callback function</span></a>
       <li><a href="#the-animatable-interface"><span class="secno">5.20</span> <span class="content">The <code>Animatable</code> interface</span></a>
@@ -10442,7 +10442,7 @@ in <var>frames</var> parameter before storing its value.</p>
 
 
     <p class="note" role="note">Note: the processing of the ECMAScript value into a suitable IDL
-value defined in <a href="#processing-a-keyframe-object">§5.16.1 Processing a Keyframe object</a> is performed before this operation is
+value defined in <a href="#processing-a-keyframe-object">§5.17.1 Processing a Keyframe object</a> is performed before this operation is
 initiated.</p>
 
 
@@ -10647,7 +10647,79 @@ the <a data-link-type="dfn" href="#animation-effect">animation effect</a> is <a 
       
 </dl>
 
-    <h3 class="heading settled" data-level="5.16" id="the-keyframe-dictionary"><span class="secno">5.16. </span><span class="content">The <code>Keyframe</code> dictionary</span><a class="self-link" href="#the-keyframe-dictionary"></a></h3>
+    <h3 class="heading settled" data-level="5.16" id="the-sharedkeyframelist-interface"><span class="secno">5.16. </span><span class="content">The <code>SharedKeyframeList</code> interface</span><a class="self-link" href="#the-sharedkeyframelist-interface"></a></h3>
+
+
+    <p>The <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code> interface represents a sequence of <code class="idl"><a data-link-type="idl" href="#dictdef-keyframe">Keyframe</a></code>
+dictionary objects such that it can be shared between <code class="idl"><a data-link-type="idl" href="#keyframeeffect">KeyframeEffect</a></code>
+objects.</p>
+
+
+    <div class="informative-bg"><em>This section is non-normative</em>
+
+
+     <p>By using <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code> objects, multiple <code class="idl"><a data-link-type="idl" href="#keyframeeffect">KeyframeEffect</a></code> objects
+can re-use the same <code class="idl"><a data-link-type="idl" href="#dictdef-keyframe">Keyframe</a></code>s without paying the cost of parsing them
+multiple times.</p>
+
+
+     <p>For example:</p>
+
+     <pre class="example lang-javascript">var keyframes = new SharedKeyframeList([
+ { left: '100px', backgroundColor: 'red' },
+ { left: '200px', backgroundColor: 'green', offset: 0.4 },
+ { left: '400px', backgroundColor: 'blue' } ]);
+var player1 = element1.animate(keyframes, 1000);
+var player2 = element2.animate(keyframes, { duration: 1000, delay: 1000 });
+</pre>
+
+</div>
+
+
+    <pre class="idl">[<a class="idl-code" data-global-name="SharedKeyframeList<interface>/SharedKeyframeList(frames)<constructor>" data-link-type="constructor" href="#dom-sharedkeyframelist-sharedkeyframelistframes">Constructor</a> ((<a data-link-type="idl-name" href="#dictdef-keyframe">Keyframe</a> or sequence&lt;<a data-link-type="idl-name" href="#dictdef-keyframe">Keyframe</a>> or <a data-link-type="idl-name" href="#sharedkeyframelist">SharedKeyframeList</a>) <a class="idl-code" data-global-name="SharedKeyframeList<interface>/SharedKeyframeList(frames)<method>/frames<argument>" data-link-type="argument" href="#dom-sharedkeyframelist-sharedkeyframelistframes-frames">frames</a>)]
+interface <dfn class="idl-code" data-dfn-type="interface" data-export="" data-global-name="" id="sharedkeyframelist">SharedKeyframeList<a class="self-link" href="#sharedkeyframelist"></a></dfn> {
+};
+</pre>
+
+
+    <div class="constructors">
+
+
+     <dl>
+      <dt data-md="">
+       <p><dfn class="idl-code" data-dfn-for="SharedKeyframeList" data-dfn-type="constructor" data-export="" data-lt="SharedKeyframeList(frames)" id="dom-sharedkeyframelist-sharedkeyframelistframes">
+SharedKeyframeList(frames)<a class="self-link" href="#dom-sharedkeyframelist-sharedkeyframelistframes"></a></dfn></p>
+       
+
+      <dd data-md="">
+       <p>Creates a new <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code> object.</p>
+       
+
+
+       <div class="parameters">
+
+
+        <dl>
+         <dt data-md="">
+          <p><dfn class="idl-code" data-dfn-for="SharedKeyframeList/SharedKeyframeList(frames)" data-dfn-type="argument" data-export="" id="dom-sharedkeyframelist-sharedkeyframelistframes-frames">frames<a class="self-link" href="#dom-sharedkeyframelist-sharedkeyframelistframes-frames"></a></dfn></p>
+          
+
+         <dd data-md="">
+          <p>The keyframes to be shared. If <var>frames</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-keyframe">Keyframe</a></code>
+object or a sequence of <code class="idl"><a data-link-type="idl" href="#dictdef-keyframe">Keyframe</a></code> objects, they are cloned and stored
+internally.
+Otherwise, <var>frames</var> is a <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code>, and
+a reference to that list’s internal <code class="idl"><a data-link-type="idl" href="#dictdef-keyframe">Keyframe</a></code> object or sequence of
+<code class="idl"><a data-link-type="idl" href="#dictdef-keyframe">Keyframe</a></code> objects is stored internally.</p>
+          
+</dl>
+</div>
+       
+</dl>
+</div>
+
+
+    <h3 class="heading settled" data-level="5.17" id="the-keyframe-dictionary"><span class="secno">5.17. </span><span class="content">The <code>Keyframe</code> dictionary</span><a class="self-link" href="#the-keyframe-dictionary"></a></h3>
 
 
     <p>Individual <a data-link-type="dfn" href="#keyframe">keyframes</a> are represented by a special kind of
@@ -10656,7 +10728,7 @@ members map to the properties to be animated.
 At the time of writing, this kind of open-ended dictionary cannot
 be represented using WebIDL and hence special
 ECMAScript-specific handling for this type is defined in
-<a href="#processing-a-keyframe-object">§5.16.1 Processing a Keyframe object</a>.
+<a href="#processing-a-keyframe-object">§5.17.1 Processing a Keyframe object</a>.
 No handling is defined for other languages.</p>
 
 
@@ -10729,7 +10801,7 @@ specified on the <code class="idl"><a data-link-type="idl" href="#animationeffec
 
 
 
-    <h4 class="heading settled" data-level="5.16.1" id="processing-a-keyframe-object"><span class="secno">5.16.1. </span><span class="content">Processing a <code>Keyframe</code> object</span><a class="self-link" href="#processing-a-keyframe-object"></a></h4>
+    <h4 class="heading settled" data-level="5.17.1" id="processing-a-keyframe-object"><span class="secno">5.17.1. </span><span class="content">Processing a <code>Keyframe</code> object</span><a class="self-link" href="#processing-a-keyframe-object"></a></h4>
 
 
     <div class="note" role="note">
@@ -10789,6 +10861,12 @@ property to IDL attribute</a> algorithm <a data-link-type="biblio" href="#biblio
       <p>If the user agent supports animation of the <a class="property" data-link-type="propdesc" href="http://dev.w3.org/csswg/css2/visuren.html#propdef-float">float</a>
 CSS property, replace "float" in
 <var>supported properties</var> with "cssFloat".</p>
+      
+
+     <li data-md="">
+      <p>If the user agent supports animation of the <a class="externalDFN" href="http://www.w3.org/TR/SVG2/pservers.html#StopElementOffsetAttribute">offset</a> attribute
+of <a class="externalDFN" href="http://www.w3.org/TR/SVG2/pservers.html#StopElement">SVG stop elements</a> <a data-link-type="biblio" href="#biblio-svg2">[SVG2]</a>, replace "offset" in
+<var>supported properties</var> with "svgOffset".</p>
       
 
      <li data-md="">
@@ -10887,7 +10965,7 @@ present in <var>animation properties</var>.</p>
       
 
 
-      <p class="note" role="note">Note: I’d like to remove this step. Prefixes are history.</p>
+      <p class="issue" id="issue-4f4c78be"><a class="self-link" href="#issue-4f4c78be"></a>I’d like to remove this step. Prefixes are history.</p>
       
 
 
@@ -10930,11 +11008,11 @@ value be an empty string.</p>
       
 </ol>
 
-    <div class="issue" id="issue-7e1dd385"><a class="self-link" href="#issue-7e1dd385"></a>
+    <div class="issue" id="issue-336fc667"><a class="self-link" href="#issue-336fc667"></a>
 
 
      <p>The above algorithm gives special meaning to the property names
-"offset", "computedOffset", "easing", and "composite".
+"offset", "easing", and "composite".
 If a CSS property called "offset" or "composite" is ever
 introduced it will clash with the meaning here.</p>
 
@@ -10953,74 +11031,6 @@ property of the same name, e.g. <code>cssOffset</code>.</p>
 e.g. "keyframeOffset".</p>
        
 </ul>
-</div>
-
-
-    <h3 class="heading settled" data-level="5.17" id="the-sharedkeyframelist-interface"><span class="secno">5.17. </span><span class="content">The <code>SharedKeyframeList</code> interface</span><a class="self-link" href="#the-sharedkeyframelist-interface"></a></h3>
-
-
-    <p>The <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code> interface allows lists of <code class="idl"><a data-link-type="idl" href="#dictdef-keyframe">Keyframe</a></code> dictionaries
-to be represented.</p>
-
-
-    <div class="note" role="note">
-This means that multiple <code class="idl"><a data-link-type="idl" href="#keyframeeffect">KeyframeEffect</a></code> objects can re-use the same
-<code class="idl"><a data-link-type="idl" href="#dictdef-keyframe">Keyframe</a></code>s without paying the cost of parsing them multiple times.
-
-
-     <p>For example:</p>
-
-     <pre class="example lang-javascript">var keyframes = new SharedKeyframeList([
- { left: '100px', backgroundColor: 'red' },
- { left: '200px', backgroundColor: 'green', offset: 0.4 },
- { left: '400px', backgroundColor: 'blue' } ]);
-var player1 = element1.animate(keyframes, 1000);
-var player2 = element2.animate(keyframes, {duration: 1000, delay: 1000});
-</pre>
-
-</div>
-
-
-    <pre class="idl">[<a class="idl-code" data-global-name="SharedKeyframeList<interface>/SharedKeyframeList(frames)<constructor>" data-link-type="constructor" href="#dom-sharedkeyframelist-sharedkeyframelistframes">Constructor</a> ((<a data-link-type="idl-name" href="#dictdef-keyframe">Keyframe</a> or sequence&lt;<a data-link-type="idl-name" href="#dictdef-keyframe">Keyframe</a>> or <a data-link-type="idl-name" href="#sharedkeyframelist">SharedKeyframeList</a>) <a class="idl-code" data-global-name="SharedKeyframeList<interface>/SharedKeyframeList(frames)<method>/frames<argument>" data-link-type="argument" href="#dom-sharedkeyframelist-sharedkeyframelistframes-frames">frames</a>)]
-interface <dfn class="idl-code" data-dfn-type="interface" data-export="" data-global-name="" id="sharedkeyframelist">SharedKeyframeList<a class="self-link" href="#sharedkeyframelist"></a></dfn> {
-};
-</pre>
-
-
-    <div class="constructors">
-
-
-     <dl>
-      <dt data-md="">
-       <p><dfn class="idl-code" data-dfn-for="SharedKeyframeList" data-dfn-type="constructor" data-export="" data-lt="SharedKeyframeList(frames)" id="dom-sharedkeyframelist-sharedkeyframelistframes">
-SharedKeyframeList(frames)<a class="self-link" href="#dom-sharedkeyframelist-sharedkeyframelistframes"></a></dfn></p>
-       
-
-      <dd data-md="">
-       <p>Creates a new <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code> object.</p>
-       
-
-
-       <div class="parameters">
-
-
-        <dl>
-         <dt data-md="">
-          <p><dfn class="idl-code" data-dfn-for="SharedKeyframeList/SharedKeyframeList(frames)" data-dfn-type="argument" data-export="" id="dom-sharedkeyframelist-sharedkeyframelistframes-frames">frames<a class="self-link" href="#dom-sharedkeyframelist-sharedkeyframelistframes-frames"></a></dfn></p>
-          
-
-         <dd data-md="">
-          <p>The keyframes to be shared. If <var>frames</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-keyframe">Keyframe</a></code>
-object or a sequence of <code class="idl"><a data-link-type="idl" href="#dictdef-keyframe">Keyframe</a></code> objects, they are cloned and stored
-internally.
-Otherwise, <var>frames</var> is a <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code>, and
-a reference to that list’s internal <code class="idl"><a data-link-type="idl" href="#dictdef-keyframe">Keyframe</a></code> object or sequence of
-<code class="idl"><a data-link-type="idl" href="#dictdef-keyframe">Keyframe</a></code> objects is stored internally.</p>
-          
-</dl>
-</div>
-       
-</dl>
 </div>
 
 
@@ -11776,7 +11786,7 @@ a timeline, <a href="#associated-with-a-timeline">3.6.1</a>
      <li>attribute for KeyframeEffectReadonly, <a href="#dom-keyframeeffectreadonly-composite">5.13</a>
      <li>attribute for KeyframeEffect, <a href="#dom-keyframeeffect-composite">5.13</a>
      <li>dict-member for KeyframeEffectOptions, <a href="#dom-keyframeeffectoptions-composite">5.13.1</a>
-     <li>dict-member for Keyframe, <a href="#dom-keyframe-composite">5.16</a>
+     <li>dict-member for Keyframe, <a href="#dom-keyframe-composite">5.17</a>
     </ul>
    <li>composited value, <a href="#composited-value">4.3.2</a>
    <li>CompositeOperation
@@ -11846,7 +11856,7 @@ timeline, <a href="#default-document-timeline">3.4.2</a>
      <li>attribute for AnimationEffectTimingReadonly, <a href="#dom-animationeffecttimingreadonly-easing">5.6</a>
      <li>attribute for AnimationEffectTiming, <a href="#dom-animationeffecttiming-easing">5.7</a>
      <li>dict-member for AnimationEffectTimingProperties, <a href="#dom-animationeffecttimingproperties-easing">5.8</a>
-     <li>dict-member for Keyframe, <a href="#dom-keyframe-easing">5.16</a>
+     <li>dict-member for Keyframe, <a href="#dom-keyframe-easing">5.17</a>
     </ul>
    <li>effect
     <ul>
@@ -11895,7 +11905,7 @@ a keyframe, <a href="#evenly-distributing-a-keyframe">4.2.1.1</a>
      <li>argument for KeyframeEffectReadonly/KeyframeEffectReadonly(target, frames, options), <a href="#dom-keyframeeffectreadonly-keyframeeffectreadonlytarget-frames-options-frames">5.13</a>
      <li>argument for KeyframeEffect/KeyframeEffect(target, frames, options), <a href="#dom-keyframeeffect-keyframeeffecttarget-frames-options-frames">5.13</a>
      <li>argument for KeyframeEffect/setFrames, <a href="#dom-keyframeeffect-setframes-frames">5.13</a>
-     <li>argument for SharedKeyframeList/SharedKeyframeList(frames), <a href="#dom-sharedkeyframelist-sharedkeyframelistframes-frames">5.17</a>
+     <li>argument for SharedKeyframeList/SharedKeyframeList(frames), <a href="#dom-sharedkeyframelist-sharedkeyframelistframes-frames">5.16</a>
      <li>argument for Animatable/animate, <a href="#dom-animatable-animate-frames">5.20</a>
     </ul>
    <li>getAnimations()
@@ -11957,7 +11967,7 @@ duration, <a href="#iteration-duration">3.8.1</a>
     </ul>
    <li>iteration start, <a href="#iteration-start">3.8.2</a>
    <li>iteration time, <a href="#iteration-time">3.10.3.3</a>
-   <li>Keyframe, <a href="#dictdef-keyframe">5.16</a>
+   <li>Keyframe, <a href="#dictdef-keyframe">5.17</a>
    <li>keyframe, <a href="#keyframe">4.2</a>
    <li>KeyframeEffect, <a href="#keyframeeffect">5.13</a>
    <li>keyframe effect, <a href="#keyframe-effect">4.1</a>
@@ -11992,7 +12002,7 @@ function, <a href="#linear-timing-function">3.12.2</a>
    <li>not animatable, <a href="#concept-not-animatable">4.1.3.1</a>
    <li>not
 paceable, <a href="#not-paceable">4.1.3</a>
-   <li>offset, <a href="#dom-keyframe-offset">5.16</a>
+   <li>offset, <a href="#dom-keyframe-offset">5.17</a>
    <li>offsetk, <a href="#offsetk">4.2.1.1</a>
    <li>options
     <ul>
@@ -12038,7 +12048,7 @@ time, <a href="#previous-current-time">3.5.13</a>
    <li>previous sibling, <a href="#previous-sibling">3.13</a>
    <li>previousSibling, <a href="#dom-animationeffectreadonly-previoussibling">5.5</a>
    <li>procedure for converting an ECMAScript object to an IDL
-Keyframe object, <a href="#procedure-for-converting-an-ecmascript-object-to-an-idl-keyframe-object">5.16.1</a>
+Keyframe object, <a href="#procedure-for-converting-an-ecmascript-object-to-an-idl-keyframe-object">5.17.1</a>
    <li>procedure for processing a timing argument, <a href="#procedure-for-processing-a-timing-argument">5.10.1</a>
    <li>Promise, <a href="#promise">3.5.7</a>
    <li>ready
@@ -12068,8 +12078,8 @@ Keyframe object, <a href="#procedure-for-converting-an-ecmascript-object-to-an-i
    <li>set the current time, <a href="#set-the-current-time">3.5.4</a>
    <li>set the target effect of an animation, <a href="#set-the-target-effect-of-an-animation">3.5.2</a>
    <li>set the timeline of an animation, <a href="#set-the-timeline-of-an-animation">3.5.1</a>
-   <li>SharedKeyframeList, <a href="#sharedkeyframelist">5.17</a>
-   <li>SharedKeyframeList(frames), <a href="#dom-sharedkeyframelist-sharedkeyframelistframes">5.17</a>
+   <li>SharedKeyframeList, <a href="#sharedkeyframelist">5.16</a>
+   <li>SharedKeyframeList(frames), <a href="#dom-sharedkeyframelist-sharedkeyframelistframes">5.16</a>
    <li>silently set the current time, <a href="#silently-set-the-current-time">3.5.4</a>
    <li>silently update the animation playback rate, <a href="#silently-update-the-animation-playback-rate">3.5.16.1</a>
    <li>single-sample, <a href="#single_sample">3.2</a>
@@ -12161,6 +12171,8 @@ Keyframe object, <a href="#procedure-for-converting-an-ecmascript-object-to-an-i
    <dd>Tantek Çelik; et al. <a href="http://www.w3.org/TR/2011/REC-css3-selectors-20110929/">Selectors Level 3</a>. 29 September 2011. W3C Recommendation. URL: <a href="http://www.w3.org/TR/2011/REC-css3-selectors-20110929/">http://www.w3.org/TR/2011/REC-css3-selectors-20110929/</a>
    <dt id="biblio-svg11"><a class="self-link" href="#biblio-svg11"></a>[SVG11]
    <dd>Erik Dahlström; et al. <a href="http://www.w3.org/TR/SVG11/">Scalable Vector Graphics (SVG) 1.1 (Second Edition)</a>. 16 August 2011. REC. URL: <a href="http://www.w3.org/TR/SVG11/">http://www.w3.org/TR/SVG11/</a>
+   <dt id="biblio-svg2"><a class="self-link" href="#biblio-svg2"></a>[SVG2]
+   <dd>Nikos Andronikos; et al. <a href="http://www.w3.org/TR/SVG2/">Scalable Vector Graphics (SVG) 2</a>. 11 February 2014. WD. URL: <a href="http://www.w3.org/TR/SVG2/">http://www.w3.org/TR/SVG2/</a>
    <dt id="biblio-webidl"><a class="self-link" href="#biblio-webidl"></a>[WebIDL]
    <dd>Cameron McCormack. <a href="http://www.w3.org/TR/WebIDL/">Web IDL</a>. 19 April 2012. CR. URL: <a href="http://www.w3.org/TR/WebIDL/">http://www.w3.org/TR/WebIDL/</a>
    <dt id="biblio-css-overflow-3"><a class="self-link" href="#biblio-css-overflow-3"></a>[CSS-OVERFLOW-3]
@@ -12187,8 +12199,6 @@ Keyframe object, <a href="#procedure-for-converting-an-ecmascript-object-to-an-i
    <dd>Simon Fraser; et al. <a href="http://www.w3.org/TR/2012/WD-css3-transforms-20120911/">CSS Transforms</a>. 11 September 2012. W3C Working Draft. (Work in progress.) URL: <a href="http://www.w3.org/TR/2012/WD-css3-transforms-20120911/">http://www.w3.org/TR/2012/WD-css3-transforms-20120911/</a>
    <dt id="biblio-fund-comp-graphics"><a class="self-link" href="#biblio-fund-comp-graphics"></a>[FUND-COMP-GRAPHICS]
    <dd>Peter Shirley; Michael Ashikhmin; Steve Marschner. Fundamentals of Computer Graphics. 2009. 
-   <dt id="biblio-svg2"><a class="self-link" href="#biblio-svg2"></a>[SVG2]
-   <dd>Nikos Andronikos; et al. <a href="http://www.w3.org/TR/SVG2/">Scalable Vector Graphics (SVG) 2</a>. 11 February 2014. WD. URL: <a href="http://www.w3.org/TR/SVG2/">http://www.w3.org/TR/SVG2/</a>
    <dt id="biblio-animation-timing"><a class="self-link" href="#biblio-animation-timing"></a>[ANIMATION-TIMING]
    <dd>James Robinson; Cameron McCormack. <a href="http://www.w3.org/TR/animation-timing/">Timing control for script-based animations</a>. 31 October 2013. CR. URL: <a href="http://www.w3.org/TR/animation-timing/">http://www.w3.org/TR/animation-timing/</a>
    <dt id="biblio-css3-animations"><a class="self-link" href="#biblio-css3-animations"></a>[CSS3-ANIMATIONS]
@@ -12374,15 +12384,15 @@ enum <a data-global-name="" href="#enumdef-iterationcompositeoperation">Iteratio
 
 enum <a data-global-name="" href="#enumdef-compositeoperation">CompositeOperation</a> {"replace", "add", "accumulate"};
 
+[<a class="idl-code" data-global-name="SharedKeyframeList<interface>/SharedKeyframeList(frames)<constructor>" data-link-type="constructor" href="#dom-sharedkeyframelist-sharedkeyframelistframes">Constructor</a> ((<a data-link-type="idl-name" href="#dictdef-keyframe">Keyframe</a> or sequence&lt;<a data-link-type="idl-name" href="#dictdef-keyframe">Keyframe</a>> or <a data-link-type="idl-name" href="#sharedkeyframelist">SharedKeyframeList</a>) <a class="idl-code" data-global-name="SharedKeyframeList<interface>/SharedKeyframeList(frames)<method>/frames<argument>" data-link-type="argument" href="#dom-sharedkeyframelist-sharedkeyframelistframes-frames">frames</a>)]
+interface <a data-global-name="" href="#sharedkeyframelist">SharedKeyframeList</a> {
+};
+
 dictionary <a data-global-name="" href="#dictdef-keyframe">Keyframe</a> {
     // ... property-value pairs ...
     double?             <a class="idl-code" data-default="null" data-global-name="Keyframe<dictionary>/offset<dict-member>" data-link-type="dict-member" data-type="double?             " href="#dom-keyframe-offset">offset</a> = null;
     DOMString           <a class="idl-code" data-default="&quot;linear&quot;" data-global-name="Keyframe<dictionary>/easing<dict-member>" data-link-type="dict-member" data-type="DOMString           " href="#dom-keyframe-easing">easing</a> = "linear";
     <a data-link-type="idl-name" href="#enumdef-compositeoperation">CompositeOperation</a>? <a class="idl-code" data-default="null" data-global-name="Keyframe<dictionary>/composite<dict-member>" data-link-type="dict-member" data-type="CompositeOperation? " href="#dom-keyframe-composite">composite</a> = null;
-};
-
-[<a class="idl-code" data-global-name="SharedKeyframeList<interface>/SharedKeyframeList(frames)<constructor>" data-link-type="constructor" href="#dom-sharedkeyframelist-sharedkeyframelistframes">Constructor</a> ((<a data-link-type="idl-name" href="#dictdef-keyframe">Keyframe</a> or sequence&lt;<a data-link-type="idl-name" href="#dictdef-keyframe">Keyframe</a>> or <a data-link-type="idl-name" href="#sharedkeyframelist">SharedKeyframeList</a>) <a class="idl-code" data-global-name="SharedKeyframeList<interface>/SharedKeyframeList(frames)<method>/frames<argument>" data-link-type="argument" href="#dom-sharedkeyframelist-sharedkeyframelistframes-frames">frames</a>)]
-interface <a data-global-name="" href="#sharedkeyframelist">SharedKeyframeList</a> {
 };
 
 dictionary <a data-global-name="" href="#dictdef-computedkeyframe">ComputedKeyframe</a> : <a data-link-type="idl-name" href="#dictdef-keyframe">Keyframe</a> {
@@ -12756,11 +12766,12 @@ that here.<a href="#issue-bf83a611"> ↵ </a></div>
 reference that here.<a href="#issue-d42a6a0c"> ↵ </a></div>
    <div class="issue">Replace this with a <code>frames</code> attribute.<a href="#issue-8e94dcc4"> ↵ </a></div>
    <div class="issue">Need to define what invalid means here.<a href="#issue-53ccb020"> ↵ </a></div>
+   <div class="issue">I’d like to remove this step. Prefixes are history.<a href="#issue-4f4c78be"> ↵ </a></div>
    <div class="issue">
 
 
     <p>The above algorithm gives special meaning to the property names
-"offset", "computedOffset", "easing", and "composite".
+"offset", "easing", and "composite".
 If a CSS property called "offset" or "composite" is ever
 introduced it will clash with the meaning here.</p>
     
@@ -12782,7 +12793,7 @@ e.g. "keyframeOffset".</p>
       
 </ul>
     
-<a href="#issue-7e1dd385"> ↵ </a>
+<a href="#issue-336fc667"> ↵ </a>
    </div>
    <div class="issue">
   This is only named <code class="idl"><a data-link-type="idl" href="#dom-effectcallback-animationobject">animationObject</a></code> because otherwise we end
