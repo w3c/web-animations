@@ -6519,6 +6519,57 @@ enum CompositeOperation {"replace", "add", "accumulate"};
     lt="animation accumulation">accumulated</a> on to the
     <a>underlying value</a>.
 
+<h3 id="the-sharedkeyframelist-interface">The <code>SharedKeyframeList</code> interface</h3>
+
+The {{SharedKeyframeList}} interface represents a sequence of {{Keyframe}}
+dictionary objects such that it can be shared between {{KeyframeEffect}}
+objects.
+
+<div class="informative-bg"><em>This section is non-normative</em>
+
+By using {{SharedKeyframeList}} objects, multiple {{KeyframeEffect}} objects
+can re-use the same {{Keyframe}}s without paying the cost of parsing them
+multiple times.
+
+For example:
+<pre class="example lang-javascript">
+var keyframes = new SharedKeyframeList([
+ { left: '100px', backgroundColor: 'red' },
+ { left: '200px', backgroundColor: 'green', offset: 0.4 },
+ { left: '400px', backgroundColor: 'blue' } ]);
+var player1 = element1.animate(keyframes, 1000);
+var player2 = element2.animate(keyframes, { duration: 1000, delay: 1000 });
+</pre>
+
+</div>
+
+<pre class='idl'>
+[Constructor ((Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames)]
+interface SharedKeyframeList {
+};
+</pre>
+
+<div class='constructors'>
+
+:   <dfn constructor for=SharedKeyframeList lt="SharedKeyframeList(frames)">
+    SharedKeyframeList(frames)</dfn>
+::  Creates a new {{SharedKeyframeList}} object.
+
+    <div class='parameters'>
+
+    :   <dfn argument for="SharedKeyframeList/SharedKeyframeList(frames)"
+        lt="frames">frames</dfn>
+    ::  The keyframes to be shared. If <var>frames</var> is a {{Keyframe}}
+        object or a sequence of {{Keyframe}} objects, they are cloned and stored
+        internally.
+        Otherwise, <var>frames</var> is a {{SharedKeyframeList}}, and
+        a reference to that list's internal {{Keyframe}} object or sequence of
+        {{Keyframe}} objects is stored internally.
+
+    </div>
+
+</div>
+
 <h3 id="the-keyframe-dictionary">The <code>Keyframe</code> dictionary</h3>
 
 Individual <a>keyframes</a> are represented by a special kind of
@@ -6717,54 +6768,6 @@ We have a few options:
     property of the same name, e.g. <code>cssOffset</code>.
 *   Rename these keywords now to reduce risk of a later clash,
     e.g. "keyframeOffset".
-
-</div>
-
-<h3 id="the-sharedkeyframelist-interface">The <code>SharedKeyframeList</code> interface</h3>
-
-The {{SharedKeyframeList}} interface allows lists of {{Keyframe}} dictionaries
-to be represented.
-
-<div class='note'>
-This means that multiple {{KeyframeEffect}} objects can re-use the same
-{{Keyframe}}s without paying the cost of parsing them multiple times.
-
-For example:
-<pre class="example lang-javascript">
-var keyframes = new SharedKeyframeList([
- { left: '100px', backgroundColor: 'red' },
- { left: '200px', backgroundColor: 'green', offset: 0.4 },
- { left: '400px', backgroundColor: 'blue' } ]);
-var player1 = element1.animate(keyframes, 1000);
-var player2 = element2.animate(keyframes, {duration: 1000, delay: 1000});
-</pre>
-
-</div>
-
-<pre class='idl'>
-[Constructor ((Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames)]
-interface SharedKeyframeList {
-};
-</pre>
-
-<div class='constructors'>
-
-:   <dfn constructor for=SharedKeyframeList lt="SharedKeyframeList(frames)">
-    SharedKeyframeList(frames)</dfn>
-::  Creates a new {{SharedKeyframeList}} object.
-
-    <div class='parameters'>
-
-    :   <dfn argument for="SharedKeyframeList/SharedKeyframeList(frames)"
-        lt="frames">frames</dfn>
-    ::  The keyframes to be shared. If <var>frames</var> is a {{Keyframe}}
-        object or a sequence of {{Keyframe}} objects, they are cloned and stored
-        internally.
-        Otherwise, <var>frames</var> is a {{SharedKeyframeList}}, and
-        a reference to that list's internal {{Keyframe}} object or sequence of
-        {{Keyframe}} objects is stored internally.
-
-    </div>
 
 </div>
 
@@ -7313,7 +7316,6 @@ The following changes have been made since the <a
         equivalents since the read-only interface is the super-interface in each
         case
 
-*   Added an opaque, immutable representation of {{SharedKeyframeList}}s.
 *   Fixed the grammar for <a>&lt;cubic-bezier-timing-function&gt;</a> to
     match CSS Transitions.
 *   Introduced the {{ComputedTimingProperties}} dictionary and
@@ -7331,6 +7333,7 @@ The following changes have been made since the <a
     keyframes with an offset outside the range [0, 1].
 *   Removed <code>paced</code> as a valid value for {{KeyframeEffect}}'s
     {{KeyframeEffect/spacing}} attribute.
+*   Added an opaque, immutable representation of {{SharedKeyframeList}}s.
 *   Added special handling for animating SVG's offset attribute on stop elements
     by using the &lsquo;svgOffset&rsquo; property name.
 *   Removed the <code>MotionPathEffect</code> interface now that motion path
