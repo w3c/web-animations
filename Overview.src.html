@@ -943,29 +943,13 @@ follows:
 
 1.  Let <var>has pending ready promise</var> be a boolean flag that is
     initially false.
-2.  If <var>animation</var> has a <a>pending play task</a>,
+1.  If <var>animation</var> has a <a>pending play task</a> or a
+    <a>pending pause task</a>,
 
     1.  Cancel that task.
-    2.  Set <var>has pending ready promise</var> to true.
+    1.  Set <var>has pending ready promise</var> to true.
 
-3.  If <var>animation</var> has a <a>pending pause task</a>,
-
-    1.  Cancel that task.
-    2.  If <var>animation</var> has an associated <a>timeline</a> that is not
-        <a lt="inactive timeline">inactive</a>, perform the following steps:
-
-        1.  Set <var>animation</var>'s <a lt="animation start time">start
-            time</a> to the result of evaluating
-            <code><var>timeline time</var> -
-            <a>hold time</a> / <a lt="animation playback rate">playback
-            rate</a></code>
-            where <var>timeline time</var> is the current <a>time value</a> of
-            the <a>timeline</a> associated with <var>animation</var>.
-        2.  Let <var>animation</var>'s <a>hold time</a> be <a>unresolved</a>.
-
-    3.  Set <var>has pending ready promise</var> to true.
-
-4.  Perform the steps corresponding to the <em>first</em> matching
+1.  Perform the steps corresponding to the <em>first</em> matching
     condition from the following, if any:
 
     <div class="switch">
@@ -992,23 +976,17 @@ follows:
 
     </div>
 
-5.  If <var>animation</var>'s <a>hold time</a> is <a>unresolved</a>, perform the
-    following steps:
+1.  If <var>animation</var>'s <a>hold time</a> is <a>unresolved</a> abort this
+    procedure.
 
-    1.  If <var>has pending ready promise</var> is true,
-        <a lt="resolve a Promise">resolve</a> <var>animation</var>'s <a>current
-        ready promise</a> with <var>animation</var>.
-
-    2.  Abort this procedure.
-
-6.  Let <var>animation</var>'s <a lt="animation start time">start time</a> be
+1.  Let <var>animation</var>'s <a lt="animation start time">start time</a> be
     <a>unresolved</a>.
 
-7.  If <var>has pending ready promise</var> is false,
+1.  If <var>has pending ready promise</var> is false,
     let <var>animation</var>'s <a>current ready promise</a> be a new
     (pending) <a>Promise</a> object.
 
-8.  Schedule a task to run as soon as <var>animation</var> is <a>ready</a>.
+1.  Schedule a task to run as soon as <var>animation</var> is <a>ready</a>.
     The task shall perform the following steps:
 
     1.  <a>Assert</a> that <a>hold time</a> is <a
@@ -1019,21 +997,21 @@ follows:
     1.  Let <var>ready time</var> be the <a>time value</a> of
         the <a>timeline</a> associated with <var>animation</var> at the moment
         when <var>animation</var> became <a>ready</a>.
-    2.  Let <var>new start time</var> be the result of evaluating
+    1.  Let <var>new start time</var> be the result of evaluating
         <code><var>ready time</var> - <a>hold time</a> / <a>animation
         playback rate</a></code> for <var>animation</var>.
         If the <a>animation playback rate</a> is zero, let <var>new start
         time</var> be simply <var>ready time</var>.
-    3.  If <var>animation</var>'s <a lt="animation playback rate">playback
+    1.  If <var>animation</var>'s <a lt="animation playback rate">playback
         rate</a> is not 0, make <var>animation</var>'s <a>hold time</a>
         <a>unresolved</a>.
-    4.  Set the <a>animation start time</a> of <var>animation</var>
+    1.  Set the <a>animation start time</a> of <var>animation</var>
         to <var>new start time</var>.
-    5.  Issue: We should queue a task here for sampling custom effects.
+    1.  Issue: We should queue a task here for sampling custom effects.
         (This should happen before we resolve the ready promise.)
-    6.  <a lt="resolve a Promise">Resolve</a> <var>animation</var>'s <a>current
+    1.  <a lt="resolve a Promise">Resolve</a> <var>animation</var>'s <a>current
         ready promise</a> with <var>animation</var>.
-    7.  Run the procedure to <a>update an animation's finished state</a>
+    1.  Run the procedure to <a>update an animation's finished state</a>
         for <var>animation</var>.
 
         <div class="annotation">
@@ -1051,7 +1029,7 @@ follows:
         determines <var>animation</var> is immediately <a>ready</a>) thereby
         bypassing the <a>pending play state</a> altogether.
 
-9.  Run the procedure to <a>update an animation's finished state</a>
+1.  Run the procedure to <a>update an animation's finished state</a>
     for <var>animation</var>.
 
 <h4 id='pausing-an-animation-section'>Pausing an animation</h4>
