@@ -945,6 +945,8 @@ animation.play();</pre>
 The procedure to <dfn>play an animation</dfn>, <var>animation</var>, is as
 follows:
 
+1.  Let <var>aborted pause</var> be a boolean flag that is true if
+    <var>animation</var> has a <a>pending pause task</a>, and false otherwise.
 1.  Let <var>has pending ready promise</var> be a boolean flag that is
     initially false.
 1.  If <var>animation</var> has a <a>pending play task</a> or a
@@ -980,11 +982,13 @@ follows:
 
     </div>
 
-1.  If <var>animation</var>'s <a>hold time</a> is <a>unresolved</a> abort this
-    procedure.
+1.  If <var>aborted pause</var> is false, perform the following steps:
 
-1.  Let <var>animation</var>'s <a lt="animation start time">start time</a> be
-    <a>unresolved</a>.
+    1.  If <var>animation</var>'s <a>hold time</a> is <a>unresolved</a>,
+        abort this procedure.
+
+    1.  Let <var>animation</var>'s <a lt="animation start time">start time</a>
+        be <a>unresolved</a>.
 
 1.  If <var>has pending ready promise</var> is false,
     let <var>animation</var>'s <a>current ready promise</a> be a new
@@ -993,24 +997,24 @@ follows:
 1.  Schedule a task to run as soon as <var>animation</var> is <a>ready</a>.
     The task shall perform the following steps:
 
-    1.  <a>Assert</a> that <a>hold time</a> is <a
-        lt="unresolved">resolved</a>. (This is because we don't queue this
-        task if <a>hold time</a> is <a>unresolved</a> and anything that causes
-        it to become <a>unresolved</a> while this task is queued, should cancel
-        this task.)
     1.  Let <var>ready time</var> be the <a>time value</a> of
         the <a>timeline</a> associated with <var>animation</var> at the moment
         when <var>animation</var> became <a>ready</a>.
-    1.  Let <var>new start time</var> be the result of evaluating
-        <code><var>ready time</var> - <a>hold time</a> / <a>animation
-        playback rate</a></code> for <var>animation</var>.
-        If the <a>animation playback rate</a> is zero, let <var>new start
-        time</var> be simply <var>ready time</var>.
-    1.  If <var>animation</var>'s <a lt="animation playback rate">playback
-        rate</a> is not 0, make <var>animation</var>'s <a>hold time</a>
-        <a>unresolved</a>.
-    1.  Set the <a>animation start time</a> of <var>animation</var>
-        to <var>new start time</var>.
+
+    1.  If <var>animation</var>'s <a lt="animation start time">start time</a> is
+        <a>unresolved</a>, perform the following steps:
+
+        1.  Let <var>new start time</var> be the result of evaluating
+            <code><var>ready time</var> - <a>hold time</a> / <a>animation
+            playback rate</a></code> for <var>animation</var>.
+            If the <a>animation playback rate</a> is zero, let <var>new start
+            time</var> be simply <var>ready time</var>.
+        1.  If <var>animation</var>'s <a lt="animation playback rate">playback
+            rate</a> is not 0, make <var>animation</var>'s <a>hold time</a>
+            <a>unresolved</a>.
+        1.  Set the <a>animation start time</a> of <var>animation</var>
+            to <var>new start time</var>.
+
     1.  Issue: We should queue a task here for sampling custom effects.
         (This should happen before we resolve the ready promise.)
     1.  <a lt="resolve a Promise">Resolve</a> <var>animation</var>'s <a>current
@@ -1056,7 +1060,6 @@ follows:
     initially false.
 1.  If <var>animation</var> has a <a>pending play task</a>, cancel that task
     and let <var>has pending ready promise</var> be true.
-1.  Set <var>animation</var>'s <a>hold time</a> to <a>current time</a>.
 1.  If <var>has pending ready promise</var> is false,
     set <var>animation</var>'s <a>current ready promise</a> to a new
     (pending) <a>Promise</a> object.
@@ -1069,8 +1072,20 @@ follows:
     <var>animation</var>'s <a>target effect</a>, if any.
     The task shall perform the following steps:
 
-    1.  Set <var>animation</var>'s <a>hold time</a> to its <a>current time</a>
-        (even if the current time is <a>unresolved</a>).
+    1.  If <var>animation</var>'s <a lt="animation start time">start time</a>
+        is <a lt=unresolved>resolved</a>, let <var>animation</var>'s <a>hold
+        time</a> be the result of evaluating
+        <code><var>ready time</var> - (<a lt="animation start time">start
+        time</a> / <a lt="animation playback rate">playback rate</a>)</code>.
+
+        Note: If we start playing an animation from the <a
+        lt="idle play state">idle</a> state, we will set the <a>hold time</a> to
+        a suitable value while the animation is <a lt="pending play
+        state">pending</a> but leave the <a lt="animation start time">start
+        time</a> <a>unresolved</a>.
+        The check here for an unresolved start time here ensures we preserve
+        the <a>hold time</a> when aborting a pending play.
+
     1.  Make <var>animation</var>'s <a lt="animation start time">start time</a>
         unresolved.
     1.  Issue: We should queue a task here for sampling custom effects
