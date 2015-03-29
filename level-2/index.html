@@ -649,7 +649,7 @@ pre[class*="language-"] {
    <h1 class="p-name no-ref" id="title">Web Animations Level 2</h1>
   
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft,
-    <time class="dt-updated" datetime="2015-03-25">25 March 2015</time></span></h2>
+    <time class="dt-updated" datetime="2015-03-29">29 March 2015</time></span></h2>
   
    <div data-fill-with="spec-metadata">
     <dl>
@@ -1011,7 +1011,7 @@ SVG animations, or created directly using the programming interface.</p>
       
 
 
-      <pre class="example lang-javascript">// Wait until all animations have finished before removing the element
+      <pre class="example lang-javascript" id="example-a99056c8"><a class="self-link" href="#example-a99056c8"></a>// Wait until all animations have finished before removing the element
 Promise.all(
   elem.getAnimations().map(animation => animation.finished)
 ).then(() => elem.remove());
@@ -1024,7 +1024,7 @@ animations without waiting.</p>
       
 
 
-      <pre class="example lang-javascript">var isAnimating = elem.getAnimations().some(
+      <pre class="example lang-javascript" id="example-460fcf00"><a class="self-link" href="#example-460fcf00"></a>var isAnimating = elem.getAnimations().some(
   animation => animation.playState == 'running'
 );
 </pre>
@@ -1044,7 +1044,7 @@ attention.</p>
       
 
 
-      <pre class="example lang-javascript">// Pause all existing animations in the document
+      <pre class="example lang-javascript" id="example-7c26c54b"><a class="self-link" href="#example-7c26c54b"></a>// Pause all existing animations in the document
 document.timeline.getAnimations().forEach(
   animation => animation.pause()
 );
@@ -1069,7 +1069,7 @@ characteristics as declarative animations.</p>
       
 
 
-      <pre class="example lang-javascript">// Fade out quickly
+      <pre class="example lang-javascript" id="example-df74f6da"><a class="self-link" href="#example-df74f6da"></a>// Fade out quickly
 elem.animate({ transform: 'scale(0)', opacity: 0 }, 300);
 </pre>
       
@@ -1088,7 +1088,7 @@ running animations to answer questions such as,
       
 
 
-      <pre class="example lang-javascript">// Print the name of any opacity animations on elem
+      <pre class="example lang-javascript" id="example-19c86190"><a class="self-link" href="#example-19c86190"></a>// Print the name of any opacity animations on elem
 elem.getAnimations().filter(
   animation =>
     animation.effect instanceof KeyframeEffect &amp;&amp;
@@ -1105,7 +1105,7 @@ reduce their playback rate and replay them.</p>
       
 
 
-      <pre class="example lang-javascript">// Slow down and replay any transform animations
+      <pre class="example lang-javascript" id="example-b8387025"><a class="self-link" href="#example-b8387025"></a>// Slow down and replay any transform animations
 elem.getAnimations().filter(
   animation =>
     animation.effect instanceof KeyframeEffect &amp;&amp;
@@ -1131,7 +1131,7 @@ Rather, it is desirable to seek the animations to specific times.</p>
       
 
 
-      <pre class="example lang-javascript">// Seek to the half-way point of an animation and check that the opacity is 50%
+      <pre class="example lang-javascript" id="example-b6887419"><a class="self-link" href="#example-b6887419"></a>// Seek to the half-way point of an animation and check that the opacity is 50%
 elem.getAnimations().forEach(
   animation =>
     animation.currentTime =
@@ -1696,7 +1696,7 @@ redundant).</p>
 
     <li data-md="">
      <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a> for
-<var>animation</var>.</p>
+<var>animation</var> with the <var>did seek</var> flag set to false.</p>
      
 </ol>
 
@@ -1800,7 +1800,7 @@ effect</var>.</p>
 
     <li data-md="">
      <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a> for
-<var>animation</var>.</p>
+<var>animation</var> with the <var>did seek</var> flag set to false.</p>
      
 </ol>
 
@@ -2008,8 +2008,8 @@ task and <a data-link-type="dfn" href="#resolve-a-promise">resolve</a> <var>anim
      
 
     <li data-md="">
-     <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a>
-for <var>animation</var>.</p>
+     <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a> for
+<var>animation</var> with the <var>did seek</var> flag set to true.</p>
      
 </ol>
 
@@ -2109,10 +2109,15 @@ a <a data-link-type="dfn" href="#pending-pause-task">pending pause task</a>, can
 
 
     <li data-md="">
-     <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a>
-for <var>animation</var>.</p>
+     <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a> for
+<var>animation</var> with the <var>did seek</var> flag set to false.</p>
      
 </ol>
+
+   <p class="issue" id="issue-e68d97d4"><a class="self-link" href="#issue-e68d97d4"></a>Is this right? If you shift an animation backwards in time so that it is
+now finished, should the current time jump to the end of the target effect, or
+be allowed to sit past the end of the target effect?</p>
+
 
    <h4 class="heading settled" data-level="3.5.6" id="waiting-for-the-target-effect"><span class="secno">3.5.6. </span><span class="content">Waiting for the target effect</span><a class="self-link" href="#waiting-for-the-target-effect"></a></h4>
 
@@ -2220,7 +2225,7 @@ cancelled (see <a href="#cancelling-an-animation-section">§3.5.15 Cancelling an
     not change.</p>
 
     
-    <pre class="example lang-javascript">animation.pause();
+    <pre class="example lang-javascript" id="example-9effe8af"><a class="self-link" href="#example-9effe8af"></a>animation.pause();
 animation.ready.then(function() {
   // Displays 'running'
   alert(animation.playState);
@@ -2238,6 +2243,11 @@ follows:</p>
 
 
    <ol>
+    <li data-md="">
+     <p>Let <var>aborted pause</var> be a boolean flag that is true if
+<var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task">pending pause task</a>, and false otherwise.</p>
+     
+
     <li data-md="">
      <p>Let <var>has pending ready promise</var> be a boolean flag that is
 initially false.</p>
@@ -2334,16 +2344,23 @@ condition from the following, if any:</p>
 
 
     <li data-md="">
-     <p>If <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold time</a> is <a data-link-type="dfn" href="#unresolved">unresolved</a> abort this
-procedure.</p>
+     <p>If <var>aborted pause</var> is false, perform the following steps:</p>
      
 
 
-    <li data-md="">
-     <p>Let <var>animation</var>’s <a data-link-type="dfn" href="#animation-start-time">start time</a> be
-<a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
-     
+     <ol>
+      <li data-md="">
+       <p>If <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold time</a> is <a data-link-type="dfn" href="#unresolved">unresolved</a>,
+abort this procedure.</p>
+       
 
+
+      <li data-md="">
+       <p>Let <var>animation</var>’s <a data-link-type="dfn" href="#animation-start-time">start time</a>
+be <a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
+       
+</ol>
+     
 
     <li data-md="">
      <p>If <var>has pending ready promise</var> is false,
@@ -2360,35 +2377,38 @@ The task shall perform the following steps:</p>
 
      <ol>
       <li data-md="">
-       <p><a data-link-type="dfn" href="#assert">Assert</a> that <a data-link-type="dfn" href="#hold-time">hold time</a> is <a data-link-type="dfn" href="#unresolved">resolved</a>. (This is because we don’t queue this
-task if <a data-link-type="dfn" href="#hold-time">hold time</a> is <a data-link-type="dfn" href="#unresolved">unresolved</a> and anything that causes
-it to become <a data-link-type="dfn" href="#unresolved">unresolved</a> while this task is queued, should cancel
-this task.)</p>
-       
-
-      <li data-md="">
        <p>Let <var>ready time</var> be the <a data-link-type="dfn" href="#time-value">time value</a> of
 the <a data-link-type="dfn" href="#timeline">timeline</a> associated with <var>animation</var> at the moment
 when <var>animation</var> became <a data-link-type="dfn" href="#ready">ready</a>.</p>
        
 
+
       <li data-md="">
-       <p>Let <var>new start time</var> be the result of evaluating
+       <p>If <var>animation</var>’s <a data-link-type="dfn" href="#animation-start-time">start time</a> is
+<a data-link-type="dfn" href="#unresolved">unresolved</a>, perform the following steps:</p>
+       
+
+
+       <ol>
+        <li data-md="">
+         <p>Let <var>new start time</var> be the result of evaluating
 <code><var>ready time</var> - <a data-link-type="dfn" href="#hold-time">hold time</a> / <a data-link-type="dfn" href="#animation-playback-rate">animation
 playback rate</a></code> for <var>animation</var>.
 If the <a data-link-type="dfn" href="#animation-playback-rate">animation playback rate</a> is zero, let <var>new start
 time</var> be simply <var>ready time</var>.</p>
-       
+         
 
-      <li data-md="">
-       <p>If <var>animation</var>’s <a data-link-type="dfn" href="#animation-playback-rate">playback
+        <li data-md="">
+         <p>If <var>animation</var>’s <a data-link-type="dfn" href="#animation-playback-rate">playback
 rate</a> is not 0, make <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold time</a>
 <a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
-       
+         
 
-      <li data-md="">
-       <p>Set the <a data-link-type="dfn" href="#animation-start-time">animation start time</a> of <var>animation</var>
+        <li data-md="">
+         <p>Set the <a data-link-type="dfn" href="#animation-start-time">animation start time</a> of <var>animation</var>
 to <var>new start time</var>.</p>
+         
+</ol>
        
 
       <li data-md="">
@@ -2402,8 +2422,8 @@ ready promise</a> with <var>animation</var>.</p>
        
 
       <li data-md="">
-       <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a>
-for <var>animation</var>.</p>
+       <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a> for
+<var>animation</var> with the <var>did seek</var> flag set to false.</p>
        
 
 
@@ -2430,8 +2450,8 @@ bypassing the <a data-link-type="dfn" href="#pending-play-state">pending play st
      
 
     <li data-md="">
-     <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a>
-for <var>animation</var>.</p>
+     <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a> for
+<var>animation</var> with the <var>did seek</var> flag set to false.</p>
      
 </ol>
 
@@ -2468,10 +2488,6 @@ and let <var>has pending ready promise</var> be true.</p>
      
 
     <li data-md="">
-     <p>Set <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold time</a> to <a data-link-type="dfn" href="#current-time">current time</a>.</p>
-     
-
-    <li data-md="">
      <p>If <var>has pending ready promise</var> is false,
 set <var>animation</var>’s <a data-link-type="dfn" href="#current-ready-promise">current ready promise</a> to a new
 (pending) <a data-link-type="dfn" href="#promise">Promise</a> object.</p>
@@ -2489,9 +2505,21 @@ The task shall perform the following steps:</p>
 
      <ol>
       <li data-md="">
-       <p>Set <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold time</a> to its <a data-link-type="dfn" href="#current-time">current time</a>
-(even if the current time is <a data-link-type="dfn" href="#unresolved">unresolved</a>).</p>
+       <p>If <var>animation</var>’s <a data-link-type="dfn" href="#animation-start-time">start time</a>
+is <a data-link-type="dfn" href="#unresolved">resolved</a>, let <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold
+time</a> be the result of evaluating
+<code><var>ready time</var> - (<a data-link-type="dfn" href="#animation-start-time">start
+time</a> / <a data-link-type="dfn" href="#animation-playback-rate">playback rate</a>)</code>.</p>
        
+
+
+       <p class="note" role="note">Note: If we start playing an animation from the <a data-link-type="dfn" href="#idle-play-state">idle</a> state, we will set the <a data-link-type="dfn" href="#hold-time">hold time</a> to
+a suitable value while the animation is <a data-link-type="dfn" href="#pending-play-state">pending</a> but leave the <a data-link-type="dfn" href="#animation-start-time">start
+time</a> <a data-link-type="dfn" href="#unresolved">unresolved</a>.
+The check here for an unresolved start time here ensures we preserve
+the <a data-link-type="dfn" href="#hold-time">hold time</a> when aborting a pending play.</p>
+       
+
 
       <li data-md="">
        <p>Make <var>animation</var>’s <a data-link-type="dfn" href="#animation-start-time">start time</a>
@@ -2510,8 +2538,8 @@ ready promise</a> with <var>animation</var>.</p>
        
 
       <li data-md="">
-       <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a>
-for <var>animation</var>.</p>
+       <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a> for
+<var>animation</var> with the <var>did seek</var> flag set to false.</p>
        
 </ol>
      
@@ -2524,8 +2552,8 @@ While the task is running, however, <var>animation</var> does
 
 
     <li data-md="">
-     <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a>
-for <var>animation</var>.</p>
+     <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a> for
+<var>animation</var> with the <var>did seek</var> flag set to false.</p>
      
 </ol>
 
@@ -2634,9 +2662,17 @@ considered to be <a data-link-type="dfn" href="#paused-play-state">paused</a> ra
 <a data-link-type="dfn" href="#finished-play-state">finished</a>.)</p>
 
 
+   <p class="issue" id="issue-26934df1"><a class="self-link" href="#issue-26934df1"></a>This needs to be fixed. It should be finished in both cases.</p>
+
+
    <p>The crossing of this boundary is checked on each modification to the
 animation object using the procedure for <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished
 state</a> defined below.</p>
+
+
+   <p class="issue" id="issue-1bd5d417"><a class="self-link" href="#issue-1bd5d417"></a>We should mention that this gets run at the end of each sample as well.
+       Likewise at the end of any update to the timing of the <a data-link-type="dfn" href="#target-effect">target
+       effect</a>.</p>
 
 
    <p>For each animation, the user agent maintains a <dfn data-dfn-type="dfn" data-noexport="" id="previous-current-time">previous current
@@ -2645,13 +2681,16 @@ and a <dfn data-dfn-type="dfn" data-noexport="" id="previous-finished-state">pre
 initially false.</p>
 
 
-   <p class="issue" id="issue-1bd5d417"><a class="self-link" href="#issue-1bd5d417"></a>We should mention that this gets run at the end of each sample as well.
-       Likewise at the end of any update to the timing of the <a data-link-type="dfn" href="#target-effect">target
-       effect</a>.</p>
+   <p>Whilst during normal playback the <a data-link-type="dfn" href="#current-time">current time</a> of an <a data-link-type="dfn" href="#concept-animation">animation</a> is
+limited to the boundaries described above, it is possible to seek the <a data-link-type="dfn" href="#current-time">current
+time</a> of an <a data-link-type="dfn" href="#concept-animation">animation</a> to times outside those boundaries using the
+procedure to <a data-link-type="dfn" href="#set-the-current-time">set the current time</a> of an <a data-link-type="dfn" href="#concept-animation">animation</a>.</p>
 
 
    <p>The procedure to <dfn data-dfn-type="dfn" data-noexport="" id="update-an-animations-finished-state">update an animation’s finished state<a class="self-link" href="#update-an-animations-finished-state"></a></dfn> for
-<var>animation</var> is as follows:</p>
+<var>animation</var>, given a flag <var>did seek</var> (to indicate if
+the update is being performed after <a data-link-type="dfn" href="#set-the-current-time">setting the
+current time</a>), is as follows:</p>
 
 
    <ol>
@@ -2689,8 +2728,13 @@ greater than or equal to <a data-link-type="dfn" href="#target-effect-end">targe
         
 
        <dd data-md="">
-        <p>let the <a data-link-type="dfn" href="#hold-time">hold time</a> be the maximum value of
-<a data-link-type="dfn" href="#previous-current-time">previous current time</a> and <a data-link-type="dfn" href="#target-effect-end">target effect end</a>.
+        <p>If <var>did seek</var> is true, let the <a data-link-type="dfn" href="#hold-time">hold time</a>
+be the value of <a data-link-type="dfn" href="#current-time">current time</a>.</p>
+        
+
+
+        <p>If <var>did seek</var> is false, let the <a data-link-type="dfn" href="#hold-time">hold time</a> be the maximum
+value of <a data-link-type="dfn" href="#previous-current-time">previous current time</a> and <a data-link-type="dfn" href="#target-effect-end">target effect end</a>.
 If the <a data-link-type="dfn" href="#previous-current-time">previous current time</a> is
 <a data-link-type="dfn" href="#unresolved">unresolved</a>, let the <a data-link-type="dfn" href="#hold-time">hold time</a> be <a data-link-type="dfn" href="#target-effect-end">target
 effect end</a>.</p>
@@ -2703,7 +2747,12 @@ less than or equal to 0,</p>
         
 
        <dd data-md="">
-        <p>let the <a data-link-type="dfn" href="#hold-time">hold time</a> be zero.</p>
+        <p>If <var>did seek</var> is true, let the <a data-link-type="dfn" href="#hold-time">hold time</a>
+be the value of <a data-link-type="dfn" href="#current-time">current time</a>.</p>
+        
+
+
+        <p>If <var>did seek</var> is false, let the <a data-link-type="dfn" href="#hold-time">hold time</a> be zero.</p>
         
 
        <dt data-md="">
@@ -2712,9 +2761,25 @@ less than or equal to 0,</p>
         
 
        <dd data-md="">
-        <p>let the <a data-link-type="dfn" href="#hold-time">hold time</a> be <a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
+        <p>Perform the following steps:</p>
         
-</dl>
+
+
+        <ol>
+         <li data-md="">
+          <p>If <var>did seek</var> is true and the <a data-link-type="dfn" href="#hold-time">hold time</a> is <a data-link-type="dfn" href="#unresolved">resolved</a>, let <var>animation</var>’s
+<a data-link-type="dfn" href="#animation-start-time">start time</a>
+be equal to the result of evaluating
+<code><var>timeline time</var> - (<a data-link-type="dfn" href="#hold-time">hold time</a> / <a data-link-type="dfn" href="#animation-playback-rate">playback rate</a>)</code>
+where <var>timeline time</var> is the current <a data-link-type="dfn" href="#time-value">time value</a>
+of <a data-link-type="dfn" href="#timeline">timeline</a> associated with <var>animation</var>.</p>
+          
+
+
+         <li data-md="">
+          <p>Let the <a data-link-type="dfn" href="#hold-time">hold time</a> be <a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
+          
+</ol></dl>
 </div>
      
 
@@ -2820,7 +2885,7 @@ infinity,
 
     <li data-md="">
      <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a>
-for <var>animation</var>.</p>
+<var>animation</var> with the <var>did seek</var> flag set to true.</p>
      
 </ol>
 
@@ -3119,7 +3184,7 @@ animation into a <a data-link-type="dfn" href="#finished-play-state">finished</a
 without restarting by setting the <a data-link-type="dfn" href="#animation-start-time">animation start time</a> such as below:</p>
 
 
-    <pre class="example lang-javascript">animation.effect.timing.duration = 5000;
+    <pre class="example lang-javascript" id="example-cd511908"><a class="self-link" href="#example-cd511908"></a>animation.effect.timing.duration = 5000;
 animation.currentTime = 4000;
 animation.pause();
 animation.ready.then(function() {
@@ -3576,21 +3641,21 @@ is <a data-link-type="dfn" href="#in-play">in play</a> or else the <a data-link-
      
 </ol>
 
-   <p>An animation effect is <dfn data-dfn-type="dfn" data-noexport="" id="current">current<a class="self-link" href="#current"></a></dfn> if
-<em>any</em>of the following conditions is true:</p>
+   <p>An <a data-link-type="dfn" href="#animation-effect">animation effect</a> is <dfn data-dfn-type="dfn" data-noexport="" id="current">current<a class="self-link" href="#current"></a></dfn> if
+<em>any</em> of the following conditions is true:</p>
 
 
    <ul>
     <li data-md="">
-     <p>it is in the <a data-link-type="dfn" href="#before-phase">before phase</a>, or</p>
+     <p>the <a data-link-type="dfn" href="#animation-effect">animation effect</a> is in the <a data-link-type="dfn" href="#before-phase">before phase</a>, or</p>
      
 
     <li data-md="">
-     <p>it is <a data-link-type="dfn" href="#in-play">in play</a>, or</p>
+     <p>the <a data-link-type="dfn" href="#animation-effect">animation effect</a> is <a data-link-type="dfn" href="#in-play">in play</a>, or</p>
      
 
     <li data-md="">
-     <p>it has a <a data-link-type="dfn" href="#parent-group">parent group</a> and the
+     <p>the <a data-link-type="dfn" href="#animation-effect">animation effect</a> has a <a data-link-type="dfn" href="#parent-group">parent group</a> and the
 <a data-link-type="dfn" href="#parent-group">parent group</a> is <a data-link-type="dfn" href="#current">current</a>.</p>
      
 </ul>
@@ -6034,7 +6099,7 @@ calculation is 1 (i.e. the behavior degenerates to <a data-link-type="dfn" href=
      
 
 
-     <div class="example">
+     <div class="example" id="example-a28a1a4d"><a class="self-link" href="#example-a28a1a4d"></a>
   For example, for a <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> that does not have
   an <a data-link-type="dfn" href="#target-element">target element</a>, there is no containing block for resolving
   percentage values against.
@@ -6545,7 +6610,7 @@ time but instead to rely on some automatic spacing.</p>
     <p>For example, rather than typing:</p>
 
 
-    <pre class="example lang-javascript">elem.animate([ { color: 'blue', offset: 0 },
+    <pre class="example lang-javascript" id="example-880b643e"><a class="self-link" href="#example-880b643e"></a>elem.animate([ { color: 'blue', offset: 0 },
                { color: 'green', offset: 1/3 },
                { color: 'red', offset: 2/3 },
                { color: 'yellow', offset: 1 } ], 2000);</pre>
@@ -6556,7 +6621,7 @@ to calculate the <a data-link-type="dfn" href="#keyframe-offset">offset</a> of e
 keyframe:</p>
 
 
-    <pre class="example lang-javascript">elem.animate([ { color: 'blue' },
+    <pre class="example lang-javascript" id="example-2442e6c6"><a class="self-link" href="#example-2442e6c6"></a>elem.animate([ { color: 'blue' },
                { color: 'green' },
                { color: 'red' },
                { color: 'yellow' } ], 2000);</pre>
@@ -6576,7 +6641,7 @@ animation.</p>
     <p>For example, consider the following animation:</p>
 
 
-    <pre class="example lang-javascript">elem.animate([ { left: '0px' },
+    <pre class="example lang-javascript" id="example-d0695eae"><a class="self-link" href="#example-d0695eae"></a>elem.animate([ { left: '0px' },
                { left: '-20px' },
                { left: '100px' },
                { left: '50px' } ], 1000);</pre>
@@ -6604,7 +6669,7 @@ for each segment as indicated the varying slope of the graph.
 spacing mode as follows:</p>
 
 
-    <pre class="example lang-javascript">elem.animate([ { left: '0px' },
+    <pre class="example lang-javascript" id="example-6751e723"><a class="self-link" href="#example-6751e723"></a>elem.animate([ { left: '0px' },
                { left: '-20px' },
                { left: '100px' },
                { left: '50px' } ],
@@ -6631,7 +6696,7 @@ of the animation indicating a constant rate of change.
 spacing modes as follows:</p>
 
 
-    <pre class="example lang-javascript">elem.animate([ { left: '0px' },
+    <pre class="example lang-javascript" id="example-cdc62e39"><a class="self-link" href="#example-cdc62e39"></a>elem.animate([ { left: '0px' },
                { left: '-20px' },
                { left: '100px', offset: 0.5 },
                { left: '50px' } ],
@@ -8502,7 +8567,7 @@ this <a data-link-type="dfn" href="#animation-effect">animation effect</a>.</p>
 
         
         <div>
-         <pre class="example lang-javascript">effect.before(effect); // throws HierarchyRequestError</pre>
+         <pre class="example lang-javascript" id="example-54d13182"><a class="self-link" href="#example-54d13182"></a>effect.before(effect); // throws HierarchyRequestError</pre>
         </div>
 </div>
        
@@ -9622,7 +9687,7 @@ treated as an <code class="idl"><a data-link-type="idl" href="#dictdef-animation
 will effectively be cloned, not shared.</p>
 
 
-     <div class="example">
+     <div class="example" id="example-f7d33ece"><a class="self-link" href="#example-f7d33ece"></a>
 
 
       <p>For example, the timing of two animations may be aligned as follows:</p>
@@ -10457,14 +10522,14 @@ a number of approaches to creating a new <code class="idl"><a data-link-type="id
 seconds can be constructed as follows:</p>
 
 
-     <pre class="example lang-javascript">var effect = new KeyframeEffect(elem, { left: '100px' }, 3000);</pre>
+     <pre class="example lang-javascript" id="example-7a28f33c"><a class="self-link" href="#example-7a28f33c"></a>var effect = new KeyframeEffect(elem, { left: '100px' }, 3000);</pre>
 
 
      <p>The second parameter, representing the list of keyframes, may
 specify multiple properties.</p>
 
 
-     <pre class="example lang-javascript">// Specify multiple properties at once
+     <pre class="example lang-javascript" id="example-3435c024"><a class="self-link" href="#example-3435c024"></a>// Specify multiple properties at once
 var effectA = new KeyframeEffect(elem, { left: '100px', top: '300px' }, 3000);
 
 // Specify multiple frames
@@ -10478,7 +10543,7 @@ as the <a data-link-type="dfn" href="#start-delay">start delay</a>, an <code cla
 be used, as follows:</p>
 
 
-     <pre class="example lang-javascript">var effect =
+     <pre class="example lang-javascript" id="example-140b8fe7"><a class="self-link" href="#example-140b8fe7"></a>var effect =
   new KeyframeEffect(elem, { left: '100px' }, { duration: 3000, delay: 2000 });</pre>
 
 
@@ -10488,7 +10553,7 @@ It is possible to create an animation that simply sets a property
 without any interpolation as follows:</p>
 
 
-     <pre class="example lang-javascript">var effect = new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' });</pre>
+     <pre class="example lang-javascript" id="example-5566bd96"><a class="self-link" href="#example-5566bd96"></a>var effect = new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' });</pre>
 
 
 
@@ -10498,7 +10563,7 @@ For example, fading an element before switching
 follows,</p>
 
 
-     <pre class="example lang-javascript">new SequenceEffect(
+     <pre class="example lang-javascript" id="example-ae78ea69"><a class="self-link" href="#example-ae78ea69"></a>new SequenceEffect(
   [
     new KeyframeEffect(elem, { opacity: 0 }, 1000),
     new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' })
@@ -10512,7 +10577,7 @@ shortcut is more convenient since it performs this last step
 automatically. For example,</p>
 
 
-     <pre class="example lang-javascript">elem.animate({ left: '100px' }, 3000);</pre>
+     <pre class="example lang-javascript" id="example-a7ce65dd"><a class="self-link" href="#example-a7ce65dd"></a>elem.animate({ left: '100px' }, 3000);</pre>
 
 </div>
 
@@ -10620,7 +10685,7 @@ multiple times.</p>
 
      <p>For example:</p>
 
-     <pre class="example lang-javascript">var keyframes = new SharedKeyframeList([
+     <pre class="example lang-javascript" id="example-1db77dc4"><a class="self-link" href="#example-1db77dc4"></a>var keyframes = new SharedKeyframeList([
  { left: '100px', backgroundColor: 'red' },
  { left: '200px', backgroundColor: 'green', offset: 0.4 },
  { left: '400px', backgroundColor: 'blue' } ]);
@@ -11142,7 +11207,7 @@ document</a> <a data-link-type="biblio" href="#biblio-dom">[DOM]</a> of the elem
 
     
        <div>
-        <pre class="example lang-javascript">var animation = elem.animate({ opacity: 0 }, 2000);</pre>
+        <pre class="example lang-javascript" id="example-c4879eae"><a class="self-link" href="#example-c4879eae"></a>var animation = elem.animate({ opacity: 0 }, 2000);</pre>
        </div>
        
 
@@ -11152,7 +11217,7 @@ document</a> <a data-link-type="biblio" href="#biblio-dom">[DOM]</a> of the elem
 
     
        <div>
-        <pre class="example lang-javascript">var effect = new KeyframeEffect(elem, { opacity: 0 }, 2000);
+        <pre class="example lang-javascript" id="example-b45f751c"><a class="self-link" href="#example-b45f751c"></a>var effect = new KeyframeEffect(elem, { opacity: 0 }, 2000);
 elem.ownerDocument.timeline.play(effect);</pre>
        </div>
        
@@ -11275,7 +11340,7 @@ interface <a data-link-type="biblio" href="#biblio-dom">[DOM]</a> is extended as
     <p>This allows the following kind of usage.</p>
 
 
-    <pre class="example lang-javascript">elem.animate({ color: 'red' }, 2000);</pre>
+    <pre class="example lang-javascript" id="example-3abce906"><a class="self-link" href="#example-3abce906"></a>elem.animate({ color: 'red' }, 2000);</pre>
 
 
 
@@ -11335,7 +11400,7 @@ the model immediately.</p>
 
     
        <div>
-        <pre class="example lang-javascript">// Initially animation.effect.computedTiming.localTime is 3000
+        <pre class="example lang-javascript" id="example-7901be6c"><a class="self-link" href="#example-7901be6c"></a>// Initially animation.effect.computedTiming.localTime is 3000
 animation.currentTime += 2000;
 alert(animation.effect.computedTiming.localTime); // Displays ‘5000’</pre>
        </div>
@@ -11367,7 +11432,7 @@ incorporated in the value returned.</p>
 
     
        <div>
-        <pre class="example lang-javascript">// Set opacity to 0 immediately
+        <pre class="example lang-javascript" id="example-414d118c"><a class="self-link" href="#example-414d118c"></a>// Set opacity to 0 immediately
 elem.animate({ opacity: 0 }, { fill: 'forwards' });
 alert(window.getComputedStyle(elem).opacity); // Displays ‘0’</pre>
        </div>
@@ -11380,7 +11445,7 @@ animated values.</p>
 
     
        <div>
-        <pre class="example lang-javascript">// Set width to 0 immediately
+        <pre class="example lang-javascript" id="example-cc0c97f3"><a class="self-link" href="#example-cc0c97f3"></a>// Set width to 0 immediately
 rect.animate({ width: '100px' }, { fill: 'forwards' });
 alert(rect.width.animVal.value); // Displays ‘100’</pre>
        </div>
@@ -11405,7 +11470,7 @@ completed during regular sampling.</p>
 
     
        <div>
-        <pre class="example lang-javascript">var timesCalled = 0;
+        <pre class="example lang-javascript" id="example-3f1fe701"><a class="self-link" href="#example-3f1fe701"></a>var timesCalled = 0;
 elem.animate(function() {
   timesCalled++;
 }, 10000);
@@ -11437,7 +11502,7 @@ rendered without the animation.</p>
 
     
        <div>
-        <pre class="example lang-javascript">// Fade the opacity with fallback for browsers that don’t
+        <pre class="example lang-javascript" id="example-aea58e96"><a class="self-link" href="#example-aea58e96"></a>// Fade the opacity with fallback for browsers that don’t
 // support Element.animate
 elem.style.opacity = '0';
 elem.animate([ { opacity: 1 }, { opacity: 0 } ], 500);</pre>
@@ -11470,7 +11535,7 @@ will return the same value as shown in the following example.</p>
 
     
        <div>
-        <pre class="example lang-javascript">var a = document.timeline.currentTime;
+        <pre class="example lang-javascript" id="example-967d9ac7"><a class="self-link" href="#example-967d9ac7"></a>var a = document.timeline.currentTime;
 // ... many lines of code ...
 var b = document.timeline.currentTime;
 alert(b - a); // Displays 0</pre>
@@ -11507,7 +11572,7 @@ an alias for <code>document.timeline.currentTime</code>.</p>
 
     
        <div>
-        <pre class="example lang-javascript">window.requestAnimationFrame(function(sampleTime) {
+        <pre class="example lang-javascript" id="example-2bc7b370"><a class="self-link" href="#example-2bc7b370"></a>window.requestAnimationFrame(function(sampleTime) {
   // Displays ‘0’
   alert(sampleTime - document.timeline.currentTime);
 });</pre>
@@ -11638,7 +11703,7 @@ Document conventions</span><a class="self-link" href="#conventions"></a></h3>
     <code>class="example"</code>, like this:
 
     </p>
-    <div class="example">
+    <div class="example" id="example-f839f6c8"><a class="self-link" href="#example-f839f6c8"></a>
         
      <p>This is an example of an informative example.</p>
      
@@ -12402,12 +12467,16 @@ redundant).<a href="#issue-79dbb264"> ↵ </a></div>
     
 <a href="#issue-7f716dd4"> ↵ </a>
    </div>
+   <div class="issue">Is this right? If you shift an animation backwards in time so that it is
+now finished, should the current time jump to the end of the target effect, or
+be allowed to sit past the end of the target effect?<a href="#issue-e68d97d4"> ↵ </a></div>
    <div class="issue">We should queue a task here for sampling custom effects.
 (This should happen before we resolve the ready promise.)<a href="#issue-97b24030"> ↵ </a></div>
    <div class="issue">We should queue a task here for sampling custom effects
 with the final current time.
 (This should happen before we resolve the ready promise).<a href="#issue-c0dfc505"> ↵ </a></div>
    <div class="issue">This procedure should probably abort if the animation is already paused.<a href="#issue-a00ae225"> ↵ </a></div>
+   <div class="issue">This needs to be fixed. It should be finished in both cases.<a href="#issue-26934df1"> ↵ </a></div>
    <div class="issue">We should mention that this gets run at the end of each sample as well.
        Likewise at the end of any update to the timing of the <a data-link-type="dfn" href="#target-effect">target
        effect</a>.<a href="#issue-1bd5d417"> ↵ </a></div>
