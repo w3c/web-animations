@@ -1167,7 +1167,11 @@ previous level of this specification:</p>
 
      <li data-md="">
       <p>an <a data-link-type="dfn" href="#animation-effect">animation effect</a>-specific
-<a data-link-type="dfn" href="#animation-effect-playback-rate">playback rate</a>.</p>
+<a data-link-type="dfn" href="#animation-effect-playback-rate">playback rate</a>,</p>
+      
+
+     <li data-md="">
+      <p><a data-link-type="dfn" href="#custom-effect">custom effects</a>.</p>
       
 </ul>
 
@@ -1782,9 +1786,12 @@ animation</var> passing null as <var>new effect</var>.</p>
 effect</var>.</p>
      
 
+
     <li data-md="">
-     <p>If <var>old effect</var> is not <code>null</code>, queue a task to call any    <a data-link-type="dfn" href="#custom-effect">custom effects</a> associated with <a data-link-type="dfn" href="#inclusive-descendant">inclusive descendants</a> of
-<var>old effect</var>    with an <a data-link-type="dfn" href="#unresolved">unresolved</a> <a data-link-type="dfn" href="#time-fraction">time fraction</a>.</p>
+     <p>If <var>old effect</var> is not <code>null</code>, queue a task to call any
+<a data-link-type="dfn" href="#custom-effect">custom effects</a> associated with <a data-link-type="dfn" href="#inclusive-descendant">inclusive descendants</a> of
+<var>old effect</var>
+with an <a data-link-type="dfn" href="#unresolved">unresolved</a> <a data-link-type="dfn" href="#time-fraction">time fraction</a>.</p>
      
 
      <div class="issue" id="issue-7f716dd4"><a class="self-link" href="#issue-7f716dd4"></a>
@@ -2160,8 +2167,8 @@ following conditions are true:</p>
      <p>the user agent has completed any setup required to begin the playback of
 each <a data-link-type="dfn" href="#inclusive-descendant">inclusive descendant</a> of
 the animation’s <a data-link-type="dfn" href="#target-effect">target effect</a>
-including rendering the first frame of any <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a>
-or executing any <a data-link-type="dfn" href="#custom-effect">custom effects</a> associated with an
+including rendering the first frame of any <a data-link-type="dfn" href="#keyframe-effect">keyframe
+effect</a>    or executing any <a data-link-type="dfn" href="#custom-effect">custom effects</a> associated with an
 <a data-link-type="dfn" href="#animation-effect">animation effect</a>.</p>
      
 
@@ -2932,6 +2939,7 @@ object.</p>
 <a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
      
 
+
     <li data-md="">
      <p>Queue a task to call any <a data-link-type="dfn" href="#custom-effect">custom effects</a> associated with
 <a data-link-type="dfn" href="#inclusive-descendant">inclusive descendants</a> of
@@ -2939,11 +2947,10 @@ object.</p>
 with an <a data-link-type="dfn" href="#unresolved">unresolved</a> time fraction.</p>
      
 
-     <p class="issue" id="issue-8b479841"><a class="self-link" href="#issue-8b479841"></a>
-  The procedures for calling custom effects needs to be reworked.
-  Currently they probably involve calling too often for changes that could
-  be coalesced.
-</p>
+
+     <p class="issue" id="issue-574e6f13"><a class="self-link" href="#issue-574e6f13"></a>The procedures for calling custom effects need to be reworked.
+       Currently they probably involve calling too often for changes that
+       could be coalesced.</p>
      
 </ol>
 
@@ -7691,6 +7698,15 @@ value</a> in <a href="#the-intermediate-effect-value-of-a-keyframe-animation-eff
    <h3 class="heading settled" data-level="4.4" id="custom-effects"><span class="secno">4.4. </span><span class="content">Custom effects</span><a class="self-link" href="#custom-effects"></a></h3>
 
 
+   <p class="issue" id="issue-621ca06d"><a class="self-link" href="#issue-621ca06d"></a>This whole feature needs to be revisited. The current thinking is that
+       rather than having custom effects, we should simply have an
+       <code>onsample</code> callback on each <a data-link-type="dfn" href="#animation-effect">animation effect</a>.  That
+       would allow, for example, augmenting an existing effect with a function
+       that performs logging or triggers additional actions at certain times.
+       With the current arrangement, doing this would require adding a parent
+       group just to achieve this.</p>
+
+
    <div class="informative-bg"><em>This section is non-normative</em>
 
 
@@ -7884,7 +7900,6 @@ applied their result to their targets (see <a href="#applying-the-composited-res
 order of execution is the same as that defined for <a data-link-type="dfn" href="#animation-effect">animation effects</a> in
 <a href="#the-effect-stack">§4.3.1 The effect stack</a>.
 Items sorted earlier are executed before those sorted later.</p>
-
 
 
 
@@ -11175,7 +11190,6 @@ This allows the animation effect to be removed from the old
 
 </div>
 
-
     <h3 class="heading settled" data-level="5.20" id="the-animatable-interface"><span class="secno">5.20. </span><span class="content">The <code>Animatable</code> interface</span><a class="self-link" href="#the-animatable-interface"></a></h3>
 
 
@@ -11489,8 +11503,6 @@ alert(timesCalled); // Displays ‘0’</pre>
 </div>
       
 
-
-
      <li data-md="">
       <p>Changes to specified style, specified attribute values, and the
 state of the Web Animations model made within the same execution
@@ -11558,9 +11570,10 @@ alert(b - a); // Displays 0</pre>
       <p>User agents that support Timing control for script-based
 animations <a data-link-type="biblio" href="#biblio-animation-timing">[ANIMATION-TIMING]</a>, prior to <a class="externalDFN" href="http://www.w3.org/TR/animation-timing/#dfn-sample-all-animations">sampling animation frame request
 callbacks</a> for a given <a class="externalDFN" href="http://www.w3.org/TR/html5/browsers.html#top-level-browsing-context">top-level browsing context</a>,
-must perform a <a data-link-type="dfn" href="#single_sample">sample</a> including 
-executing any eligible
-<a data-link-type="dfn" href="#custom-effect">custom effects</a> (see <a href="#sampling-custom-effects">§4.4.1 Sampling custom effects</a>) for all <a data-link-type="dfn" href="#animation-effect">animation effects</a>
+must perform a <a data-link-type="dfn" href="#single_sample">sample</a>
+including executing any eligible
+<a data-link-type="dfn" href="#custom-effect">custom effects</a> (see <a href="#sampling-custom-effects">§4.4.1 Sampling custom effects</a>)
+for all <a data-link-type="dfn" href="#animation-effect">animation effects</a>
 <a data-link-type="dfn" href="#associated-with-a-timeline">associated with a timeline</a> that is associated with a document
 which is the <a class="externalDFN" href="https://html.spec.whatwg.org/#active-document">active document</a> of the <a class="externalDFN" href="http://www.w3.org/TR/html5/browsers.html#top-level-browsing-context">top-level browsing context</a> or
 of any of its <a class="externalDFN" href="http://www.w3.org/TR/html5/browsers.html#list-of-the-descendant-browsing-contexts">descendant browsing contexts</a>.
@@ -12489,11 +12502,9 @@ with the final current time.
    <div class="issue">We should mention that this gets run at the end of each sample as well.
        Likewise at the end of any update to the timing of the <a data-link-type="dfn" href="#target-effect">target
        effect</a>.<a href="#issue-1bd5d417"> ↵ </a></div>
-   <div class="issue">
-  The procedures for calling custom effects needs to be reworked.
-  Currently they probably involve calling too often for changes that could
-  be coalesced.
-<a href="#issue-8b479841"> ↵ </a></div>
+   <div class="issue">The procedures for calling custom effects need to be reworked.
+       Currently they probably involve calling too often for changes that
+       could be coalesced.<a href="#issue-574e6f13"> ↵ </a></div>
    <div class="issue">
 Currently <a data-link-type="dfn" href="#timing-function">timing functions</a> that generate results outside the
 range [0, 1] will behave unexpectedly when applied to group
@@ -12744,6 +12755,13 @@ value”?<a href="#issue-b7707b18"> ↵ </a></div>
    <div class="issue">This needs to be reworked since the interaction between CSS Animations
 and CSS Transitions is more complex than this arrangement allows.<a href="#issue-78a8a330"> ↵ </a></div>
    <div class="issue">This is probably no longer accurate.<a href="#issue-49163874"> ↵ </a></div>
+   <div class="issue">This whole feature needs to be revisited. The current thinking is that
+       rather than having custom effects, we should simply have an
+       <code>onsample</code> callback on each <a data-link-type="dfn" href="#animation-effect">animation effect</a>.  That
+       would allow, for example, augmenting an existing effect with a function
+       that performs logging or triggers additional actions at certain times.
+       With the current arrangement, doing this would require adding a parent
+       group just to achieve this.<a href="#issue-621ca06d"> ↵ </a></div>
    <div class="issue">
 There may be use cases where an action needs to be triggered at
 a specific point in an animation tree.
