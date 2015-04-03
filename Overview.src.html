@@ -1647,10 +1647,14 @@ specification), the
 In addition to the <a lt="animation effect start time">start
 time</a>, an <a>animation effect</a> also has a <dfn>start delay</dfn>
 which is an offset from the <a lt="animation effect start time">start time</a>.
+The <a>start delay</a> is represented a real number including positive and
+negative infinity.
 <!-- @ifdef INCLUDE_GROUPS -->
 Unlike the <a lt="animation effect start time">start time</a> which
 is determined by the <a>parent group</a>, the <a>start
 delay</a> is a property of the <a>animation effect</a> itself.
+
+<!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->
 <!-- @endif -->
 
 The lower bound of the <a>active interval</a> of an <a>animation
@@ -1874,11 +1878,19 @@ An <a>animation effect</a> is in the <dfn>active phase</dfn> if
 3.  the <a>animation effect</a>'s <a>local time</a> is <em>less
     than</em> the sum of its <a>start delay</a> and <a>active
     duration</a>.
+    If the <a>start delay</a> is negative infinity, and the
+    <a>active duration</a> is positive infinity, the sum of the <a>start
+    delay</a> and <a>active duration</a> is positive infinity for the purpose
+    of this comparison.
 
 An <a>animation effect</a> is in the <dfn>after phase</dfn> if the
 animation effect's <a>local time</a> is not <a>unresolved</a> and is
 <em>greater than or equal</em> to the sum of its <a>start delay</a>
 and <a>active duration</a>.
+As with the <a>active phase</a>, if the <a>start delay</a> is negative infinity
+and the <a>active duration</a> is positive infinity, then, for the purposes of
+this comparison, their sum is positive infinity and, as such, the <a>animation
+effect</a> will never enter the <a>after phase</a>.
 
 An <a>animation effect</a> is <dfn>in play</dfn> if <em>all</em>
 of the following conditions are met:
@@ -2109,6 +2121,12 @@ into the series of iterations at which the <a>animation effect</a>
 should begin.
 The <a>iteration start</a> is a finite real number greater than or
 equal to zero.
+
+For an <a>animation effect</a> whose <a>start delay</a> is negative infinity and
+<a>iteration count</a> is positive infinity, the <a>iteration start</a>
+determines the offset into the current iteration when the <a>local time</a> is
+zero. As such, only the fraction portion of the <a>iteration start</a> is
+significant in this case.
 
 The behavior of these parameters is defined in the calculations in <a
 href="#core-animation-effect-calculations" section></a>.
@@ -2450,9 +2468,15 @@ steps:
 
 The <dfn>active time</dfn> is based on the <a>local time</a>
 and <a>start delay</a>.
-However, it is only defined when the <a>animation effect</a> should
-produce an output and hence depends on its <a>fill mode</a> and
-phase
+Note that since the <a>start delay</a> may be negative infinity, the
+<a>active time</a> may be positive infinity. When the <a>start delay</a> is
+positive infinity, the <a>animation effect</a> never enters the <a>active
+phase</a>, hence the reverse case of <a>active time</a> becoming negative
+infinity never occurs.
+
+The <a>active time</a> is only a <a lt=unresolved>resolved</a> time when the
+<a>animation effect</a> should produce an output and hence depends on its
+<a>fill mode</a> and phase
 <!-- @ifdef INCLUDE_GROUPS -->
 as well as the phase of its <a>parent group</a>, if any,
 <!-- @endif -->
@@ -2569,7 +2593,18 @@ the following steps:
     an <a>unresolved</a> <a>time value</a>.
 
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-2.  Return the scaled active time based on the
+2.  If the <a>active time</a> is positive infinity, return the <a>active
+    time</a>.
+
+    Note: The <a>active time</a> is only positive infinity in the case of
+    a <a>start delay</a> of negative infinity and an <a>iteration duration</a>
+    of infinity. In this case, positive infinity is a reasonable value for
+    the <a>scaled active time</a> (regardless of the value of the
+    <a lt="animation effect playback rate">playback rate</a>) because special
+    handling of the <a>iteration time</a> is performed in this case
+    without using the <a>scaled active time</a>.
+
+3.  Return the scaled active time based on the
     <a lt="animation effect playback rate">playback rate</a> as
     follows,
 
@@ -2581,6 +2616,8 @@ the following steps:
                     <a>active duration</a>)
         &times; <a lt="animation effect playback rate">playback
         rate</a> + <a>start offset</a></code>.
+
+        If <a>active time</a> is positive infinity and <a>active duration</a>
 
     :   If the <a lt="animation effect playback rate">playback
         rate</a> is zero,
@@ -2607,9 +2644,24 @@ following steps:
 1.  If the <a>scaled active time</a> is <a>unresolved</a>,
     return <a>unresolved</a>.
 
-2.  If the <a>iteration duration</a> is zero, return zero.
+2.  If the <a>iteration duration</a> is zero or infinity, return zero.
 
-3.  If <code><a>scaled active time</a> - <a>start
+3.  If the <a>start delay</a> is negative infinity, return the result of
+    evaluating<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+    <code>(<a>animation effect playback rate</a> &times; <a>local time</a> +
+    (<a>iteration start</a> % 1) &times; <a>iteration duration</a>) %
+    <a>iteration duration</a></code>.
+
+<!-- @endif --><!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+    <code>(<a>local time</a> + (<a>iteration start</a> % 1) &times;
+    <a>iteration duration</a>) % <a>iteration duration</a></code>.
+
+<!-- @endif -->
+
+    Note: In this case the <a>iteration count</a> must be positive infinity or
+    else the <a>scaled active time</a> would be <a>unresolved</a>.
+
+4.  If <code><a>scaled active time</a> - <a>start
     offset</a></code> is equal to the<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
     <a>repeated duration</a>,<!-- @endif --><!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
     <a>active duration</a>,<!-- @endif -->
@@ -2618,7 +2670,7 @@ following steps:
     % 1</code> is zero,
     return the <a>iteration duration</a>.
 
-4.  Otherwise, return <code><a>scaled active time</a>
+5.  Otherwise, return <code><a>scaled active time</a>
     % <a>iteration duration</a></code>.
 
 <h4 id="calculating-the-current-iteration">Calculating the current iteration</h4>
@@ -2644,6 +2696,9 @@ following steps:
 
     1.  Otherwise, return
         <code>ceil(<a>iteration start</a> + <a>iteration count</a>) - 1</code>.
+
+1.  If the <a>active time</a> is positive infinity, return positive
+    infinity.
 
 1.  If the <a>iteration time</a> equals the <a>iteration
     duration</a>, return <code><a>iteration start</a> +
@@ -2716,18 +2771,32 @@ A non-normative definition of these values is as follows:
 
           1.  Let <var>d</var> be the <a>current iteration</a>.
 
-          2.  If <a>playback direction</a> is
+          2.  If <var>d</var> is positive infinity, let <var>d</var> be the
+              result of evalulating:
+
+              <blockquote>
+                <code><!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+
+              floor((<a lt="animation effect playback rate">playback rate</a>
+                     &times; <a>local time</a> +
+<!-- @endif --><!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+              floor((<a>local time</a> +
+<!-- @endif -->
+              (<a>iteration start</a> % 1) &times; <a>iteration duration</a>) /
+              <a>iteration duration</a>)</code></blockquote>
+
+          3.  If <a>playback direction</a> is
               <code>alternate-reverse</code> increment
               <var>d</var> by 1.
 
-          3.  Issue: There used to be a step here which seemed to be adding
+          4.  Issue: There used to be a step here which seemed to be adding
               special handling for filling when the effect ends on
               a repeat boundary but it seems like that is taken care
               of by the calcuation of <a>iteration time</a> and
               <a>current iteration</a>.
               Is anything actually needed here?
 
-          4.  If <code><var>d</var> % 2 == 0</code>, let the
+          5.  If <code><var>d</var> % 2 == 0</code>, let the
               <var>current direction</var> be forwards, otherwise let
               the <var>current direction</var> be reverse.
               If <var>d</var> is infinity, let the <var>current direction</var>
@@ -3396,6 +3465,9 @@ the following:
             and an <a>iteration duration</a> of 1.
 
     </div>
+
+:   If the <a>iteration duration</a> is positive infinity,
+::  Return <code><a>iteration start</a> % 1</code>.
 
 :   Otherwise,
 ::  Return <a>transformed time</a> / <a>iteration duration</a>.
@@ -5304,7 +5376,7 @@ Issue: This interface needs a constructor.
 
 <pre class="idl">
 interface AnimationEffectTimingReadonly {
-    readonly attribute double                             delay;
+    readonly attribute unrestricted double                delay;
     readonly attribute double                             endDelay;
     readonly attribute FillMode                           fill;
     readonly attribute double                             iterationStart;
@@ -5465,7 +5537,7 @@ Issue: This interface needs a constructor.
 
 <pre class='idl'>
 interface AnimationEffectTiming : AnimationEffectTimingReadonly {
-    inherit attribute double                             delay;
+    inherit attribute unrestricted double                delay;
     inherit attribute double                             endDelay;
     inherit attribute FillMode                           fill;
     inherit attribute double                             iterationStart;
@@ -5549,7 +5621,7 @@ The meaning and acceptable values for each of its members are identical.
 
 <pre class='idl'>
 dictionary AnimationEffectTimingProperties {
-    double                             delay = 0;
+    unrestricted double                delay = 0;
     double                             endDelay = 0;
     FillMode                           fill = "auto";
     double                             iterationStart = 0.0;
@@ -7308,6 +7380,8 @@ The following changes have been made since the <a
     asynchronous play/pause/reverse operations.
 *   Renamed animation nodes to <a>animation effects</a> and what were previously
     known as an animations to <a>keyframe effects</a>.
+*   Allowed the <a>start delay</a> of an <a>animation effect</a> to be positive
+    or negative infinity.
 *   Deferred group effects (previously known as animation groups) to a <a
     href="https://w3c.github.io/web-animations/level-2/">subsequent level</a>.
     Deferring this feature also lead to the following simplifications.
