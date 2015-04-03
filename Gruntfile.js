@@ -21,7 +21,8 @@ module.exports = function(grunt) {
         context: {
           LEVEL: 2,
           INCLUDE_GROUPS: true,
-          INCLUDE_ANIMATION_NODE_PLAYBACKRATE: true
+          INCLUDE_ANIMATION_NODE_PLAYBACKRATE: true,
+          INCLUDE_CUSTOM_EFFECTS: true
         }
       }
     }

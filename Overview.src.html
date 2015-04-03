@@ -192,7 +192,8 @@ previous level of this specification:
 
 *   <a>group effects</a> and <a>sequence effects</a>,
 *   an <a>animation effect</a>-specific
-    <a lt="animation effect playback rate">playback rate</a>.
+    <a lt="animation effect playback rate">playback rate</a>,
+*   <a>custom effects</a>.
 
 <!-- @endif -->
 
@@ -603,10 +604,12 @@ follows:
 1.  If <var>previous animation time</var> is <a lt=unresolved>resolved</a>,
     run the procedure to <a>silently set the current time</a> of
     <var>animation</var> to <var>previous animation time</a>.
+<!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
 1.  Issue: If <var>new timeline</var> is null, we should ensure that <a>custom
     effects</a> get called with an <a>unresolved</a> <a>time fraction</a>
     (unless a subsequent change in the same script execution context makes this
     redundant).
+<!-- @endif -->
 1.  Run the procedure to <a>update an animation's finished state</a> for
     <var>animation</var> with the <var>did seek</var> flag set to false.
 
@@ -653,11 +656,13 @@ follows:
     animation</var> passing null as <var>new effect</var>.
 1.  Let the <a>target effect</a> of <var>animation</var> be <var>new
     effect</var>.
-1.  If <var>old effect</var> is not <code>null</code>, queue a task to call any<!-- @ifdef INCLUDE_GROUPS -->
+<!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
+    <!-- As elsewhere, we'd like to change this comment based on whether we
+    support groups or not but npm preprocess doesn't support nested ifdefs so we
+    just assume that if we support custom effects we support groups too. -->
+1.  If <var>old effect</var> is not <code>null</code>, queue a task to call any
     <a>custom effects</a> associated with <a>inclusive descendants</a> of
-    <var>old effect</var><!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->
-    <a>custom effect</a> associated with <var>old effect</var>
-<!-- @endif -->
+    <var>old effect</var>
     with an <a>unresolved</a> <a>time fraction</a>.
     <div class="issue">
       This is not quite right. If <var>old effect</var> is attached to another
@@ -667,6 +672,7 @@ follows:
       The definition of when <a>custom effects</a> gets called needs to be
       audited and probably rewritten.
     </div>
+<!-- @endif -->
 1.  Run the procedure to <a>update an animation's finished state</a> for
     <var>animation</var> with the <var>did seek</var> flag set to false.
 
@@ -877,9 +883,10 @@ following conditions are true:
     each <a>inclusive descendant</a> of
 <!-- @endif -->
     the animation's <a>target effect</a>
-    including rendering the first frame of any <a>keyframe effect</a>
+    including rendering the first frame of any <a>keyframe
+    effect</a><!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
     or executing any <a>custom effects</a> associated with an
-    <a>animation effect</a>.
+    <a>animation effect</a><!-- @endif -->.
 
 *   the animation is associated with a <a>timeline</a> that is not
     <a lt="inactive timeline">inactive</a>.
@@ -1015,8 +1022,10 @@ follows:
         1.  Set the <a>animation start time</a> of <var>animation</var>
             to <var>new start time</var>.
 
+<!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
     1.  Issue: We should queue a task here for sampling custom effects.
         (This should happen before we resolve the ready promise.)
+<!-- @endif -->
     1.  <a lt="resolve a Promise">Resolve</a> <var>animation</var>'s <a>current
         ready promise</a> with <var>animation</var>.
     1.  Run the procedure to <a>update an animation's finished state</a> for
@@ -1088,9 +1097,11 @@ follows:
 
     1.  Make <var>animation</var>'s <a lt="animation start time">start time</a>
         unresolved.
+<!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
     1.  Issue: We should queue a task here for sampling custom effects
         with the final current time.
         (This should happen before we resolve the ready promise).
+<!-- @endif -->
     1.  <a lt="resolve a Promise">Resolve</a> <var>animation</var>'s <a>current
         ready promise</a> with <var>animation</var>.
     1.  Run the procedure to <a>update an animation's finished state</a> for
@@ -1341,17 +1352,18 @@ as follows:
 4.  Make <var>animation</var>'s <a>hold time</a> <a>unresolved</a>.
 5.  Make <var>animation</var>'s <a lt="animation start time">start time</a>
     <a>unresolved</a>.
+
+<!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
 6.  Queue a task to call any <a>custom effects</a> associated with
-<!-- @ifdef INCLUDE_GROUPS -->
     <a>inclusive descendants</a> of
-<!-- @endif -->
     <var>animation</var>'s <a>target effect</a>
     with an <a>unresolved</a> time fraction.
-    <p class="issue">
-      The procedures for calling custom effects needs to be reworked.
-      Currently they probably involve calling too often for changes that could
-      be coalesced.
-    </p>
+
+    Issue: The procedures for calling custom effects need to be reworked.
+           Currently they probably involve calling too often for changes that
+           could be coalesced.
+
+<!-- @endif -->
 
 <h4 id="speed-control">Speed control</h4>
 
@@ -4696,7 +4708,16 @@ as follows:
     href="#the-intermediate-effect-value-of-a-keyframe-animation-effect"
     section></a>.
 
+<!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
 <h3 id="custom-effects">Custom effects</h3>
+
+Issue: This whole feature needs to be revisited. The current thinking is that
+       rather than having custom effects, we should simply have an
+       <code>onsample</code> callback on each <a>animation effect</a>.  That
+       would allow, for example, augmenting an existing effect with a function
+       that performs logging or triggers additional actions at certain times.
+       With the current arrangement, doing this would require adding a parent
+       group just to achieve this.
 
 <div class='informative-bg'><em>This section is non-normative</em>
 
@@ -4831,6 +4852,7 @@ Within the set of <a>custom effects</a>, the
 order of execution is the same as that defined for <a>animation effects</a> in
 <a href="#the-effect-stack" section></a>.
 Items sorted earlier are executed before those sorted later.
+<!-- @endif -->
 
 <!-- End of animation model -->
 
@@ -6827,6 +6849,7 @@ dictionary ComputedKeyframe : Keyframe {
 
 </div>
 
+<!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
 <h3 id="the-effectcallback-callback-function">The <code>EffectCallback</code> callback function</h3>
 
 <a>Custom effects</a> can be defined in script by providing an
@@ -6880,6 +6903,7 @@ associated is <a lt="sampling">sampled</a>.
 </div>
 
 </div>
+<!-- @endif -->
 
 <h3 id="the-animatable-interface">The <code>Animatable</code> interface</h3>
 
@@ -7091,6 +7115,7 @@ alert(rect.width.animVal.value); // Displays &lsquo;100&rsquo;</pre></div>
 
     </div>
 
+<!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
 *   Changes made to the model using the programming interface do
     <em>not</em> cause any {{EffectCallback}} functions to be
     called.
@@ -7109,7 +7134,7 @@ elem.animate(function() {
 alert(timesCalled); // Displays &lsquo;0&rsquo;</pre></div>
 
     </div>
-
+<!-- @endif -->
 
 *   Changes to specified style, specified attribute values, and the
     state of the Web Animations model made within the same execution
@@ -7164,10 +7189,13 @@ alert(b - a); // Displays 0</pre></div>
     callbacks</a> for a given <a
     href="http://www.w3.org/TR/html5/browsers.html#top-level-browsing-context"
     class="externalDFN">top-level browsing context</a>,
-    must perform a <a lt='single-sample'>sample</a> including 
-    executing any eligible
+    must perform a <a lt='single-sample'>sample</a>
+<!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
+    including executing any eligible
     <a>custom effects</a> (see <a href="#sampling-custom-effects"
-    section></a>) for all <a>animation effects</a>
+    section></a>)
+<!-- @endif -->
+    for all <a>animation effects</a>
     <a>associated with a timeline</a> that is associated with a document
     which is the <a href="https://html.spec.whatwg.org/#active-document"
     class="externalDFN">active document</a> of the <a
@@ -7310,7 +7338,8 @@ The following changes have been made since the <a
 *   Renamed animation nodes to <a>animation effects</a> and what were previously
     known as an animations to <a>keyframe effects</a>.
 *   Deferred group effects (previously known as animation groups) to a <a
-    href="https://w3c.github.io/web-animations/level-2/">subsequent level</a>.
+    href="https://w3c.github.io/web-animations/level-2/">subsequent level</a>
+    of this specification.
     Deferring this feature also lead to the following simplifications.
     *   Deferred the <a>animation effect</a>-specific playback rate since it was
         considered to be not particularly useful without group effects and
@@ -7323,6 +7352,9 @@ The following changes have been made since the <a
 *   Removed motion path animation effects since this functionality can be
     achieved using the <a href="http://dev.w3.org/fxtf/motion-1/">Motion Path
     Module</a>.
+*   Deferred custom effects to a <a
+    href="https://w3c.github.io/web-animations/level-2/">subsequent level</a>
+    of this specification.
 *   Defined that <a>unresolved</a> <a>time values</a> are represented
     by <code>null</code>.
 *   Added the {{DocumentTimeline}} interface.
