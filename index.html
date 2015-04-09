@@ -4863,6 +4863,40 @@ and an <a data-link-type="dfn" href="#iteration-duration">iteration duration</a>
     a <a data-link-type="dfn" href="#time-fraction">time fraction</a> also lies outside this range.</p>
 
 
+   <div class="informative-bg"><em>This section is non-normative</em>
+
+
+    <p>Intuitively, it may seem that the <a data-link-type="dfn" href="#time-fraction">time fraction</a> for an <a data-link-type="dfn" href="#animation-effect">animation
+effect</a> with an <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> of zero should be 0 or 1 and that
+the above algorithm is unnecessarily complex.
+However, the influence of a non-zero <a data-link-type="dfn" href="#iteration-start">iteration start</a>, a non-integral
+<a data-link-type="dfn" href="#iteration-count">iteration count</a>, or a <a data-link-type="dfn" href="#playback-direction">playback direction</a> other than forwards can
+all cause the <a data-link-type="dfn" href="#animation-effect">animation effect</a> to start and stop mid-way through its
+iteration interval.</p>
+
+
+    <p>As a result, it is necessary to perform all the same timing calculations as we
+do in the general case including determining the <a data-link-type="dfn" href="#current-iteration">current iteration</a> so
+that we arrive at the appropriate <a data-link-type="dfn" href="#directed-time">directed time</a> when the <a data-link-type="dfn" href="#playback-direction">playback
+direction</a> alternates, and applying the <a data-link-type="dfn" href="#timing-function">timing function</a> to the result
+as well.</p>
+
+
+    <p>However, simply substituting the zero <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> in to the
+procedures defined in <a href="#core-animation-effect-calculations">§3.9 Core animation effect
+calculations</a>
+will not produce the desired result since no meaningful value of progress can be
+calculated for a zero-duration interval (specifically, the <a data-link-type="dfn" href="#iteration-time">iteration time</a>
+will always be zero).</p>
+
+
+    <p>In order to provide the result intuitively expected in this case, the algorithm
+above temporarily inflates the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> to 1 and calculates the
+<a data-link-type="dfn" href="#time-fraction">time fraction</a> at the appropriate end of the <a data-link-type="dfn" href="#active-interval">active interval</a>.</p>
+
+</div>
+
+
 
 
 
