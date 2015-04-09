@@ -3511,6 +3511,34 @@ Note: Since <a>timing functions</a> are allowed to produce output times
     outside the range [0, 1] it is possible that the value calculated for
     a <a>time fraction</a> also lies outside this range.
 
+<div class='informative-bg'><em>This section is non-normative</em>
+
+Intuitively, it may seem that the <a>time fraction</a> for an <a>animation
+effect</a> with an <a>iteration duration</a> of zero should be 0 or 1 and that
+the above algorithm is unnecessarily complex.
+However, the influence of a non-zero <a>iteration start</a>, a non-integral
+<a>iteration count</a>, or a <a>playback direction</a> other than forwards can
+all cause the <a>animation effect</a> to start and stop mid-way through its
+iteration interval.
+
+As a result, it is necessary to perform all the same timing calculations as we
+do in the general case including determining the <a>current iteration</a> so
+that we arrive at the appropriate <a>directed time</a> when the <a>playback
+direction</a> alternates, and applying the <a>timing function</a> to the result
+as well.
+
+However, simply substituting the zero <a>iteration duration</a> in to the
+procedures defined in <a href="#core-animation-effect-calculations" section></a>
+will not produce the desired result since no meaningful value of progress can be
+calculated for a zero-duration interval (specifically, the <a>iteration time</a>
+will always be zero).
+
+In order to provide the result intuitively expected in this case, the algorithm
+above temporarily inflates the <a>iteration duration</a> to 1 and calculates the
+<a>time fraction</a> at the appropriate end of the <a>active interval</a>.
+
+</div>
+
 <!-- End of timing model -->
 
 
