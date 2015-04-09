@@ -1583,17 +1583,35 @@ The period that an <a>animation effect</a> is scheduled to run is
 called its <a>active interval</a>.
 Each <a>animation effect</a> has only one such interval.
 
+<!-- @ifndef INCLUDE_GROUPS -->
+The lower bound of the <a>active interval</a> typically corresponds
+to the <a lt="animation start time">start time</a> of the <a>animation</a>
+associated with this <a>animation effect</a> but may be shifted by a
+<a>start delay</a> on the <a>animation effect</a>.
+
+<!-- @endif -->
+<!-- @ifdef INCLUDE_GROUPS -->
 The lower bound of the <a>active interval</a> is determined by the
 <a lt="animation effect start time">start time</a> of the
 <a>animation effect</a> but may be shifted by a <a>start delay</a> on
 the <a>animation effect</a>.
 
+<!-- @endif -->
+
 The upper bound of the interval is determined by the <a>active
 duration</a>.
 
+<!-- @ifndef INCLUDE_GROUPS -->
+The relationship between the <a
+lt="animation start time">start time</a>, <a>start
+delay</a>, and <a>active duration</a> is illustrated below.
+<!-- @endif -->
+<!-- @ifdef INCLUDE_GROUPS -->
 The relationship between the <a
 lt="animation effect start time">start time</a>, <a>start
 delay</a>, and <a>active duration</a> is illustrated below.
+
+<!-- @endif -->
 
 <div class="figure">
 <img src="img/active-interval-examples.svg" width="600"
@@ -1602,10 +1620,16 @@ delay</a>, and <a>active duration</a> is illustrated below.
 </div>
 <p class="caption">
 Examples of the effect of the <a>start delay</a> on the endpoints of
-the <a>active interval</a>.<br>
+the <a>active interval</a>.<br><!-- @ifndef INCLUDE_GROUPS -->
+(a) An animation effect with no delay; the <a
+lt="animation start time">start time</a> and beginning of
+the <a>active interval</a> are coincident.<br>
+<!-- @endif -->
+<!-- @ifdef INCLUDE_GROUPS -->
 (a) An animation effect with no delay; the <a
 lt="animation effect start time">start time</a> and beginning of
 the <a>active interval</a> are coincident.<br>
+<!-- @endif -->
 (b) An animation effect with a positive delay; the beginning of the
 <a>active interval</a> is deferred by the delay.<br>
 (c) An animation effect with a negative delay; the beginning of the
@@ -1614,7 +1638,7 @@ the <a>active interval</a> are coincident.<br>
 
 An <a>end delay</a> may also be specified but is primarily only of
 use when sequencing<!-- @ifdef INCLUDE_GROUPS -->
-animations such as by using a <a>sequence effect</a>.
+ animations such as by using a <a>sequence effect</a>.
 <!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->
 animations.
 <!-- @endif -->
@@ -1626,11 +1650,20 @@ the period of time during which the effect is scheduled to produce its
 effect with the exception of <a>fill modes</a> which apply outside the
 <a>active interval</a>.
 
+<!-- @ifndef INCLUDE_GROUPS -->
+The lower bound of the <a>active interval</a> is defined by the
+<a>start delay</a>.
+
+The <dfn>start delay</dfn> of an <a>animation effect</a> is a signed offset
+from the <a lt="animation start time">start time</a> of the <a>animation</a>
+with which the animation effect is associated 
+
+<!-- @endif -->
+<!-- @ifdef INCLUDE_GROUPS -->
 The lower bound of the <a>active interval</a> is defined by the
 combination of the animation effect's
 <a lt="animation effect start time">start time</a> and <a>start delay</a>.
 
-<!-- @ifdef INCLUDE_GROUPS -->
 An <a>animation effect</a>'s
 <dfn lt="animation effect start time">start time</dfn> is the moment at
 which the <a>parent group</a>,
@@ -1645,25 +1678,13 @@ the <a lt="animation effect start time">start times</a> of their
 children as described in <a
 href="#the-start-time-of-children-of-a-sequence-effect" section></a>.
 
-<!-- @endif -->
-<!-- @ifndef INCLUDE_GROUPS -->
-The <dfn lt="animation effect start time">start time</dfn> of an <a>animation
-effect</a> is the moment in <a>inherited time</a> when the <a>animation
-effect</a> is scheduled to begin.
-In the absence of group effects (as is the case in this level of this
-specification), the
-<a lt="animation effect start time">start time</a> is always zero.
-
-<!-- @endif -->
-
 In addition to the <a lt="animation effect start time">start
 time</a>, an <a>animation effect</a> also has a <dfn>start delay</dfn>
 which is an offset from the <a lt="animation effect start time">start time</a>.
-<!-- @ifdef INCLUDE_GROUPS -->
+
 Unlike the <a lt="animation effect start time">start time</a> which
 is determined by the <a>parent group</a>, the <a>start
 delay</a> is a property of the <a>animation effect</a> itself.
-<!-- @endif -->
 
 The lower bound of the <a>active interval</a> of an <a>animation
 effect</a>, expressed in <a lt="inherited time">inherited time
@@ -1674,6 +1695,7 @@ delay</a>.
 These definitions are incorporated in the calculation of the <a>local
 time</a> (see <a href="#local-time-and-inherited-time" section></a>)
 and <a>active time</a>.
+<!-- @endif -->
 
 The length of the <a>active interval</a> is called the <a>active
 duration</a>, the calculation of which is defined in <a
@@ -1699,6 +1721,15 @@ attribute in SVG ([[SVG11]], Chapter 19).
 The <a>end time</a> of an <a>animation effect</a> is the result of
 calculating the following expression:
 
+<!-- @ifndef INCLUDE_GROUPS -->
+<blockquote>
+  <dfn>end time</dfn> =
+  <code>max(<a>start delay</a> + <a>active duration</a> + <a>end delay</a>,
+    0</code>).</code>
+</blockquote>
+
+<!-- @endif -->
+<!-- @ifdef INCLUDE_GROUPS -->
 <blockquote>
   <dfn>end time</dfn> =
   <code>max(<a lt="animation effect start time">start time</a> +
@@ -1706,6 +1737,27 @@ calculating the following expression:
   <a lt="animation effect start time">start time</a>).</code>
 </blockquote>
 
+<!-- @endif -->
+
+<!-- @ifndef INCLUDE_GROUPS -->
+<h4 id="local-time-section">Local time</h4>
+
+The <dfn>local time</dfn> of an <a>animation effect</a> at a given
+moment is based on the first matching condition from the following:
+
+<div class='switch'>
+
+:   If the <a>animation effect</a> is <a>associated with an animation</a>,
+::  the local time is the <a>current time</a> of the
+    <a>animation</a>.
+:   Otherwise,
+::  the local time is <a>unresolved</a>.
+
+</div>
+
+<!-- @endif -->
+
+<!-- @ifdef INCLUDE_GROUPS -->
 <h4 id="local-time-and-inherited-time">Local time and inherited time</h4>
 
 <div class="informative-bg">
@@ -1719,7 +1771,6 @@ graphics.
 The zero time of a time space is analogous to the origin of
 a coordinate space.
 
-<!-- @ifdef INCLUDE_GROUPS -->
 Just as with coordinate spaces, time spaces can also be nested.
 <a>Group effects</a> typically perform some
 transformations on the <a>time values</a> they
@@ -1734,7 +1785,6 @@ parent&mdash;called the <a>inherited time</a>&mdash;and add their
 <a lt="animation effect start time">start time</a> to establish
 their own <a lt="local time">local time space</a> as illustrated
 below.
-<!-- @endif -->
 
 <div class="figure">
 <img src="img/local-time.svg" width="600"
@@ -1763,16 +1813,11 @@ following:
 
 <div class='switch'>
 
-<!-- @ifdef INCLUDE_GROUPS -->
 :   If the <a>animation effect</a> has a <a>parent group</a>,
 ::  the inherited time is the <a>parent group</a>'s current
     <a>transformed time</a>.
 :   If the <a>animation effect</a> is <a>directly associated with
     an animation</a>,
-<!-- @endif -->
-<!-- @ifndef INCLUDE_GROUPS -->
-:   If the <a>animation effect</a> is <a>associated with an animation</a>,
-<!-- @endif -->
 ::  the inherited time is the <a>current time</a> of the
     <a>animation</a>.
 :   Otherwise,
@@ -1785,6 +1830,8 @@ The <dfn>local time</dfn> of an <a>animation effect</a> is the
 lt="animation effect start time">start time</a>.
 If the <a>inherited time</a> is <a>unresolved</a> then the local time
 is also <a>unresolved</a>.
+
+<!-- @endif -->
 
 <h4 id="animation-effect-phases-and-states">Animation effect phases and
 states</h4>
@@ -2162,16 +2209,31 @@ operation</a> of
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
+<!-- @ifndef INCLUDE_GROUPS -->
+In Web Animations all times are relative to some point of reference.
+These different points of reference produce different <em>time
+spaces</em>.
+
+This can be compared to coordinate spaces as used in computer
+graphics.
+The zero time of a time space is analogous to the origin of
+a coordinate space.
+
+We can describe animations that repeat as establishing a new time space
+each time the animation repeats: the <em>iteration time space</em>.
+
+<!-- @endif -->
+<!-- @ifdef INCLUDE_GROUPS -->
 We have already encountered different time spaces in describing
 <a>local time</a> and <a>inherited time</a> (see <a
 href="#local-time-and-inherited-time" section></a>).
 Repetition introduces yet another time space: the iteration time
 space.
 
+<!-- @endif -->
 
 <em>Iteration time space</em> is a time space whose zero time is the
 beginning of an animation effect's current iteration.
-
 
 Within the Web Animations model we also refer to <a>active
 time</a> which is a time relative to the beginning of the active
@@ -2216,7 +2278,7 @@ document</a>.
 
 When an animation effect repeats we must define the behavior at the
 iteration boundaries.
-For this and indeed for all interval-timing, Web Animations uses an
+For this, and indeed for all interval timing, Web Animations uses an
 endpoint-exclusive timing model.
 This means that whilst the begin time of an interval
 is included in the interval, the end time time is not.
@@ -2226,13 +2288,26 @@ sequenced since there is no overlap between the intervals.
 
 
 In the examples below, for the repeated effect, at local time 1s,
-the iteration time is 0.
-For the sequenced effects, at inherited time 1s, only effect B will be
+the iteration time is 0.<!-- @ifndef INCLUDE_GROUPS -->
+For the sequenced animations, at timeline time 1s, only animation B's
+<a>target effect</a> will be <a>in play</a>; there is no overlap.
+
+<!-- @endif -->
+<!-- @ifdef INCLUDE_GROUPS -->
+ For the sequenced effects, at inherited time 1s, only effect B will be
 <a>in play</a>; there is no overlap.
 
+<!-- @endif -->
+
 <div class="figure">
+<!-- @ifndef INCLUDE_GROUPS -->
+  <img src="img/endpoint-exclusive-timing-without-groups.svg" width="600"
+    alt="Illustration of end-point exclusive timing.">
+<!-- @endif -->
+<!-- @ifdef INCLUDE_GROUPS -->
   <img src="img/endpoint-exclusive-timing.svg" width="600"
     alt="Illustration of end-point exclusive timing.">
+<!-- @endif -->
 </div>
 <p class="caption">
   Illustration of end-point exclusive timing. For both repeated and
@@ -2333,13 +2408,15 @@ calculations</h3>
 <div class="informative-bg"><em>This section is non-normative</em>
 
 At the core of the Web Animations timing model is the process that
-takes an <a>inherited time</a> value and converts it to an
-<a>iteration time</a>.
-
-
+takes <!-- @ifndef INCLUDE_GROUPS -->
+a <a>local time</a> value
+<!--@endif -->
+<!-- @ifdef INCLUDE_GROUPS -->
+ an <a>inherited time</a> value
+<!--@endif -->
+and converts it to an <a>iteration time</a>.
 Following this, further transformations are applied before resulting at
 a final <a>transformed time</a>.
-
 
 The first step in this process is to calculate the bounds of the
 <a>active interval</a> which is determined by the <a>active
@@ -2370,7 +2447,12 @@ then dividing by the <a lt="animation effect playback rate">playback rate</a>.<!
 </p>
 <p>
   Having established the <a>active duration</a>, the process for
-  transforming an <a>animation effect</a>'s <a>inherited time</a> into its
+  transforming an <a>animation effect</a>'s<!-- @ifndef INCLUDE_GROUPS -->
+  <a>local time</a>
+  <!-- @endif --><!-- @ifdef INCLUDE_GROUPS -->
+  <a>inherited time</a>
+  <!-- @endif -->
+  into its
   <a>transformed time</a> is illustrated below.
 </p>
 <div class="figure">
@@ -2378,17 +2460,21 @@ then dividing by the <a lt="animation effect playback rate">playback rate</a>.<!
   <img src="img/time-calculations.svg" width="650"
     alt="An overview of timing model calculations.">
 <!-- @endif --><!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-  <img src="img/time-calculations-without-playback-rate.svg" width="650"
+  <img src="img/time-calculations-without-playback-rate-or-inherited-time.svg" width="650"
     alt="An overview of timing model calculations.">
 <!-- @endif -->
 </div>
 <p class="caption">
-  An overview of timing model calculations.<br>
+  An overview of timing model calculations.<br><!-- @ifndef INCLUDE_GROUPS -->
+  (1) The <a>local time</a> is determined from the associated
+  <a>animation</a>.<br>
+<!-- @endif --><!-- @ifdef INCLUDE_GROUPS -->
   (1) The <a>inherited time</a> is converted into a <a>local time</a> by
-  incorporating the <a lt="animation effect start time">start
-  time</a>.<br>
+  incorporating the <a lt="animation effect start time">start time</a>.<br>
+<!-- @endif -->
   (2) The <a>local time</a> is converted into an <a>active time</a> by
-  incorporating the <a>start delay</a>.<br><!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+  incorporating the <a>start
+  delay</a>.<br><!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
   (3) The <a lt="animation effect playback rate">playback rate</a>
   and <a>iteration start</a> properties are
 <!-- @endif --><!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
@@ -2403,8 +2489,14 @@ then dividing by the <a lt="animation effect playback rate">playback rate</a>.<!
   time</a> to produce the <a>transformed time</a>.
 </p>
 
+<!-- @ifndef INCLUDE_GROUPS -->
+The first step, calculating the <a>local time</a> is described in <a
+href="#local-time-section" section></a>.
+<!-- @endif -->
+<!-- @ifdef INCLUDE_GROUPS -->
 The first step, calculating the <a>local time</a> is described in <a
 href="#local-time-and-inherited-time" section></a>.
+<!-- @endif -->
 Steps 2 to 4 in the diagram are described in the following sections.
 Steps 5 and 6 are described in
 <a href="#calculating-the-directed-time" section></a>
@@ -5344,9 +5436,16 @@ interface AnimationEffectTimingReadonly {
 <div class="attributes">
 
 :   <dfn attribute for=AnimationEffectTimingReadonly>delay</dfn>
+<!-- @ifndef INCLUDE_GROUPS -->::  The <a>start delay</a> which represents
+    the number of milliseconds from the <a lt='animation start time'>start
+    time</a> of the associated <a>animation</a> to the start of the <a>active
+    interval</a>.
+<!-- @endif -->
+<!-- @ifdef INCLUDE_GROUPS -->
 ::  The <a>start delay</a> which represents the number of milliseconds
     from an <a>animation effect</a>'s <a lt="animation effect start time">start
     time</a> to the start of the <a>active interval</a>.
+<!-- @endif -->
 
 :   <dfn attribute for=AnimationEffectTimingReadonly>endDelay</dfn>
 ::  The <a>end delay</a> which represents the number of milliseconds
@@ -5636,7 +5735,9 @@ Timing parameters calculated by the timing model are exposed using
 
 <pre class='idl'>
 dictionary ComputedTimingProperties : AnimationEffectTimingProperties {
+<!-- @ifdef INCLUDE_GROUPS -->
     double               startTime;
+<!-- @endif -->
     unrestricted double  endTime;
     unrestricted double  activeDuration;
     double?              localTime;
@@ -5647,25 +5748,34 @@ dictionary ComputedTimingProperties : AnimationEffectTimingProperties {
 
 <div class='attributes'>
 
+<!-- @ifdef INCLUDE_GROUPS -->
 :   <dfn dict-member for=ComputedTimingProperties>startTime</dfn>
 ::  The <a lt='animation effect start time'>start time</a> of this
-    <a>animation effect</a> in milliseconds.<!-- @ifdef INCLUDE_GROUPS -->
+    <a>animation effect</a> in milliseconds.
     This is the time at which the <a>parent group</a>, if
     any, has scheduled this child to run within its <a
     lt="transformed time">transformed time space</a>, that is, the
     <a>animation effect</a>'s <a lt="inherited time">inherited time
-    space</a>.<!-- @endif --><!-- @ifndef INCLUDE_GROUPS -->
-    In this level of the specification, this will always be zero.
-<!-- @endif -->
+    space</a>.
 
     The start of the <a>active interval</a> is based on the sum of
     the <a lt="animation effect start time">start time</a> and
     <a>start delay</a>.
 
+<!-- @endif -->
+
 :   <dfn dict-member for=ComputedTimingProperties>endTime</dfn>
-::  The <a>end time</a> of the <a>animation effect</a> expressed in
+::  The <a>end time</a> of the <a>animation effect</a> expressed
+    in <!-- @ifndef INCLUDE_GROUPS -->
+    milliseconds since zero <a>local time</a> (that is, since
+    the associated <a>animation</a>'s <a lt='animation start time'>start
+    time</a> if this <a>animation effect</a> is <a>associated with an
+    animation</a>).
+<!-- @endif -->
+<!-- @ifdef INCLUDE_GROUPS -->
     milliseconds in <a lt="inherited time">inherited time
     space</a>.
+<!-- @endif -->
     This corresponds to the end of the <a>animation effect</a>'s active
     interval plus any <a>end delay</a>.
 
@@ -7337,6 +7447,11 @@ The following changes have been made since the <a
     asynchronous play/pause/reverse operations.
 *   Renamed animation nodes to <a>animation effects</a> and what were previously
     known as an animations to <a>keyframe effects</a>.
+*   Removed the start time specific to an <a>animation effect</a> since it is
+    always zero in the absence of groups effects.
+*   Removed the term &lsquo;inherited time&rsquo; since, in the absence of
+    animation effect-specific start times, <a>local time</a> is equivalent to
+    &lsquo;inherited time&rsquo;.
 *   Deferred group effects (previously known as animation groups) to a <a
     href="https://w3c.github.io/web-animations/level-2/">subsequent level</a>
     of this specification.
