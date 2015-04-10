@@ -4230,47 +4230,49 @@ Issue: The above algorithm is quite complex.
 <dfn>property-indexed keyframes</dfn>, which are sets of properties
 with a list of values associated with each property.
 
-For each property, the values in the associated list are inserted into an 
+For each property, the values in the associated list are inserted into an
 implicitly created keyframe, and <a>keyframe offsets</a> are calculated by
-<a lt="distribute keyframe spacing mode">distributing</a> or 
-<a lt="paced keyframe spacing mode">pacing</a> the keyframes
-thus defined.
+<a lt="distribute keyframe spacing mode">distributing</a> or
+<a lt="paced keyframe spacing mode">pacing</a> the keyframes.
 
 A <a>keyframe-specific composite operation</a> can be defined for all
-implicitly generated <a>keyframes</a> by setting the <code>composite</code> 
+implicitly generated <a>keyframes</a> by setting the <code>composite</code>
 property of the <a>property-indexed keyframe</a>. If no
-<a>keyframe-specific composite operation</a> is defined, the 
+<a>keyframe-specific composite operation</a> is defined, the
 <a>composite operation</a> specified for the <a>keyframe effect</a>
 is used for all implictly generated <a>keyframes</a>.
+
+Issue: This needs an example
 
 Property indexed keyframes and explicitly defined keyframes can not be mixed
 for a single <a>keyframe effect</a>.
 
 <div class='informative-bg'><em>This section is non-normative.</em>
 
-Property indexed keyframes make it easy to create regularly spaced
+Property-indexed keyframes make it easy to create regularly spaced
 animations. Although quite limited, this approach covers the majority of
 animations including simple to-animations and animations with only start
 and end keyframes. For example: 
 
 <pre class='example lang-javascript'>
-// equivalent
+// Equivalent means of creating a single-value keyframe effect
 elem.animate([ { color: 'red' } ], 1000);
 elem.animate({ color: ['red'] }, 1000);
 elem.animate({ color: 'red' }, 1000);
 
-// equivalent
-elem.animate([ {color: 'red', color: 'blue'} ], 1000);
+// Equivalent means of creating a two-value keyframe effect
+elem.animate([ { color: 'red' }, { color: 'blue'} ], 1000);
 elem.animate({ color: ['red', 'blue'] }, 1000);
 
-//equivalent
+// Equivalent means of creating a multi-value keyframe effect
 elem.animate([ { color: 'blue' },
                { color: 'green' },
                { color: 'red' },
                { color: 'yellow' } ], 2000);
 elem.animate({ color: ['blue', 'green', 'red', 'yellow'] }, 2000);
 
-//equivalent
+// Equivalent means of creating a keyframe effect with multiple
+// values for two different properites
 elem.animate([ { color: 'blue', left: '0px' },
                { color: 'green', left: '-20px' },
                { color: 'red', left: '100px' },
@@ -4289,17 +4291,34 @@ warranted by the improvement in usability.
 <h5 id="generating-keyframes-from-property-indexed-keyframes">
 Generating keyframes from property-indexed keyframes</h5>
 
-A set of <a>keyframes</a> <var>all keyframes</var> is generated from
-a <a>property-indexed keyframe</a>
-specification using the following procedure.
+The procedure to <dfn>normalize property-indexed keyframes</dfn> takes
+as input a <var>property-indexed keyframe</var> and generates a sequence of
+<a>keyframes</a> using the following procedure:
 
-1.  Let <var>all keyframes</var> initially be an empty list.
-2.  Let <var>composite operation</var> be the value associated with
-    the <code>composite</code> property if present, or undefined otherwise.
-3.  For each property <var>p</var> in the <a>property-indexed keyframe</a>:
+1.  Let <var>generated keyframes</var> initially be an empty list.
+
+2.  Let <var>composite operation</var> be initially null.
+
+3.  Issue: We need to call \[[HasProperty]] to see if there is a composite
+    property and, if there is do a \[[Get]] on it. If it's null we should do
+    nothing, but otherwise we should set <var>composite operation</var> to
+    the result of applying the <a
+    href="http://www.w3.org/TR/WebIDL/#es-enumeration">procedure for
+    converting an ECMAScript value to an IDL enumeration type</a>
+    [[!WEBIDL]] with <a>CompositeOperation</a> as the enumeration type to the
+    value we got back from \[[Get]]..
+
+4.  For each property <var>p</var> in the <a>property-indexed keyframe</a>:
+
+    Issue: This needs to be expressed in terms of \[[Enumerate]] or something
+    equivalent.
 
     1.  Let <var>property keyframes</var> be an empty list.
     2.  For each value <var>v</var> in the list indexed by <var>p</var>:
+
+        Issue: Again, this and throughout this procedure, we need to be more
+        explicit about the mechanics used here. What if <var>p</var> doesn't
+        point to a list? We need to say when we do a \[[Get]] etc.
 
         1.  Construct an empty <a>keyframe</a> <var>k</var>.
         2.  Associate value <var>v</var> with property <var>p</var> in 
@@ -4312,12 +4331,17 @@ specification using the following procedure.
     3.  Apply the procedure for 
         <a href="#applying-spacing-to-keyframes" section></a> to the
         <var>property keyframes</var> list.
+
+        Issue: That procedure probably needs to be refactored to just take
+        a sequence of keyframes.
+
     4.  Add the <a>keyframes</a> in <var>property keyframes</var> to
         <var>all keyframes</var>.
 
-4.  Sort <var>all keyframes</var> by offset, in increasing order.
-5.  Merge adjacent <a>keyframes</a> in <var>all keyframes</var> when
+5.  Sort <var>generated keyframes</var> by offset, in increasing order.
+6.  Merge adjacent <a>keyframes</a> in <var>generated keyframes</var> when
     they have equal offsets.
+7.  Return <var>generated keyframes</var>.
 
 <h4 id="the-intermediate-effect-value-of-a-keyframe-animation-effect">The intermediate effect value of a keyframe effect</h4>
 
@@ -6517,6 +6541,12 @@ value defined in <a href="#processing-a-keyframe-object"
 section></a> is performed before this operation is
 initiated.
 
+Issue: This procedure doesn't make sense any more. It's currently specced to
+apply after the keyframe object is processed but we can't do that now since we
+can't distinguish between a {{Keyframe}} object and a <a>property-indexed
+keyframe</a>. We probably need to introduce a new object that covers either case
+and use that in the various function signatures.
+
 1.  If <var>frames</var> is a {{SharedKeyframeList}} object, then
     replace <var>frames</var> with the {{Keyframe}} or
     sequence of {{Keyframe}} objects used to construct the
@@ -6552,6 +6582,11 @@ initiated.
             <span class=exceptionname>TypeError</span>.
         1.  Follow the procedure for
             <a href='#applying-spacing-to-keyframes' section></a>
+
+        Issue: We need to do this step later or else all offsets will get fixed
+        at initialization so paced spacing would cease to respond to changes in
+        the content and we could never return the keyframe list without the gaps
+        filled in.  We need to do this step later
 
     </div>
 
