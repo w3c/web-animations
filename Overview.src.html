@@ -1065,6 +1065,15 @@ The procedure to <dfn>pause an animation</dfn>, <var>animation</var>, is as
 follows:
 
 1.  If <var>animation</var> has a <a>pending pause task</a>, abort these steps.
+1.  If the <a>play state</a> of <var>animation</var> is <a
+    lt="paused play state">paused</a>, abort these steps.
+
+    Note: If the <a>play state</a> definition is updated such that a paused and
+    finished animation reports the play state as <a
+    lt="finished play state">finished</a> instead of <a
+    lt="paused play state">paused</a>, this step will need to be updated to
+    abort early in that case too.
+
 1.  Let <var>has pending ready promise</var> be a boolean flag that is
     initially false.
 1.  If <var>animation</var> has a <a>pending play task</a>, cancel that task
@@ -1114,8 +1123,6 @@ follows:
 
 1.  Run the procedure to <a>update an animation's finished state</a> for
     <var>animation</var> with the <var>did seek</var> flag set to false.
-
-Issue: This procedure should probably abort if the animation is already paused.
 
 <h4 id="reaching-the-end">Reaching the end</h4>
 
