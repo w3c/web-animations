@@ -5020,7 +5020,7 @@ represented by the value <code>null</code>.
 <pre class="idl">
 interface AnimationTimeline {
     readonly attribute double? currentTime;
-    Animation           play (optional AnimationEffectReadonly? effect = null);
+    Animation           play (optional AnimationEffectReadOnly? effect = null);
     sequence&lt;Animation&gt; getAnimations();
 };
 </pre>
@@ -5036,7 +5036,7 @@ interface AnimationTimeline {
 <div class='methods'>
 
 :   <dfn method for=AnimationTimeline lt='play()'>
-    Animation play(optional AnimationEffectReadonly? effect = null)</dfn>
+    Animation play(optional AnimationEffectReadOnly? effect = null)</dfn>
 ::  Creates a new {{Animation}} object associated with
     this <a>timeline</a> that begins playback as soon as it is
     <a>ready</a>.
@@ -5140,10 +5140,10 @@ interface DocumentTimeline : AnimationTimeline {
 API by the {{Animation}} interface.
 
 <pre class='idl'>
-[Constructor (optional AnimationEffectReadonly? effect = null,
+[Constructor (optional AnimationEffectReadOnly? effect = null,
               optional AnimationTimeline? timeline = null)]
 interface Animation {
-             attribute AnimationEffectReadonly? effect;
+             attribute AnimationEffectReadOnly? effect;
              attribute AnimationTimeline?       timeline;
              attribute double?                  startTime;
              attribute double?                  currentTime;
@@ -5285,37 +5285,37 @@ enum AnimationPlayState { "idle", "pending", "running", "paused", "finished" };
 :   <code>finished</code>
 ::  Corresponds to the <a>finished play state</a>.
 
-<h3 id="the-animationeffectreadonly-interface">The <code>AnimationEffectReadonly</code> interface</h3>
+<h3 id="the-animationeffectreadonly-interface">The <code>AnimationEffectReadOnly</code> interface</h3>
 
 <a>Animation effects</a> are represented in the Web
-Animations API by the {{AnimationEffectReadonly}} interface.
+Animations API by the {{AnimationEffectReadOnly}} interface.
 
 <!-- @ifdef INCLUDE_GROUPS -->
-Interfaces that inherit from {{AnimationEffectReadonly}} that are intended
+Interfaces that inherit from {{AnimationEffectReadOnly}} that are intended
 to be mutable must also implement the additional {{AnimationEffectMutable}}
 interface.
 
 <!-- @endif -->
 
 <pre class='idl'>
-interface AnimationEffectReadonly {
-    readonly attribute AnimationEffectTimingReadonly timing;
+interface AnimationEffectReadOnly {
+    readonly attribute AnimationEffectTimingReadOnly timing;
     readonly attribute ComputedTimingProperties      computedTiming;
 <!-- @ifdef INCLUDE_GROUPS -->
 
     // Timing hierarchy
-    readonly attribute GroupEffectReadonly?     parent;
-    readonly attribute AnimationEffectReadonly? previousSibling;
-    readonly attribute AnimationEffectReadonly? nextSibling;
+    readonly attribute GroupEffectReadOnly?     parent;
+    readonly attribute AnimationEffectReadOnly? previousSibling;
+    readonly attribute AnimationEffectReadOnly? nextSibling;
 <!-- @endif -->
 };
 <!-- @ifdef INCLUDE_GROUPS -->
 
 [NoInterfaceObject]
 interface AnimationEffectMutable {
-    void before (AnimationEffectReadonly... effects);
-    void after (AnimationEffectReadonly... effects);
-    void replace (AnimationEffectReadonly... effects);
+    void before (AnimationEffectReadOnly... effects);
+    void after (AnimationEffectReadOnly... effects);
+    void replace (AnimationEffectReadOnly... effects);
     void remove ();
 };
 <!-- @endif -->
@@ -5330,21 +5330,21 @@ apart from the timing model.
 
 <div class='attributes'>
 
-:   <dfn attribute for=AnimationEffectReadonly>timing</dfn>
+:   <dfn attribute for=AnimationEffectReadOnly>timing</dfn>
 ::  Returns the input timing properties specified for this
     <a>animation effect</a>.
     This is comparable to the specified style on an Element,
     <code>elem.style</code>.
 
-:   <dfn attribute for=AnimationEffectReadonly>computedTiming</dfn>
+:   <dfn attribute for=AnimationEffectReadOnly>computedTiming</dfn>
 ::  Returns the calculated timing properties for this <a>animation
     effect</a>.
     This is comparable to the computed style of an Element,
     <code>window.getComputedStyle(elem)</code>.
 
     Although several of the attributes of the this object are common
-    to the {{AnimationEffectTimingReadonly}} object returned by the
-    {{AnimationEffectReadonly/timing}}
+    to the {{AnimationEffectTimingReadOnly}} object returned by the
+    {{AnimationEffectReadOnly/timing}}
     attribute, the values of this object represent the values <em>after</em>
     applying the adjustments described by the {{AnimationEffectTiming}}
     interface as being <cite>&ldquo;for the purpose of timing model
@@ -5368,16 +5368,16 @@ apart from the timing model.
         href="#the-fillmode-enumeration" section></a>).
 
 <!-- @ifdef INCLUDE_GROUPS -->
-:   <dfn attribute for=AnimationEffectReadonly>parent</dfn>
+:   <dfn attribute for=AnimationEffectReadOnly>parent</dfn>
 ::  The <a>parent group</a> of this <a>animation effect</a> or
     <code>null</code> if this <a>animation effect</a> does not have
     a <a>parent group</a>.
 
     Issue: Should this be <code>parentGroup</code>?
 
-:   <dfn attribute for=AnimationEffectReadonly>previousSibling</dfn>
+:   <dfn attribute for=AnimationEffectReadOnly>previousSibling</dfn>
 ::  The <a>previous sibling</a> of this <a>animation effect</a>.
-:   <dfn attribute for=AnimationEffectReadonly>nextSibling</dfn>
+:   <dfn attribute for=AnimationEffectReadOnly>nextSibling</dfn>
 ::  The <a>next sibling</a> of this <a>animation effect</a>.
 
 <!-- @endif -->
@@ -5387,7 +5387,7 @@ apart from the timing model.
 <div class='methods'>
 
 :   <dfn method for=AnimationEffectMutable lt='before()'>
-    void before (AnimationEffectReadonly... effects)</dfn>
+    void before (AnimationEffectReadOnly... effects)</dfn>
 ::  Inserts <var>effects</var> before this <a>animation effect</a>.
 
     1.  If there is no <a>parent group</a>, terminate these
@@ -5409,7 +5409,7 @@ effect.before(effect); // throws HierarchyRequestError</pre></div>
     </div>
 
 :   <dfn method for=AnimationEffectMutable lt='after()'>
-    void after(AnimationEffectReadonly... effects)</dfn>
+    void after(AnimationEffectReadOnly... effects)</dfn>
 ::  Inserts <var>effects</var> after this <a>animation effect</a>.
 
     1.  If there is no <a>parent group</a>, terminate these
@@ -5426,8 +5426,8 @@ effect.before(effect); // throws HierarchyRequestError</pre></div>
         <var>reference child</var>.
 
 :   <dfn method for=AnimationEffectMutable lt='replace()'>
-    void replace(AnimationEffectReadonly... effects)</dfn>
-::  Replaces this {{AnimationEffectReadonly}} with the passed in
+    void replace(AnimationEffectReadOnly... effects)</dfn>
+::  Replaces this {{AnimationEffectReadOnly}} with the passed in
     <var>effects</var>.
 
     1.  If there is no <a>parent group</a>, terminate these
@@ -5459,12 +5459,12 @@ simply as removing the animation from its animation?
 <!-- @endif -->
 
 
-<h3 id="the-animationeffecttimingreadonly-interface">The <code>AnimationEffectTimingReadonly</code> interface</h3>
+<h3 id="the-animationeffecttimingreadonly-interface">The <code>AnimationEffectTimingReadOnly</code> interface</h3>
 
 Issue: This interface needs a constructor.
 
 <pre class="idl">
-interface AnimationEffectTimingReadonly {
+interface AnimationEffectTimingReadOnly {
     readonly attribute double                             delay;
     readonly attribute double                             endDelay;
     readonly attribute FillMode                           fill;
@@ -5481,7 +5481,7 @@ interface AnimationEffectTimingReadonly {
 
 <div class="attributes">
 
-:   <dfn attribute for=AnimationEffectTimingReadonly>delay</dfn>
+:   <dfn attribute for=AnimationEffectTimingReadOnly>delay</dfn>
 <!-- @ifndef INCLUDE_GROUPS -->::  The <a>start delay</a> which represents
     the number of milliseconds from the <a lt='animation start time'>start
     time</a> of the associated <a>animation</a> to the start of the <a>active
@@ -5493,7 +5493,7 @@ interface AnimationEffectTimingReadonly {
     time</a> to the start of the <a>active interval</a>.
 <!-- @endif -->
 
-:   <dfn attribute for=AnimationEffectTimingReadonly>endDelay</dfn>
+:   <dfn attribute for=AnimationEffectTimingReadOnly>endDelay</dfn>
 ::  The <a>end delay</a> which represents the number of milliseconds
     from the end of an <a>animation effect</a>'s <a>active interval</a>
 <!-- @ifdef INCLUDE_GROUPS -->
@@ -5505,7 +5505,7 @@ interface AnimationEffectTimingReadonly {
     until its <a>end time</a>.
 <!-- @endif -->
 
-:   <dfn attribute for=AnimationEffectTimingReadonly>fill</dfn>
+:   <dfn attribute for=AnimationEffectTimingReadOnly>fill</dfn>
 ::  The <a>fill mode</a> which defines the behavior of the <a>animation
     effect</a> outside its <a>active interval</a>.
 
@@ -5526,7 +5526,7 @@ interface AnimationEffectTimingReadonly {
 
     </div>
 
-:   <dfn attribute for=AnimationEffectTimingReadonly>iterationStart</dfn>
+:   <dfn attribute for=AnimationEffectTimingReadOnly>iterationStart</dfn>
 ::  The <a>animation effect</a>'s <a>iteration start</a> property which is a
     finite real number greater than or equal to zero representing the iteration
     index at which the animation effect begins and its progress through that
@@ -5537,10 +5537,10 @@ interface AnimationEffectTimingReadonly {
     effect begins 20% of the way through its second iteration.
 
     <div class="note">
-    Note that the value of {{AnimationEffectTimingReadonly/iterations}} is effectively
-    <em>added</em> to the {{AnimationEffectTimingReadonly/iterationStart}} such that
-    an animation effect with an {{AnimationEffectTimingReadonly/iterationStart}} of
-    &lsquo;0.5&rsquo; and {{AnimationEffectTimingReadonly/iterations}} of
+    Note that the value of {{AnimationEffectTimingReadOnly/iterations}} is effectively
+    <em>added</em> to the {{AnimationEffectTimingReadOnly/iterationStart}} such that
+    an animation effect with an {{AnimationEffectTimingReadOnly/iterationStart}} of
+    &lsquo;0.5&rsquo; and {{AnimationEffectTimingReadOnly/iterations}} of
     &lsquo;2&rsquo; will still repeat twice however it will begin
     and end half-way through the its <a>iteration interval</a>.
 
@@ -5551,7 +5551,7 @@ interface AnimationEffectTimingReadonly {
     <a>current iteration</a> index is otherwise significant.
     </div>
 
-:   <dfn attribute for=AnimationEffectTimingReadonly>iterations</dfn>
+:   <dfn attribute for=AnimationEffectTimingReadOnly>iterations</dfn>
 ::  The <a>animation effect</a>'s <a>iteration count</a> property which is
     a real number greater than or equal to zero (including positive
     infinity) representing the number of times to the animation effect repeats.
@@ -5559,7 +5559,7 @@ interface AnimationEffectTimingReadonly {
     A value of positive infinity indicates that the animation effect repeats
     forever.
 
-:   <dfn attribute for=AnimationEffectTimingReadonly>duration</dfn>
+:   <dfn attribute for=AnimationEffectTimingReadOnly>duration</dfn>
 ::  The <a>iteration duration</a> which is a real number greater than
     or equal to zero (including positive infinity) representing the
     time taken to complete a single iteration of the <a>animation
@@ -5581,7 +5581,7 @@ interface AnimationEffectTimingReadonly {
 <!-- @endif -->
 
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-:   <dfn attribute for=AnimationEffectTimingReadonly>playbackRate</dfn>
+:   <dfn attribute for=AnimationEffectTimingReadOnly>playbackRate</dfn>
 ::  The <a>animation effect</a>'s <a
     lt="animation effect playback rate">playback rate</a> property
     which is a multiplier applied to the <a>local time</a> potentially
@@ -5589,12 +5589,12 @@ interface AnimationEffectTimingReadonly {
 
 <!-- @endif -->
 
-:   <dfn attribute for=AnimationEffectTimingReadonly>direction</dfn>
+:   <dfn attribute for=AnimationEffectTimingReadOnly>direction</dfn>
 ::  The <a>playback direction</a> of the <a>animation effect</a> which
     defines whether playback proceeds forwards, backwards, or alternates
     on each iteration.
 
-:   <dfn attribute for=AnimationEffectTimingReadonly>easing</dfn>
+:   <dfn attribute for=AnimationEffectTimingReadOnly>easing</dfn>
 ::  The <a>timing function</a> used to scale the time to
     produce easing effects.
 
@@ -5620,7 +5620,7 @@ interface AnimationEffectTimingReadonly {
 <h3 id="the-animationeffecttiming-interface">The <code>AnimationEffectTiming</code> interface</h3>
 
 The {{AnimationEffectTiming}} interface is a mutable subclass of
-{{AnimationEffectTimingReadonly}} returned for the <code>timing</code> attribute
+{{AnimationEffectTimingReadOnly}} returned for the <code>timing</code> attribute
 of a mutable <a>animation effect</a> such as <!-- @ifdef INCLUDE_GROUPS -->
 {{KeyframeEffect}}, {{GroupEffect}}, or {{SequenceEffect}}.
 
@@ -5632,7 +5632,7 @@ of a mutable <a>animation effect</a> such as <!-- @ifdef INCLUDE_GROUPS -->
 Issue: This interface needs a constructor.
 
 <pre class='idl'>
-interface AnimationEffectTiming : AnimationEffectTimingReadonly {
+interface AnimationEffectTiming : AnimationEffectTimingReadOnly {
     inherit attribute double                             delay;
     inherit attribute double                             endDelay;
     inherit attribute FillMode                           fill;
@@ -5650,24 +5650,24 @@ interface AnimationEffectTiming : AnimationEffectTimingReadonly {
 <div class='attributes'>
 
 :   <dfn attribute for=AnimationEffectTiming>delay</dfn>
-::  See the {{AnimationEffectTimingReadonly/delay}} attribute of the
-    {{AnimationEffectTimingReadonly}} interface.
+::  See the {{AnimationEffectTimingReadOnly/delay}} attribute of the
+    {{AnimationEffectTimingReadOnly}} interface.
 :   <dfn attribute for=AnimationEffectTiming>endDelay</dfn>
-::  See the {{AnimationEffectTimingReadonly/endDelay}} attribute of the
-    {{AnimationEffectTimingReadonly}} interface.
+::  See the {{AnimationEffectTimingReadOnly/endDelay}} attribute of the
+    {{AnimationEffectTimingReadOnly}} interface.
 :   <dfn attribute for=AnimationEffectTiming>fill</dfn>
-::  See the {{AnimationEffectTimingReadonly/fill}} attribute of the
-    {{AnimationEffectTimingReadonly}} interface.
+::  See the {{AnimationEffectTimingReadOnly/fill}} attribute of the
+    {{AnimationEffectTimingReadOnly}} interface.
 :   <dfn attribute for=AnimationEffectTiming>iterationStart</dfn>
-::  See the {{AnimationEffectTimingReadonly/iterationStart}} attribute of the
-    {{AnimationEffectTimingReadonly}} interface.
+::  See the {{AnimationEffectTimingReadOnly/iterationStart}} attribute of the
+    {{AnimationEffectTimingReadOnly}} interface.
 
     Values less than zero are clamped to zero for the purpose of timing model
     calculations.
 
 :   <dfn attribute for=AnimationEffectTiming>iterations</dfn>
-::  See the {{AnimationEffectTimingReadonly/iterations}} attribute of the
-    {{AnimationEffectTimingReadonly}} interface.
+::  See the {{AnimationEffectTimingReadOnly/iterations}} attribute of the
+    {{AnimationEffectTimingReadOnly}} interface.
 
     This may be set to <code class="esvalue">+Infinity</code> to cause
     the <a>animation effect</a> to repeat indefinitely.
@@ -5676,8 +5676,8 @@ interface AnimationEffectTiming : AnimationEffectTimingReadonly {
     treated as the value 1.0 for the purpose of timing model calculations.
 
 :   <dfn attribute for=AnimationEffectTiming>duration</dfn>
-::  See the {{AnimationEffectTimingReadonly/duration}} attribute of the
-    {{AnimationEffectTimingReadonly}} interface.
+::  See the {{AnimationEffectTimingReadOnly/duration}} attribute of the
+    {{AnimationEffectTimingReadOnly}} interface.
 
     Real numbers less than zero, <code>NaN</code> values, and strings
     other than the lowercase value <code>auto</code> are treated
@@ -5685,15 +5685,15 @@ interface AnimationEffectTiming : AnimationEffectTimingReadonly {
     calculations.
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 :   <dfn attribute for=AnimationEffectTiming>playbackRate</dfn>
-::  See the {{AnimationEffectTimingReadonly/playbackRate}} attribute of the
-    {{AnimationEffectTimingReadonly}} interface.
+::  See the {{AnimationEffectTimingReadOnly/playbackRate}} attribute of the
+    {{AnimationEffectTimingReadOnly}} interface.
 <!-- @endif -->
 :   <dfn attribute for=AnimationEffectTiming>direction</dfn>
-::  See the {{AnimationEffectTimingReadonly/direction}} attribute of the
-    {{AnimationEffectTimingReadonly}} interface.
+::  See the {{AnimationEffectTimingReadOnly/direction}} attribute of the
+    {{AnimationEffectTimingReadOnly}} interface.
 :   <dfn attribute for=AnimationEffectTiming>easing</dfn>
-::  See the {{AnimationEffectTimingReadonly/easing}} attribute of the
-    {{AnimationEffectTimingReadonly}} interface.
+::  See the {{AnimationEffectTimingReadOnly/easing}} attribute of the
+    {{AnimationEffectTimingReadOnly}} interface.
 
     Invalid values, unrecognized values, or values that correspond to
     a <a>timing function</a> that is not supported for the type of
@@ -5706,10 +5706,10 @@ interface AnimationEffectTiming : AnimationEffectTimingReadonly {
 <h3 id="the-animationeffecttimingproperties-dictionary">The <code>AnimationEffectTimingProperties</code> dictionary</h3>
 
 The {{AnimationEffectTimingProperties}} dictionary encapsulates the timing
-properties of an {{AnimationEffectReadonly}} so that they can be set in bulk (as
+properties of an {{AnimationEffectReadOnly}} so that they can be set in bulk (as
 with the {{Animation()}} constructor) or returned as a readonly snapshot (as
-with the {{AnimationEffectReadonly/computedTiming}} attribute of the
-{{AnimationEffectReadonly}} interface).
+with the {{AnimationEffectReadOnly/computedTiming}} attribute of the
+{{AnimationEffectReadOnly}} interface).
 
 {{AnimationEffectTimingProperties}} is simply a dictionary-equivalent of the
 {{AnimationEffectTiming}} interface.
@@ -5876,8 +5876,8 @@ enum FillMode { "none", "forwards", "backwards", "both", "auto" };
 :   <code>auto</code>
 <!-- @ifdef INCLUDE_GROUPS -->
 ::  Fill backwards and forwards when applied to an
-    {{GroupEffectReadonly}} and no fill when applied to an
-    {{KeyframeEffectReadonly}}.
+    {{GroupEffectReadOnly}} and no fill when applied to an
+    {{KeyframeEffectReadOnly}}.
 
 <!-- @endif -->
 <!-- @ifndef INCLUDE_GROUPS -->
@@ -5910,33 +5910,33 @@ enum PlaybackDirection { "normal", "reverse", "alternate", "alternate-reverse" }
     they are specified, odd iterations are played as specified.
 
 <!-- @ifdef INCLUDE_GROUPS -->
-<h3 id="the-animationgroup-interfaces">The <code>GroupEffectReadonly</code>
+<h3 id="the-animationgroup-interfaces">The <code>GroupEffectReadOnly</code>
   and <code>GroupEffect</code> interfaces</h3>
 
-<a>Group effects</a> are represented by the {{GroupEffectReadonly}}
+<a>Group effects</a> are represented by the {{GroupEffectReadOnly}}
 interface.
 Mutable <a>group effects</a> are represented by the {{GroupEffect}}
 interface.
 
 <pre class='idl'>
-[Constructor (sequence<AnimationEffectReadonly>? children,
+[Constructor (sequence<AnimationEffectReadOnly>? children,
               optional (unrestricted double or AnimationEffectTimingProperties) timing)]
-interface GroupEffectReadonly : AnimationEffectReadonly {
+interface GroupEffectReadOnly : AnimationEffectReadOnly {
     readonly attribute AnimationNodeList      children;
-    readonly attribute AnimationEffectReadonly? firstChild;
-    readonly attribute AnimationEffectReadonly? lastChild;
+    readonly attribute AnimationEffectReadOnly? firstChild;
+    readonly attribute AnimationEffectReadOnly? lastChild;
     GroupEffect clone ();
 };
 
 [NoInterfaceObject]
 interface GroupEffectMutable {
-  void prepend (AnimationEffectReadonly... effects);
-  void append (AnimationEffectReadonly... effects);
+  void prepend (AnimationEffectReadOnly... effects);
+  void append (AnimationEffectReadOnly... effects);
 };
 
-[Constructor (sequence<AnimationEffectReadonly>? children,
+[Constructor (sequence<AnimationEffectReadOnly>? children,
               optional (unrestricted double or AnimationEffectTimingProperties) timing)]
-interface GroupEffect : GroupEffectReadonly {
+interface GroupEffect : GroupEffectReadOnly {
 };
 GroupEffect implements AnimationEffectMutable;
 GroupEffect implements GroupEffectMutable;
@@ -5944,19 +5944,19 @@ GroupEffect implements GroupEffectMutable;
 
 <div class="constructors">
 
-:   <dfn constructor for=GroupEffectReadonly
-      lt="GroupEffectReadonly(children, timing)">
-    GroupEffectReadonly ()</dfn>
-::  Creates a new {{GroupEffectReadonly}} object using the following
+:   <dfn constructor for=GroupEffectReadOnly
+      lt="GroupEffectReadOnly(children, timing)">
+    GroupEffectReadOnly ()</dfn>
+::  Creates a new {{GroupEffectReadOnly}} object using the following
     procedure:
 
-    1.  Create a new {{GroupEffectReadonly}} object, <var>group</var>.
+    1.  Create a new {{GroupEffectReadOnly}} object, <var>group</var>.
 
     2.  Let <var>timing input</var> be the result of applying the
         <a>procedure for processing a timing argument</a> to <var>timing</var>.
 
     3.  Set <code><var>group</var>.timing</code> to a new
-        {{AnimationEffectTimingReadonly}} object whose attributes are assigned
+        {{AnimationEffectTimingReadOnly}} object whose attributes are assigned
         the value of the member of the same name on <var>timing input</var>.
 
     4.  <a lt="insert children">Insert</a> <var>children</var>
@@ -5965,7 +5965,7 @@ GroupEffect implements GroupEffectMutable;
     <div class="parameters">
 
     :   <dfn argument
-        for="GroupEffectReadonly/GroupEffectReadonly(children, timing)"
+        for="GroupEffectReadOnly/GroupEffectReadOnly(children, timing)"
         lt="children">children</dfn>
     ::  A sequence of animation effects to add as children of this group.
 
@@ -5974,7 +5974,7 @@ GroupEffect implements GroupEffectMutable;
         {{GroupEffectMutable}} interface.
 
     :   <dfn argument
-        for="GroupEffectReadonly/GroupEffectReadonly(children, timing)"
+        for="GroupEffectReadOnly/GroupEffectReadOnly(children, timing)"
         lt="timing">timing</dfn>
     ::  The timing properties or <a>iteration duration</a> of the new
         group effect.
@@ -5985,25 +5985,25 @@ GroupEffect implements GroupEffectMutable;
       lt="GroupEffect(children, timing)">
     GroupEffect ()</dfn>
 ::  Creates a new {{GroupEffect}} object using the same procedure as with
-    the {{GroupEffectReadonly()}} constructor with the following differences:
+    the {{GroupEffectReadOnly()}} constructor with the following differences:
 
     *   <var>group</var> is initialized to a new {{GroupEffect}} object
-        rather than a new {{GroupEffectReadonly}} object.
+        rather than a new {{GroupEffectReadOnly}} object.
     *   <code><var>group</var>.timing</code> is set to a new
-        {{AnimationEffectTiming}} object rather than a new {{AnimationEffectTimingReadonly}}
+        {{AnimationEffectTiming}} object rather than a new {{AnimationEffectTimingReadOnly}}
         object.
 
 </div>
 
 <div class="attributes">
 
-:   <dfn attribute for=GroupEffectReadonly>children</dfn>
+:   <dfn attribute for=GroupEffectReadOnly>children</dfn>
 ::  The list of <a>child effects</a> in the group.
 
-:   <dfn attribute for=GroupEffectReadonly>firstChild</dfn>
+:   <dfn attribute for=GroupEffectReadOnly>firstChild</dfn>
 ::  The <a>first child</a> of this <a>group effect</a>.
 
-:   <dfn attribute for=GroupEffectReadonly>lastChild</dfn>
+:   <dfn attribute for=GroupEffectReadOnly>lastChild</dfn>
 ::  The <a>last child</a> of this <a>group effect</a>.
 
 </div>
@@ -6011,7 +6011,7 @@ GroupEffect implements GroupEffectMutable;
 <div class="methods">
 
 :   <dfn method for=GroupEffectMutable lt="prepend()">
-:   void prepend (AnimationEffectReadonly... effects)</dfn>
+:   void prepend (AnimationEffectReadOnly... effects)</dfn>
 ::
 
     1.  If any of the <a>animation effects</a> in <var>effects</var> is an
@@ -6023,7 +6023,7 @@ GroupEffect implements GroupEffectMutable;
         the <a>first child</a>.
 
 :   <dfn method for=GroupEffectMutable lt="append()">
-    void append (AnimationEffectReadonly... effects)</dfn>
+    void append (AnimationEffectReadOnly... effects)</dfn>
 ::
 
     1.  If any of the <a>animation effects</a> in <var>effects</var> is an
@@ -6034,12 +6034,12 @@ GroupEffect implements GroupEffectMutable;
     2.  <a lt="insert children">Insert</a> <var>effects</var> before
         <code>null</code>.
 
-:   <dfn method for=GroupEffectReadonly lt="clone()">
+:   <dfn method for=GroupEffectReadOnly lt="clone()">
     GroupEffect clone ()</dfn>
-::  Creates a deep copy of this {{GroupEffectReadonly}} object using the
+::  Creates a deep copy of this {{GroupEffectReadOnly}} object using the
     following procedure.
 
-    1.  Let <var>source</var> be this {{GroupEffectReadonly}} object,
+    1.  Let <var>source</var> be this {{GroupEffectReadOnly}} object,
         the object to be cloned.
 
     2.  Let <var>cloned timing</var> be a new
@@ -6048,7 +6048,7 @@ GroupEffect implements GroupEffectMutable;
         <code><var>source</var>.timing</code>.
 
     3.  Let <var>cloned children</var> be an empty sequence of
-        {{AnimationEffectReadonly}} objects.
+        {{AnimationEffectReadOnly}} objects.
 
     4.  For each <var>child</var> in
         <code><var>source</var>.children</code>, append the result
@@ -6064,8 +6064,8 @@ GroupEffect implements GroupEffectMutable;
 
 <h4 id="processing-a-timing-argument">Processing a <var>timing</var> argument</h4>
 
-<p>The <var>timing</var> parameter passed to the {{GroupEffectReadonly()}},
-{{GroupEffect()}}, {{SequenceEffectReadonly()}}, or {{SequenceEffect()}}
+<p>The <var>timing</var> parameter passed to the {{GroupEffectReadOnly()}},
+{{GroupEffect()}}, {{SequenceEffectReadOnly()}}, or {{SequenceEffect()}}
 constructor may be an {{AnimationEffectTimingProperties}} object, a double
 representing the duration of the <a>animation effect</a> in milliseconds, or
 undefined.</p>
@@ -6088,13 +6088,13 @@ a {{AnimationEffectTimingProperties}} object.</p>
 
 <div class="note">
 
-Note that since {{AnimationEffectTimingReadonly}} objects have the same
+Note that since {{AnimationEffectTimingReadOnly}} objects have the same
 member names as {{AnimationEffectTimingProperties}} dictionaries, it is
-also possible to pass the {{AnimationEffectReadonly/timing}} member of another
-{{AnimationEffectReadonly}} to the any of the methods that invoke this method
+also possible to pass the {{AnimationEffectReadOnly/timing}} member of another
+{{AnimationEffectReadOnly}} to the any of the methods that invoke this method
 as the <var>timing</var> parameter.
 
-Doing so will cause the {{AnimationEffectTimingReadonly}} object to be
+Doing so will cause the {{AnimationEffectTimingReadOnly}} object to be
 treated as an {{AnimationEffectTimingProperties}} dictionary and thus it
 will effectively be cloned, not shared.
 
@@ -6176,7 +6176,7 @@ are accessed via a <code>children</code> member.
 <pre class='idl'>
 interface AnimationNodeList {
     readonly attribute unsigned long length;
-    getter AnimationEffectReadonly? item (unsigned long index);
+    getter AnimationEffectReadOnly? item (unsigned long index);
 };
 </pre>
 
@@ -6190,7 +6190,7 @@ interface AnimationNodeList {
 <div class="methods">
 
 :   <dfn method for=AnimationNodeList lt="item()">
-    getter AnimationEffectReadonly? item(unsigned long index)</dfn>
+    getter AnimationEffectReadOnly? item(unsigned long index)</dfn>
 ::  Returns the <a>animation effect</a> at <code>index</code>.
     If <code>index</code> is greater than or equal to
     <code>length</code> returns <code>null</code>.
@@ -6198,24 +6198,24 @@ interface AnimationNodeList {
 </div>
 
 <h3 id="the-animationsequence-interfaces">The
-<code>SequenceEffectReadonly</code> and <code>SequenceEffect</code>
+<code>SequenceEffectReadOnly</code> and <code>SequenceEffect</code>
 interfaces</h3>
 
-<a>Sequence effects</a> are represented by the {{SequenceEffectReadonly}}
+<a>Sequence effects</a> are represented by the {{SequenceEffectReadOnly}}
 interface.
 Mutable <a>sequence effects</a> are represented by the {{SequenceEffect}}
 interface.
 
 <pre class='idl'>
-[Constructor (sequence<AnimationEffectReadonly>? children,
+[Constructor (sequence<AnimationEffectReadOnly>? children,
               optional (unrestricted double or AnimationEffectTimingProperties) timing)]
-interface SequenceEffectReadonly : GroupEffectReadonly {
+interface SequenceEffectReadOnly : GroupEffectReadOnly {
     SequenceEffect clone ();
 };
 
-[Constructor (sequence<AnimationEffectReadonly>? children,
+[Constructor (sequence<AnimationEffectReadOnly>? children,
               optional (unrestricted double or AnimationEffectTimingProperties) timing)]
-interface SequenceEffect : SequenceEffectReadonly {
+interface SequenceEffect : SequenceEffectReadOnly {
 };
 SequenceEffect implements AnimationEffectMutable;
 SequenceEffect implements GroupEffectMutable;
@@ -6224,8 +6224,8 @@ SequenceEffect implements GroupEffectMutable;
 <div class="contructors">
 
 :   <dfn constructor for=SequenceEffect lt="SequenceEffect()"><dfn
-      constructor for=SequenceEffectReadonly lt="SequenceEffectReadonly()">
-    Constructor (sequence&lt;AnimationEffectReadonly&gt;? children,
+      constructor for=SequenceEffectReadOnly lt="SequenceEffectReadOnly()">
+    Constructor (sequence&lt;AnimationEffectReadOnly&gt;? children,
     optional (unrestricted double or AnimationEffectTimingProperties) timing)</dfn></dfn>
 ::  The meaning and handling of each of the parameters in this
     constructor is identical to the {{GroupEffect()}} constructor.
@@ -6234,21 +6234,21 @@ SequenceEffect implements GroupEffectMutable;
 
 <div class="methods">
 
-:   <dfn method for=SequenceEffectReadonly lt="clone()">
+:   <dfn method for=SequenceEffectReadOnly lt="clone()">
     SequenceEffect clone ()</dfn>
-::  Creates a deep copy of this {{SequenceEffectReadonly}} object using
-    the same procedure as defined for the {{GroupEffectReadonly/clone()}}
-    method of the {{GroupEffectReadonly}} interface except that a new
+::  Creates a deep copy of this {{SequenceEffectReadOnly}} object using
+    the same procedure as defined for the {{GroupEffectReadOnly/clone()}}
+    method of the {{GroupEffectReadOnly}} interface except that a new
     {{SequenceEffect}} object is created.
 
 </div>
 <!-- @endif -->
 
-<h3 id="the-keyframeeffect-interfaces">The <code>KeyframeEffectReadonly</code>
+<h3 id="the-keyframeeffect-interfaces">The <code>KeyframeEffectReadOnly</code>
   and <code>KeyframeEffect</code> interfaces</h3>
 
 <a>Keyframe effects</a> are represented by the
-{{KeyframeEffectReadonly}} interface.
+{{KeyframeEffectReadOnly}} interface.
 Mutable <a>keyframe effects</a> are represented by the
 {{KeyframeEffect}} interface.
 
@@ -6256,7 +6256,7 @@ Mutable <a>keyframe effects</a> are represented by the
 [Constructor (Animatable? target,
               (Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
               optional (unrestricted double or KeyframeEffectOptions) options)]
-interface KeyframeEffectReadonly : AnimationEffectReadonly {
+interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
     readonly attribute Animatable?                 target;
     readonly attribute DOMString                   name;
     readonly attribute IterationCompositeOperation iterationComposite;
@@ -6269,7 +6269,7 @@ interface KeyframeEffectReadonly : AnimationEffectReadonly {
 [Constructor (Animatable? target,
               (Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
               optional (unrestricted double or KeyframeEffectOptions) options)]
-interface KeyframeEffect : KeyframeEffectReadonly {
+interface KeyframeEffect : KeyframeEffectReadOnly {
     inherit attribute Animatable?                 target;
     inherit attribute DOMString                   name;
     inherit attribute IterationCompositeOperation iterationComposite;
@@ -6284,13 +6284,13 @@ KeyframeEffect implements AnimationEffectMutable;
 
 <div class="constructors">
 
-:   <dfn constructor for=KeyframeEffectReadonly
-     lt="KeyframeEffectReadonly(target, frames, options)">
-    KeyframeEffectReadonly ()</dfn>
-::  Creates a new {{KeyframeEffectReadonly}} object
+:   <dfn constructor for=KeyframeEffectReadOnly
+     lt="KeyframeEffectReadOnly(target, frames, options)">
+    KeyframeEffectReadOnly ()</dfn>
+::  Creates a new {{KeyframeEffectReadOnly}} object
     using the following procedure:
 
-    1.  Create a new {{KeyframeEffectReadonly}} object,
+    1.  Create a new {{KeyframeEffectReadOnly}} object,
         <var>effect</var>.</li>
 
     1.  Set the <code>target</code> property of <var>effect</var>
@@ -6315,17 +6315,17 @@ KeyframeEffect implements AnimationEffectMutable;
             object with all members set to their default values.
 
     1.  Set <code><var>effect</var>.timing</code> to a new
-        {{AnimationEffectTimingReadonly}} object whose attributes are assigned
+        {{AnimationEffectTimingReadOnly}} object whose attributes are assigned
         the value of the member of the same name on <var>timing input</var>.
 
-        Issue: Make a constructor for {{AnimationEffectTimingReadonly}} and call
+        Issue: Make a constructor for {{AnimationEffectTimingReadOnly}} and call
         that here.
 
     1.  If <var>options</var> is a {{KeyframeEffectOptions}} object,
-        set the {{KeyframeEffectReadonly/name}},
-        {{KeyframeEffectReadonly/iterationComposite}},
-        {{KeyframeEffectReadonly/composite}}, and
-        {{KeyframeEffectReadonly/spacing}} properties of <var>effect</var> to
+        set the {{KeyframeEffectReadOnly/name}},
+        {{KeyframeEffectReadOnly/iterationComposite}},
+        {{KeyframeEffectReadOnly/composite}}, and
+        {{KeyframeEffectReadOnly/spacing}} properties of <var>effect</var> to
         the corresponding value from <var>options</var>.
 
     1.  Initialize the set of <a>keyframes</a> by performing the procedure
@@ -6335,7 +6335,7 @@ KeyframeEffect implements AnimationEffectMutable;
     <div class="parameters">
 
     :   <dfn argument
-        for="KeyframeEffectReadonly/KeyframeEffectReadonly(target, frames, timing)"
+        for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, timing)"
         lt="target"><dfn argument
         for="KeyframeEffect/KeyframeEffect(target, frames, timing)"
         lt="target">Animatable? target</dfn></dfn>
@@ -6344,14 +6344,14 @@ KeyframeEffect implements AnimationEffectMutable;
         a specific element.
 
     :   <dfn argument
-        for="KeyframeEffectReadonly/KeyframeEffectReadonly(target, frames, options)"
+        for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)"
         lt="frames"><dfn argument
         for="KeyframeEffect/KeyframeEffect(target, frames, options)"
         lt="frames">(Keyframe or sequence&lt;Keyframe&gt;) frames</dfn></dfn>
     ::  The set of <a>keyframes</a> to use.
 
     :   <dfn argument
-        for="KeyframeEffectReadonly/KeyframeEffectReadonly(target, frames, options)"
+        for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)"
         lt="options"><dfn argument
         for="KeyframeEffect/KeyframeEffect(target, frames, options)"
         lt="options">optional KeyframeEffectOptions options</dfn></dfn>
@@ -6363,12 +6363,12 @@ KeyframeEffect implements AnimationEffectMutable;
     lt="KeyframeEffect(target, frames, options)">
     KeyframeEffect ()</dfn>
 ::  Creates a new {{KeyframeEffect}} object using the same procedure as with
-    the {{KeyframeEffectReadonly()}} constructor with the following differences:
+    the {{KeyframeEffectReadOnly()}} constructor with the following differences:
 
     *   <var>effect</var> is initialized to a new {{KeyframeEffect}} object
-        rather than a new {{KeyframeEffectReadonly}} object.
+        rather than a new {{KeyframeEffectReadOnly}} object.
     *   <code><var>effect</var>.timing</code> is set to a new
-        {{AnimationEffectTiming}} object rather than a new {{AnimationEffectTimingReadonly}}
+        {{AnimationEffectTiming}} object rather than a new {{AnimationEffectTimingReadOnly}}
         object.
 
     Examples of the usage of this constructor are given in <a
@@ -6378,14 +6378,14 @@ KeyframeEffect implements AnimationEffectMutable;
 
 <div class="attributes">
 
-:   <dfn attribute for=KeyframeEffectReadonly><dfn attribute
+:   <dfn attribute for=KeyframeEffectReadOnly><dfn attribute
     for=KeyframeEffect>target</dfn></dfn>
 ::  The element or pseudo-element being animated by this object.
     This may be <code>null</code> for animations that do not target
     a specific element such as an animation that produces a sound
     using an audio API.
 
-:   <dfn attribute for=KeyframeEffectReadonly><dfn attribute
+:   <dfn attribute for=KeyframeEffectReadOnly><dfn attribute
     for=KeyframeEffect>name</dfn></dfn>
 ::  A string used to identify this effect.
 
@@ -6394,7 +6394,7 @@ KeyframeEffect implements AnimationEffectMutable;
     Issue: We should define the name as an internal member in the model and
     reference that here.
 
-:   <dfn attribute for=KeyframeEffectReadonly><dfn attribute
+:   <dfn attribute for=KeyframeEffectReadOnly><dfn attribute
     for=KeyframeEffect>iterationComposite</dfn></dfn>
 ::  The <a>iteration composite operation</a> property of this
     <a>keyframe effect</a> as specified by one of the
@@ -6403,7 +6403,7 @@ KeyframeEffect implements AnimationEffectMutable;
     On setting, sets the <a>iteration composite operation</a> property of this
     <a>animation effect</a> to the provided value.
 
-:   <dfn attribute for=KeyframeEffectReadonly><dfn attribute
+:   <dfn attribute for=KeyframeEffectReadOnly><dfn attribute
     for=KeyframeEffect>composite</dfn></dfn>
 ::  The <a>composite operation</a> used to composite this
     <a>keyframe effect</a> with the <a>effect stack</a>, as
@@ -6413,7 +6413,7 @@ KeyframeEffect implements AnimationEffectMutable;
     On setting, sets the <a>composite operation</a> property of this
     <a>animation effect</a> to the provided value.
 
-:   <dfn attribute for=KeyframeEffectReadonly><dfn attribute
+:   <dfn attribute for=KeyframeEffectReadOnly><dfn attribute
     for=KeyframeEffect>spacing</dfn></dfn>
 ::  On getting, returns the <a lt="keyframe spacing mode">spacing mode</a> to
     use for this <a>keyframe effect</a>.
@@ -6452,12 +6452,12 @@ KeyframeEffect implements AnimationEffectMutable;
 
 <div class="methods">
 
-:   <dfn method for=KeyframeEffectReadonly lt="clone()">
+:   <dfn method for=KeyframeEffectReadOnly lt="clone()">
     KeyframeEffect clone ()</dfn>
 ::  Returns a new {{KeyframeEffect}} object whose members have the same values
     as this object using the following procedure.
 
-    1.   Let <var>source</var> be the {{KeyframeEffectReadonly}} object on which
+    1.   Let <var>source</var> be the {{KeyframeEffectReadOnly}} object on which
          this method was called.
     2.   Let <var>dest</var> be a new {{KeyframeEffect}} object.
     3.   Set each of the {{KeyframeEffect/name}},
@@ -6466,19 +6466,19 @@ KeyframeEffect implements AnimationEffectMutable;
          the value returned by the getter of the corresponding attribute on
          <var>source</var>.
     4.   Let <var>frames</var> be the result of calling the
-         {{KeyframeEffectReadonly/getFrames()}} method on <var>source</var>.
+         {{KeyframeEffectReadOnly/getFrames()}} method on <var>source</var>.
     5.   Call the {{KeyframeEffect/setFrames()}} method on <var>dest</var>
          passing <var>frames</var> as the {{KeyframeEffect/setFrames/frames}}
          argument.
 
-:   <dfn method for=KeyframeEffectReadonly lt="getFrames()">
+:   <dfn method for=KeyframeEffectReadOnly lt="getFrames()">
     sequence&lt;ComputedKeyframe&gt; getFrames()</dfn>
 ::  Returns the <a>keyframes</a> that make up this effect as
     a sequence of {{ComputedKeyframe}} objects.
 
     The value returned differs from the {{KeyframeEffect/setFrames/frames}}
     argument passed into {{KeyframeEffect/setFrames()}} or the
-    {{KeyframeEffectReadonly()}} or {{KeyframeEffect()}} constructors in
+    {{KeyframeEffectReadOnly()}} or {{KeyframeEffect()}} constructors in
     the following ways:
 
     *   The normalization defined in <a
@@ -6521,7 +6521,7 @@ KeyframeEffect implements AnimationEffectMutable;
 
 <h4 id="the-keyframeeffectoptions-dictionary">The <code>KeyframeEffectOptions</code> dictionary</h4>
 
-Additional parameters may be passed to the {{KeyframeEffectReadonly()}} and
+Additional parameters may be passed to the {{KeyframeEffectReadOnly()}} and
 {{KeyframeEffect()}} constructors by providing a {{KeyframeEffectOptions}}
 object.
 
@@ -6538,7 +6538,7 @@ dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
 
 :   <dfn dict-member for=KeyframeEffectOptions>name</dfn>
 ::  The value to set for the {{KeyframeEffect}}'s
-    {{KeyframeEffectReadonly/name}} property.
+    {{KeyframeEffectReadOnly/name}} property.
 
 :   <dfn dict-member for=KeyframeEffectOptions>iterationComposite</dfn>
 ::  The <a>iteration composite operation</a> used to define the way
@@ -6559,7 +6559,7 @@ dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
     {{KeyframeEffect}} interface for the recognized values and
     their meanings.
 
-    Unrecognized values are set on the created {{KeyframeEffectReadonly}} or
+    Unrecognized values are set on the created {{KeyframeEffectReadOnly}} or
     {{KeyframeEffect}} object, but are treated as "distribute" for the purpose
     of animation model calculations.
 
@@ -6569,7 +6569,7 @@ dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
 <h4 id="normalizing-a-sequence-of-keyframes">Normalizing a sequence of keyframes</h4>
 
 For each call to {{KeyframeEffect/setFrames()}}, the
-{{KeyframeEffectReadonly()}} constructor or the {{KeyframeEffect()}}
+{{KeyframeEffectReadOnly()}} constructor or the {{KeyframeEffect()}}
 constructor, the following normalization is performed on the passed
 in <var>frames</var> parameter before storing its value.
 
@@ -6604,8 +6604,8 @@ initiated.
 
 <div class='informative-bg'><em>This section is non-normative</em>
 
-The {{KeyframeEffectReadonly()}} and {{KeyframeEffect()}} constructors offer
-a number of approaches to creating a new {{KeyframeEffectReadonly}} and
+The {{KeyframeEffectReadOnly()}} and {{KeyframeEffect()}} constructors offer
+a number of approaches to creating a new {{KeyframeEffectReadOnly}} and
 {{KeyframeEffect}} objects.
 
 At its simplest, an {{KeyframeEffect}} object that changes the
@@ -6830,7 +6830,7 @@ dictionary Keyframe {
     specified in this keyframe with the <a>underlying value</a>.
 
     If <code>null</code>, the <a>composite operation</a>
-    specified on the {{AnimationEffectReadonly}} will be used.
+    specified on the {{AnimationEffectReadOnly}} will be used.
 
 </div>
 
@@ -6986,8 +6986,8 @@ We have a few options:
 
 <h3 id="the-computedkeyframe-dictionary">The <code>ComputedKeyframe</code> dictionary</h3>
 
-<a>Keyframes</a> returned by the {{KeyframeEffectReadonly/getFrames()}} method
-of the {{KeyframeEffectReadonly}} interface are represented using
+<a>Keyframes</a> returned by the {{KeyframeEffectReadOnly/getFrames()}} method
+of the {{KeyframeEffectReadOnly}} interface are represented using
 {{ComputedKeyframe}} dictionary objects.
 
 <pre class='idl'>
@@ -7016,7 +7016,7 @@ callback EffectCallback = void (double? timeFraction, Animatable currentTarget,
                                 Animation animation);
 </pre>
 
-An {{EffectCallback}} is called each time an {{KeyframeEffectReadonly}} object
+An {{EffectCallback}} is called each time an {{KeyframeEffectReadOnly}} object
 with which it is
 associated is <a lt="sampling">sampled</a>.
 
@@ -7056,7 +7056,7 @@ associated is <a lt="sampling">sampled</a>.
 
 <h3 id="the-animatable-interface">The <code>Animatable</code> interface</h3>
 
-Objects that may be the target of an {{KeyframeEffectReadonly}} object implement
+Objects that may be the target of an {{KeyframeEffectReadOnly}} object implement
 the {{Animatable}} interface.
 
 <pre class='idl'>
@@ -7536,11 +7536,11 @@ The following changes have been made since the <a
 *   Added a read-only version of interfaces for <a>animation effects</a> and
     related interfaces as follows:
     *   <a>Animation effects</a> are now represented by the
-        {{AnimationEffectReadonly}} interface.
+        {{AnimationEffectReadOnly}} interface.
     *   <a>Animation effects</a> are now represented by the
-        {{KeyframeEffectReadonly}} and {{Animation}} interfaces.
+        {{KeyframeEffectReadOnly}} and {{Animation}} interfaces.
     *   <a>Keyframe effects</a> are now represented by the
-        {{KeyframeEffectReadonly}} and {{KeyframeEffect}} interfaces.
+        {{KeyframeEffectReadOnly}} and {{KeyframeEffect}} interfaces.
     *   A number of references to {{Animation}} and
         {{KeyframeEffect}} have been updated to refer to their read-only
         equivalents since the read-only interface is the super-interface in each
@@ -7549,12 +7549,12 @@ The following changes have been made since the <a
 *   Fixed the grammar for <a>&lt;cubic-bezier-timing-function&gt;</a> to
     match CSS Transitions.
 *   Introduced the {{ComputedTimingProperties}} dictionary and
-    {{AnimationEffectTimingReadonly}} interface.
-*   Moved computed timing from {{AnimationEffectReadonly}} to a
-    {{AnimationEffectReadonly/computedTiming}} attribute of type
+    {{AnimationEffectTimingReadOnly}} interface.
+*   Moved computed timing from {{AnimationEffectReadOnly}} to a
+    {{AnimationEffectReadOnly/computedTiming}} attribute of type
     {{ComputedTimingProperties}}.
 *   Removed the <code>player</code> attribute from the
-    {{AnimationEffectReadonly}} interface.
+    {{AnimationEffectReadOnly}} interface.
 *   Exposed the <a>time fraction</a> to script as
     <code>effect.computedTiming.timeFraction</code>.
 *   Made the procedure defined in <a
