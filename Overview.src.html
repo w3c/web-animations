@@ -6694,7 +6694,7 @@ constructor, the following normalization is performed on the passed
 in <var>frames</var> parameter before storing its value.
 
 Note: the processing of the ECMAScript value into a suitable IDL
-value defined in <a href="#processing-a-keyframe-object"
+value defined in <a href="#processing-keyframe-and-propertyindexedkeyframe-objects"
 section></a> is performed before this operation is
 initiated.
 
@@ -6947,7 +6947,7 @@ members map to the properties to be animated.
 At the time of writing, this kind of open-ended dictionary cannot
 be represented using WebIDL and hence special
 ECMAScript-specific handling for this type is defined in
-<a href="#processing-a-keyframe-object" section></a>.
+<a href="#processing-keyframe-and-propertyindexedkeyframe-objects" section></a>.
 No handling is defined for other languages.
 
 <pre class='idl'>
@@ -6990,8 +6990,48 @@ dictionary Keyframe {
 
 </div>
 
+<h4 id="the-propertyindexedkeyframe-dictionary">The <code>PropertyIndexedKeyframe</code> dictionary</h4>
 
-<h4 id="processing-a-keyframe-object">Processing a <code>Keyframe</code> object</h4>
+Keyframe lists can also be represented by a {{PropertyIndexedKeyframe}}
+dictionary type. This dictionary is functionally very similar to the {{Keyframe}}
+dictionary, except that it potentially stores lists of values for each
+property.
+
+As with {{Keyframe}} dictionaries, special ECMAScript-specific handling for
+this type is defined in
+<a href="#processing-keyframe-and-propertyindexedkeyframe-objects" section></a>.
+No handling is defined for other languages.
+
+<pre class='idl'>
+dictionary PropertyIndexedKeyframe {
+    // ... property-value and property-valuelist pairs ...
+    DOMString           easing = "linear";
+    CompositeOperation? composite = null;
+};
+</pre>
+
+<div class='attributes'>
+
+:   <dfn dict-member for=PropertyIndexedKeyframe>easing</dfn>
+::  The <a>timing function</a> used to transform the progress of time
+    between any two adjacent keyframes defined by this dictionary.
+
+    The syntax and error-handling associated with parsing this string
+    is identical to that defined for the <code>easing</code> attribute
+    of the {{AnimationEffectTiming}} interface.
+
+:   <dfn dict-member for=PropertyIndexedKeyframe>composite</dfn>
+::  The <a>keyframe-specific composite operation</a> used to combine the
+    values specified by any keyframe defined by this dictionary with the
+    appropriate <a>underlying value</a>.
+
+    If <code>null</code>, the <a>composite operation</a>
+    specified on the {{AnimationEffectReadonly}} will be used.
+
+</div>
+
+<h4 id="processing-keyframe-and-propertyindexedkeyframe-objects">
+Processing <code>Keyframe</code> and <code>PropertyIndexedKeyframes</code> objects</h4>
 
 <div class="note">
 
@@ -7017,24 +7057,24 @@ is as follows:
     <code>offset</code>, <code>easing</code> and
     <code>composite</code> attributes set to the default dictionary
     values.
-1.  Create a list, <var>supported properties</var>, of property
+2.  Create a list, <var>supported properties</var>, of property
     names and attribute names that can be animated by the
     implementation.
-1.  Convert each property name in <var>supported properties</var>
+3.  Convert each property name in <var>supported properties</var>
     to the equivalent IDL attribute by applying the <a
     href="http://dev.w3.org/csswg/cssom/#css-property-to-idl-attribute">CSS
     property to IDL attribute</a> algorithm [[!CSSOM]].
-1.  If the user agent supports animation of the 'float'
+4.  If the user agent supports animation of the 'float'
     CSS property, replace "float" in
     <var>supported properties</var> with "cssFloat".
-1.  If the user agent supports animation of the <a
+5.  If the user agent supports animation of the <a
     href="http://www.w3.org/TR/SVG2/pservers.html#StopElementOffsetAttribute"
     class="externalDFN">offset</a> attribute
     of <a href="http://www.w3.org/TR/SVG2/pservers.html#StopElement"
       class="externalDFN">SVG stop elements</a> [[!SVG2]], replace "offset" in
     <var>supported properties</var> with "svgOffset".
-1.  Let <var>animation properties</var> be an empty sequence.
-1.  Use the internal \[[Enumerate]] operation on <var>keyframe
+6.  Let <var>animation properties</var> be an empty sequence.
+7.  Use the internal \[[Enumerate]] operation on <var>keyframe
     input</var> to iterate over its properties.
     For each <var>property</var> perform the step corresponding to
     the first matching condition from below, if any.
@@ -7093,7 +7133,7 @@ is as follows:
 
     </div>
 
-1.  For user agents that support both a prefixed and an
+8.  For user agents that support both a prefixed and an
     unprefixed version of some CSS properties, remove all
     prefixed properties from <var>animation properties</var>
     where the corresponding unprefixed version is also
@@ -7101,9 +7141,9 @@ is as follows:
 
     Issue: I'd like to remove this step. Prefixes are history.
 
-1.  Sort <var>animation properties</var> lexicographically by
+9.  Sort <var>animation properties</var> lexicographically by
     the Unicode codepoints that define each element.
-1.  Iterate over <var>animation properties</var> from beginning to
+10. Iterate over <var>animation properties</var> from beginning to
     end and for each <var>name</var> in <var>animation
     properties</var> add a new member pair to <var>keyframe
     result</var> as follows:
@@ -7122,11 +7162,53 @@ is as follows:
         If \[[Get]] returns null or undefined, let the member
         value be an empty string.
 
-1.  Return <var>keyframe result</var>.
+11. Return <var>keyframe result</var>.
+
+The <dfn>procedure for converting an ECMAScript object to an IDL
+PropertyIndexedKeyframe object</dfn> with parameter <var>keyframe input</var>
+is identical to the <a>procedure for converting an ECMAScript object 
+to an IDL Keyframe object</a>, except for the following two changes:
+
+
+1.  The condition for matching the "offset" string in step 7 is removed.
+2.  The processing of <em>member values</em> in step 10 is replaced with the
+    following procedure:
+
+    1.  If any phase of this calculation throws a TypeError, apply the
+        procedure defined in step 10 of the <a>procedure for converting
+        an ECMAScript object to an IDL Keyframe object</a> for processing
+        of member values instead.
+    2.  Let <var>member value object</var> be the result of calling 
+        <code>ToObject</code> on the value returned from the \[[Get]]
+        method of <var>keyframe input</var> with property name <var>name</var>.
+    3.  Let <var>member value length</var> be the value returned from the \[[Get]]
+        method of <var>member value object</var> with property name <var>length</var>.
+
+    <div class='switch'>
+
+        :   If <var>member value length</var> is of <code>Number</code> type, and has
+            non-negative integral value,
+        ::  Let <var>member value length</var> be this value, and execute the 
+            following steps:
+
+            *   initialize <var>member value</var> to an empty list.
+            *   let <var>index</var> iterate over integers 0 to
+                <var>member value length</var> in order
+            *   for each <var>index</var>, append the result of calling
+                <code>ToString</code> on the value returned from the 
+                \[[Get]] method of <var>member value object</var> with
+                property name <var>index</var> to <var>member value</var>
+
+        :   Otherwise,
+        ::  apply the procedure defined in step 10 of the
+            <a>procedure for converting an ECMAScript object to an IDL
+            Keyframe object</a> for processing of member values.
+
+    </div>
 
 <div class="issue">
 
-The above algorithm gives special meaning to the property names
+The above algorithms give special meaning to the property names
 "offset", "easing", and "composite".
 If a CSS property called "offset" or "composite" is ever
 introduced it will clash with the meaning here.
