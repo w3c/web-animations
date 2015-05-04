@@ -4437,33 +4437,21 @@ as input a <var>property-indexed keyframe</var> and generates a sequence of
 
 2.  Let <var>composite operation</var> be initially null.
 
-3.  Issue: We need to call \[[HasProperty]] to see if there is a composite
-    property and, if there is do a \[[Get]] on it. If it's null we should do
-    nothing, but otherwise we should set <var>composite operation</var> to
-    the result of applying the <a
-    href="http://www.w3.org/TR/WebIDL/#es-enumeration">procedure for
-    converting an ECMAScript value to an IDL enumeration type</a>
-    [[!WEBIDL]] with <a>CompositeOperation</a> as the enumeration type to the
-    value we got back from \[[Get]]..
-
-4.  For each property <var>p</var> in the <a>property-indexed keyframe</a>:
-
-    Issue: This needs to be expressed in terms of \[[Enumerate]] or something
-    equivalent.
+3.  For each property <var>p</var> in the <a>property-indexed keyframe</a>:
 
     1.  Let <var>property keyframes</var> be an empty list.
+
     2.  For each value <var>v</var> in the list indexed by <var>p</var>:
 
-        Issue: Again, this and throughout this procedure, we need to be more
-        explicit about the mechanics used here. What if <var>p</var> doesn't
-        point to a list? We need to say when we do a \[[Get]] etc.
-
         1.  Construct an empty <a>keyframe</a> <var>k</var>.
+
         2.  Associate value <var>v</var> with property <var>p</var> in 
             <var>k</var>.
+
         3.  If <var>composite operation</var> is defined, associate
             <var>composite operation</var> with <code>composite</code> in 
             <var>k</var>.
+
         4.  Append <var>k</var> to <var>property keyframes</var>.
 
     3.  Apply the procedure for 
@@ -4477,8 +4465,10 @@ as input a <var>property-indexed keyframe</var> and generates a sequence of
         <var>all keyframes</var>.
 
 5.  Sort <var>all keyframes</var> by offset, in increasing order.
+
 6.  Merge adjacent <a>keyframes</a> in <var>all keyframes</var> when
     they have equal offsets.
+
 7.  Return <var>all keyframes</var>.
 
 <h4 id="the-intermediate-effect-value-of-a-keyframe-animation-effect">The intermediate effect value of a keyframe effect</h4>
@@ -6374,7 +6364,7 @@ Mutable <a>keyframe effects</a> are represented by the
 
 <pre class='idl'>
 [Constructor (Animatable? target,
-              (Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
+              (PropertyIndexedKeyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
               optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
     readonly attribute Animatable?                 target;
@@ -6387,7 +6377,7 @@ interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
 };
 
 [Constructor (Animatable? target,
-              (Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
+              (PropertyIndexedKeyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
               optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffect : KeyframeEffectReadOnly {
     inherit attribute Animatable?                 target;
@@ -6395,7 +6385,7 @@ interface KeyframeEffect : KeyframeEffectReadOnly {
     inherit attribute IterationCompositeOperation iterationComposite;
     inherit attribute CompositeOperation          composite;
     inherit attribute DOMString                   spacing;
-    void setFrames ((Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames);
+    void setFrames ((PropertyIndexedKeyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames);
 };
 <!-- @ifdef INCLUDE_GROUPS -->
 KeyframeEffect implements AnimationEffectMutable;
@@ -6467,7 +6457,7 @@ KeyframeEffect implements AnimationEffectMutable;
         for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)"
         lt="frames"><dfn argument
         for="KeyframeEffect/KeyframeEffect(target, frames, options)"
-        lt="frames">(Keyframe or sequence&lt;Keyframe&gt;) frames</dfn></dfn>
+        lt="frames">(PropertyIndexedKeyframe or sequence&lt;Keyframe&gt;) frames</dfn></dfn>
     ::  The set of <a>keyframes</a> to use.
 
     :   <dfn argument
@@ -6616,7 +6606,7 @@ KeyframeEffect implements AnimationEffectMutable;
     Issue: Replace this with a <code>frames</code> attribute.
 
 :   <dfn method for=KeyframeEffect lt='setFrames(frames)'>
-    void setFrames((Keyframe or sequence&lt;Keyframe&gt;) frames)</dfn>
+    void setFrames((PropertyIndexedKeyframe or sequence&lt;Keyframe&gt;) frames)</dfn>
 ::  Replaces the set of <a>keyframes</a> that make up this effect.
 
     <div class="parameters">
@@ -6698,12 +6688,6 @@ value defined in <a href="#processing-keyframe-and-propertyindexedkeyframe-objec
 section></a> is performed before this operation is
 initiated.
 
-Issue: This procedure doesn't make sense any more. It's currently specced to
-apply after the keyframe object is processed but we can't do that now since we
-can't distinguish between a {{Keyframe}} object and a <a>property-indexed
-keyframe</a>. We probably need to introduce a new object that covers either case
-and use that in the various function signatures.
-
 1.  If <var>frames</var> is a {{SharedKeyframeList}} object, then
     replace <var>frames</var> with the {{Keyframe}} or
     sequence of {{Keyframe}} objects used to construct the 
@@ -6712,10 +6696,9 @@ and use that in the various function signatures.
 1.  Normalization depends on the type of keyframes object provided:
 
     <div class='switch'>
-    
-    :   If <var>frames</var> is not a list of objects (i.e. it is either a 
-        {{Keyframe}} or a <a>property indexed keyframe</a>)
-    ::  
+    :   If <var>frames</var> is not a list of objects (i.e. it is a
+        {{PropertyIndexedKeyframe}})
+    ::
 
         1.  If <code>offset</code> is specified in <var>frames</var>, 
             <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
@@ -6724,12 +6707,7 @@ and use that in the various function signatures.
             <a href="#generating-keyframes-from-property-indexed-keyframes"
             section></a>.
 
-        Note: if <var>frames</var> is a {{Keyframe}}, this is equivalent to
-        replacing <var>frames</var> with a new sequence containing a single
-        item that is the previous value of <var>frames</var> and then
-        normalizing.
-
-    :   else
+    :   Otherwise,
     ::
 
         1.  If <var>frames</var> is not <a>loosely sorted by offset</a>,
@@ -6740,13 +6718,6 @@ and use that in the various function signatures.
             greater than one,
             <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
             <span class=exceptionname>TypeError</span>.
-        1.  Follow the procedure for
-            <a href='#applying-spacing-to-keyframes' section></a>
-
-        Issue: We need to do this step later or else all offsets will get fixed
-        at initialization so paced spacing would cease to respond to changes in
-        the content and we could never return the keyframe list without the gaps
-        filled in.  We need to do this step later
 
     </div>
 
@@ -6913,7 +6884,7 @@ var player2 = element2.animate(keyframes, { duration: 1000, delay: 1000 });
 </div>
 
 <pre class='idl'>
-[Constructor ((Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames)]
+[Constructor ((PropertyIndexedKeyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames)]
 interface SharedKeyframeList {
 };
 </pre>
@@ -7174,10 +7145,11 @@ to an IDL Keyframe object</a>, except for the following two changes:
 2.  The processing of <em>member values</em> in step 10 is replaced with the
     following procedure:
 
-    1.  If any phase of this calculation throws a TypeError, apply the
+    1.  If any phase of this calculation throws a TypeError, follow the
         procedure defined in step 10 of the <a>procedure for converting
         an ECMAScript object to an IDL Keyframe object</a> for processing
-        of member values instead.
+        of member values, and return a list with the produced value as
+        the sole item.
     2.  Let <var>member value object</var> be the result of calling 
         <code>ToObject</code> on the value returned from the \[[Get]]
         method of <var>keyframe input</var> with property name <var>name</var>.
@@ -7200,9 +7172,10 @@ to an IDL Keyframe object</a>, except for the following two changes:
                 property name <var>index</var> to <var>member value</var>
 
         :   Otherwise,
-        ::  apply the procedure defined in step 10 of the
+        ::  follow the procedure defined in step 10 of the
             <a>procedure for converting an ECMAScript object to an IDL
-            Keyframe object</a> for processing of member values.
+            Keyframe object</a> for processing of member values, and 
+            return a list with the produced value as the sole item.
 
     </div>
 
@@ -7300,7 +7273,7 @@ the {{Animatable}} interface.
 <pre class='idl'>
 [NoInterfaceObject]
 interface Animatable {
-    Animation           animate ((Keyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
+    Animation           animate ((PropertyIndexedKeyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
                                  optional (double or KeyframeEffectOptions) options);
     sequence&lt;Animation&gt; getAnimations ();
 };
@@ -7333,7 +7306,7 @@ var animation = elem.ownerDocument.timeline.play(effect);</pre></div>
 
     <div class="parameters">
 
-    :   <dfn argument for="Animatable/animate" lt="frames">(Keyframe or sequence&lt;Keyframe&gt;) frames</dfn>
+    :   <dfn argument for="Animatable/animate" lt="frames">(PropertyIndexedKeyframe or sequence&lt;Keyframe&gt;) frames</dfn>
     ::  The <a>keyframes</a> to use.
         This value is passed to the {{KeyframeEffect()}}
         constructor as the <var>frames</var> parameter and has the
