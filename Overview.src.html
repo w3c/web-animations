@@ -256,12 +256,12 @@ model</em>.  The role of these pieces is as follows:
 
 :   Timing model
 ::  Takes a moment in time and converts it to a proportional distance
-    within a single iteration of an animation called the <em>time
-    fraction</em>.
+    within a single iteration of an animation called the <em>iteration
+    progress</em>.
     The <em>iteration index</em> is also recorded since some animations vary
     each time they repeat.
 :   Animation model
-::  Takes the <em>time fractions</em> and <em>iteration indices</em>
+::  Takes the <em>iteration progress</em> values and <em>iteration indices</em>
     produced by the timing model and converts them into a series of values
     to apply to the target properties and attributes.
 
@@ -271,8 +271,8 @@ Graphically, this flow can be represented as follows:
 </div>
 <p class="caption">
 Overview of the operation of the Web Animations model.<br>
-The current time is input to the timing model which produces a time
-fraction and an iteration index.<br>
+The current time is input to the timing model which produces an iteration
+progress value and an iteration index.<br>
 These parameters are used as input to the animation model which produces
 the values to apply.<br>
 </p>
@@ -311,7 +311,7 @@ Two features characterise the Web Animations timing model: it is
 <h4 id="stateless">Stateless</h4>
 
 The Web Animations timing model operates by taking an input time and
-producing an output time fraction.
+producing an output iteration progress.
 Since the output is based solely on the input time and is independent
 of previous inputs, the model may be described as stateless.
 This gives the model the following properties:
@@ -607,7 +607,7 @@ follows:
     <var>animation</var> to <var>previous animation time</a>.
 <!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
 1.  Issue: If <var>new timeline</var> is null, we should ensure that <a>custom
-    effects</a> get called with an <a>unresolved</a> <a>time fraction</a>
+    effects</a> get called with an <a>unresolved</a> <a>iteration progress</a>
     (unless a subsequent change in the same script execution context makes this
     redundant).
 <!-- @endif -->
@@ -664,7 +664,7 @@ follows:
 1.  If <var>old effect</var> is not <code>null</code>, queue a task to call any
     <a>custom effects</a> associated with <a>inclusive descendants</a> of
     <var>old effect</var>
-    with an <a>unresolved</a> <a>time fraction</a>.
+    with an <a>unresolved</a> <a>iteration progress</a>.
     <div class="issue">
       This is not quite right. If <var>old effect</var> is attached to another
       animation in the same task then we should probably not do an extra
@@ -991,13 +991,11 @@ follows:
 
     </div>
 
-1.  If <var>aborted pause</var> is false, perform the following steps:
+1.  If <var>animation</var>'s <a>hold time</a> is <a>unresolved</a>
+    and <var>aborted pause</var> is false, abort this procedure.
 
-    1.  If <var>animation</var>'s <a>hold time</a> is <a>unresolved</a>,
-        abort this procedure.
-
-    1.  Let <var>animation</var>'s <a lt="animation start time">start time</a>
-        be <a>unresolved</a>.
+1.  If <var>animation</var>'s <a>hold time</a> is <a lt=unresolved>resolved</a>,
+    let its <a lt="animation start time">start time</a> be <a>unresolved</a>.
 
 1.  If <var>has pending ready promise</var> is false,
     let <var>animation</var>'s <a>current ready promise</a> be a new
@@ -1373,7 +1371,7 @@ as follows:
 6.  Queue a task to call any <a>custom effects</a> associated with
     <a>inclusive descendants</a> of
     <var>animation</var>'s <a>target effect</a>
-    with an <a>unresolved</a> time fraction.
+    with an <a>unresolved</a> iteration progress.
 
     Issue: The procedures for calling custom effects need to be reworked.
            Currently they probably involve calling too often for changes that
@@ -2879,8 +2877,8 @@ steps.
 For such situations Web Animations provides <a>timing functions</a>
 that scale the progress of an <a>animation effect</a>.
 
-<a>Timing functions</a> take an input time fraction and produce
-a scaled output time fraction.
+<a>Timing functions</a> take an input progress value and produce
+a scaled output progress value.
 
 <div class="figure">
   <img src="img/timing-function-example.svg" width="350"
@@ -2888,8 +2886,8 @@ a scaled output time fraction.
 </div>
 <p class="caption">
   Example of a timing function that produces an ease-in effect.
-  Given an input timing fraction of 0.7, the timing function scales the
-  value to produce an output time fraction of 0.52.<br>
+  Given an input progress of 0.7, the timing function scales the
+  value to produce an output progress of 0.52.<br>
   By applying this timing function, time will appear to progress more
   slowly at first but then gradually progress more quickly.
 </p>
@@ -2901,8 +2899,8 @@ effect</a>.
 
 <h4 id="timing-functions">Timing functions</h4>
 
-A <dfn>timing function</dfn> takes an input time fraction in the range
-[0, 1] and produces an output time fraction whose range is unbounded
+A <dfn>timing function</dfn> takes an input progress value in the range
+[0, 1] and produces an output progress value whose range is unbounded
 (i.e. positive and negative infinity are permitted).
 
 <a>Animation effects</a> have one <a>timing function</a> associated with
@@ -2959,8 +2957,8 @@ This arrangement is illustrated below.
   A cubic B&eacute;zier curve used as a timing function.<br>
   The shape of the curve is determined by the location of the control
   points <var>P1</var> and <var>P2</var>.<br>
-  Input time fractions serve as <var>x</var> values of the curve,
-  whilst the <var>y</var> values are the output time fractions.
+  Input progress values serve as <var>x</var> values of the curve,
+  whilst the <var>y</var> values are the output progress values.
 </p>
 
 Some example cubic B&eacute;zier timing functions are illustrated below.
@@ -3047,9 +3045,8 @@ Some example step timing functions are illustrated below.
 </div>
 <p class="caption">
   Example step timing functions.
-  In each case the domain is the input time fraction whilst the range
-  represents the output time fraction produced by the step
-  function.<br>
+  In each case the domain is the input progress whilst the range
+  represents the output progress produced by the step function.<br>
   The first row shows the function for each transition point when only
   one step is specified whilst the second row shows the same for three
   steps.
@@ -3143,18 +3140,17 @@ The <dfn>transformed time</dfn> is calculated from the
     return an <a>unresolved</a> <a>time value</a>.
 2.  If the <a>iteration duration</a> is infinity,
     return the <a>directed time</a>.
-3.  Let <var>iteration fraction</var> be the result of
+3.  Let <var>unscaled progress</var> be the result of
     evaluating <code><a>directed time</a> / <a>iteration
     duration</a></code> unless <a>iteration duration</a> is
-    zero, in which case let <var>iteration fraction</var> be
+    zero, in which case let <var>unscaled progress</var> be
     zero.
-4.  Let <var>scaled fraction</var> be the result of
+4.  Let <var>scaled progress</var> be the result of
     evaluating the <a>animation effect</a>'s <a>timing function</a>
-    with <var>iteration fraction</var> as the input time
-    fraction.
+    with <var>unscaled progress</var> as the input progress.
 5.  Return the result of evaluating <code><var>scaled
-    fraction</var> &times; <a>iteration duration</a></code>.
-    If the <var>scaled fraction</var> is zero, let the result be
+    progress</var> &times; <a>iteration duration</a></code>.
+    If the <var>scaled progress</var> is zero, let the result be
     zero.
 
     Note: This clarification is needed since the <a>iteration duration</a>
@@ -3482,13 +3478,14 @@ effects</a> the <a>intrinsic iteration duration</a> will be
 zero.
 <!-- @endif -->
 
-<h4 id="calculating-the-time-fraction">Calculating the time fraction</h4>
+<h4 id="calculating-the-iteration-progress">Calculating the iteration
+  progress</h4>
 
 Before the <a>transformed time</a> is passed to the animation model, it is
 normalized to represent a fraction of the <a>iteration duration</a>, known as a
-<em>time fraction</em>.
+<em>iteration progress</em>.
 
-The <dfn>time fraction</dfn> of an <a>animation effect</a> is calculated
+The <dfn>iteration progress</dfn> of an <a>animation effect</a> is calculated
 by running the steps corresponding to the first matching condition from
 the following:
 
@@ -3497,7 +3494,7 @@ the following:
 :   If the <a>transformed time</a> is <a>unresolved</a>, return
     an <a>unresolved</a> <a>time value</a>.
 :   If the <a>iteration duration</a> is zero,
-::  the <a>time fraction</a> is as follows,
+::  the <a>iteration progress</a> is as follows,
 
     <div class="switch">
 
@@ -3523,13 +3520,13 @@ the following:
 
 </div>
 
-Note: Since <a>timing functions</a> are allowed to produce output times
-    outside the range [0, 1] it is possible that the value calculated for
-    a <a>time fraction</a> also lies outside this range.
+Note: Since <a>timing functions</a> are allowed to produce output progress
+    values outside the range [0, 1] it is possible that the value calculated
+    for the <a>iteration progress</a> also lies outside this range.
 
 <div class='informative-bg'><em>This section is non-normative</em>
 
-Intuitively, it may seem that the <a>time fraction</a> for an <a>animation
+Intuitively, it may seem that the <a>iteration progress</a> for an <a>animation
 effect</a> with an <a>iteration duration</a> of zero should be 0 or 1 and that
 the above algorithm is unnecessarily complex.
 However, the influence of a non-zero <a>iteration start</a>, a non-integral
@@ -3551,7 +3548,7 @@ will always be zero).
 
 In order to provide the result intuitively expected in this case, the algorithm
 above temporarily inflates the <a>iteration duration</a> to 1 and calculates the
-<a>time fraction</a> at the appropriate end of the <a>active interval</a>.
+<a>iteration progress</a> at the appropriate end of the <a>active interval</a>.
 
 </div>
 
@@ -3564,9 +3561,9 @@ above temporarily inflates the <a>iteration duration</a> to 1 and calculates the
 <div class='informative-bg'><em>This section is non-normative</em>
 
 For some kinds of <a>animation effects</a>, the Web Animations <em>animation
-model</em> takes the <a>time fraction</a> and <a>current iteration</a> values
-produced by the <em>timing model</em> and uses them to calculate a corresponding
-output.
+model</em> takes the <a>iteration progress</a> and <a>current iteration</a>
+values produced by the <em>timing model</em> and uses them to calculate
+a corresponding output.
 
 The output of each such animation effect is then combined with
 that of others using an <a>effect stack</a> before being
@@ -3583,7 +3580,7 @@ DOM attributes of an element or pseudo-element such as <code>::before</code> or
 <code>::after</code> [[!SELECT]] referred to as the <dfn>target element</dfn>.
 
 Since the result of a <a>keyframe effect</a> is based on the
-<a>time fraction</a> and <a>current iteration</a> value, it is updated
+<a>iteration progress</a> and <a>current iteration</a> value, it is updated
 whenever the timing model is <a lt="sampling">sampled</a>.
 
 <h4 id="target-properties">Target properties</h4>
@@ -4046,7 +4043,7 @@ Issue: Now that we've renamed this from &ldquo;intermediate animation
 value&rdquo;, would it be ok to rename this to simply &ldquo;effect
 value&rdquo;?
 
-Given a <a>time fraction</a>, a <a>current iteration</a>, and an
+Given an <a>iteration progress</a>, a <a>current iteration</a>, and an
 <a>underlying value</a>, a <a>keyframe effect</a> produces
 an <dfn>intermediate effect value</dfn> for each <a>animatable</a>
 <a>target property</a> by applying the <a>animation behavior</a>
@@ -4475,7 +4472,7 @@ as input a <var>property-indexed keyframe</var> and generates a sequence of
 The <a>intermediate effect value</a> of a single property
 referenced by a <a>keyframe effect</a> as one of its
 <a lt="target property">target properties</a>, for a given
-<var>time fraction</var>, <var>current iteration</var> and
+<var>iteration progress</var>, <var>current iteration</var> and
 <var>underlying value</var> is calculated as follows.
 
 1.  Let <var>target property</var> be the property for which the
@@ -4516,13 +4513,13 @@ referenced by a <a>keyframe effect</a> as one of its
 
     <div class="switch">
 
-    :   If <var>time fraction</var> &lt; 0 and there is more
+    :   If <var>iteration progress</var> &lt; 0 and there is more
         than one <a>keyframe</a> in <var>property-specific
         keyframes</var> with a <a>keyframe offset</a> of
         0,
     ::  Add the first <a>keyframe</a> in <var>property-specific
         keyframes</var> to <var>interval endpoints</var>.
-    :   If <var>time fraction</var> &ge; 1 and there is more
+    :   If <var>iteration progress</var> &ge; 1 and there is more
         than one <a>keyframe</a> in <var>property-specific
         keyframes</var> with a <a>keyframe offset</a> of
         1,
@@ -4534,9 +4531,9 @@ referenced by a <a>keyframe effect</a> as one of its
         1.  Append to <var>interval endpoints</var> the last
             <a>keyframe</a> in <var>property-specific
             keyframes</var> whose <a>keyframe offset</a> is less than
-            or equal to <var>time fraction</var> and less than 1.  If
+            or equal to <var>iteration progress</var> and less than 1.  If
             there is no such <a>keyframe</a> (because, for example,
-            the <a>time fraction</a> is negative), add the last
+            the <a>iteration progress</a> is negative), add the last
             <a>keyframe</a> whose <a>keyframe offset</a> is 0.
         2.  Append to <var>interval endpoints</var> the next
             <a>keyframe</a> in <var>property-specific keyframes</var>
@@ -4595,7 +4592,7 @@ referenced by a <a>keyframe effect</a> as one of its
 14. Let <var>end offset</var> be the <a>keyframe offset</a> of
     last keyframe in <var>interval endpoints</var>.
 15. Let <var>interval distance</var> be the result of evaluating
-    <code>(<var>time fraction</var> - <var>start offset</var>) /
+    <code>(<var>iteration progress</var> - <var>start offset</var>) /
     (<var>end offset</var> - <var>start offset</var>)</code>
 16. Return the result of applying the <a
     lt="animation interpolation">interpolation procedure</a> defined
@@ -4635,22 +4632,22 @@ referenced by a <a>keyframe effect</a> as one of its
 Note: this procedure permits overlapping <a>keyframes</a>.
     The behavior is that at the point of overlap the output value jumps to
     the value of the last defined <a>keyframe</a> at that offset.
-    For overlapping frames at 0 or 1, the output value for <a
-    lt="time fraction">time fractions</a> less than 0 or greater than
+    For overlapping frames at 0 or 1, the output value for <a>iteration
+    progress</a> values less than 0 or greater than
     or equal to 1 is the value of the first <a>keyframe</a> or the last
     <a>keyframe</a> in <var>keyframes</var> respectively.
 
 <div class="issue">
-    In the presence of certain timing functions, the input time
-    fraction to an animation effect is not limited to the range [0, 1].
+    In the presence of certain timing functions, the input iteration
+    progress to an animation effect is not limited to the range [0, 1].
     Currently, however, keyframe offsets <em>are</em> limited to the
     range [0, 1] and property values are simply extrapolated for input
-    time fractions outside this range.
+    iteration progress values outside this range.
 
     We have considered removing this restriction since some cases exist
     where it is useful to be able to specify non-linear
-    changes in property values at time fractions outside the range
-    [0, 1].
+    changes in property values at iteration progress values outside the
+    range [0, 1].
     One example is an animation that interpolates from green to yellow
     but has an overshoot timing function that makes it temporarily
     interpolate &lsquo;beyond&rsquo; yellow to red before settling back
@@ -4979,8 +4976,8 @@ affecting the document content.
 In such cases, where the provided <a>animation
 effects</a> do not provide needed functionality, an effect defined by
 script may be used.
-Such <a>custom effects</a> receive a <a>time
-fraction</a> and <a>current iteration</a> from the timing model and
+Such <a>custom effects</a> receive an <a>iteration
+progress</a> and <a>current iteration</a> from the timing model and
 are responsible for producing an effect corresponding to the specified
 time.
 
@@ -5021,8 +5018,8 @@ following criteria.
     *   referenced this same <a>custom effect</a>, and
     *   had a different <a>target element</a>
 
-    Call the callback passing an <a>unresolved</a> <a>time fraction</a> and
-    the <a>target element</a> from the previous sample as parameters to
+    Call the callback passing an <a>unresolved</a> <a>iteration progress</a>
+    and the <a>target element</a> from the previous sample as parameters to
     the callback.
 2.  Call the callback for the current <a>target element</a> based on
     the first matching condition from the following:
@@ -5032,8 +5029,8 @@ following criteria.
     :   If the <a>animation effect</a> referencing the custom
         effect is not <a>in effect</a> but was <a>in effect</a> in the previous
         sample,
-    ::  Call the callback passing an <a>unresolved</a> <a>time fraction</a> and
-        the current <a>target element</a> as parameters to the callback.
+    ::  Call the callback passing an <a>unresolved</a> <a>iteration progress</a>
+        and the current <a>target element</a> as parameters to the callback.
     :   Otherwise, if the <a>animation effect</a> referencing
         the custom effect:
     ::
@@ -5041,12 +5038,12 @@ following criteria.
         *   <strong>is <a>in effect</a>, and</strong>
         *   <strong>was not <a>in effect</a> in the previous 
             <a lt='single-sample'>sample</a>, or
-              was <a>in effect</a> but with a different <a>time
-              fraction</a> or <a>current iteration</a>,</strong>
+              was <a>in effect</a> but with a different <a>iteration
+              progress</a> or <a>current iteration</a>,</strong>
 
-    ::   Call the callback passing with the referencing
-         <a>animation effect</a>'s current <a>time
-        fraction</a> and <a>target element</a> as parameters to the callback.
+    ::  Call the callback passing with the referencing
+        <a>animation effect</a>'s current <a>iteration
+        progress</a> and <a>target element</a> as parameters to the callback.
 
     </div>
 
@@ -5431,7 +5428,7 @@ interface AnimationEffectMutable {
 </pre>
 
 <div class="annotation">
-In future, we may expose <code>any sample (double?  timeFraction,
+In future, we may expose <code>any sample (double? progress,
 double currentIteration, Animatable? target, any
 underlyingValue)</code> so that the animation effects can be driven
 apart from the timing model.
@@ -5896,7 +5893,7 @@ dictionary ComputedTimingProperties : AnimationEffectTimingProperties {
     unrestricted double  endTime;
     unrestricted double  activeDuration;
     double?              localTime;
-    unrestricted double? timeFraction;
+    unrestricted double? progress;
     unrestricted double? currentIteration;
 };
 </pre>
@@ -5948,8 +5945,8 @@ dictionary ComputedTimingProperties : AnimationEffectTimingProperties {
     <a>associated with an animation</a>.
 <!-- @endif -->
 
-:   <dfn dict-member for=ComputedTimingProperties>timeFraction</dfn>
-::  The current <a>time fraction</a> of this <a>animation effect</a>.
+:   <dfn dict-member for=ComputedTimingProperties>progress</dfn>
+::  The current <a>iteration progress</a> of this <a>animation effect</a>.
 
 :   <dfn dict-member for=ComputedTimingProperties>currentIteration</dfn>
 ::  The <a>current iteration</a> index beginning with zero for the first
@@ -7222,7 +7219,7 @@ dictionary ComputedKeyframe : Keyframe {
 {{EffectCallback}} callback function.
 
 <pre class='idl'>
-callback EffectCallback = void (double? timeFraction, Animatable currentTarget,
+callback EffectCallback = void (double? progress, Animatable currentTarget,
                                 Animation animation);
 </pre>
 
@@ -7232,8 +7229,8 @@ associated is <a lt="sampling">sampled</a>.
 
 <div class="parameters">
 
-:   double? timeFraction
-::  The <a>time fraction</a> for which to produce an effect.
+:   double? progress
+::  The <a>iteration progress</a> value for which to produce an effect.
     When this is <code>null</code>, the function SHOULD
     remove the effect.
 
@@ -7248,10 +7245,10 @@ associated is <a lt="sampling">sampled</a>.
 
     If the <a>target element</a> of <var>animation</var>
     is changed between samples, this method will be
-    called once with a null <var>timeFraction</var> and the
+    called once with a null <var>progress</var> and the
     previous <a>target element</a> as the
     <var>currentTarget</var>, then again with the current
-    <var>timeFraction</var> and the updated <a>target
+    <var>progress</var> and the updated <a>target
     element</a> as the <var>currentTarget</var>.
     This allows the animation effect to be removed from the old
     <a>target element</a>.
@@ -7696,6 +7693,7 @@ The following changes have been made since the <a
 *   Removed the term &lsquo;inherited time&rsquo; since, in the absence of
     animation effect-specific start times, <a>local time</a> is equivalent to
     &lsquo;inherited time&rsquo;.
+*   Renamed the &ldquo;time fraction&rdquo; to <a>iteration progress</a>.
 *   Deferred group effects (previously known as animation groups) to a <a
     href="https://w3c.github.io/web-animations/level-2/">subsequent level</a>
     of this specification.
@@ -7760,8 +7758,8 @@ The following changes have been made since the <a
     {{ComputedTimingProperties}}.
 *   Removed the <code>player</code> attribute from the
     {{AnimationEffectReadOnly}} interface.
-*   Exposed the <a>time fraction</a> to script as
-    <code>effect.computedTiming.timeFraction</code>.
+*   Exposed the <a>iteration progress</a> (was &ldquo;time fraction&rdquo;) to
+    script as <code>effect.computedTiming.progress</code>.
 *   Made the procedure defined in <a
     href="#normalizing-a-sequence-of-keyframes" section></a> throw an exception
     if the keyframes are not <a>loosely sorted by offset</a> or if there are any
