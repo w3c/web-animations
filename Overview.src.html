@@ -6836,65 +6836,6 @@ enum CompositeOperation {"replace", "add", "accumulate"};
     lt="animation accumulation">accumulated</a> on to the
     <a>underlying value</a>.
 
-<h3 id="the-sharedkeyframelist-interface">The <code>SharedKeyframeList</code> interface</h3>
-
-The {{SharedKeyframeList}} interface represents a sequence of {{Keyframe}}
-dictionary objects such that it can be shared between {{KeyframeEffect}}
-objects.
-
-<div class="informative-bg"><em>This section is non-normative</em>
-
-By using {{SharedKeyframeList}} objects, multiple {{KeyframeEffect}} objects
-can re-use the same {{Keyframe}}s without paying the cost of parsing them
-multiple times.
-
-For example:
-<pre class="example lang-javascript">
-var keyframes = new SharedKeyframeList([
- { left: '100px', backgroundColor: 'red' },
- { left: '200px', backgroundColor: 'green', offset: 0.4 },
- { left: '400px', backgroundColor: 'blue' } ]);
-var player1 = element1.animate(keyframes, 1000);
-var player2 = element2.animate(keyframes, { duration: 1000, delay: 1000 });
-</pre>
-
-</div>
-
-<pre class='idl'>
-[Constructor ((PropertyIndexedKeyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames)]
-interface SharedKeyframeList {
-};
-</pre>
-
-<div class='constructors'>
-
-:   <dfn constructor for=SharedKeyframeList lt="SharedKeyframeList(frames)">
-    SharedKeyframeList(frames)</dfn>
-::  Creates a new {{SharedKeyframeList}} object.
-
-    <div class='parameters'>
-
-    :   <dfn argument for="SharedKeyframeList/SharedKeyframeList(frames)"
-        lt="frames">frames</dfn>
-    ::  The keyframes to be shared. This argument is processed using the
-        procedure defined in <a href="#processing-a-frames-argument"
-        section></a>.
-
-        <div class="annotation">
-        We used to have wording here that indicated that if
-        <code>frames</code> is a {{SharedKeyframeList}}, the newly-created
-        object should refer to the same set of keyframes, rather than
-        copying them, but that is an (untestable) implementation detail
-        so it has been removed.
-        </div>
-
-        Issue: Do we really need to support <code>new SharedKeyframeList(new
-        SharedKeyframeList())</code> anyway?
-
-    </div>
-
-</div>
-
 <h3 id="the-keyframe-dictionary">The <code>Keyframe</code> dictionary</h3>
 
 Individual <a>keyframes</a> are represented by a special kind of
@@ -7234,6 +7175,65 @@ dictionary ComputedKeyframe : Keyframe {
 ::  The <a>keyframe offset</a> calculated for this <a>keyframe</a> as
     a result of applying the spacing procedure defined in
     <a href="#spacing-keyframes" section></a>.
+
+</div>
+
+<h3 id="the-sharedkeyframelist-interface">The <code>SharedKeyframeList</code> interface</h3>
+
+The {{SharedKeyframeList}} interface represents a sequence of {{Keyframe}}
+dictionary objects such that it can be shared between {{KeyframeEffect}}
+objects.
+
+<div class="informative-bg"><em>This section is non-normative</em>
+
+By using {{SharedKeyframeList}} objects, multiple {{KeyframeEffect}} objects
+can re-use the same {{Keyframe}}s without paying the cost of parsing them
+multiple times.
+
+For example:
+<pre class="example lang-javascript">
+var keyframes = new SharedKeyframeList([
+ { left: '100px', backgroundColor: 'red' },
+ { left: '200px', backgroundColor: 'green', offset: 0.4 },
+ { left: '400px', backgroundColor: 'blue' } ]);
+var player1 = element1.animate(keyframes, 1000);
+var player2 = element2.animate(keyframes, { duration: 1000, delay: 1000 });
+</pre>
+
+</div>
+
+<pre class='idl'>
+[Constructor ((PropertyIndexedKeyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames)]
+interface SharedKeyframeList {
+};
+</pre>
+
+<div class='constructors'>
+
+:   <dfn constructor for=SharedKeyframeList lt="SharedKeyframeList(frames)">
+    SharedKeyframeList(frames)</dfn>
+::  Creates a new {{SharedKeyframeList}} object.
+
+    <div class='parameters'>
+
+    :   <dfn argument for="SharedKeyframeList/SharedKeyframeList(frames)"
+        lt="frames">frames</dfn>
+    ::  The keyframes to be shared. This argument is processed using the
+        procedure defined in <a href="#processing-a-frames-argument"
+        section></a>.
+
+        <div class="annotation">
+        We used to have wording here that indicated that if
+        <code>frames</code> is a {{SharedKeyframeList}}, the newly-created
+        object should refer to the same set of keyframes, rather than
+        copying them, but that is an (untestable) implementation detail
+        so it has been removed.
+        </div>
+
+        Issue: Do we really need to support <code>new SharedKeyframeList(new
+        SharedKeyframeList())</code> anyway?
+
+    </div>
 
 </div>
 
