@@ -172,7 +172,7 @@ pre[class*="language-"] {
    <h1 class="p-name no-ref" id="title">Web Animations</h1>
   
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft,
-    <time class="dt-updated" datetime="2015-05-08">8 May 2015</time></span></h2>
+    <time class="dt-updated" datetime="2015-05-13">13 May 2015</time></span></h2>
   
    <div data-fill-with="spec-metadata">
     <dl>
@@ -358,7 +358,8 @@ calculations</span></a>
         <li><a href="#scaling-using-a-cubic-bezier-curve"><span class="secno">3.11.3</span> <span class="content">Scaling using a cubic Bézier curve</span></a>
         <li><a href="#timing-in-discrete-steps"><span class="secno">3.11.4</span> <span class="content">Timing in discrete steps</span></a>
         <li><a href="#calculating-the-transformed-time"><span class="secno">3.11.5</span> <span class="content">Calculating the transformed time</span></a>
-        <li><a href="#calculating-the-time-fraction"><span class="secno">3.11.6</span> <span class="content">Calculating the time fraction</span></a>
+        <li><a href="#calculating-the-iteration-progress"><span class="secno">3.11.6</span> <span class="content">Calculating the iteration
+  progress</span></a>
        </ul>
      </ul>
     <li><a href="#animation-model"><span class="secno">4</span> <span class="content">Animation Model</span></a>
@@ -741,8 +742,8 @@ model</em>.  The role of these pieces is as follows:</p>
 
      <dd data-md="">
       <p>Takes a moment in time and converts it to a proportional distance
-within a single iteration of an animation called the <em>time
-fraction</em>.
+within a single iteration of an animation called the <em>iteration
+progress</em>.
 The <em>iteration index</em> is also recorded since some animations vary
 each time they repeat.</p>
       
@@ -752,7 +753,7 @@ each time they repeat.</p>
       
 
      <dd data-md="">
-      <p>Takes the <em>time fractions</em> and <em>iteration indices</em>
+      <p>Takes the <em>iteration progress</em> values and <em>iteration indices</em>
 produced by the timing model and converts them into a series of values
 to apply to the target properties and attributes.</p>
       
@@ -766,8 +767,8 @@ to apply to the target properties and attributes.</p>
 
     <p class="caption">
 Overview of the operation of the Web Animations model.<br>
-The current time is input to the timing model which produces a time
-fraction and an iteration index.<br>
+The current time is input to the timing model which produces an iteration
+progress value and an iteration index.<br>
 These parameters are used as input to the animation model which produces
 the values to apply.<br>
 </p>
@@ -830,7 +831,7 @@ timing model.</p>
 
 
     <p>The Web Animations timing model operates by taking an input time and
-producing an output time fraction.
+producing an output iteration progress.
 Since the output is based solely on the input time and is independent
 of previous inputs, the model may be described as stateless.
 This gives the model the following properties:</p>
@@ -3942,8 +3943,8 @@ steps.</p>
 that scale the progress of an <a data-link-type="dfn" href="#animation-effect">animation effect</a>.</p>
 
 
-    <p><a data-link-type="dfn" href="#timing-function">Timing functions</a> take an input time fraction and produce
-a scaled output time fraction.</p>
+    <p><a data-link-type="dfn" href="#timing-function">Timing functions</a> take an input progress value and produce
+a scaled output progress value.</p>
 
 
     <div class="figure">
@@ -3952,8 +3953,8 @@ a scaled output time fraction.</p>
 
     <p class="caption">
   Example of a timing function that produces an ease-in effect.
-  Given an input timing fraction of 0.7, the timing function scales the
-  value to produce an output time fraction of 0.52.<br>
+  Given an input progress of 0.7, the timing function scales the
+  value to produce an output progress of 0.52.<br>
   By applying this timing function, time will appear to progress more
   slowly at first but then gradually progress more quickly.
 </p>
@@ -3968,8 +3969,8 @@ effect</a>.</p>
    <h4 class="heading settled" data-level="3.11.2" id="timing-functions"><span class="secno">3.11.2. </span><span class="content">Timing functions</span><a class="self-link" href="#timing-functions"></a></h4>
 
 
-   <p>A <dfn data-dfn-type="dfn" data-noexport="" id="timing-function">timing function<a class="self-link" href="#timing-function"></a></dfn> takes an input time fraction in the range
-[0, 1] and produces an output time fraction whose range is unbounded
+   <p>A <dfn data-dfn-type="dfn" data-noexport="" id="timing-function">timing function<a class="self-link" href="#timing-function"></a></dfn> takes an input progress value in the range
+[0, 1] and produces an output progress value whose range is unbounded
 (i.e. positive and negative infinity are permitted).</p>
 
 
@@ -4011,8 +4012,8 @@ This arrangement is illustrated below.</p>
   A cubic Bézier curve used as a timing function.<br>
   The shape of the curve is determined by the location of the control
   points <var>P1</var> and <var>P2</var>.<br>
-  Input time fractions serve as <var>x</var> values of the curve,
-  whilst the <var>y</var> values are the output time fractions.
+  Input progress values serve as <var>x</var> values of the curve,
+  whilst the <var>y</var> values are the output progress values.
 </p>
 
 
@@ -4144,9 +4145,8 @@ effect occurs in a series of discrete steps using a stepping function.
 
     <p class="caption">
   Example step timing functions.
-  In each case the domain is the input time fraction whilst the range
-  represents the output time fraction produced by the step
-  function.<br>
+  In each case the domain is the input progress whilst the range
+  represents the output progress produced by the step function.<br>
   The first row shows the function for each transition point when only
   one step is specified whilst the second row shows the same for three
   steps.
@@ -4286,24 +4286,23 @@ return the <a data-link-type="dfn" href="#directed-time">directed time</a>.</p>
      
 
     <li data-md="">
-     <p>Let <var>iteration fraction</var> be the result of
+     <p>Let <var>unscaled progress</var> be the result of
 evaluating <code><a data-link-type="dfn" href="#directed-time">directed time</a> / <a data-link-type="dfn" href="#iteration-duration">iteration
 duration</a></code> unless <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is
-zero, in which case let <var>iteration fraction</var> be
+zero, in which case let <var>unscaled progress</var> be
 zero.</p>
      
 
     <li data-md="">
-     <p>Let <var>scaled fraction</var> be the result of
+     <p>Let <var>scaled progress</var> be the result of
 evaluating the <a data-link-type="dfn" href="#animation-effect">animation effect</a>’s <a data-link-type="dfn" href="#timing-function">timing function</a>
-with <var>iteration fraction</var> as the input time
-fraction.</p>
+with <var>unscaled progress</var> as the input progress.</p>
      
 
     <li data-md="">
      <p>Return the result of evaluating <code><var>scaled
-fraction</var> × <a data-link-type="dfn" href="#iteration-duration">iteration duration</a></code>.
-If the <var>scaled fraction</var> is zero, let the result be
+progress</var> × <a data-link-type="dfn" href="#iteration-duration">iteration duration</a></code>.
+If the <var>scaled progress</var> is zero, let the result be
 zero.</p>
      
 
@@ -4314,15 +4313,16 @@ zero.</p>
      
 </ol>
 
-   <h4 class="heading settled" data-level="3.11.6" id="calculating-the-time-fraction"><span class="secno">3.11.6. </span><span class="content">Calculating the time fraction</span><a class="self-link" href="#calculating-the-time-fraction"></a></h4>
+   <h4 class="heading settled" data-level="3.11.6" id="calculating-the-iteration-progress"><span class="secno">3.11.6. </span><span class="content">Calculating the iteration
+  progress</span><a class="self-link" href="#calculating-the-iteration-progress"></a></h4>
 
 
    <p>Before the <a data-link-type="dfn" href="#transformed-time">transformed time</a> is passed to the animation model, it is
 normalized to represent a fraction of the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a>, known as a
-<em>time fraction</em>.</p>
+<em>iteration progress</em>.</p>
 
 
-   <p>The <dfn data-dfn-type="dfn" data-noexport="" id="time-fraction">time fraction<a class="self-link" href="#time-fraction"></a></dfn> of an <a data-link-type="dfn" href="#animation-effect">animation effect</a> is calculated
+   <p>The <dfn data-dfn-type="dfn" data-noexport="" id="iteration-progress">iteration progress<a class="self-link" href="#iteration-progress"></a></dfn> of an <a data-link-type="dfn" href="#animation-effect">animation effect</a> is calculated
 by running the steps corresponding to the first matching condition from
 the following:</p>
 
@@ -4341,7 +4341,7 @@ an <a data-link-type="dfn" href="#unresolved">unresolved</a> <a data-link-type="
       
 
      <dd data-md="">
-      <p>the <a data-link-type="dfn" href="#time-fraction">time fraction</a> is as follows,</p>
+      <p>the <a data-link-type="dfn" href="#iteration-progress">iteration progress</a> is as follows,</p>
       
 
 
@@ -4395,15 +4395,15 @@ and an <a data-link-type="dfn" href="#iteration-duration">iteration duration</a>
 </div>
 
 
-   <p class="note" role="note">Note: Since <a data-link-type="dfn" href="#timing-function">timing functions</a> are allowed to produce output times
-    outside the range [0, 1] it is possible that the value calculated for
-    a <a data-link-type="dfn" href="#time-fraction">time fraction</a> also lies outside this range.</p>
+   <p class="note" role="note">Note: Since <a data-link-type="dfn" href="#timing-function">timing functions</a> are allowed to produce output progress
+    values outside the range [0, 1] it is possible that the value calculated
+    for the <a data-link-type="dfn" href="#iteration-progress">iteration progress</a> also lies outside this range.</p>
 
 
    <div class="informative-bg"><em>This section is non-normative</em>
 
 
-    <p>Intuitively, it may seem that the <a data-link-type="dfn" href="#time-fraction">time fraction</a> for an <a data-link-type="dfn" href="#animation-effect">animation
+    <p>Intuitively, it may seem that the <a data-link-type="dfn" href="#iteration-progress">iteration progress</a> for an <a data-link-type="dfn" href="#animation-effect">animation
 effect</a> with an <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> of zero should be 0 or 1 and that
 the above algorithm is unnecessarily complex.
 However, the influence of a non-zero <a data-link-type="dfn" href="#iteration-start">iteration start</a>, a non-integral
@@ -4429,7 +4429,7 @@ will always be zero).</p>
 
     <p>In order to provide the result intuitively expected in this case, the algorithm
 above temporarily inflates the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> to 1 and calculates the
-<a data-link-type="dfn" href="#time-fraction">time fraction</a> at the appropriate end of the <a data-link-type="dfn" href="#active-interval">active interval</a>.</p>
+<a data-link-type="dfn" href="#iteration-progress">iteration progress</a> at the appropriate end of the <a data-link-type="dfn" href="#active-interval">active interval</a>.</p>
 
 </div>
 
@@ -4445,9 +4445,9 @@ above temporarily inflates the <a data-link-type="dfn" href="#iteration-duration
 
 
     <p>For some kinds of <a data-link-type="dfn" href="#animation-effect">animation effects</a>, the Web Animations <em>animation
-model</em> takes the <a data-link-type="dfn" href="#time-fraction">time fraction</a> and <a data-link-type="dfn" href="#current-iteration">current iteration</a> values
-produced by the <em>timing model</em> and uses them to calculate a corresponding
-output.</p>
+model</em> takes the <a data-link-type="dfn" href="#iteration-progress">iteration progress</a> and <a data-link-type="dfn" href="#current-iteration">current iteration</a>
+values produced by the <em>timing model</em> and uses them to calculate
+a corresponding output.</p>
 
 
     <p>The output of each such animation effect is then combined with
@@ -4467,7 +4467,7 @@ DOM attributes of an element or pseudo-element such as <code>::before</code> or
 
 
    <p>Since the result of a <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> is based on the
-<a data-link-type="dfn" href="#time-fraction">time fraction</a> and <a data-link-type="dfn" href="#current-iteration">current iteration</a> value, it is updated
+<a data-link-type="dfn" href="#iteration-progress">iteration progress</a> and <a data-link-type="dfn" href="#current-iteration">current iteration</a> value, it is updated
 whenever the timing model is <a data-link-type="dfn" href="#sampling">sampled</a>.</p>
 
 
@@ -5274,7 +5274,7 @@ value”, would it be ok to rename this to simply “effect
 value”?</p>
 
 
-   <p>Given a <a data-link-type="dfn" href="#time-fraction">time fraction</a>, a <a data-link-type="dfn" href="#current-iteration">current iteration</a>, and an
+   <p>Given an <a data-link-type="dfn" href="#iteration-progress">iteration progress</a>, a <a data-link-type="dfn" href="#current-iteration">current iteration</a>, and an
 <a data-link-type="dfn" href="#underlying-value">underlying value</a>, a <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> produces
 an <dfn data-dfn-type="dfn" data-noexport="" id="intermediate-effect-value">intermediate effect value<a class="self-link" href="#intermediate-effect-value"></a></dfn> for each <a data-link-type="dfn" href="#concept-animatable">animatable</a>
 <a data-link-type="dfn" href="#target-property">target property</a> by applying the <a data-link-type="dfn" href="#animation-behavior">animation behavior</a>
@@ -5713,7 +5713,7 @@ a keyframe</a> to each keyframe in the range (<var>A</var>,
    <p>The <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect value</a> of a single property
 referenced by a <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> as one of its
 <a data-link-type="dfn" href="#target-property">target properties</a>, for a given
-<var>time fraction</var>, <var>current iteration</var> and
+<var>iteration progress</var>, <var>current iteration</var> and
 <var>underlying value</var> is calculated as follows.</p>
 
 
@@ -5786,7 +5786,7 @@ the first matching condition from below:</p>
 
       <dl>
        <dt data-md="">
-        <p>If <var>time fraction</var> &lt; 0 and there is more
+        <p>If <var>iteration progress</var> &lt; 0 and there is more
 than one <a data-link-type="dfn" href="#keyframe">keyframe</a> in <var>property-specific
 keyframes</var> with a <a data-link-type="dfn" href="#keyframe-offset">keyframe offset</a> of
 0,</p>
@@ -5798,7 +5798,7 @@ keyframes</var> to <var>interval endpoints</var>.</p>
         
 
        <dt data-md="">
-        <p>If <var>time fraction</var> ≥ 1 and there is more
+        <p>If <var>iteration progress</var> ≥ 1 and there is more
 than one <a data-link-type="dfn" href="#keyframe">keyframe</a> in <var>property-specific
 keyframes</var> with a <a data-link-type="dfn" href="#keyframe-offset">keyframe offset</a> of
 1,</p>
@@ -5821,9 +5821,9 @@ keyframes</var> to <var>interval endpoints</var>.</p>
           <p>Append to <var>interval endpoints</var> the last
 <a data-link-type="dfn" href="#keyframe">keyframe</a> in <var>property-specific
 keyframes</var> whose <a data-link-type="dfn" href="#keyframe-offset">keyframe offset</a> is less than
-or equal to <var>time fraction</var> and less than 1.  If
+or equal to <var>iteration progress</var> and less than 1.  If
 there is no such <a data-link-type="dfn" href="#keyframe">keyframe</a> (because, for example,
-the <a data-link-type="dfn" href="#time-fraction">time fraction</a> is negative), add the last
+the <a data-link-type="dfn" href="#iteration-progress">iteration progress</a> is negative), add the last
 <a data-link-type="dfn" href="#keyframe">keyframe</a> whose <a data-link-type="dfn" href="#keyframe-offset">keyframe offset</a> is 0.</p>
           
 
@@ -5923,7 +5923,7 @@ last keyframe in <var>interval endpoints</var>.</p>
 
     <li data-md="">
      <p>Let <var>interval distance</var> be the result of evaluating
-<code>(<var>time fraction</var> - <var>start offset</var>) /
+<code>(<var>iteration progress</var> - <var>start offset</var>) /
 (<var>end offset</var> - <var>start offset</var>)</code></p>
      
 
@@ -5984,23 +5984,24 @@ value on each keyframe.</p>
    <p class="note" role="note">Note: this procedure permits overlapping <a data-link-type="dfn" href="#keyframe">keyframes</a>.
     The behavior is that at the point of overlap the output value jumps to
     the value of the last defined <a data-link-type="dfn" href="#keyframe">keyframe</a> at that offset.
-    For overlapping frames at 0 or 1, the output value for <a data-link-type="dfn" href="#time-fraction">time fractions</a> less than 0 or greater than
+    For overlapping frames at 0 or 1, the output value for <a data-link-type="dfn" href="#iteration-progress">iteration
+    progress</a> values less than 0 or greater than
     or equal to 1 is the value of the first <a data-link-type="dfn" href="#keyframe">keyframe</a> or the last
     <a data-link-type="dfn" href="#keyframe">keyframe</a> in <var>keyframes</var> respectively.</p>
 
 
-   <div class="issue" id="issue-73bc0c24"><a class="self-link" href="#issue-73bc0c24"></a>
-    In the presence of certain timing functions, the input time
-    fraction to an animation effect is not limited to the range [0, 1].
+   <div class="issue" id="issue-e5c1f2ca"><a class="self-link" href="#issue-e5c1f2ca"></a>
+    In the presence of certain timing functions, the input iteration
+    progress to an animation effect is not limited to the range [0, 1].
     Currently, however, keyframe offsets <em>are</em> limited to the
     range [0, 1] and property values are simply extrapolated for input
-    time fractions outside this range.
+    iteration progress values outside this range.
 
 
     <p>We have considered removing this restriction since some cases exist
     where it is useful to be able to specify non-linear
-    changes in property values at time fractions outside the range
-    [0, 1].
+    changes in property values at iteration progress values outside the
+    range [0, 1].
     One example is an animation that interpolates from green to yellow
     but has an overshoot timing function that makes it temporarily
     interpolate ‘beyond’ yellow to red before settling back
@@ -6929,7 +6930,7 @@ Animations API by the <code class="idl"><a data-link-type="idl" href="#animation
 
 
     <div class="annotation">
-In future, we may expose <code>any sample (double?  timeFraction,
+In future, we may expose <code>any sample (double? progress,
 double currentIteration, Animatable? target, any
 underlyingValue)</code> so that the animation effects can be driven
 apart from the timing model.
@@ -7470,7 +7471,7 @@ of the <code class="idl"><a data-link-type="idl" href="#animationeffecttiming">A
     unrestricted double  <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/endTime<dict-member>" data-link-type="dict-member" data-type="unrestricted double  " href="#dom-computedtimingproperties-endtime">endTime</a>;
     unrestricted double  <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/activeDuration<dict-member>" data-link-type="dict-member" data-type="unrestricted double  " href="#dom-computedtimingproperties-activeduration">activeDuration</a>;
     double?              <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/localTime<dict-member>" data-link-type="dict-member" data-type="double?              " href="#dom-computedtimingproperties-localtime">localTime</a>;
-    unrestricted double? <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/timeFraction<dict-member>" data-link-type="dict-member" data-type="unrestricted double? " href="#dom-computedtimingproperties-timefraction">timeFraction</a>;
+    unrestricted double? <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/progress<dict-member>" data-link-type="dict-member" data-type="unrestricted double? " href="#dom-computedtimingproperties-progress">progress</a>;
     unrestricted double? <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/currentIteration<dict-member>" data-link-type="dict-member" data-type="unrestricted double? " href="#dom-computedtimingproperties-currentiteration">currentIteration</a>;
 };
 </pre>
@@ -7520,11 +7521,11 @@ interval plus any <a data-link-type="dfn" href="#end-delay">end delay</a>.</p>
        
 
       <dt data-md="">
-       <p><dfn class="idl-code" data-dfn-for="ComputedTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-computedtimingproperties-timefraction">timeFraction<a class="self-link" href="#dom-computedtimingproperties-timefraction"></a></dfn>, <span> of type <a data-link-type="idl-name">unrestricted double</a>, nullable</span></p>
+       <p><dfn class="idl-code" data-dfn-for="ComputedTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-computedtimingproperties-progress">progress<a class="self-link" href="#dom-computedtimingproperties-progress"></a></dfn>, <span> of type <a data-link-type="idl-name">unrestricted double</a>, nullable</span></p>
        
 
       <dd data-md="">
-       <p>The current <a data-link-type="dfn" href="#time-fraction">time fraction</a> of this <a data-link-type="dfn" href="#animation-effect">animation effect</a>.</p>
+       <p>The current <a data-link-type="dfn" href="#iteration-progress">iteration progress</a> of this <a data-link-type="dfn" href="#animation-effect">animation effect</a>.</p>
        
 
 
@@ -9369,6 +9370,10 @@ animation effect-specific start times, <a data-link-type="dfn" href="#local-time
       
 
      <li data-md="">
+      <p>Renamed the “time fraction” to <a data-link-type="dfn" href="#iteration-progress">iteration progress</a>.</p>
+      
+
+     <li data-md="">
       <p>Deferred group effects (previously known as animation groups) to a <a href="https://w3c.github.io/web-animations/level-2/">subsequent level</a>
 of this specification.
 Deferring this feature also lead to the following simplifications.</p>
@@ -9520,8 +9525,8 @@ match CSS Transitions.</p>
       
 
      <li data-md="">
-      <p>Exposed the <a data-link-type="dfn" href="#time-fraction">time fraction</a> to script as
-<code>effect.computedTiming.timeFraction</code>.</p>
+      <p>Exposed the <a data-link-type="dfn" href="#iteration-progress">iteration progress</a> (was “time fraction”) to
+script as <code>effect.computedTiming.progress</code>.</p>
       
 
      <li data-md="">
@@ -9822,6 +9827,7 @@ a keyframe, <a href="#evenly-distributing-a-keyframe">4.2.1.1</a>
    <li>iteration
 duration, <a href="#iteration-duration">3.8.1</a>
    <li>iteration interval, <a href="#iteration-interval">3.8.1</a>
+   <li>iteration progress, <a href="#iteration-progress">3.11.6</a>
    <li>iterations
     <ul>
      <li>attribute for AnimationEffectTimingReadOnly, <a href="#dom-animationeffecttimingreadonly-iterations">5.6</a>
@@ -9902,6 +9908,7 @@ time, <a href="#previous-current-time">3.5.13</a>
    <li>previous finished state, <a href="#previous-finished-state">3.5.13</a>
    <li>procedure for converting an ECMAScript object to an IDL
 Keyframe object, <a href="#procedure-for-converting-an-ecmascript-object-to-an-idl-keyframe-object">5.14.1</a>
+   <li>progress, <a href="#dom-computedtimingproperties-progress">5.9</a>
    <li>Promise, <a href="#promise">3.5.7</a>
    <li>ready
     <ul>
@@ -9949,8 +9956,6 @@ Keyframe object, <a href="#procedure-for-converting-an-ecmascript-object-to-an-i
    <li>target effect end, <a href="#target-effect-end">3.5.13</a>
    <li>target element, <a href="#target-element">4.1</a>
    <li>target property, <a href="#target-property">4.1.1</a>
-   <li>time fraction, <a href="#time-fraction">3.11.6</a>
-   <li>timeFraction, <a href="#dom-computedtimingproperties-timefraction">5.9</a>
    <li>timeline
     <ul>
      <li>definition of, <a href="#timeline">3.4</a>
@@ -10004,7 +10009,7 @@ Keyframe object, <a href="#procedure-for-converting-an-ecmascript-object-to-an-i
    <dt id="biblio-ecma-262"><a class="self-link" href="#biblio-ecma-262"></a>[ECMA-262]
    <dd><a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm">ECMAScript Language Specification, Edition 5.1</a>. June 2011. URL: <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm">http://www.ecma-international.org/publications/standards/Ecma-262.htm</a>
    <dt id="biblio-html"><a class="self-link" href="#biblio-html"></a>[HTML]
-   <dd>Ian Hickson. <a href="https://html.spec.whatwg.org/multipage/">HTML</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
+   <dd>Ian Hickson. <a href="https://html.spec.whatwg.org/multipage/">HTML Standard</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-select"><a class="self-link" href="#biblio-select"></a>[SELECT]
    <dd>Tantek Çelik; et al. <a href="http://www.w3.org/TR/css3-selectors/">Selectors Level 3</a>. 29 September 2011. REC. URL: <a href="http://www.w3.org/TR/css3-selectors/">http://www.w3.org/TR/css3-selectors/</a>
    <dt id="biblio-svg11"><a class="self-link" href="#biblio-svg11"></a>[SVG11]
@@ -10122,7 +10127,7 @@ dictionary <a data-global-name="" href="#dictdef-computedtimingproperties">Compu
     unrestricted double  <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/endTime<dict-member>" data-link-type="dict-member" data-type="unrestricted double  " href="#dom-computedtimingproperties-endtime">endTime</a>;
     unrestricted double  <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/activeDuration<dict-member>" data-link-type="dict-member" data-type="unrestricted double  " href="#dom-computedtimingproperties-activeduration">activeDuration</a>;
     double?              <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/localTime<dict-member>" data-link-type="dict-member" data-type="double?              " href="#dom-computedtimingproperties-localtime">localTime</a>;
-    unrestricted double? <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/timeFraction<dict-member>" data-link-type="dict-member" data-type="unrestricted double? " href="#dom-computedtimingproperties-timefraction">timeFraction</a>;
+    unrestricted double? <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/progress<dict-member>" data-link-type="dict-member" data-type="unrestricted double? " href="#dom-computedtimingproperties-progress">progress</a>;
     unrestricted double? <a class="idl-code" data-global-name="ComputedTimingProperties<dictionary>/currentIteration<dict-member>" data-link-type="dict-member" data-type="unrestricted double? " href="#dom-computedtimingproperties-currentiteration">currentIteration</a>;
 };
 
@@ -10399,17 +10404,17 @@ value”?<a href="#issue-b7707b18"> ↵ </a></div>
    <div class="issue">It seems like this could be done as a separate step at the end
     and applied to all types of animation effects consistently.<a href="#issue-8b7cca9f"> ↵ </a></div>
    <div class="issue">
-    In the presence of certain timing functions, the input time
-    fraction to an animation effect is not limited to the range [0, 1].
+    In the presence of certain timing functions, the input iteration
+    progress to an animation effect is not limited to the range [0, 1].
     Currently, however, keyframe offsets <em>are</em> limited to the
     range [0, 1] and property values are simply extrapolated for input
-    time fractions outside this range.
+    iteration progress values outside this range.
 
 
     <p>We have considered removing this restriction since some cases exist
     where it is useful to be able to specify non-linear
-    changes in property values at time fractions outside the range
-    [0, 1].
+    changes in property values at iteration progress values outside the
+    range [0, 1].
     One example is an animation that interpolates from green to yellow
     but has an overshoot timing function that makes it temporarily
     interpolate ‘beyond’ yellow to red before settling back
@@ -10434,7 +10439,7 @@ value”?<a href="#issue-b7707b18"> ↵ </a></div>
     4 (Keyframe offsets outside [0, 1]) of minuted discussion from Tokyo
       2013 F2F</a>.</p>
     
-<a href="#issue-73bc0c24"> ↵ </a>
+<a href="#issue-e5c1f2ca"> ↵ </a>
    </div>
    <div class="issue">Recent changes in CSS Animations and CSS Transitions mean this
   description is no longer accurate. This section needs to be significantly
