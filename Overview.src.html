@@ -4218,8 +4218,7 @@ The keyframe spacing modes are:
     procedure defined by the <a>animation behavior</a> associated
     with the <a>paced property</a>.
 
-<h5 id="applying-spacing-to-keyframes">
-Applying spacing to keyframes</h5>
+<h5 id="applying-spacing-to-keyframes">Applying spacing to keyframes</h5>
 
 We define a generic procedure for <dfn>evenly distributing
 a keyframe</dfn>, <var>keyframe</var>, between two reference
@@ -4357,115 +4356,6 @@ Issue: The above algorithm is quite complex.
     with either pacing or distribute spacing.
     We await implementation experience to determine if the complexity
     is justified.
-
-<h4 id="property-indexed-keyframes-section">Property indexed keyframes</h4>
-
-<a>Keyframe effects</a> can also be constructed using
-<dfn>Property-indexed keyframes</dfn>, which are sets of properties
-with a list of values associated with each property.
-
-For each property, the values in the associated list are inserted into an
-implicitly created keyframe, and <a>keyframe offsets</a> are calculated by
-<a lt="distribute keyframe spacing mode">distributing</a> or
-<a lt="paced keyframe spacing mode">pacing</a> the keyframes.
-
-A <a>keyframe-specific composite operation</a> can be defined for all
-implicitly generated <a>keyframes</a> by setting the <code>composite</code>
-property of the <a>property-indexed keyframe</a>. If no
-<a>keyframe-specific composite operation</a> is defined, the
-<a>composite operation</a> specified for the <a>keyframe effect</a>
-is used for all implictly generated <a>keyframes</a>.
-
-Issue: This needs an example
-
-Property indexed keyframes and explicitly defined keyframes can not be mixed
-for a single <a>keyframe effect</a>.
-
-<div class='informative-bg'><em>This section is non-normative.</em>
-
-Property-indexed keyframes make it easy to create regularly spaced
-animations. Although quite limited, this approach covers the majority of
-animations including simple to-animations and animations with only start
-and end keyframes. For example: 
-
-<pre class='example lang-javascript'>
-// Equivalent means of creating a single-value keyframe effect
-elem.animate([ { color: 'red' } ], 1000);
-elem.animate({ color: ['red'] }, 1000);
-elem.animate({ color: 'red' }, 1000);
-
-// Equivalent means of creating a two-value keyframe effect
-elem.animate([ { color: 'red' }, { color: 'blue'} ], 1000);
-elem.animate({ color: ['red', 'blue'] }, 1000);
-
-// Equivalent means of creating a multi-value keyframe effect
-elem.animate([ { color: 'blue' },
-               { color: 'green' },
-               { color: 'red' },
-               { color: 'yellow' } ], 2000);
-elem.animate({ color: ['blue', 'green', 'red', 'yellow'] }, 2000);
-
-// Equivalent means of creating a keyframe effect with multiple
-// values for two different properites
-elem.animate([ { color: 'blue', left: '0px' },
-               { color: 'green', left: '-20px' },
-               { color: 'red', left: '100px' },
-               { color: 'yellow', left: '50px'} ], 2000);
-elem.animate({ color: ['blue', 'green', 'red', 'yellow'],
-               left: ['0px', '-20px', '100px', '50px'] }, 2000);
-
-</pre>
-
-</div>
-
-Issue: This feature is gated on implementation experience - it is currently
-unknown whether the additional complexity introduced by the feature is 
-warranted by the improvement in usability.
-
-<h5 id="generating-keyframes-from-property-indexed-keyframes">
-Generating keyframes from property indexed keyframes</h5>
-
-The procedure to <dfn>normalize property-indexed keyframes</dfn> takes
-as input a <var>property-indexed keyframe</var> and generates a sequence of
-<a>keyframes</a> <var>all keyframes</var> using the following procedure:
-
-1.  Let <var>all keyframes</var> initially be an empty list.
-
-2.  Let <var>composite operation</var> be initially null.
-
-3.  For each property <var>p</var> in the <a>property-indexed keyframe</a>:
-
-    1.  Let <var>property keyframes</var> be an empty list.
-
-    2.  For each value <var>v</var> in the list indexed by <var>p</var>:
-
-        1.  Construct an empty <a>keyframe</a> <var>k</var>.
-
-        2.  Associate value <var>v</var> with property <var>p</var> in 
-            <var>k</var>.
-
-        3.  If <var>composite operation</var> is defined, associate
-            <var>composite operation</var> with <code>composite</code> in 
-            <var>k</var>.
-
-        4.  Append <var>k</var> to <var>property keyframes</var>.
-
-    3.  Apply the procedure for 
-        <a href="#applying-spacing-to-keyframes" section></a> to the
-        <var>property keyframes</var> list.
-
-        Issue: That procedure probably needs to be refactored to just take
-        a sequence of keyframes.
-
-    4.  Add the <a>keyframes</a> in <var>property keyframes</var> to
-        <var>all keyframes</var>.
-
-5.  Sort <var>all keyframes</var> by offset, in increasing order.
-
-6.  Merge adjacent <a>keyframes</a> in <var>all keyframes</var> when
-    they have equal offsets.
-
-7.  Return <var>all keyframes</var>.
 
 <h4 id="the-intermediate-effect-value-of-a-keyframe-animation-effect">The intermediate effect value of a keyframe effect</h4>
 
@@ -4623,7 +4513,7 @@ referenced by a <a>keyframe effect</a> as one of its
     For example, for the <a href="#programming-interface">programming
     interface</a> defined by this specification, these conditions are
     met by applying the normalization defined in <a
-    href="#normalizing-a-sequence-of-keyframes" section></a>
+    href="#processing-a-frames-argument" section></a>
     and resolving null <a>keyframe offsets</a> by
     applying <a href="#spacing-keyframes">spacing behavior</a>.
 
@@ -6168,7 +6058,7 @@ GroupEffect implements GroupEffectMutable;
 
 </div>
 
-<h4 id="processing-a-timing-argument">Processing a <var>timing</var> argument</h4>
+<h4 id="processing-a-timing-argument">Processing a <code>timing</code> argument</h4>
 
 <p>The <var>timing</var> parameter passed to the {{GroupEffectReadOnly()}},
 {{GroupEffect()}}, {{SequenceEffectReadOnly()}}, or {{SequenceEffect()}}
@@ -6195,7 +6085,7 @@ a {{AnimationEffectTimingProperties}} object.</p>
 <div class="note">
 
 Note that since {{AnimationEffectTimingReadOnly}} objects have the same
-member names as {{AnimationEffectTimingProperties}} dictionaries, it is
+member keys as {{AnimationEffectTimingProperties}} dictionaries, it is
 also possible to pass the {{AnimationEffectReadOnly/timing}} member of another
 {{AnimationEffectReadOnly}} to the any of the methods that invoke this method
 as the <var>timing</var> parameter.
@@ -6573,6 +6463,8 @@ KeyframeEffect implements AnimationEffectMutable;
          <var>source</var>.
     4.   Let <var>frames</var> be the result of calling the
          {{KeyframeEffectReadOnly/getFrames()}} method on <var>source</var>.
+         Issue: If <var>source</var> is using a {{SharedKeyframeList}} should
+         we continue to share it?
     5.   Call the {{KeyframeEffect/setFrames()}} method on <var>dest</var>
          passing <var>frames</var> as the {{KeyframeEffect/setFrames/frames}}
          argument.
@@ -6588,12 +6480,16 @@ KeyframeEffect implements AnimationEffectMutable;
     the following ways:
 
     *   The normalization defined in <a
-        href="#normalizing-a-sequence-of-keyframes"
+        href="#processing-a-frames-argument"
         section></a> is applied to <var>frames</var> which
-        may result in some frames being removed or re-ordered and some
-        properties being removed.
-        This normalization will also cause a single {{Keyframe}}
-        object to be replaced with a sequence.
+        will result in:
+
+        *   {{SharedKeyframeList}} objects being replaced
+            with the set of {{Keyframe}} objects referred to by the shared list,
+        *   {{PropertyIndexedKeyframe}} objects being expanded into a sequence
+            of {{Keyframe}} objects, and
+        *   Invalid or unsupported properties being removed.
+
     *   The result of computing the <a>keyframe offset</a>
         of each <a>keyframe</a> as defined in <a
         href="#spacing-keyframes" section></a> is stored in
@@ -6609,18 +6505,15 @@ KeyframeEffect implements AnimationEffectMutable;
 
     :   <dfn argument for=KeyframeEffect/setFrames
         lt="frames">object frames</dfn>
-    ::  A {{Keyframe}} object or sequence of {{Keyframe}} objects used to
-        replace the set of <a>keyframes</a> that make up this effect.
+    ::  A {{PropertyIndexedKeyframe}} object or sequence of {{Keyframe}} objects
+        used to replace the set of <a>keyframes</a> that make up this effect.
 
-        If only a single {{Keyframe}} object is provided, it is treated as
-        a single-item sequence.
+        On calling, the implementation must perform the validation defined
+        in <a href="#processing-a-frames-argument" section></a>.
 
-        Subsequently, the resulting sequence of {{Keyframe}} objects is
-        normalized using the procedure in <a
-        href="#normalizing-a-sequence-of-keyframes" section></a> before storing.
+        Issue: Why doesn't this take a {{SharedKeyframeList}}?
 
     </div>
-
 
 </div>
 
@@ -6672,36 +6565,123 @@ dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
 </div>
 
 
-<h4 id="normalizing-a-sequence-of-keyframes">Normalizing a sequence of keyframes</h4>
+<h4 id="processing-a-frames-argument">Processing a <code>frames</code>
+argument</h4>
 
-For each call to {{KeyframeEffect/setFrames()}}, the
-{{KeyframeEffectReadOnly()}} constructor or the {{KeyframeEffect()}}
-constructor, the following normalization is performed on the passed
-in <var>frames</var> parameter before storing its value.
+On each call to {{KeyframeEffect/setFrames()}}, the {{KeyframeEffectReadOnly()}}
+constructor, the {{KeyframeEffect()}} constructor, or the
+{{SharedKeyframeList()}}, the passed-in <code>frames</code> argument is
+verified and normalized according to the following procedure.
 
-Note: the processing of the ECMAScript value into a suitable IDL
-value defined in <a href="#processing-keyframe-and-propertyindexedkeyframe-objects"
-section></a> is performed before this operation is
-initiated.
+Note that this occurs <em>after</em> converting to IDL types including the
+specific processing defined to <a>convert an ECMAScript object to an IDL
+Keyframe object</a> or <a lt="convert an ECMAScript object to
+an IDL PropertyIndexedKeyframe object">PropertyIndexedKeyframe object</a>.
+
+The result of this procedure is a <dfn>normalized sequence of {{Keyframe}}
+objects</dfn> which forms the input for calculating <a>intermediate effect
+values</a> (see <a
+href="#the-intermediate-effect-value-of-a-keyframe-animation-effect"
+section></a>).
 
 1.  If <var>frames</var> is a {{SharedKeyframeList}} object, then
-    replace <var>frames</var> with the {{Keyframe}} or
-    sequence of {{Keyframe}} objects used to construct the 
-    {{SharedKeyframeList}}.
+    return the <a>normalized sequence of Keyframe objects</a> established
+    when the {{SharedKeyframeList}} object was constructed and abort
+    this procedure.
 
-1.  Normalization depends on the type of keyframes object provided:
+1.  Normalization depends on the type of <var>frames</var> as follows:
 
     <div class='switch'>
-    :   If <var>frames</var> is not a list of objects (i.e. it is a
-        {{PropertyIndexedKeyframe}})
+    :   If <var>frames</var> is a {{PropertyIndexedKeyframe}} object,
     ::
 
-        1.  If <code>offset</code> is specified in <var>frames</var>, 
-            <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
-            <span class=exceptionname>TypeError</span>.
-        1.  Follow the procedure for 
-            <a href="#generating-keyframes-from-property-indexed-keyframes"
-            section></a>.
+        1.  Let <var>expanded keyframe list</var> initially be an empty list.
+
+        1.  Let <var>composite operation</var> be the value of the
+            &ldquo;composite&rdquo; member of <var>frames</var>, or null if
+            there is no member of that name.
+
+        1.  Let <var>easing</var> be the value of the
+            &ldquo;easing&rdquo; member of <var>frames</var>, or
+            &ldquo;linear&rdquo; otherwise.
+
+        1.  For each member, <var>m</var>, in <var>frames</var>, perform
+            the following steps:
+
+            1.  Let <var>property name</var> be the key for <var>m</var>.
+            1.  If <var>property name</var> is &ldquo;composite&rdquo; or
+                &ldquo;easing&rdquo; skip the remaining steps in this loop
+                and continue from the next member in <var>frames</var> after
+                <var>m</var>.
+            1.  Let <var>property values</var> be the value for <var>m</var>.
+                If the value for <var>m</var> is a DOMString (i.e. <em>not</em>
+                a sequence of DOMStrings), let <var>property values</var> be
+                a sequence with a single element corresponding to the value for
+                <var>m</var>.
+            1.  Let <var>property keyframes</var> be an empty list.
+            1.  For each value, <var>v</var>, in <var>property values</var>
+                perform the following steps:
+
+                1.  Let <var>k</var> be a new {{Keyframe}} object with the
+                    <code>offset</code>, <code>easing</code> and
+                    <code>composite</code> attributes set to the default
+                    dictionary values.
+
+                1.  Add the following member to <var>k</var>:
+
+                    *   <em>member key</em>: <var>property name</var>
+                    *   <em>member value</em>: <var>v</var>
+
+                1.  Set <code><var>k</var>.composite</code> to
+                    <var>composite operation</var>.
+                1.  Set <code><var>k</var>.easing</code> to
+                    <var>easing</var>.
+                1.  Append <var>k</var> to <var>property keyframes</var>.
+
+            1.  Apply the procedure for
+                <a href="#applying-spacing-to-keyframes" section></a> to the
+                <var>property keyframes</var> list.
+
+                <div class="issue">
+
+                Applying this procedure here means that offsets are fixed and
+                <a lt="paced keyframe spacing mode">paced spacing</a> will no
+                longer respond to changes in the environment (such as
+                percentage values where the frame of reference changes).
+
+                We could possibly:
+
+                *   Only allow <a
+                    lt="distribute keyframe spacing mode">distribute
+                    spacing</a> with property-indexed keyframes (i.e. ignore the
+                    spacing mode).
+
+                *   Only allow <a
+                    lt="distribute keyframe spacing mode">distribute
+                    spacing</a> and also drop offsets at the end of this
+                    procedure so at least the list of keyframes can be more
+                    easily updated.
+
+                *   Perform an additional step before calculating intermediate
+                    effect values and before returning from
+                    {{KeyframeEffectReadOnly/getFrames()}} that
+                    does spacing and merging.
+
+                </div>
+
+                Issue: The procedure for spacing probably needs to be refactored
+                to just take a sequence of keyframes and a spacing mode.
+
+            1.  Add the <a>keyframes</a> in <var>property keyframes</var> to
+                <var>all keyframes</var>.
+
+        1.  Sort <var>all keyframes</var> by <code>offset</code>, in increasing
+            order.
+
+        1.  Merge adjacent <a>keyframes</a> in <var>expanded keyframes</var>
+            when they have equal offsets.
+
+        1.  Let <var>frames</var> refer to <var>expanded keyframes</var>.
 
     :   Otherwise,
     ::
@@ -6720,8 +6700,9 @@ initiated.
 1.  Remove all property values in <var>frames</var> that are invalid
     or not supported by the implementation.
 
-    Issue: Need to define what invalid means here.
+1.  Return <var>frames</var>.
 
+    Issue: Need to define what invalid means here.
 
 <h4 id="creating-a-new-keyframeeffect-object">Creating a new <code>KeyframeEffect</code> object</h4>
 
@@ -6895,12 +6876,20 @@ interface SharedKeyframeList {
 
     :   <dfn argument for="SharedKeyframeList/SharedKeyframeList(frames)"
         lt="frames">frames</dfn>
-    ::  The keyframes to be shared. If <var>frames</var> is a {{Keyframe}}
-        object or a sequence of {{Keyframe}} objects, they are cloned and stored
-        internally.
-        Otherwise, <var>frames</var> is a {{SharedKeyframeList}}, and
-        a reference to that list's internal {{Keyframe}} object or sequence of
-        {{Keyframe}} objects is stored internally.
+    ::  The keyframes to be shared. This argument is processed using the
+        procedure defined in <a href="#processing-a-frames-argument"
+        section></a>.
+
+        <div class="annotation">
+        We used to have wording here that indicated that if
+        <code>frames</code> is a {{SharedKeyframeList}}, the newly-created
+        object should refer to the same set of keyframes, rather than
+        copying them, but that is an (untestable) implementation detail
+        so it has been removed.
+        </div>
+
+        Issue: Do we really need to support <code>new SharedKeyframeList(new
+        SharedKeyframeList())</code> anyway?
 
     </div>
 
@@ -6914,7 +6903,7 @@ members map to the properties to be animated.
 At the time of writing, this kind of open-ended dictionary cannot
 be represented using WebIDL and hence special
 ECMAScript-specific handling for this type is defined in
-<a href="#processing-keyframe-and-propertyindexedkeyframe-objects" section></a>.
+<a href="#processing-a-keyframe-object" section></a>.
 No handling is defined for other languages.
 
 <pre class='idl'>
@@ -6934,7 +6923,7 @@ dictionary Keyframe {
 
     <a>Keyframes</a> with offsets outside the range [0.0, 1.0] are
     ignored when calculating animation values as defined in
-    <a href="#normalizing-a-sequence-of-keyframes" section></a>.
+    <a href="#processing-a-frames-argument" section></a>.
 
     A <code>null</code> value indicates that the <a>keyframe</a>
     should be positioned using the <a>keyframe effect</a>'s
@@ -6957,48 +6946,7 @@ dictionary Keyframe {
 
 </div>
 
-<h4 id="the-propertyindexedkeyframe-dictionary">The <code>PropertyIndexedKeyframe</code> dictionary</h4>
-
-Keyframe lists can also be represented by a {{PropertyIndexedKeyframe}}
-dictionary type. This dictionary is functionally very similar to the {{Keyframe}}
-dictionary, except that it potentially stores lists of values for each
-property.
-
-As with {{Keyframe}} dictionaries, special ECMAScript-specific handling for
-this type is defined in
-<a href="#processing-keyframe-and-propertyindexedkeyframe-objects" section></a>.
-No handling is defined for other languages.
-
-<pre class='idl'>
-dictionary PropertyIndexedKeyframe {
-    // ... property-value and property-valuelist pairs ...
-    DOMString           easing = "linear";
-    CompositeOperation? composite = null;
-};
-</pre>
-
-<div class='attributes'>
-
-:   <dfn dict-member for=PropertyIndexedKeyframe>easing</dfn>
-::  The <a>timing function</a> used to transform the progress of time
-    between any two adjacent keyframes defined by this dictionary.
-
-    The syntax and error-handling associated with parsing this string
-    is identical to that defined for the <code>easing</code> attribute
-    of the {{AnimationEffectTiming}} interface.
-
-:   <dfn dict-member for=PropertyIndexedKeyframe>composite</dfn>
-::  The <a>keyframe-specific composite operation</a> used to combine the
-    values specified by any keyframe defined by this dictionary with the
-    appropriate <a>underlying value</a>.
-
-    If <code>null</code>, the <a>composite operation</a>
-    specified on the {{AnimationEffectReadOnly}} will be used.
-
-</div>
-
-<h4 id="processing-keyframe-and-propertyindexedkeyframe-objects">
-Processing <code>Keyframe</code> and <code>PropertyIndexedKeyframes</code> objects</h4>
+<h4 id="processing-a-keyframe-object">Processing a <code>Keyframe</code> object</h4>
 
 <div class="note">
 
@@ -7016,12 +6964,20 @@ properties:
 
 </div>
 
-The <dfn>procedure for converting an ECMAScript object to an IDL
-Keyframe object</dfn> with parameter <var>keyframe input</var>
-is as follows:
+Since much of the processing for {{Keyframe}} objects is shared with
+{{PropertyIndexedKeyframe}} objects, we define a generic procedure to
+<dfn>convert an ECMAScript keyframe-like object to an IDL keyframe</dfn>
+that takes the following parameters:
 
-1.  Let <var>keyframe result</var> be a {{Keyframe}} object with the
-    <code>offset</code>, <code>easing</code> and
+*   a <var>keyframe input</var> object,
+*   an <var>&lt;&lt;OutputType&gt;&gt;</var> type,
+*   an <var>allow offsets</var> boolean flag, and
+*   an <var>allow lists</var> boolean flag.
+
+The procedure is as follows:
+
+1.  Let <var>keyframe result</var> be an <var>&lt;&lt;OutputType&gt;&gt;</var>
+    IDL object with the <code>offset</code>, <code>easing</code> and
     <code>composite</code> attributes set to the default dictionary
     values.
 1.  Create a list, <var>supported properties</var>, of property
@@ -7050,8 +7006,12 @@ is as follows:
 
     :   If <var>property</var> is a case-sensitive match for
         the string "offset",</dt>
-    ::  Let <var>offset value</var> be the result of calling the \[[Get]]
-        internal method on <var>keyframe input</var> with property name
+    ::  If <var>allow offsets</var> is false,
+        <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
+        <span class=exceptionname>TypeError</span> and abort this procedure.
+
+        Otherwise, let <var>offset value</var> be the result of calling the
+        \[[Get]] internal method on <var>keyframe input</var> with property name
         "offset".
         If <var>offset value</var> is null, set the <code>offset</code>
         member of <var>keyframe result</var> to null.
@@ -7115,69 +7075,29 @@ is as follows:
     properties</var> add a new member pair to <var>keyframe
     result</var> as follows:
 
-    *   <em>member name</em>: the result of applying the
+    *   <em>member key</em>: the result of applying the
         the <a
         href="http://dev.w3.org/csswg/cssom/#idl-attribute-to-css-property">IDL
         attribute to CSS property</a> algorithm [[!CSSOM]] to
         <var>name</var> unless <var>name</var> is
         a case-sensitive match for the string "cssFloat" in
         which case use the string "float".
-    *   <em>member value</em>: the result of calling
-        <code>ToString</code> on the value returned from the
-        \[[Get]] method of <var>keyframe input</var> with property
-        name, <var>name</var>.
-        If \[[Get]] returns null or undefined, let the member
-        value be an empty string.
+    *   <em>member value</em>: the result of <a
+        href="http://heycam.github.io/webidl/#dfn-convert-ecmascript-to-idl-value">converting</a>
+        the value returned from the \[[Get]] method of <var>keyframe input</var>
+        with property name, <var>name</var>.
+        The IDL type to use for conversion is <code>(DOMString or
+        sequence&ldquo;DOMString&rdquo;)</code> if <var>allow lists</var> is
+        true, and <code>DOMString</code> otherwise.
+        In both cases the conversion is performed with the <a
+        href="http://www.w3.org/TR/WebIDL/#TreatNullAs">[TreatNullAs=EmptyString]</a>
+        annotation in effect.
 
 1.  Return <var>keyframe result</var>.
 
-The <dfn>procedure for converting an ECMAScript object to an IDL
-PropertyIndexedKeyframe object</dfn> with parameter <var>keyframe input</var>
-is identical to the <a>procedure for converting an ECMAScript object 
-to an IDL Keyframe object</a>, except for the following two changes:
-
-
-1.  The condition for matching the "offset" string in step 7 is removed.
-2.  The processing of <em>member values</em> in step 10 is replaced with the
-    following procedure:
-
-    1.  If any phase of this calculation throws a TypeError, follow the
-        procedure defined in step 10 of the <a>procedure for converting
-        an ECMAScript object to an IDL Keyframe object</a> for processing
-        of member values, and return a list with the produced value as
-        the sole item.
-    2.  Let <var>member value object</var> be the result of calling 
-        <code>ToObject</code> on the value returned from the \[[Get]]
-        method of <var>keyframe input</var> with property name <var>name</var>.
-    3.  Let <var>member value length</var> be the value returned from the \[[Get]]
-        method of <var>member value object</var> with property name <var>length</var>.
-
-    <div class='switch'>
-
-        :   If <var>member value length</var> is of <code>Number</code> type, and has
-            non-negative integral value,
-        ::  Let <var>member value length</var> be this value, and execute the 
-            following steps:
-
-            *   initialize <var>member value</var> to an empty list.
-            *   let <var>index</var> iterate over integers 0 to
-                <var>member value length</var> in order
-            *   for each <var>index</var>, append the result of calling
-                <code>ToString</code> on the value returned from the 
-                \[[Get]] method of <var>member value object</var> with
-                property name <var>index</var> to <var>member value</var>
-
-        :   Otherwise,
-        ::  follow the procedure defined in step 10 of the
-            <a>procedure for converting an ECMAScript object to an IDL
-            Keyframe object</a> for processing of member values, and 
-            return a list with the produced value as the sole item.
-
-    </div>
-
 <div class="issue">
 
-The above algorithms give special meaning to the property names
+The above algorithm gives special meaning to the property names
 "offset", "easing", and "composite".
 If a CSS property called "offset" or "composite" is ever
 introduced it will clash with the meaning here.
@@ -7190,6 +7110,111 @@ We have a few options:
     e.g. "keyframeOffset".
 
 </div>
+
+The procedure to <dfn>convert an ECMAScript object to an IDL
+Keyframe object</dfn> with parameter <var>keyframe input</var>
+is simply the result of applying the procedure to <a
+lt="convert an ECMAScript keyframe-like object to an IDL keyframe">convert
+a keyframe-like object</a> with the following parameter assignments:
+
+*   <var>keyframe input</var> &ndash; as provided
+*   <var>&lt;&lt;OutputType&gt;&gt;</var> &ndash; {{Keyframe}}
+*   <var>allow offset</var> &ndash; true
+*   <var>allow list values</var> &ndash; false
+
+<h3 id="the-propertyindexedkeyframe-dictionary">The <code>PropertyIndexedKeyframe</code> dictionary</h3>
+
+Keyframe lists can also be specified using a {{PropertyIndexedKeyframe}}
+dictionary type which provides a convenient syntax for specifying a sequence
+of values for each property.
+
+{{PropertyIndexedKeyframe}} objects are expanded into a sequence of {{Keyframe}}
+objects using the procedure defined in <a href="#processing-a-frames-argument"
+section></a>.
+
+Unlike {{Keyframe}} objects, {{PropertyIndexedKeyframe}} objects do not permit
+<a>keyframe offsets</a> to be specified.
+
+Issue: This feature is gated on implementation experience&mdash;it is currently
+unknown whether the additional complexity introduced by the feature is
+warranted by the improvement in usability.
+
+<div class='informative-bg'><em>This section is non-normative.</em>
+
+Property-indexed keyframes make it easy to create regularly spaced
+animations. For example:
+
+<pre class='example lang-javascript'>
+// The following two expressions produce the same result:
+elem.animate([ { color: 'blue' },
+               { color: 'green' },
+               { color: 'red' },
+               { color: 'yellow' } ], 2000);
+elem.animate({ color: [ 'blue', 'green', 'red', 'yellow' ] }, 2000);
+
+// Likewise, for a multi-property animation, the following two
+// expressions are equivalent:
+elem.animate([ { color: 'blue', left: '0px' },
+               { color: 'green', left: '-20px' },
+               { color: 'red', left: '100px' },
+               { color: 'yellow', left: '50px'} ], 2000);
+elem.animate({ color: [ 'blue', 'green', 'red', 'yellow' ],
+               left: [ '0px', '-20px', '100px', '50px' ] }, 2000);
+
+// Incidentally, the following three expressions are all equivalent:
+elem.animate([ { color: 'red' } ], 1000);
+elem.animate({ color: [ 'red' ] }, 1000);
+elem.animate({ color: 'red' }, 1000);
+</pre>
+
+</div>
+
+As with {{Keyframe}} dictionaries, special ECMAScript-specific handling for
+this type is defined in
+<a href="#processing-propertyindexedkeyframe-objects" section></a>.
+No handling is defined for other languages.
+
+<pre class='idl'>
+dictionary PropertyIndexedKeyframe {
+    // ... property-value and property-valuelist pairs ...
+    DOMString           easing = "linear";
+    CompositeOperation? composite = null;
+};
+</pre>
+
+<div class='attributes'>
+
+:   <dfn dict-member for=PropertyIndexedKeyframe>easing</dfn>
+::  The <a>timing function</a> used to transform the progress of time
+    between any two adjacent keyframes defined by this dictionary.
+
+    The syntax and error-handling associated with parsing this string
+    is identical to that defined for the <code>easing</code> attribute
+    of the {{AnimationEffectTiming}} interface.
+
+:   <dfn dict-member for=PropertyIndexedKeyframe>composite</dfn>
+::  The <a>keyframe-specific composite operation</a> used to combine the
+    values specified by any keyframe defined by this dictionary with the
+    appropriate <a>underlying value</a>.
+
+    If <code>null</code>, the <a>composite operation</a>
+    specified on the {{AnimationEffectReadOnly}} will be used.
+
+</div>
+
+<h4 id="processing-propertyindexedkeyframe-objects">
+Processing <code>PropertyIndexedKeyframe</code> objects</h4>
+
+The procedure to <dfn>convert an ECMAScript object to an IDL
+PropertyIndexedKeyframe object</dfn> with parameter <var>keyframe input</var>
+is simply the result of applying the procedure to <a
+lt="convert an ECMAScript keyframe-like object to an IDL keyframe">convert
+a keyframe-like object</a> with the following parameter assignments:
+
+*   <var>keyframe input</var> &ndash; as provided
+*   <var>&lt;&lt;OutputType&gt;&gt;</var> &ndash; {{PropertyIndexedKeyframe}}
+*   <var>allow offset</var> &ndash; false
+*   <var>allow list values</var> &ndash; true
 
 <h3 id="the-computedkeyframe-dictionary">The <code>ComputedKeyframe</code> dictionary</h3>
 
@@ -7761,7 +7786,7 @@ The following changes have been made since the <a
 *   Exposed the <a>iteration progress</a> (was &ldquo;time fraction&rdquo;) to
     script as <code>effect.computedTiming.progress</code>.
 *   Made the procedure defined in <a
-    href="#normalizing-a-sequence-of-keyframes" section></a> throw an exception
+    href="#processing-a-frames-argument" section></a> throw an exception
     if the keyframes are not <a>loosely sorted by offset</a> or if there are any
     keyframes with an offset outside the range [0, 1].
 *   Removed <code>paced</code> as a valid value for {{KeyframeEffect}}'s
