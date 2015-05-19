@@ -1307,14 +1307,13 @@ An animation can be advanced to the natural end of its current playback
 direction by using the procedure to <dfn>finish an animation</dfn>
 for <var>animation</var> defined below:
 
-
 1.  If <a>animation playback rate</a> is zero,
     or if <a>animation playback rate</a> &gt; 0 and <a>target effect end</a> is
     infinity,
     <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> an
     <span class=exceptionname>InvalidStateError</span> and abort these steps.
 
-2.  Set <var>limit</var> as follows:
+1.  Set <var>limit</var> as follows:
 
     <div class="switch">
 
@@ -1326,7 +1325,7 @@ for <var>animation</var> defined below:
 
     </div>
 
-3.  <a>Set the current time</a> to <var>limit</var>.
+1.  <a>Set the current time</a> to <var>limit</var>.
 
     <div class="annotation">
         The procedure for setting the current time has the side effect of
@@ -1334,11 +1333,21 @@ for <var>animation</var> defined below:
         handle that here.
     </div>
 
-4.  If there is a <a>pending play task</a>, cancel that task and
-    <a lt="resolve a Promise">resolve</a> the <a>current ready promise</a> of
-    <var>animation</var> with <var>animation</var>.
+1.  If <var>animation</var>'s <a lt="animation start time">start time</a> is
+    <a>unresolved</a> and <var>animation</var> has an associated <a
+    lt="inactive timeline">active</a> <a>timeline</a>, let the <a
+    lt="animation start time">start time</a> be the result of evaluating
+    <code><var>timeline time</var> -
+    (<var>limit</var> / <a lt="animation playback rate">playback
+    rate</a>)</code> where <var>timeline time</var> is the current <a>time
+    value</a> of the associated <a>timeline</a>.
 
-6.  Run the procedure to <a>update an animation's finished state</a>
+1.  If there is a <a>pending play task</a> and <a
+    lt="animation start time">start time</a> is <a lt="unresolved">resolved</a>,
+    cancel that task and <a lt="resolve a Promise">resolve</a> the <a>current
+    ready promise</a> of <var>animation</var> with <var>animation</var>.
+
+1.  Run the procedure to <a>update an animation's finished state</a>
     <var>animation</var> with the <var>did seek</var> flag set to true.
 
 Note: Finishing an animation does not necessarily cause that animation
