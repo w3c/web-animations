@@ -1077,12 +1077,28 @@ follows:
 1.  If <var>animation</var> has a <a>pending pause task</a>, abort these steps.
 1.  If the <a>play state</a> of <var>animation</var> is <a
     lt="paused play state">paused</a>, abort these steps.
+1.  If the <var>animation</var>'s <a>current time</a> is <a>unresolved</a>,
+    perform the steps according to the first matching condition from below:
 
-    Note: If the <a>play state</a> definition is updated such that a paused and
-    finished animation reports the play state as <a
-    lt="finished play state">finished</a> instead of <a
-    lt="paused play state">paused</a>, this step will need to be updated to
-    abort early in that case too.
+    <div class="switch">
+
+    :    If <var>animation</var>'s <a lt="animation playback rate">playback
+         rate</a> is &ge; 0,
+    ::   Let <var>animation</var>'s <a>hold time</a> be zero.
+
+         Issue: Should we throw an exception for <a
+         lt="animation playback rate">playback rate</a> = 0?
+
+    :    Otherwise,
+    ::   If <a>target effect end</a> for <var>animation</var> is positive
+         infinity,
+         <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> an
+         <span class=exceptionname>InvalidStateError</span> and abort these
+         steps.
+         Otherwise, let <var>animation</var>'s <a>hold time</a> be
+         <a>target effect end</a>.
+
+    </div>
 
 1.  Let <var>has pending ready promise</var> be a boolean flag that is
     initially false.
