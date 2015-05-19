@@ -172,7 +172,7 @@ pre[class*="language-"] {
    <h1 class="p-name no-ref" id="title">Web Animations Level 2</h1>
   
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft,
-    <time class="dt-updated" datetime="2015-05-13">13 May 2015</time></span></h2>
+    <time class="dt-updated" datetime="2015-05-19">19 May 2015</time></span></h2>
   
    <div data-fill-with="spec-metadata">
     <dl>
@@ -1543,11 +1543,29 @@ make <var>animation</var>’s <a data-link-type="dfn" href="#animation-start-tim
      
 
     <li data-md="">
-     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task">pending pause task</a>, cancel the
-task and <a data-link-type="dfn" href="#resolve-a-promise">resolve</a> <var>animation</var>’s
-<a data-link-type="dfn" href="#current-ready-promise">current ready promise</a> with <var>animation</var>.</p>
+     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task">pending pause task</a>, synchronously
+complete the pause operation by performing the following steps:</p>
      
 
+     <ol>
+      <li data-md="">
+       <p>Set <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold time</a> to <var>seek time</var>.</p>
+       
+
+      <li data-md="">
+       <p>Make <var>animation</var>’s <a data-link-type="dfn" href="#animation-start-time">start time</a>
+<a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
+       
+
+      <li data-md="">
+       <p>Cancel the <a data-link-type="dfn" href="#pending-pause-task">pending pause task</a>.</p>
+       
+
+      <li data-md="">
+       <p><a data-link-type="dfn" href="#resolve-a-promise">Resolve</a> <var>animation</var>’s
+<a data-link-type="dfn" href="#current-ready-promise">current ready promise</a> with <var>animation</var>.</p>
+       
+</ol>
     <li data-md="">
      <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a> for
 <var>animation</var> with the <var>did seek</var> flag set to true.</p>
@@ -1557,7 +1575,7 @@ task and <a data-link-type="dfn" href="#resolve-a-promise">resolve</a> <var>anim
    <h4 class="heading settled" data-level="3.5.5" id="setting-the-start-time-of-an-animation"><span class="secno">3.5.5. </span><span class="content">Setting the start time of an animation</span><a class="self-link" href="#setting-the-start-time-of-an-animation"></a></h4>
 
 
-   <p>The procedure to <dfn data-dfn-type="dfn" data-noexport="" id="update-the-animation-start-time">update the animation start time<a class="self-link" href="#update-the-animation-start-time"></a></dfn>
+   <p>The procedure to <dfn data-dfn-type="dfn" data-noexport="" id="set-the-animation-start-time">set the animation start time<a class="self-link" href="#set-the-animation-start-time"></a></dfn>
 of <a data-link-type="dfn" href="#concept-animation">animation</a>, <var>animation</var>, to
 <a data-link-type="dfn" href="#animation-start-time">start time</a>, <var>new start time</var>,
 is as follows:</p>
@@ -1795,23 +1813,6 @@ initially false.</p>
      
 
     <li data-md="">
-     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task">pending play task</a> or a
-<a data-link-type="dfn" href="#pending-pause-task">pending pause task</a>,</p>
-     
-
-
-     <ol>
-      <li data-md="">
-       <p>Cancel that task.</p>
-       
-
-      <li data-md="">
-       <p>Set <var>has pending ready promise</var> to true.</p>
-       
-</ol>
-     
-
-    <li data-md="">
      <p>Perform the steps corresponding to the <em>first</em> matching
 condition from the following, if any:</p>
      
@@ -1868,7 +1869,12 @@ condition from the following, if any:</p>
         
 
        <dd data-md="">
-        <p>set <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold time</a> to <a data-link-type="dfn" href="#target-effect-end">target effect end</a>.</p>
+        <p>If <a data-link-type="dfn" href="#target-effect-end">target effect end</a> is positive infinity,
+<a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> an
+<span class="exceptionname">InvalidStateError</span> and abort these
+steps.
+Otherwise, set <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold time</a> to <a data-link-type="dfn" href="#target-effect-end">target
+effect end</a>.</p>
         
 
        <dt data-md="">
@@ -1883,6 +1889,23 @@ condition from the following, if any:</p>
 </div>
      
 
+
+    <li data-md="">
+     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task">pending play task</a> or a
+<a data-link-type="dfn" href="#pending-pause-task">pending pause task</a>,</p>
+     
+
+
+     <ol>
+      <li data-md="">
+       <p>Cancel that task.</p>
+       
+
+      <li data-md="">
+       <p>Set <var>has pending ready promise</var> to true.</p>
+       
+</ol>
+     
 
     <li data-md="">
      <p>If <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold time</a> is <a data-link-type="dfn" href="#unresolved">unresolved</a>
@@ -2015,10 +2038,45 @@ follows:</p>
      <p>If the <a data-link-type="dfn" href="#play-state">play state</a> of <var>animation</var> is <a data-link-type="dfn" href="#paused-play-state">paused</a>, abort these steps.</p>
      
 
+    <li data-md="">
+     <p>If the <var>animation</var>’s <a data-link-type="dfn" href="#current-time">current time</a> is <a data-link-type="dfn" href="#unresolved">unresolved</a>,
+perform the steps according to the first matching condition from below:</p>
+     
 
-     <p class="note" role="note">Note: If the <a data-link-type="dfn" href="#play-state">play state</a> definition is updated such that a paused and
-finished animation reports the play state as <a data-link-type="dfn" href="#finished-play-state">finished</a> instead of <a data-link-type="dfn" href="#paused-play-state">paused</a>, this step will need to be updated to
-abort early in that case too.</p>
+
+     <div class="switch">
+
+
+      <dl>
+       <dt data-md="">
+        <p>If <var>animation</var>’s <a data-link-type="dfn" href="#animation-playback-rate">playback
+ rate</a> is ≥ 0,</p>
+        
+
+       <dd data-md="">
+        <p>Let <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold time</a> be zero.</p>
+        
+
+
+        <p class="issue" id="issue-380aae41"><a class="self-link" href="#issue-380aae41"></a>Should we throw an exception for <a data-link-type="dfn" href="#animation-playback-rate">playback rate</a> = 0?</p>
+        
+
+
+       <dt data-md="">
+        <p>Otherwise,</p>
+        
+
+       <dd data-md="">
+        <p>If <a data-link-type="dfn" href="#target-effect-end">target effect end</a> for <var>animation</var> is positive
+ infinity,
+ <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> an
+ <span class="exceptionname">InvalidStateError</span> and abort these
+ steps.
+ Otherwise, let <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold time</a> be
+ <a data-link-type="dfn" href="#target-effect-end">target effect end</a>.</p>
+        
+</dl>
+</div>
      
 
 
@@ -2365,7 +2423,6 @@ direction by using the procedure to <dfn data-dfn-type="dfn" data-noexport="" id
 for <var>animation</var> defined below:</p>
 
 
-
    <ol>
     <li data-md="">
      <p>If <a data-link-type="dfn" href="#animation-playback-rate">animation playback rate</a> is zero,
@@ -2419,9 +2476,19 @@ infinity,
 
 
     <li data-md="">
-     <p>If there is a <a data-link-type="dfn" href="#pending-play-task">pending play task</a>, cancel that task and
-<a data-link-type="dfn" href="#resolve-a-promise">resolve</a> the <a data-link-type="dfn" href="#current-ready-promise">current ready promise</a> of
-<var>animation</var> with <var>animation</var>.</p>
+     <p>If <var>animation</var>’s <a data-link-type="dfn" href="#animation-start-time">start time</a> is
+<a data-link-type="dfn" href="#unresolved">unresolved</a> and <var>animation</var> has an associated <a data-link-type="dfn" href="#inactive-timeline">active</a> <a data-link-type="dfn" href="#timeline">timeline</a>, let the <a data-link-type="dfn" href="#animation-start-time">start time</a> be the result of evaluating
+<code><var>timeline time</var> -
+(<var>limit</var> / <a data-link-type="dfn" href="#animation-playback-rate">playback
+rate</a>)</code> where <var>timeline time</var> is the current <a data-link-type="dfn" href="#time-value">time
+value</a> of the associated <a data-link-type="dfn" href="#timeline">timeline</a>.</p>
+     
+
+
+    <li data-md="">
+     <p>If there is a <a data-link-type="dfn" href="#pending-play-task">pending play task</a> and <a data-link-type="dfn" href="#animation-start-time">start time</a> is <a data-link-type="dfn" href="#unresolved">resolved</a>,
+cancel that task and <a data-link-type="dfn" href="#resolve-a-promise">resolve</a> the <a data-link-type="dfn" href="#current-ready-promise">current
+ready promise</a> of <var>animation</var> with <var>animation</var>.</p>
      
 
 
@@ -2538,7 +2605,7 @@ trigger a compensatory seek so that that the animation’s
 rate.</p>
 
 
-   <p>The procedure to <dfn data-dfn-type="dfn" data-noexport="" id="update-the-animation-playback-rate">update the animation playback rate<a class="self-link" href="#update-the-animation-playback-rate"></a></dfn> of
+   <p>The procedure to <dfn data-dfn-type="dfn" data-noexport="" id="set-the-animation-playback-rate">set the animation playback rate<a class="self-link" href="#set-the-animation-playback-rate"></a></dfn> of
 an <a data-link-type="dfn" href="#concept-animation">animation</a>, <var>animation</var> to <var>new playback rate</var>
 is as follows:</p>
 
@@ -2562,7 +2629,7 @@ is as follows:</p>
      
 </ol>
 
-   <p>The procedure to <dfn data-dfn-type="dfn" data-noexport="" id="silently-update-the-animation-playback-rate">silently update the animation playback rate<a class="self-link" href="#silently-update-the-animation-playback-rate"></a></dfn>
+   <p>The procedure to <dfn data-dfn-type="dfn" data-noexport="" id="silently-set-the-animation-playback-rate">silently set the animation playback rate<a class="self-link" href="#silently-set-the-animation-playback-rate"></a></dfn>
 of <a data-link-type="dfn" href="#concept-animation">animation</a>, <var>animation</var> to <var>new playback rate</var>
 is identical to the above procedure except that rather than invoking
 the procedure to <a data-link-type="dfn" href="#set-the-current-time">set the current time</a> in the final step, the
@@ -2585,7 +2652,7 @@ associated <a data-link-type="dfn" href="#timeline">timeline</a> is <a data-link
      
 
     <li data-md="">
-     <p><a data-link-type="dfn" href="#silently-update-the-animation-playback-rate">Silently update the animation playback rate</a> of
+     <p><a data-link-type="dfn" href="#silently-set-the-animation-playback-rate">Silently set the animation playback rate</a> of
 <var>animation</var> to <code>−<a data-link-type="dfn" href="#animation-playback-rate">animation playback rate</a></code>.</p>
      
 
@@ -7803,7 +7870,7 @@ the procedure to <a data-link-type="dfn" href="#set-the-timeline-of-an-animation
        <p>Returns the <a data-link-type="dfn" href="#animation-start-time">start time</a> of this
 animation.
 Setting this attribute updates the <a data-link-type="dfn" href="#animation-start-time">animation start time</a> using
-the procedure to <a data-link-type="dfn" href="#update-the-animation-start-time">update the animation start time</a> of this object
+the procedure to <a data-link-type="dfn" href="#set-the-animation-start-time">set the animation start time</a> of this object
 to the new value.</p>
        
 
@@ -7835,7 +7902,7 @@ of this object to the new value.</p>
       <dd data-md="">
        <p>The <a data-link-type="dfn" href="#animation-playback-rate">playback rate</a> of this
 animation.
-Setting this attribute follows the procedure to <a data-link-type="dfn" href="#update-the-animation-playback-rate">update the animation
+Setting this attribute follows the procedure to <a data-link-type="dfn" href="#set-the-animation-playback-rate">set the animation
 playback rate</a> of this object to the new value.</p>
        
 
@@ -12138,13 +12205,15 @@ time, <a href="#previous-current-time">3.5.13</a>
    <li>SequenceEffectReadOnly, <a href="#sequenceeffectreadonly">5.12</a>
    <li>SequenceEffectReadOnly(), <a href="#dom-sequenceeffectreadonly-sequenceeffectreadonly">5.12</a>
    <li>setFrames(frames), <a href="#dom-keyframeeffect-setframesframes">5.13</a>
+   <li>set the animation playback rate, <a href="#set-the-animation-playback-rate">3.5.16.1</a>
+   <li>set the animation start time, <a href="#set-the-animation-start-time">3.5.5</a>
    <li>set the current time, <a href="#set-the-current-time">3.5.4</a>
    <li>set the target effect of an animation, <a href="#set-the-target-effect-of-an-animation">3.5.2</a>
    <li>set the timeline of an animation, <a href="#set-the-timeline-of-an-animation">3.5.1</a>
    <li>SharedKeyframeList, <a href="#sharedkeyframelist">5.19</a>
    <li>SharedKeyframeList(frames), <a href="#dom-sharedkeyframelist-sharedkeyframelistframes">5.19</a>
+   <li>silently set the animation playback rate, <a href="#silently-set-the-animation-playback-rate">3.5.16.1</a>
    <li>silently set the current time, <a href="#silently-set-the-current-time">3.5.4</a>
-   <li>silently update the animation playback rate, <a href="#silently-update-the-animation-playback-rate">3.5.16.1</a>
    <li>single-sample, <a href="#single_sample">3.2</a>
    <li>spacing
     <ul>
@@ -12193,8 +12262,6 @@ time, <a href="#previous-current-time">3.5.13</a>
    <li>underlying value, <a href="#underlying-value">4.3.2</a>
    <li>unresolved, <a href="#unresolved">3.2</a>
    <li>update an animation’s finished state, <a href="#update-an-animations-finished-state">3.5.13</a>
-   <li>update the animation playback rate, <a href="#update-the-animation-playback-rate">3.5.16.1</a>
-   <li>update the animation start time, <a href="#update-the-animation-start-time">3.5.5</a>
    <li>zero time, <a href="#zero-time">3.4</a></ul>
   <h3 class="no-num heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="indexlist">
@@ -12514,6 +12581,7 @@ now finished, should the current time jump to the end of the target effect, or
 be allowed to sit past the end of the target effect?<a href="#issue-e68d97d4"> ↵ </a></div>
    <div class="issue">We should queue a task here for sampling custom effects.
 (This should happen before we resolve the ready promise.)<a href="#issue-97b24030"> ↵ </a></div>
+   <div class="issue">Should we throw an exception for <a data-link-type="dfn" href="#animation-playback-rate">playback rate</a> = 0?<a href="#issue-380aae41"> ↵ </a></div>
    <div class="issue">We should queue a task here for sampling custom effects
 with the final current time.
 (This should happen before we resolve the ready promise).<a href="#issue-c0dfc505"> ↵ </a></div>
