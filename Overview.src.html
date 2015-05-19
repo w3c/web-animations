@@ -963,12 +963,6 @@ follows:
     <var>animation</var> has a <a>pending pause task</a>, and false otherwise.
 1.  Let <var>has pending ready promise</var> be a boolean flag that is
     initially false.
-1.  If <var>animation</var> has a <a>pending play task</a> or a
-    <a>pending pause task</a>,
-
-    1.  Cancel that task.
-    1.  Set <var>has pending ready promise</var> to true.
-
 1.  Perform the steps corresponding to the <em>first</em> matching
     condition from the following, if any:
 
@@ -989,12 +983,23 @@ follows:
         *   <a>current time</a> &le; zero, or
         *   <a>current time</a> &gt; <a>target effect end</a>,
 
-    ::  set <var>animation</var>'s <a>hold time</a> to <a>target effect end</a>.
+    ::  If <a>target effect end</a> is positive infinity,
+        <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> an
+        <span class=exceptionname>InvalidStateError</span> and abort these
+        steps.
+        Otherwise, set <var>animation</var>'s <a>hold time</a> to <a>target
+        effect end</a>.
     :   If <a>animation playback rate</a> = 0 and <var>animation</var>'s
         <a>current time</a> is <a>unresolved</a>,
     ::  Set <var>animation</var>'s <a>hold time</a> to zero.
 
     </div>
+
+1.  If <var>animation</var> has a <a>pending play task</a> or a
+    <a>pending pause task</a>,
+
+    1.  Cancel that task.
+    1.  Set <var>has pending ready promise</var> to true.
 
 1.  If <var>animation</var>'s <a>hold time</a> is <a>unresolved</a>
     and <var>aborted pause</var> is false, abort this procedure.
