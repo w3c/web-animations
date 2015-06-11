@@ -5053,7 +5053,9 @@ represented by the value <code>null</code>.
 <pre class="idl">
 interface AnimationTimeline {
     readonly attribute double? currentTime;
+<!-- @if LEVEL=2 -->
     Animation           play (optional AnimationEffectReadOnly? effect = null);
+<!-- @endif -->
     sequence&lt;Animation&gt; getAnimations();
 };
 </pre>
@@ -5068,6 +5070,7 @@ interface AnimationTimeline {
 
 <div class='methods'>
 
+<!-- @if LEVEL=2 -->
 :   <dfn method for=AnimationTimeline lt='play()'>
     Animation play(optional AnimationEffectReadOnly? effect = null)</dfn>
 ::  Creates a new {{Animation}} object associated with
@@ -5099,6 +5102,7 @@ interface AnimationTimeline {
         {{Animation}} object.
 
     </div>
+<!-- @endif -->
 
 :   <dfn method for=AnimationTimeline lt='getAnimations()'>
     sequence&lt;Animation&gt; getAnimations()</dfn>
@@ -6368,9 +6372,9 @@ KeyframeEffect implements AnimationEffectMutable;
     <div class="parameters">
 
     :   <dfn argument
-        for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, timing)"
+        for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)"
         lt="target"><dfn argument
-        for="KeyframeEffect/KeyframeEffect(target, frames, timing)"
+        for="KeyframeEffect/KeyframeEffect(target, frames, options)"
         lt="target">Animatable? target</dfn></dfn>
     ::  The <a>target element</a> or target pseudo-element.
         This may be <code>null</code> for animations that do not target
@@ -6540,8 +6544,7 @@ KeyframeEffect implements AnimationEffectMutable;
 
     <div class="parameters">
 
-    :   <dfn argument for=KeyframeEffect/setFrames
-        lt="frames">object frames</dfn>
+    :   <dfn argument for="KeyframeEffect/setFrames" lt="frames">frames</dfn>
     ::  A {{PropertyIndexedKeyframe}} object or sequence of {{Keyframe}} objects
         used to replace the set of <a>keyframes</a> that make up this effect.
 
@@ -6805,11 +6808,11 @@ new SequenceEffect(
 );</pre>
 <!-- @endif -->
 
-Having created a {{KeyframeEffect}}, it can be played using
-<code>document.timeline.play(<var>effect</var>)</code>.
+Having created a {{KeyframeEffect}}, it can be played by adding it to
+an {{Animation}} and then playing that animation.
 For simple effects, however, the <a
 href="#extensions-to-the-element-interface"><code>Element.animate</code></a>
-shortcut is more convenient since it performs this last step
+shortcut is more convenient since it performs these steps
 automatically. For example,
 
 <pre class='example lang-javascript'>
@@ -7340,13 +7343,24 @@ interface Animatable {
 <div class="methods">
 
 :   <dfn method for=Animatable lt="animate(frames, options)">Animation animate(frames, options)</dfn>
-::  Creates a new {{KeyframeEffect}} object
-    whose <a>target element</a> is the object on which the method is
-    called, and calls the {{AnimationTimeline/play()}} method of the
-    {{AnimationTimeline}} object of the <a>default document timeline</a> of the
-    <a href="http://www.w3.org/TR/dom/#concept-node-document">node
-    document</a> [[!DOM]] of the element, passing the newly created
-    {{KeyframeEffect}} as the argument to the method.
+::  Performs the following steps:
+
+    1.  Construct a new {{KeyframeEffect}} object, <var>effect</var>, passing
+        the object on which this method was called as the
+        <var>target</var> argument,
+        and the <var>frames</var> and <var>options</var> arguments as supplied.
+
+    2.  Construct a new {{Animation}} object, <var>animation</var>, passing
+        <var>effect</var> as the argument of the same name, and the
+        the <a>default document timeline</a> of the
+        <a href="http://www.w3.org/TR/dom/#concept-node-document">node
+        document</a> [[!DOM]] of the element on which this method was called
+        as the <var>timeline</var> argument.
+
+    3.  Run the procedure to <a>play an animation</a> for
+        <var>animation</var>.
+
+    4.  Return <var>animation</var>.
 
     The following code fragment:
 
@@ -7357,20 +7371,19 @@ var animation = elem.animate({ opacity: 0 }, 2000);</pre></div>
 
     <div><pre class="example lang-javascript">
 var effect = new KeyframeEffect(elem, { opacity: 0 }, 2000);
-var animation = elem.ownerDocument.timeline.play(effect);</pre></div>
-
-    Returns the {{Animation}} object returned by the
-    {{AnimationTimeline/play()}} method of the {{AnimationTimeline}}.
+var animation = new Animation(effect, elem.ownerDocument.timeline);
+animation.play();</pre></div>
 
     <div class="parameters">
 
-    :   <dfn argument for="Animatable/animate" lt="frames">(PropertyIndexedKeyframe or sequence&lt;Keyframe&gt;) frames</dfn>
+    :   <dfn argument for="Animatable/animate(frames, options)"
+        lt="frames">frames</dfn>
     ::  The <a>keyframes</a> to use.
         This value is passed to the {{KeyframeEffect()}}
         constructor as the <var>frames</var> parameter and has the
         same interpretation as defined for that constructor.
-    :   <dfn argument for="Animatable/animate" lt="options">optional (double or
-        KeyframeEffectOptions) options</dfn>
+    :   <dfn argument for="Animatable/animate(frames, options)"
+        lt="options">options</dfn>
     ::  The timing and animation options for the created {{KeyframeEffect}}.
         This value is passed to the {{KeyframeEffect()}} constructor as the
         <var>options</var> parameter and has the same interpretation as
@@ -7784,6 +7797,8 @@ The following changes have been made since the <a
     {{AnimationTimeline}} and {{Animatable}} interfaces return all
     <a>animations</a> that are <em>either</em> <a>current</a> <em>or</em> <a>in
     effect</a>.
+*   Moved the <code>play()</code> method of {{AnimationTimeline}} to
+    a subsequent level of this specification.
 *   Renamed the <code>AnimationPlayer</code> interface to {{Animation}}.
 *   Updated the {{Animation}} interface:
 
