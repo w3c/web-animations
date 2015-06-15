@@ -4074,21 +4074,16 @@ Values and Replaced Content</a>
 
 </div>
 
-<h4 id="intermediate-effect-values">Intermediate effect values</h4>
-
-Issue: Now that we've renamed this from &ldquo;intermediate animation
-value&rdquo;, would it be ok to rename this to simply &ldquo;effect
-value&rdquo;?
+<h4 id="effect-values">Effect values</h4>
 
 Given an <a>iteration progress</a>, a <a>current iteration</a>, and an
 <a>underlying value</a>, a <a>keyframe effect</a> produces
-an <dfn>intermediate effect value</dfn> for each <a>animatable</a>
-<a>target property</a> by applying the <a>animation behavior</a>
-appropriate to the property.
+an <dfn>effect value</dfn> for each <a>animatable</a> <a>target property</a>
+by applying the <a>animation behavior</a> appropriate to the property.
 
 <h3 id="keyframes-section">Keyframes</h3>
 
-The <a>intermediate effect values</a> for a <a>keyframe effect</a>
+The <a>effect values</a> for a <a>keyframe effect</a>
 are calculated by interpolating between a series of property values
 positioned at fractional offsets.
 Each set of property values indexed by an offset is called
@@ -4105,7 +4100,7 @@ is not null, if any.
 
 The behavior when <a>keyframes</a> overlap or have unsupported values
 is defined in <a
-href="#the-intermediate-effect-value-of-a-keyframe-animation-effect"
+href="#the-effect-value-of-a-keyframe-animation-effect"
 section></a>.
 
 Each keyframe also has a <a>timing function</a> associated with it
@@ -4394,16 +4389,16 @@ Issue: The above algorithm is quite complex.
     We await implementation experience to determine if the complexity
     is justified.
 
-<h4 id="the-intermediate-effect-value-of-a-keyframe-animation-effect">The intermediate effect value of a keyframe effect</h4>
+<h4 id="the-effect-value-of-a-keyframe-animation-effect">The effect value of a keyframe effect</h4>
 
-The <a>intermediate effect value</a> of a single property
+The <a>effect value</a> of a single property
 referenced by a <a>keyframe effect</a> as one of its
 <a lt="target property">target properties</a>, for a given
 <var>iteration progress</var>, <var>current iteration</var> and
 <var>underlying value</var> is calculated as follows.
 
 1.  Let <var>target property</var> be the property for which the
-    <a>intermediate effect value</a> is to be calculated.
+    <a>effect value</a> is to be calculated.
 2.  If <a>animation behavior</a> of the <var>target property</var> is
     <a>not animatable</a> abort this procedure
     since the effect cannot be applied.
@@ -4603,7 +4598,7 @@ Issue: Recent changes in CSS Animations and CSS Transitions mean this
   description is no longer accurate. This section needs to be significantly
   reworked.
 
-After calculating the <a>intermediate effect values</a> for a
+After calculating the <a>effect values</a> for a
 <a>keyframe effect</a>, they are applied to the <a>animation
 effect</a>'s <a lt="target property">target properties</a>.
 
@@ -4622,11 +4617,11 @@ For a CSS <a>target property</a> the arrangement is illustrated below:
 
 <div class="figure">
 <img src="img/animation-cascade.svg" width="450"
-alt="Overview of the application of intermediate effect values
+alt="Overview of the application of effect values
 to their target properties">
 </div>
 <p class="caption">
-Overview of the application of <a>intermediate effect values</a> to
+Overview of the application of <a>effect values</a> to
 their <a>target properties</a>.<br>
 The results of <a>keyframe effects</a> targetting the same property
 are composited together using an <a>effect stack</a>.<br>
@@ -4640,20 +4635,19 @@ composited result is combined with the value of the attribute
 specified in the DOM or the lacuna value for that attribute if it is
 not specified.
 
-For the first part of this operation&mdash;combining <a>intermediate
-effect values</a> that target the same <a
-lt="target property">property</a>&mdash; it is necessary to
+For the first part of this operation&mdash;combining <a>effect values</a> that
+target the same <a lt="target property">property</a>&mdash; it is necessary to
 determine both
 <em>how</em> <a>keyframe effects</a>
 are combined with one another,
 as well as the <em>order</em> in which they are applied, that is,
 their relative <em>priority</em>.
 
-The matter of <em>how</em> <a>intermediate effect values</a> are
+The matter of <em>how</em> <a>effect values</a> are
 combined is governed by the <a>composite operation</a> of
 the corresponding <a>keyframe effects</a>.
 
-The relative <em>priority</em> of <a>intermediate effect values</a>
+The relative <em>priority</em> of <a>effect values</a>
 is determined by an <a>effect stack</a> established for each
 animated property.
 </div>
@@ -4727,7 +4721,7 @@ are created.
 <h4 id="calculating-the-result-of-an-effect-stack">Calculating the result of an effect stack</h4>
 
 In order to calculate the final value of an <a>effect stack</a>,
-the <a>intermediate effect values</a> of each
+the <a>effect values</a> of each
 <a>keyframe effect</a> in the stack are combined in order of priority
 from lowest to highest priority.
 
@@ -4735,49 +4729,46 @@ Each step in the process of evaluating an <a>effect stack</a> takes
 an <dfn>underlying value</dfn> as input.
 
 For each <a>keyframe effect</a> in the stack, the appropriate
-<a>intermediate effect value</a> from the <a>keyframe effect</a>
+<a>effect value</a> from the <a>keyframe effect</a>
 is combined with the <a>underlying value</a> to produce a new value.
 This resulting value becomes the <a>underlying value</a> for combining
 the next <a>keyframe effect</a> in the stack.
 
 The final value of an <a>effect stack</a>, called the
 <dfn>composited value</dfn>, is simply the result of combining the
-<a>intermediate effect value</a> of the final (highest priority)
+<a>effect value</a> of the final (highest priority)
 <a>keyframe effect</a> in the stack with the <a>underlying value</a>
 at that point.
 
 <h4 id="effect-composition">Effect composition</h4>
 
-The specific operation used to combine an <a>intermediate effect
-value</a> with an <a>underlying value</a> is determined by the
+The specific operation used to combine an <a>effect value</a> with an
+<a>underlying value</a> is determined by the
 <dfn>composite operation</dfn> of the <a>keyframe effect</a> that
-produced the <a>intermediate effect value</a>.
+produced the <a>effect value</a>.
 
 This specification defines three <a>composite operations</a> as
 follows:
 
 :   <dfn lt="composite operation replace">replace</dfn>
-::  The result of compositing the <a>intermediate effect value</a>
-    with the <a>underlying value</a> is simply the <a>intermediate
-    effect value</a>.
+::  The result of compositing the <a>effect value</a>
+    with the <a>underlying value</a> is simply the <a>effect value</a>.
 :   <dfn lt="composite operation add">add</dfn>
-::  The <a>intermediate effect value</a> is <a
+::  The <a>effect value</a> is <a
     lt="animation addition">added</a> to the <a>underlying
     value</a>.
     For <a>animation behaviors</a> where the
     <a lt="animation addition">addition operation</a> is defined
     such that it is not commutative, the order of the operands is
-    <code><a>underlying value</a> + <a>intermediate effect
-    value</a></code>.
+    <code><a>underlying value</a> + <a>effect value</a></code>.
 :   <dfn lt="composite operation accumulate">accumulate</dfn></dt>
-::  The <a>intermediate effect value</a> is <a
+::  The <a>effect value</a> is <a
     lt="animation accumulation">accumulated</a>
     onto the <a>underlying value</a>.
     For <a>animation behaviors</a> where the
     <a lt="animation accumulation">accumulation operation</a> is
     defined such that it is not commutative, the order of the operands
-    is <a>underlying value</a> followed by <a>intermediate effect
-    value</a>.
+    is <a>underlying value</a> followed by <a>effect value</a>.
 
 <h4 id="applying-the-composited-result">Applying the composited result</h4>
 
@@ -4855,8 +4846,8 @@ value</a> as the attribute value.
 
 <h4 id="effect-accumulation-section">Effect accumulation</h4>
 
-Similar to the compositing performed between <a>intermediate effect
-values</a> (see <a href="#effect-composition"
+Similar to the compositing performed between <a>effect values</a>
+(see <a href="#effect-composition"
 section></a>), the <dfn>iteration composite operation</dfn>
 determines how values are combined between successive iterations of
 the same <a>keyframe effect</a>.
@@ -4873,9 +4864,8 @@ as follows:
     final value of the previous iteration.
 
     The application of the <a>iteration composite operation</a> is
-    incorporated in the calculation of the <a>intermediate effect
-    value</a> in <a
-    href="#the-intermediate-effect-value-of-a-keyframe-animation-effect"
+    incorporated in the calculation of the <a>effect value</a> in <a
+    href="#the-effect-value-of-a-keyframe-animation-effect"
     section></a>.
 
 <!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
@@ -6616,9 +6606,8 @@ Keyframe object</a> or <a lt="convert an ECMAScript object to
 an IDL PropertyIndexedKeyframe object">PropertyIndexedKeyframe object</a>.
 
 The result of this procedure is a <dfn>normalized sequence of {{Keyframe}}
-objects</dfn> which forms the input for calculating <a>intermediate effect
-values</a> (see <a
-href="#the-intermediate-effect-value-of-a-keyframe-animation-effect"
+objects</dfn> which forms the input for calculating <a>effect values</a>
+(see <a href="#the-effect-value-of-a-keyframe-animation-effect"
 section></a>).
 
 1.  If <var>frames</var> is a {{SharedKeyframeList}} object, then
@@ -6699,7 +6688,7 @@ section></a>).
                     procedure so at least the list of keyframes can be more
                     easily updated.
 
-                *   Perform an additional step before calculating intermediate
+                *   Perform an additional step before calculating
                     effect values and before returning from
                     {{KeyframeEffectReadOnly/getFrames()}} that
                     does spacing and merging.
@@ -6831,7 +6820,7 @@ enum IterationCompositeOperation {"replace", "accumulate"};
 ::  Corresponds to the <a
     lt="iteration composite operation replace">replace</a>
     <a>iteration composite operation</a> value such that the
-    <a>intermediate effect value</a> produced is independent of the
+    <a>effect value</a> produced is independent of the
     <a>current iteration</a>.
 :   <code>accumulate</code>
 ::  Corresponds to the <a
@@ -7774,7 +7763,7 @@ The following changes have been made since the <a
     *   Removed the &lsquo;repeated duration&rsquo; definition since it is
         redundant in the absence of the <a>animation effect</a>-specific
         playback rate.
-*   Renamed intermediate animation values to <a>intermediate effect values</a>.
+*   Renamed intermediate animation values to <a>effect values</a>.
 *   Removed motion path animation effects since this functionality can be
     achieved using the <a href="http://dev.w3.org/fxtf/motion-1/">Motion Path
     Module</a>.
