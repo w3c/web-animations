@@ -4590,10 +4590,6 @@ Note: this procedure permits overlapping <a>keyframes</a>.
 <h3 id="combining-effects">Combining effects</h3>
 <div class='informative-bg'><em>This section is non-normative</em>
 
-Issue: Recent changes in CSS Animations and CSS Transitions mean this
-  description is no longer accurate. This section needs to be significantly
-  reworked.
-
 After calculating the <a>effect values</a> for a
 <a>keyframe effect</a>, they are applied to the <a>animation
 effect</a>'s <a lt="target property">target properties</a>.
@@ -4612,7 +4608,7 @@ values specified for the <a>target property</a>.
 For a CSS <a>target property</a> the arrangement is illustrated below:
 
 <div class="figure">
-<img src="img/animation-cascade.svg" width="450"
+<img src="img/animation-cascade.svg" width="550"
 alt="Overview of the application of effect values
 to their target properties">
 </div>
@@ -4621,9 +4617,8 @@ Overview of the application of <a>effect values</a> to
 their <a>target properties</a>.<br>
 The results of <a>keyframe effects</a> targetting the same property
 are composited together using an <a>effect stack</a>.<br>
-The result of this composition is written to an animation stylesheet
-that is more important than other stylesheets but less than any
-<code>!important</code> rules.
+The result of this composition is then inserted into the CSS cascade
+at an appropriate point.
 </p>
 
 For a <a>target property</a> that specifies a DOM attribute, the
@@ -4648,6 +4643,29 @@ is determined by an <a>effect stack</a> established for each
 animated property.
 </div>
 
+<h4 id="effect-brands">Effect brands</h4>
+
+This specification provides a common animation model intended to be used
+by other specifications that define markup or programming interfaces on
+top of this model. The particular markup or programming interface that
+generated an <a>animation</a> defines its <dfn>brand</dfn>.
+
+Further specifications may define specialized behavior for prioritizing
+animations between brands or within a particular <a>brand</a>.
+
+<div class='informative-bg'><em>This section is non-normative</em>
+
+For example, animations whose <a>brand</a> is &lsquo;CSS animation&rsquo; are
+defined as having a <em>higher</em> priority than animations whose brand is
+&lsquo;CSS transition&rsquo; but <em>lower</em> than other animations without
+a specific brand.
+
+Within the set of &lsquo;CSS animation&rsquo;-branded objects, specialized
+prioritization is defined based on the <code>animation-name</code> property
+amongst other factors.
+
+</div>
+
 <h4 id="the-effect-stack">The effect stack</h4>
 
 Associated with each property <a lt="target property">targetted</a>
@@ -4655,9 +4673,9 @@ by one or more <a>keyframe effects</a> is an <dfn>effect
 stack</dfn> that establishes the relative priority of the <a>keyframe
 effects</a>.
 
-The relative priority of any two <a>keyframe
-effects</a>, <var>A</var> and <var>B</var>, within an <a>effect
-stack</a> is established by comparing their properties as follows:
+The relative priority of any two <a>keyframe effects</a>,
+<var>A</var> and <var>B</var>, within an <a>effect stack</a> is
+established by comparing their properties as follows:
 
 1.  Let the <dfn>associated animation of an animation effect</dfn>
     be the <a>animation</a> <a
@@ -4667,16 +4685,18 @@ stack</a> is established by comparing their properties as follows:
 2.  Sort <var>A</var> and <var>B</var> by applying the following
     conditions in turn until the order is resolved,
 
-    1.  Sort <var>A</var> and <var>B</var> using any <a>custom
-        animation priority</a> specified for the <a
-        lt="associated animation of an animation effect">associated
-        animation</a> of each of <var>A</var> and
-        <var>B</var> so that lower priorities sort first.
-    2.  Sort by the <a>animation sequence number</a> so that lower
+    1.  If <var>A</var> and <var>B</var> differ by <a>brand</a>,
+        sort by any inter-brand prioritization defined for the
+        corresponding brands.
+    1.  If <var>A</var> and <var>B</var> are still not sorted,
+        sort by any <a>brand</a>-specific prioritization defined by
+        <var>A</var> and <var>B</var>'s common brand.
+    1.  If <var>A</var> and <var>B</var> are still not sorted,
+        sort by the <a>animation sequence number</a> so that lower
         sequence numbers sort first.
 
 <!-- @ifdef INCLUDE_GROUPS -->
-    3.  Sort <var>A</var> and <var>B</var> in <a>tree order</a>.
+    1.  Sort <var>A</var> and <var>B</var> in <a>tree order</a>.
         (By this point, <var>A</var> and <var>B</var> must have the
         same <a>animation</a> since otherwise the order would have been
         resolved in the previous step.)
@@ -4685,34 +4705,6 @@ stack</a> is established by comparing their properties as follows:
 
 <a>Animation effects</a> that sort earlier have <em>lower</em>
 priority.
-
-<h5 id="the-custom-animation-priority">The custom animation priority</h5>
-
-Issue: This needs to be reworked since the interaction between CSS Animations
-and CSS Transitions is more complex than this arrangement allows.
-
-Each <a>animation</a> has an associated numeric <dfn>custom animation
-priority</dfn> that is used to provide high-level control of
-animation priority for specifications layered on top of Web
-Animations.
-The initial value of the <a>custom animation priority</a> is zero.
-
-<div class="note">
-
-Note that the <a>custom animation priority</a> is primarily
-intended to be used to prioritize animations at
-a high-level, such as to prioritize animations <em>by type</em>.
-For example, it can be used to ensure that CSS Animations always
-override CSS Transitions.
-
-It is possible to control animation priority at a lower-level by
-setting the <a>animation start time</a> appropriately,
-(possibly after making compensatory adjustments to the <a>start
-delay</a> of the <a>target effect</a>) or influencing the
-<a>animation sequence number</a> by controlling when <a>animations</a>
-are created.
-
-</div>
 
 <h4 id="calculating-the-result-of-an-effect-stack">Calculating the result of an effect stack</h4>
 
@@ -4773,28 +4765,29 @@ The process for applying a <a>composited value</a> depends on if the
 
 <h5 id="applying-the-result-to-a-css-property">Applying the composited result to a CSS property</h5>
 
-Issue: This is probably no longer accurate.
-
 Applying a <a>composited value</a> to a CSS <a>target property</a>
-depends on establishing an <a>animation stylesheet</a>.
+is achieved by adding a specified value to the CSS cascade.
 
-The <dfn>animation stylesheet</dfn> contains
-<a lt="composited value">composited animation values</a>
-and acts with a higher priority than all other stylesheets.
-However, <code>!important</code> rules from all other stylesheets
-act with a higher priority than the <a>animation stylesheet</a>.
-The <a>animation stylesheet</a> is regenerated each time the
-animation model is updated (see <a href="#animation-effects"
-section></a>).
+The level of the cascade to which this specified value is added
+depends on the <a>brand</a> of the <a>animation</a> with the highest
+priority in the <a>effect stack</a> for a given property.
+By default, the specified value is added to the &lsquo;Animation
+declarations&rsquo; level of the cascade ([[!css-cascade-3]]).
+
+<div class='informative-bg'><em>This section is non-normative</em>
+
+For example, if the highest priority <a>animation</a> is a &lsquo;CSS
+transition&rsquo;-branded animation, the <a>composited value</a> is
+added to &lsquo;Transition declarations&rsquo; level of the cascade.
+
+</div>
 
 The <a>composited value</a> calculated for a CSS <a>target
 property</a> is applied using the following process.
 
 1.  Calculate the <var>base value</var> of the property as
-    the value generated for that property by computing the <a
-    href="http://www.w3.org/TR/CSS2/cascade.html#used-value">used
-    value</a> [[!CSS21]] for that property in the absence of the
-    <a>animation stylesheet</a>.
+    the value generated for that property by computing the computed value
+    for that property in the absence of animations.
 2.  Establish the <a>effect stack</a> for the property (see <a
     href="#the-effect-stack" section></a>).
 3.  Calculate the <a>composited value</a> of the <a>effect
@@ -4802,8 +4795,9 @@ property</a> is applied using the following process.
     as the initial <a>underlying value</a> (see <a
     href="#calculating-the-result-of-an-effect-stack"
     section></a>).
-4.  Insert the <a>composited value</a> into the <a>animation
-    stylesheet</a>.
+4.  Insert the <a>composited value</a> into the CSS cascade at the
+    level defined for the <a>brand</a> of the <a>animation</a> at the top
+    of the <a>effect stack</a> established for the target property.
 
 <h5 id="applying-the-composited-result-to-a-dom-attribute">Applying the composited result to a DOM attribute</h5>
 
