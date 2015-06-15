@@ -172,7 +172,7 @@ pre[class*="language-"] {
    <h1 class="p-name no-ref" id="title">Web Animations Level 2</h1>
   
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft,
-    <time class="dt-updated" datetime="2015-06-11">11 June 2015</time></span></h2>
+    <time class="dt-updated" datetime="2015-06-15">15 June 2015</time></span></h2>
   
    <div data-fill-with="spec-metadata">
     <dl>
@@ -375,7 +375,7 @@ calculations</span></a>
           <li><a href="#animatable-as-transform-list-section"><span class="secno">4.1.3.6</span> <span class="content">Animatable as transform list</span></a>
           <li><a href="#other-animation-behaviors"><span class="secno">4.1.3.7</span> <span class="content">Other animation behaviors</span></a>
          </ul>
-        <li><a href="#intermediate-effect-values"><span class="secno">4.1.4</span> <span class="content">Intermediate effect values</span></a>
+        <li><a href="#effect-values"><span class="secno">4.1.4</span> <span class="content">Effect values</span></a>
        </ul>
       <li><a href="#keyframes-section"><span class="secno">4.2</span> <span class="content">Keyframes</span></a>
        <ul class="toc">
@@ -383,22 +383,20 @@ calculations</span></a>
          <ul class="toc">
           <li><a href="#applying-spacing-to-keyframes"><span class="secno">4.2.1.1</span> <span class="content">Applying spacing to keyframes</span></a>
          </ul>
-        <li><a href="#the-intermediate-effect-value-of-a-keyframe-animation-effect"><span class="secno">4.2.2</span> <span class="content">The intermediate effect value of a keyframe effect</span></a>
+        <li><a href="#the-effect-value-of-a-keyframe-animation-effect"><span class="secno">4.2.2</span> <span class="content">The effect value of a keyframe effect</span></a>
        </ul>
       <li><a href="#combining-effects"><span class="secno">4.3</span> <span class="content">Combining effects</span></a>
        <ul class="toc">
-        <li><a href="#the-effect-stack"><span class="secno">4.3.1</span> <span class="content">The effect stack</span></a>
+        <li><a href="#effect-brands"><span class="secno">4.3.1</span> <span class="content">Effect brands</span></a>
+        <li><a href="#the-effect-stack"><span class="secno">4.3.2</span> <span class="content">The effect stack</span></a>
+        <li><a href="#calculating-the-result-of-an-effect-stack"><span class="secno">4.3.3</span> <span class="content">Calculating the result of an effect stack</span></a>
+        <li><a href="#effect-composition"><span class="secno">4.3.4</span> <span class="content">Effect composition</span></a>
+        <li><a href="#applying-the-composited-result"><span class="secno">4.3.5</span> <span class="content">Applying the composited result</span></a>
          <ul class="toc">
-          <li><a href="#the-custom-animation-priority"><span class="secno">4.3.1.1</span> <span class="content">The custom animation priority</span></a>
+          <li><a href="#applying-the-result-to-a-css-property"><span class="secno">4.3.5.1</span> <span class="content">Applying the composited result to a CSS property</span></a>
+          <li><a href="#applying-the-composited-result-to-a-dom-attribute"><span class="secno">4.3.5.2</span> <span class="content">Applying the composited result to a DOM attribute</span></a>
          </ul>
-        <li><a href="#calculating-the-result-of-an-effect-stack"><span class="secno">4.3.2</span> <span class="content">Calculating the result of an effect stack</span></a>
-        <li><a href="#effect-composition"><span class="secno">4.3.3</span> <span class="content">Effect composition</span></a>
-        <li><a href="#applying-the-composited-result"><span class="secno">4.3.4</span> <span class="content">Applying the composited result</span></a>
-         <ul class="toc">
-          <li><a href="#applying-the-result-to-a-css-property"><span class="secno">4.3.4.1</span> <span class="content">Applying the composited result to a CSS property</span></a>
-          <li><a href="#applying-the-composited-result-to-a-dom-attribute"><span class="secno">4.3.4.2</span> <span class="content">Applying the composited result to a DOM attribute</span></a>
-         </ul>
-        <li><a href="#effect-accumulation-section"><span class="secno">4.3.5</span> <span class="content">Effect accumulation</span></a>
+        <li><a href="#effect-accumulation-section"><span class="secno">4.3.6</span> <span class="content">Effect accumulation</span></a>
        </ul>
       <li><a href="#custom-effects"><span class="secno">4.4</span> <span class="content">Custom effects</span></a>
        <ul class="toc">
@@ -1164,15 +1162,10 @@ which is used to fix the animation’s output <a data-link-type="dfn" href="#tim
 The <a data-link-type="dfn" href="#hold-time">hold time</a> is initially <a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
 
 
-   <p>When an <a data-link-type="dfn" href="#concept-animation">animation</a> is created, it is assigned a globally unique
-sequence number called the <dfn data-dfn-type="dfn" data-noexport="" id="animation-sequence-number">animation sequence number<a class="self-link" href="#animation-sequence-number"></a></dfn>.
-This number is used to resolve the sort order of animations for a variety
-of situations such as combining effects and returning the list of
-current animations.</p>
-
-
-   <p class="issue" id="issue-beb79231"><a class="self-link" href="#issue-beb79231"></a> Should this actually be based on when the animation is attached to
-    a timeline? Or when it leaves the idle state?</p>
+   <p>In order to establish the priority of conflicting <a data-link-type="dfn" href="#concept-animation">animations</a>, each
+animation has an associated <dfn data-dfn-type="dfn" data-noexport="" id="animation-sequence-number">animation sequence number<a class="self-link" href="#animation-sequence-number"></a></dfn> that is
+assigned a globally unique sequence number each time it transitions
+out of the <a data-link-type="dfn" href="#idle-play-state">idle play state</a>.</p>
 
 
    <h4 class="heading settled" data-level="3.5.1" id="setting-the-timeline"><span class="secno">3.5.1. </span><span class="content">Setting the timeline of a animation</span><a class="self-link" href="#setting-the-timeline"></a></h4>
@@ -5532,8 +5525,8 @@ behavior<a class="self-link" href="#animation-behavior"></a></dfn>.</p>
 <a data-link-type="biblio" href="#biblio-css3-transitions">[CSS3-TRANSITIONS]</a> for properties that lack a such a line.</p>
 
 
-   <p class="issue" id="issue-48287af4"><a class="self-link" href="#issue-48287af4"></a> The default <a data-link-type="dfn" href="#animation-behavior">animation behavior</a> for CSS properties is "as
-       string".  Should this be defined here or in CSS Animations Level 4?</p>
+   <p class="issue" id="issue-f8dba5e7"><a class="self-link" href="#issue-f8dba5e7"></a> The default <a data-link-type="dfn" href="#animation-behavior">animation behavior</a> for CSS properties is "as
+       string".  Should this be defined here or in CSS Animations Level 2?</p>
 
 
    <p>For DOM attributes, the <a data-link-type="dfn" href="#animation-behavior">animation behavior</a> is defined alongside
@@ -6137,7 +6130,7 @@ Values and Replaced Content</a>
 <a data-link-type="biblio" href="#biblio-css4-images">[CSS4-IMAGES]</a>.</p>
 
 
-   <div class="issue" id="issue-2b25d150"><a class="self-link" href="#issue-2b25d150"></a>
+   <div class="issue" id="issue-6e37162d"><a class="self-link" href="#issue-6e37162d"></a>
 
 
     <p>There are a bunch of CSS properties for which distance (and in
@@ -6192,30 +6185,24 @@ percentages)</p>
       
 </ul>
 
-    <p>Should we define these here or in the CSS Animation 4 spec?</p>
+    <p>Should we define these here or in the CSS Animation 2 spec?</p>
 
 </div>
 
 
-   <h4 class="heading settled" data-level="4.1.4" id="intermediate-effect-values"><span class="secno">4.1.4. </span><span class="content">Intermediate effect values</span><a class="self-link" href="#intermediate-effect-values"></a></h4>
-
-
-   <p class="issue" id="issue-b7707b18"><a class="self-link" href="#issue-b7707b18"></a> Now that we’ve renamed this from “intermediate animation
-value”, would it be ok to rename this to simply “effect
-value”?</p>
+   <h4 class="heading settled" data-level="4.1.4" id="effect-values"><span class="secno">4.1.4. </span><span class="content">Effect values</span><a class="self-link" href="#effect-values"></a></h4>
 
 
    <p>Given an <a data-link-type="dfn" href="#iteration-progress">iteration progress</a>, a <a data-link-type="dfn" href="#current-iteration">current iteration</a>, and an
 <a data-link-type="dfn" href="#underlying-value">underlying value</a>, a <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> produces
-an <dfn data-dfn-type="dfn" data-noexport="" id="intermediate-effect-value">intermediate effect value<a class="self-link" href="#intermediate-effect-value"></a></dfn> for each <a data-link-type="dfn" href="#concept-animatable">animatable</a>
-<a data-link-type="dfn" href="#target-property">target property</a> by applying the <a data-link-type="dfn" href="#animation-behavior">animation behavior</a>
-appropriate to the property.</p>
+an <dfn data-dfn-type="dfn" data-noexport="" id="effect-value">effect value<a class="self-link" href="#effect-value"></a></dfn> for each <a data-link-type="dfn" href="#concept-animatable">animatable</a> <a data-link-type="dfn" href="#target-property">target property</a>
+by applying the <a data-link-type="dfn" href="#animation-behavior">animation behavior</a> appropriate to the property.</p>
 
 
    <h3 class="heading settled" data-level="4.2" id="keyframes-section"><span class="secno">4.2. </span><span class="content">Keyframes</span><a class="self-link" href="#keyframes-section"></a></h3>
 
 
-   <p>The <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect values</a> for a <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a>
+   <p>The <a data-link-type="dfn" href="#effect-value">effect values</a> for a <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a>
 are calculated by interpolating between a series of property values
 positioned at fractional offsets.
 Each set of property values indexed by an offset is called
@@ -6233,7 +6220,7 @@ is not null, if any.</p>
 
 
    <p>The behavior when <a data-link-type="dfn" href="#keyframe">keyframes</a> overlap or have unsupported values
-is defined in <a href="#the-intermediate-effect-value-of-a-keyframe-animation-effect">§4.2.2 The intermediate effect value of a keyframe effect</a>.</p>
+is defined in <a href="#the-effect-value-of-a-keyframe-animation-effect">§4.2.2 The effect value of a keyframe effect</a>.</p>
 
 
    <p>Each keyframe also has a <a data-link-type="dfn" href="#timing-function">timing function</a> associated with it
@@ -6248,7 +6235,7 @@ operation<a class="self-link" href="#keyframe_specific-composite-operation"></a>
 specified in that <a data-link-type="dfn" href="#keyframe">keyframe</a>.
 The possible operations and their meanings are identical to those defined
 for the <a data-link-type="dfn" href="#composite-operation">composite operation</a> associated with the <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a>
-as a whole in <a href="#effect-composition">§4.3.3 Effect composition</a>.
+as a whole in <a href="#effect-composition">§4.3.4 Effect composition</a>.
 If no <a data-link-type="dfn" href="#keyframe_specific-composite-operation">keyframe-specific composite operation</a> is specified for
 a <a data-link-type="dfn" href="#keyframe">keyframe</a>, the <a data-link-type="dfn" href="#composite-operation">composite operation</a> specified for the
 <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> as a whole is used for values specified in that keyframe.</p>
@@ -6638,10 +6625,10 @@ a keyframe</a> to each keyframe in the range (<var>A</var>,
     is justified.</p>
 
 
-   <h4 class="heading settled" data-level="4.2.2" id="the-intermediate-effect-value-of-a-keyframe-animation-effect"><span class="secno">4.2.2. </span><span class="content">The intermediate effect value of a keyframe effect</span><a class="self-link" href="#the-intermediate-effect-value-of-a-keyframe-animation-effect"></a></h4>
+   <h4 class="heading settled" data-level="4.2.2" id="the-effect-value-of-a-keyframe-animation-effect"><span class="secno">4.2.2. </span><span class="content">The effect value of a keyframe effect</span><a class="self-link" href="#the-effect-value-of-a-keyframe-animation-effect"></a></h4>
 
 
-   <p>The <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect value</a> of a single property
+   <p>The <a data-link-type="dfn" href="#effect-value">effect value</a> of a single property
 referenced by a <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> as one of its
 <a data-link-type="dfn" href="#target-property">target properties</a>, for a given
 <var>iteration progress</var>, <var>current iteration</var> and
@@ -6651,7 +6638,7 @@ referenced by a <a data-link-type="dfn" href="#keyframe-effect">keyframe effect<
    <ol>
     <li data-md="">
      <p>Let <var>target property</var> be the property for which the
-<a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect value</a> is to be calculated.</p>
+<a data-link-type="dfn" href="#effect-value">effect value</a> is to be calculated.</p>
      
 
     <li data-md="">
@@ -6963,12 +6950,7 @@ argument</a>
    <div class="informative-bg"><em>This section is non-normative</em>
 
 
-    <p class="issue" id="issue-337796cc"><a class="self-link" href="#issue-337796cc"></a> Recent changes in CSS Animations and CSS Transitions mean this
-  description is no longer accurate. This section needs to be significantly
-  reworked.</p>
-
-
-    <p>After calculating the <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect values</a> for a
+    <p>After calculating the <a data-link-type="dfn" href="#effect-value">effect values</a> for a
 <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a>, they are applied to the <a data-link-type="dfn" href="#animation-effect">animation
 effect</a>’s <a data-link-type="dfn" href="#target-property">target properties</a>.</p>
 
@@ -6990,18 +6972,17 @@ values specified for the <a data-link-type="dfn" href="#target-property">target 
 
 
     <div class="figure">
-<img alt="Overview of the application of intermediate effect values
-to their target properties" src="img/animation-cascade.svg" width="450">
+<img alt="Overview of the application of effect values
+to their target properties" src="img/animation-cascade.svg" width="550">
 </div>
 
     <p class="caption">
-Overview of the application of <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect values</a> to
+Overview of the application of <a data-link-type="dfn" href="#effect-value">effect values</a> to
 their <a data-link-type="dfn" href="#target-property">target properties</a>.<br>
 The results of <a data-link-type="dfn" href="#keyframe-effect">keyframe effects</a> targetting the same property
 are composited together using an <a data-link-type="dfn" href="#effect-stack">effect stack</a>.<br>
-The result of this composition is written to an animation stylesheet
-that is more important than other stylesheets but less than any
-<code>!important</code> rules.
+The result of this composition is then inserted into the CSS cascade
+at an appropriate point.
 </p>
 
 
@@ -7011,8 +6992,8 @@ specified in the DOM or the lacuna value for that attribute if it is
 not specified.</p>
 
 
-    <p>For the first part of this operation—combining <a data-link-type="dfn" href="#intermediate-effect-value">intermediate
-effect values</a> that target the same <a data-link-type="dfn" href="#target-property">property</a>— it is necessary to
+    <p>For the first part of this operation—combining <a data-link-type="dfn" href="#effect-value">effect values</a> that
+target the same <a data-link-type="dfn" href="#target-property">property</a>— it is necessary to
 determine both
 <em>how</em> <a data-link-type="dfn" href="#keyframe-effect">keyframe effects</a>
 are combined with one another,
@@ -7020,18 +7001,47 @@ as well as the <em>order</em> in which they are applied, that is,
 their relative <em>priority</em>.</p>
 
 
-    <p>The matter of <em>how</em> <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect values</a> are
+    <p>The matter of <em>how</em> <a data-link-type="dfn" href="#effect-value">effect values</a> are
 combined is governed by the <a data-link-type="dfn" href="#composite-operation">composite operation</a> of
 the corresponding <a data-link-type="dfn" href="#keyframe-effect">keyframe effects</a>.</p>
 
 
-    <p>The relative <em>priority</em> of <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect values</a>
+    <p>The relative <em>priority</em> of <a data-link-type="dfn" href="#effect-value">effect values</a>
 is determined by an <a data-link-type="dfn" href="#effect-stack">effect stack</a> established for each
 animated property.</p>
 </div>
 
 
-   <h4 class="heading settled" data-level="4.3.1" id="the-effect-stack"><span class="secno">4.3.1. </span><span class="content">The effect stack</span><a class="self-link" href="#the-effect-stack"></a></h4>
+   <h4 class="heading settled" data-level="4.3.1" id="effect-brands"><span class="secno">4.3.1. </span><span class="content">Effect brands</span><a class="self-link" href="#effect-brands"></a></h4>
+
+
+   <p>This specification provides a common animation model intended to be used
+by other specifications that define markup or programming interfaces on
+top of this model. The particular markup or programming interface that
+generated an <a data-link-type="dfn" href="#concept-animation">animation</a> defines its <dfn data-dfn-type="dfn" data-noexport="" id="brand">brand<a class="self-link" href="#brand"></a></dfn>.</p>
+
+
+   <p>Further specifications may define specialized behavior for prioritizing
+animations between brands or within a particular <a data-link-type="dfn" href="#brand">brand</a>.</p>
+
+
+   <div class="informative-bg"><em>This section is non-normative</em>
+
+
+    <p>For example, animations whose <a data-link-type="dfn" href="#brand">brand</a> is ‘CSS animation’ are
+defined as having a <em>higher</em> priority than animations whose brand is
+‘CSS transition’ but <em>lower</em> than other animations without
+a specific brand.</p>
+
+
+    <p>Within the set of ‘CSS animation’-branded objects, specialized
+prioritization is defined based on the <code>animation-name</code> property
+amongst other factors.</p>
+
+</div>
+
+
+   <h4 class="heading settled" data-level="4.3.2" id="the-effect-stack"><span class="secno">4.3.2. </span><span class="content">The effect stack</span><a class="self-link" href="#the-effect-stack"></a></h4>
 
 
    <p>Associated with each property <a data-link-type="dfn" href="#target-property">targetted</a>
@@ -7040,9 +7050,9 @@ stack<a class="self-link" href="#effect-stack"></a></dfn> that establishes the r
 effects</a>.</p>
 
 
-   <p>The relative priority of any two <a data-link-type="dfn" href="#keyframe-effect">keyframe
-effects</a>, <var>A</var> and <var>B</var>, within an <a data-link-type="dfn" href="#effect-stack">effect
-stack</a> is established by comparing their properties as follows:</p>
+   <p>The relative priority of any two <a data-link-type="dfn" href="#keyframe-effect">keyframe effects</a>,
+<var>A</var> and <var>B</var>, within an <a data-link-type="dfn" href="#effect-stack">effect stack</a> is
+established by comparing their properties as follows:</p>
 
 
    <ol>
@@ -7061,15 +7071,22 @@ conditions in turn until the order is resolved,</p>
 
      <ol>
       <li data-md="">
-       <p>Sort <var>A</var> and <var>B</var> using any <a data-link-type="dfn" href="#custom-animation-priority">custom
-animation priority</a> specified for the <a data-link-type="dfn" href="#associated-animation-of-an-animation-effect">associated
-animation</a> of each of <var>A</var> and
-<var>B</var> so that lower priorities sort first.</p>
+       <p>If <var>A</var> and <var>B</var>’s associated animations differ by
+<a data-link-type="dfn" href="#brand">brand</a>, sort by any inter-brand prioritization defined for the
+corresponding brands.</p>
        
 
       <li data-md="">
-       <p>Sort by the <a data-link-type="dfn" href="#animation-sequence-number">animation sequence number</a> so that lower
-sequence numbers sort first.</p>
+       <p>If <var>A</var> and <var>B</var> are still not sorted,
+sort by any <a data-link-type="dfn" href="#brand">brand</a>-specific prioritization defined by
+the common brand of <var>A</var> and <var>B</var>’s
+associated animations.</p>
+       
+
+      <li data-md="">
+       <p>If <var>A</var> and <var>B</var> are still not sorted,
+sort by the <a data-link-type="dfn" href="#animation-sequence-number">animation sequence number</a> of their
+associated animations so that lower sequence numbers sort first.</p>
        
 
 
@@ -7085,45 +7102,11 @@ resolved in the previous step.)</p>
 priority.</p>
 
 
-   <h5 class="heading settled" data-level="4.3.1.1" id="the-custom-animation-priority"><span class="secno">4.3.1.1. </span><span class="content">The custom animation priority</span><a class="self-link" href="#the-custom-animation-priority"></a></h5>
-
-
-   <p class="issue" id="issue-78a8a330"><a class="self-link" href="#issue-78a8a330"></a> This needs to be reworked since the interaction between CSS Animations
-and CSS Transitions is more complex than this arrangement allows.</p>
-
-
-   <p>Each <a data-link-type="dfn" href="#concept-animation">animation</a> has an associated numeric <dfn data-dfn-type="dfn" data-noexport="" id="custom-animation-priority">custom animation
-priority<a class="self-link" href="#custom-animation-priority"></a></dfn> that is used to provide high-level control of
-animation priority for specifications layered on top of Web
-Animations.
-The initial value of the <a data-link-type="dfn" href="#custom-animation-priority">custom animation priority</a> is zero.</p>
-
-
-   <div class="note" role="note">
-
-
-    <p>Note that the <a data-link-type="dfn" href="#custom-animation-priority">custom animation priority</a> is primarily
-intended to be used to prioritize animations at
-a high-level, such as to prioritize animations <em>by type</em>.
-For example, it can be used to ensure that CSS Animations always
-override CSS Transitions.</p>
-
-
-    <p>It is possible to control animation priority at a lower-level by
-setting the <a data-link-type="dfn" href="#animation-start-time">animation start time</a> appropriately,
-(possibly after making compensatory adjustments to the <a data-link-type="dfn" href="#start-delay">start
-delay</a> of the <a data-link-type="dfn" href="#target-effect">target effect</a>) or influencing the
-<a data-link-type="dfn" href="#animation-sequence-number">animation sequence number</a> by controlling when <a data-link-type="dfn" href="#concept-animation">animations</a>
-are created.</p>
-
-</div>
-
-
-   <h4 class="heading settled" data-level="4.3.2" id="calculating-the-result-of-an-effect-stack"><span class="secno">4.3.2. </span><span class="content">Calculating the result of an effect stack</span><a class="self-link" href="#calculating-the-result-of-an-effect-stack"></a></h4>
+   <h4 class="heading settled" data-level="4.3.3" id="calculating-the-result-of-an-effect-stack"><span class="secno">4.3.3. </span><span class="content">Calculating the result of an effect stack</span><a class="self-link" href="#calculating-the-result-of-an-effect-stack"></a></h4>
 
 
    <p>In order to calculate the final value of an <a data-link-type="dfn" href="#effect-stack">effect stack</a>,
-the <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect values</a> of each
+the <a data-link-type="dfn" href="#effect-value">effect values</a> of each
 <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> in the stack are combined in order of priority
 from lowest to highest priority.</p>
 
@@ -7133,7 +7116,7 @@ an <dfn data-dfn-type="dfn" data-noexport="" id="underlying-value">underlying va
 
 
    <p>For each <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> in the stack, the appropriate
-<a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect value</a> from the <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a>
+<a data-link-type="dfn" href="#effect-value">effect value</a> from the <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a>
 is combined with the <a data-link-type="dfn" href="#underlying-value">underlying value</a> to produce a new value.
 This resulting value becomes the <a data-link-type="dfn" href="#underlying-value">underlying value</a> for combining
 the next <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> in the stack.</p>
@@ -7141,18 +7124,18 @@ the next <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> in 
 
    <p>The final value of an <a data-link-type="dfn" href="#effect-stack">effect stack</a>, called the
 <dfn data-dfn-type="dfn" data-noexport="" id="composited-value">composited value<a class="self-link" href="#composited-value"></a></dfn>, is simply the result of combining the
-<a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect value</a> of the final (highest priority)
+<a data-link-type="dfn" href="#effect-value">effect value</a> of the final (highest priority)
 <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> in the stack with the <a data-link-type="dfn" href="#underlying-value">underlying value</a>
 at that point.</p>
 
 
-   <h4 class="heading settled" data-level="4.3.3" id="effect-composition"><span class="secno">4.3.3. </span><span class="content">Effect composition</span><a class="self-link" href="#effect-composition"></a></h4>
+   <h4 class="heading settled" data-level="4.3.4" id="effect-composition"><span class="secno">4.3.4. </span><span class="content">Effect composition</span><a class="self-link" href="#effect-composition"></a></h4>
 
 
-   <p>The specific operation used to combine an <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect
-value</a> with an <a data-link-type="dfn" href="#underlying-value">underlying value</a> is determined by the
+   <p>The specific operation used to combine an <a data-link-type="dfn" href="#effect-value">effect value</a> with an
+<a data-link-type="dfn" href="#underlying-value">underlying value</a> is determined by the
 <dfn data-dfn-type="dfn" data-noexport="" id="composite-operation">composite operation<a class="self-link" href="#composite-operation"></a></dfn> of the <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> that
-produced the <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect value</a>.</p>
+produced the <a data-link-type="dfn" href="#effect-value">effect value</a>.</p>
 
 
    <p>This specification defines three <a data-link-type="dfn" href="#composite-operation">composite operations</a> as
@@ -7165,9 +7148,8 @@ follows:</p>
      
 
     <dd data-md="">
-     <p>The result of compositing the <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect value</a>
-with the <a data-link-type="dfn" href="#underlying-value">underlying value</a> is simply the <a data-link-type="dfn" href="#intermediate-effect-value">intermediate
-effect value</a>.</p>
+     <p>The result of compositing the <a data-link-type="dfn" href="#effect-value">effect value</a>
+with the <a data-link-type="dfn" href="#underlying-value">underlying value</a> is simply the <a data-link-type="dfn" href="#effect-value">effect value</a>.</p>
      
 
     <dt data-md="">
@@ -7175,13 +7157,12 @@ effect value</a>.</p>
      
 
     <dd data-md="">
-     <p>The <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect value</a> is <a data-link-type="dfn" href="#animation-addition">added</a> to the <a data-link-type="dfn" href="#underlying-value">underlying
+     <p>The <a data-link-type="dfn" href="#effect-value">effect value</a> is <a data-link-type="dfn" href="#animation-addition">added</a> to the <a data-link-type="dfn" href="#underlying-value">underlying
 value</a>.
 For <a data-link-type="dfn" href="#animation-behavior">animation behaviors</a> where the
 <a data-link-type="dfn" href="#animation-addition">addition operation</a> is defined
 such that it is not commutative, the order of the operands is
-<code><a data-link-type="dfn" href="#underlying-value">underlying value</a> + <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect
-value</a></code>.</p>
+<code><a data-link-type="dfn" href="#underlying-value">underlying value</a> + <a data-link-type="dfn" href="#effect-value">effect value</a></code>.</p>
      
 
     <dt data-md="">
@@ -7189,39 +7170,43 @@ value</a></code>.</p>
     <p></p>
 
     <dd data-md="">
-     <p>The <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect value</a> is <a data-link-type="dfn" href="#animation-accumulation">accumulated</a>
+     <p>The <a data-link-type="dfn" href="#effect-value">effect value</a> is <a data-link-type="dfn" href="#animation-accumulation">accumulated</a>
 onto the <a data-link-type="dfn" href="#underlying-value">underlying value</a>.
 For <a data-link-type="dfn" href="#animation-behavior">animation behaviors</a> where the
 <a data-link-type="dfn" href="#animation-accumulation">accumulation operation</a> is
 defined such that it is not commutative, the order of the operands
-is <a data-link-type="dfn" href="#underlying-value">underlying value</a> followed by <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect
-value</a>.</p>
+is <a data-link-type="dfn" href="#underlying-value">underlying value</a> followed by <a data-link-type="dfn" href="#effect-value">effect value</a>.</p>
 </dl>
 
-   <h4 class="heading settled" data-level="4.3.4" id="applying-the-composited-result"><span class="secno">4.3.4. </span><span class="content">Applying the composited result</span><a class="self-link" href="#applying-the-composited-result"></a></h4>
+   <h4 class="heading settled" data-level="4.3.5" id="applying-the-composited-result"><span class="secno">4.3.5. </span><span class="content">Applying the composited result</span><a class="self-link" href="#applying-the-composited-result"></a></h4>
 
 
    <p>The process for applying a <a data-link-type="dfn" href="#composited-value">composited value</a> depends on if the
 <a data-link-type="dfn" href="#target-property">target property</a> refers to a CSS property or a DOM attribute.</p>
 
 
-   <h5 class="heading settled" data-level="4.3.4.1" id="applying-the-result-to-a-css-property"><span class="secno">4.3.4.1. </span><span class="content">Applying the composited result to a CSS property</span><a class="self-link" href="#applying-the-result-to-a-css-property"></a></h5>
-
-
-   <p class="issue" id="issue-49163874"><a class="self-link" href="#issue-49163874"></a> This is probably no longer accurate.</p>
+   <h5 class="heading settled" data-level="4.3.5.1" id="applying-the-result-to-a-css-property"><span class="secno">4.3.5.1. </span><span class="content">Applying the composited result to a CSS property</span><a class="self-link" href="#applying-the-result-to-a-css-property"></a></h5>
 
 
    <p>Applying a <a data-link-type="dfn" href="#composited-value">composited value</a> to a CSS <a data-link-type="dfn" href="#target-property">target property</a>
-depends on establishing an <a data-link-type="dfn" href="#animation-stylesheet">animation stylesheet</a>.</p>
+is achieved by adding a specified value to the CSS cascade.</p>
 
 
-   <p>The <dfn data-dfn-type="dfn" data-noexport="" id="animation-stylesheet">animation stylesheet<a class="self-link" href="#animation-stylesheet"></a></dfn> contains
-<a data-link-type="dfn" href="#composited-value">composited animation values</a>
-and acts with a higher priority than all other stylesheets.
-However, <code>!important</code> rules from all other stylesheets
-act with a higher priority than the <a data-link-type="dfn" href="#animation-stylesheet">animation stylesheet</a>.
-The <a data-link-type="dfn" href="#animation-stylesheet">animation stylesheet</a> is regenerated each time the
-animation model is updated (see <a href="#animation-effects">§3.6 Animation effects</a>).</p>
+   <p>The level of the cascade to which this specified value is added
+depends on the <a data-link-type="dfn" href="#brand">brand</a> of the <a data-link-type="dfn" href="#concept-animation">animation</a> with the highest
+priority in the <a data-link-type="dfn" href="#effect-stack">effect stack</a> for a given property.
+By default, the specified value is added to the ‘Animation
+declarations’ level of the cascade (<a data-link-type="biblio" href="#biblio-css-cascade-3">[css-cascade-3]</a>).</p>
+
+
+   <div class="informative-bg"><em>This section is non-normative</em>
+
+
+    <p>For example, if the highest priority <a data-link-type="dfn" href="#concept-animation">animation</a> is a ‘CSS
+transition’-branded animation, the <a data-link-type="dfn" href="#composited-value">composited value</a> is
+added to ‘Transition declarations’ level of the cascade.</p>
+
+</div>
 
 
    <p>The <a data-link-type="dfn" href="#composited-value">composited value</a> calculated for a CSS <a data-link-type="dfn" href="#target-property">target
@@ -7231,28 +7216,28 @@ property</a> is applied using the following process.</p>
    <ol>
     <li data-md="">
      <p>Calculate the <var>base value</var> of the property as
-the value generated for that property by computing the <a href="http://www.w3.org/TR/CSS2/cascade.html#used-value">used
-value</a> <a data-link-type="biblio" href="#biblio-css21">[CSS21]</a> for that property in the absence of the
-<a data-link-type="dfn" href="#animation-stylesheet">animation stylesheet</a>.</p>
+the value generated for that property by computing the computed value
+for that property in the absence of animations.</p>
      
 
     <li data-md="">
-     <p>Establish the <a data-link-type="dfn" href="#effect-stack">effect stack</a> for the property (see <a href="#the-effect-stack">§4.3.1 The effect stack</a>).</p>
+     <p>Establish the <a data-link-type="dfn" href="#effect-stack">effect stack</a> for the property (see <a href="#the-effect-stack">§4.3.2 The effect stack</a>).</p>
      
 
     <li data-md="">
      <p>Calculate the <a data-link-type="dfn" href="#composited-value">composited value</a> of the <a data-link-type="dfn" href="#effect-stack">effect
 stack</a> passing in the <var>base value</var> of the property
-as the initial <a data-link-type="dfn" href="#underlying-value">underlying value</a> (see <a href="#calculating-the-result-of-an-effect-stack">§4.3.2 Calculating the result of an effect stack</a>).</p>
+as the initial <a data-link-type="dfn" href="#underlying-value">underlying value</a> (see <a href="#calculating-the-result-of-an-effect-stack">§4.3.3 Calculating the result of an effect stack</a>).</p>
      
 
     <li data-md="">
-     <p>Insert the <a data-link-type="dfn" href="#composited-value">composited value</a> into the <a data-link-type="dfn" href="#animation-stylesheet">animation
-stylesheet</a>.</p>
+     <p>Insert the <a data-link-type="dfn" href="#composited-value">composited value</a> into the CSS cascade at the
+level defined for the <a data-link-type="dfn" href="#brand">brand</a> of the <a data-link-type="dfn" href="#concept-animation">animation</a> at the top
+of the <a data-link-type="dfn" href="#effect-stack">effect stack</a> established for the target property.</p>
      
 </ol>
 
-   <h5 class="heading settled" data-level="4.3.4.2" id="applying-the-composited-result-to-a-dom-attribute"><span class="secno">4.3.4.2. </span><span class="content">Applying the composited result to a DOM attribute</span><a class="self-link" href="#applying-the-composited-result-to-a-dom-attribute"></a></h5>
+   <h5 class="heading settled" data-level="4.3.5.2" id="applying-the-composited-result-to-a-dom-attribute"><span class="secno">4.3.5.2. </span><span class="content">Applying the composited result to a DOM attribute</span><a class="self-link" href="#applying-the-composited-result-to-a-dom-attribute"></a></h5>
 
 
    <p>DOM attributes are, unless otherwise specified, <a data-link-type="dfn" href="#concept-not-animatable">not animatable</a>.
@@ -7277,13 +7262,13 @@ if the attribute value is not specified in the DOM, the
      
 
     <li data-md="">
-     <p>Establish the <a data-link-type="dfn" href="#effect-stack">effect stack</a> for the property (see <a href="#the-effect-stack">§4.3.1 The effect stack</a>).</p>
+     <p>Establish the <a data-link-type="dfn" href="#effect-stack">effect stack</a> for the property (see <a href="#the-effect-stack">§4.3.2 The effect stack</a>).</p>
     <p></p>
 
     <li data-md="">
      <p>Calculate the <a data-link-type="dfn" href="#composited-value">composited value</a> of the <a data-link-type="dfn" href="#effect-stack">effect
 stack</a> passing in the <var>base value</var> of the attribute
-as the initial <a data-link-type="dfn" href="#underlying-value">underlying value</a> (see <a href="#calculating-the-result-of-an-effect-stack">§4.3.2 Calculating the result of an effect stack</a>).</p>
+as the initial <a data-link-type="dfn" href="#underlying-value">underlying value</a> (see <a href="#calculating-the-result-of-an-effect-stack">§4.3.3 Calculating the result of an effect stack</a>).</p>
     <p></p>
 
     <li data-md="">
@@ -7299,11 +7284,11 @@ using DOM interfaces, user agents must treat the <a data-link-type="dfn" href="#
 value</a> as the attribute value.</p>
 
 
-   <h4 class="heading settled" data-level="4.3.5" id="effect-accumulation-section"><span class="secno">4.3.5. </span><span class="content">Effect accumulation</span><a class="self-link" href="#effect-accumulation-section"></a></h4>
+   <h4 class="heading settled" data-level="4.3.6" id="effect-accumulation-section"><span class="secno">4.3.6. </span><span class="content">Effect accumulation</span><a class="self-link" href="#effect-accumulation-section"></a></h4>
 
 
-   <p>Similar to the compositing performed between <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect
-values</a> (see <a href="#effect-composition">§4.3.3 Effect composition</a>), the <dfn data-dfn-type="dfn" data-noexport="" id="iteration-composite-operation">iteration composite operation<a class="self-link" href="#iteration-composite-operation"></a></dfn>
+   <p>Similar to the compositing performed between <a data-link-type="dfn" href="#effect-value">effect values</a>
+(see <a href="#effect-composition">§4.3.4 Effect composition</a>), the <dfn data-dfn-type="dfn" data-noexport="" id="iteration-composite-operation">iteration composite operation<a class="self-link" href="#iteration-composite-operation"></a></dfn>
 determines how values are combined between successive iterations of
 the same <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a>.</p>
 
@@ -7333,8 +7318,7 @@ final value of the previous iteration.</p>
 
 
      <p>The application of the <a data-link-type="dfn" href="#iteration-composite-operation">iteration composite operation</a> is
-incorporated in the calculation of the <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect
-value</a> in <a href="#the-intermediate-effect-value-of-a-keyframe-animation-effect">§4.2.2 The intermediate effect value of a keyframe effect</a>.</p>
+incorporated in the calculation of the <a data-link-type="dfn" href="#effect-value">effect value</a> in <a href="#the-effect-value-of-a-keyframe-animation-effect">§4.2.2 The effect value of a keyframe effect</a>.</p>
      
 </dl>
 
@@ -7529,7 +7513,7 @@ order of execution differs from <a data-link-type="dfn" href="#animation-effect"
 
    <p><a data-link-type="dfn" href="#custom-effect">Custom effects</a> are executed after all
 <a data-link-type="dfn" href="#animation-effect">animation effects</a> have completed and
-applied their result to their targets (see <a href="#applying-the-composited-result">§4.3.4 Applying the composited result</a>).</p>
+applied their result to their targets (see <a href="#applying-the-composited-result">§4.3.5 Applying the composited result</a>).</p>
 
 
    <p class="issue" id="issue-8b46f38c"><a class="self-link" href="#issue-8b46f38c"></a> Need to define this more precisely.
@@ -7541,7 +7525,7 @@ applied their result to their targets (see <a href="#applying-the-composited-res
 
    <p>Within the set of <a data-link-type="dfn" href="#custom-effect">custom effects</a>, the
 order of execution is the same as that defined for <a data-link-type="dfn" href="#animation-effect">animation effects</a> in
-<a href="#the-effect-stack">§4.3.1 The effect stack</a>.
+<a href="#the-effect-stack">§4.3.2 The effect stack</a>.
 Items sorted earlier are executed before those sorted later.</p>
 
 
@@ -7672,8 +7656,8 @@ associated with this <a data-link-type="dfn" href="#timeline">timeline</a> that 
       
 
 
-      <p>The returned list is sorted in increasing order by <a data-link-type="dfn" href="#animation-sequence-number">animation
-sequence number</a>.</p>
+      <p>The returned list is sorted using the prioritization described
+for the associated <a data-link-type="dfn" href="#concept-animation">animations</a> of effects in <a class="sectionRef" href="#the-effect-stack">§4.3.2 The effect stack</a>.</p>
       
 
 
@@ -10151,8 +10135,8 @@ Keyframe object</a> or <a data-link-type="dfn" href="#convert-an-ecmascript-obje
 
 
     <p>The result of this procedure is a <dfn data-dfn-type="dfn" data-noexport="" id="normalized-sequence-of-keyframe-objects">normalized sequence of <code class="idl"><a data-link-type="idl" href="#dictdef-keyframe">Keyframe</a></code>
-objects<a class="self-link" href="#normalized-sequence-of-keyframe-objects"></a></dfn> which forms the input for calculating <a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect
-values</a> (see <a href="#the-intermediate-effect-value-of-a-keyframe-animation-effect">§4.2.2 The intermediate effect value of a keyframe effect</a>).</p>
+objects<a class="self-link" href="#normalized-sequence-of-keyframe-objects"></a></dfn> which forms the input for calculating <a data-link-type="dfn" href="#effect-value">effect values</a>
+(see <a href="#the-effect-value-of-a-keyframe-animation-effect">§4.2.2 The effect value of a keyframe effect</a>).</p>
 
 
     <ol>
@@ -10283,7 +10267,7 @@ dictionary values.</p>
              
 
 
-             <div class="issue" id="issue-ad5692a9"><a class="self-link" href="#issue-ad5692a9"></a>
+             <div class="issue" id="issue-3d6469de"><a class="self-link" href="#issue-3d6469de"></a>
 
 
               <p>Applying this procedure here means that offsets are fixed and
@@ -10312,7 +10296,7 @@ easily updated.</p>
 
 
                <li data-md="">
-                <p>Perform an additional step before calculating intermediate
+                <p>Perform an additional step before calculating
 effect values and before returning from
 <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getframes">getFrames()</a></code> that
 does spacing and merging.</p>
@@ -10489,7 +10473,7 @@ automatically. For example,</p>
      <dd data-md="">
       <p>Corresponds to the <a data-link-type="dfn" href="#iteration-composite-operation-replace">replace</a>
 <a data-link-type="dfn" href="#iteration-composite-operation">iteration composite operation</a> value such that the
-<a data-link-type="dfn" href="#intermediate-effect-value">intermediate effect value</a> produced is independent of the
+<a data-link-type="dfn" href="#effect-value">effect value</a> produced is independent of the
 <a data-link-type="dfn" href="#current-iteration">current iteration</a>.</p>
       
 
@@ -11374,8 +11358,8 @@ contains at least one <a data-link-type="dfn" href="#animation-effect">animation
 <a data-link-type="dfn" href="#animation-effect">animation effects</a> which are associated with the
 same <a data-link-type="dfn" href="#concept-animation">animation</a>, the corresponding <code class="idl"><a data-link-type="idl" href="#animation">Animation</a></code>
 object will still only appear in the returned list once.
-The returned list is sorted in increasing order by <a data-link-type="dfn" href="#animation-sequence-number">animation
-sequence number</a>.</p>
+The returned list is sorted using the prioritization described
+for the associated <a data-link-type="dfn" href="#concept-animation">animations</a> of effects in <a class="sectionRef" href="#the-effect-stack">§4.3.2 The effect stack</a>.</p>
        
 
 
@@ -11852,7 +11836,7 @@ number, <a href="#animatable-as-real-number">4.1.3.3</a>
    <li>animatable as transform
 list, <a href="#animatable-as-transform-list">4.1.3.6</a>
    <li>animated
-attribute value, <a href="#animated-attribute-value">4.3.4.2</a>
+attribute value, <a href="#animated-attribute-value">4.3.5.2</a>
    <li>animate(frames, options), <a href="#dom-animatable-animateframes-options">5.21</a>
    <li>animation
     <ul>
@@ -11879,17 +11863,17 @@ behavior, <a href="#animation-behavior">4.1.3</a>
    <li>AnimationPlayState, <a href="#enumdef-animationplaystate">5.4.1</a>
    <li>animation sequence number, <a href="#animation-sequence-number">3.5</a>
    <li>animation start time, <a href="#animation-start-time">3.5</a>
-   <li>animation stylesheet, <a href="#animation-stylesheet">4.3.4.1</a>
    <li>AnimationTimeline, <a href="#animationtimeline">5.2</a>
    <li>append(), <a href="#dom-groupeffectmutable-append">5.10</a>
    <li>assert, <a href="#assert">Unnumbered section</a>
-   <li>associated animation of an animation effect, <a href="#associated-animation-of-an-animation-effect">4.3.1</a>
+   <li>associated animation of an animation effect, <a href="#associated-animation-of-an-animation-effect">4.3.2</a>
    <li>associated with an animation, <a href="#associated-with-an-animation">3.6.1</a>
    <li>associated with
 a timeline, <a href="#associated-with-a-timeline">3.6.1</a>
    <li>before(), <a href="#dom-animationeffectmutable-before">5.5</a>
    <li>before flag, <a href="#before-flag">3.12.4</a>
    <li>before phase, <a href="#before-phase">3.6.5</a>
+   <li>brand, <a href="#brand">4.3.1</a>
    <li>cancel(), <a href="#dom-animation-cancel">5.4</a>
    <li>cancel an animation, <a href="#cancel-an-animation">3.5.15</a>
    <li>child effect, <a href="#child-effect">3.13</a>
@@ -11912,16 +11896,16 @@ a timeline, <a href="#associated-with-a-timeline">3.6.1</a>
      <li>dict-member for Keyframe, <a href="#dom-keyframe-composite">5.16</a>
      <li>dict-member for PropertyIndexedKeyframe, <a href="#dom-propertyindexedkeyframe-composite">5.17</a>
     </ul>
-   <li>composited value, <a href="#composited-value">4.3.2</a>
+   <li>composited value, <a href="#composited-value">4.3.3</a>
    <li>CompositeOperation
     <ul>
      <li>definition of, <a href="#compositeoperation">5.15</a>
      <li>(enum), <a href="#enumdef-compositeoperation">5.15</a>
     </ul>
-   <li>composite operation, <a href="#composite-operation">4.3.3</a>
-   <li>composite operation accumulate, <a href="#composite-operation-accumulate">4.3.3</a>
-   <li>composite operation add, <a href="#composite-operation-add">4.3.3</a>
-   <li>composite operation replace, <a href="#composite-operation-replace">4.3.3</a>
+   <li>composite operation, <a href="#composite-operation">4.3.4</a>
+   <li>composite operation accumulate, <a href="#composite-operation-accumulate">4.3.4</a>
+   <li>composite operation add, <a href="#composite-operation-add">4.3.4</a>
+   <li>composite operation replace, <a href="#composite-operation-replace">4.3.4</a>
    <li>composition, <a href="#composition">4.3</a>
    <li>ComputedKeyframe, <a href="#dictdef-computedkeyframe">5.18</a>
    <li>computedOffset, <a href="#dom-computedkeyframe-computedoffset">5.18</a>
@@ -11948,8 +11932,6 @@ PropertyIndexedKeyframe object, <a href="#convert-an-ecmascript-object-to-an-idl
      <li>attribute for AnimationTimeline, <a href="#dom-animationtimeline-currenttime">5.2</a>
      <li>attribute for Animation, <a href="#dom-animation-currenttime">5.4</a>
     </ul>
-   <li>custom animation
-priority, <a href="#custom-animation-priority">4.3.1.1</a>
    <li>custom effect, <a href="#custom-effect">4.4</a>
    <li>default document
 timeline, <a href="#default-document-timeline">3.4.2</a>
@@ -12005,7 +11987,8 @@ timeline, <a href="#default-document-timeline">3.4.2</a>
      <li>argument for GroupEffectMutable/append(effects...), <a href="#dom-groupeffectmutable-appendeffects-effects">5.10</a>
     </ul>
    <li>effect
-stack, <a href="#effect-stack">4.3.1</a>
+stack, <a href="#effect-stack">4.3.2</a>
+   <li>effect value, <a href="#effect-value">4.1.4</a>
    <li>end delay, <a href="#end-delay">3.6.3</a>
    <li>endDelay
     <ul>
@@ -12063,7 +12046,6 @@ a keyframe, <a href="#evenly-distributing-a-keyframe">4.2.1.1</a>
    <li>inherited time, <a href="#inherited-time">3.6.4</a>
    <li>in play, <a href="#in-play">3.6.5</a>
    <li>insert children, <a href="#insert-children">5.10.2</a>
-   <li>intermediate effect value, <a href="#intermediate-effect-value">4.1.4</a>
    <li>intrinsic iteration duration, <a href="#intrinsic-iteration-duration">3.8.1</a>
    <li>item(), <a href="#dom-animationnodelist-item">5.11</a>
    <li>item(index), <a href="#dom-animationnodelist-itemindex">5.11</a>
@@ -12078,9 +12060,9 @@ a keyframe, <a href="#evenly-distributing-a-keyframe">4.2.1.1</a>
      <li>definition of, <a href="#iterationcompositeoperation">5.14</a>
      <li>(enum), <a href="#enumdef-iterationcompositeoperation">5.14</a>
     </ul>
-   <li>iteration composite operation, <a href="#iteration-composite-operation">4.3.5</a>
-   <li>iteration composite operation accumulate, <a href="#iteration-composite-operation-accumulate">4.3.5</a>
-   <li>iteration composite operation replace, <a href="#iteration-composite-operation-replace">4.3.5</a>
+   <li>iteration composite operation, <a href="#iteration-composite-operation">4.3.6</a>
+   <li>iteration composite operation accumulate, <a href="#iteration-composite-operation-accumulate">4.3.6</a>
+   <li>iteration composite operation replace, <a href="#iteration-composite-operation-replace">4.3.6</a>
    <li>iteration count, <a href="#iteration-count">3.8.2</a>
    <li>iteration
 duration, <a href="#iteration-duration">3.8.1</a>
@@ -12112,7 +12094,7 @@ duration, <a href="#iteration-duration">3.8.1</a>
    <li>keyframe spacing mode, <a href="#keyframe-spacing-mode">4.2.1</a>
    <li>keyframe-specific composite
 operation, <a href="#keyframe_specific-composite-operation">4.2</a>
-   <li>lacuna value, <a href="#lacuna-value">4.3.4.2</a>
+   <li>lacuna value, <a href="#lacuna-value">4.3.5.2</a>
    <li>lastChild, <a href="#dom-groupeffectreadonly-lastchild">5.10</a>
    <li>last child, <a href="#last-child">3.13</a>
    <li>length, <a href="#dom-animationnodelist-length">5.11</a>
@@ -12266,7 +12248,7 @@ time, <a href="#previous-current-time">3.5.13</a>
    <li>timing function, <a href="#timing-function">3.12.2</a>
    <li>transformed time, <a href="#transformed-time">3.12.5</a>
    <li>tree order, <a href="#tree-order">3.13</a>
-   <li>underlying value, <a href="#underlying-value">4.3.2</a>
+   <li>underlying value, <a href="#underlying-value">4.3.3</a>
    <li>unresolved, <a href="#unresolved">3.2</a>
    <li>update an animation’s finished state, <a href="#update-an-animations-finished-state">3.5.13</a>
    <li>zero time, <a href="#zero-time">3.4</a></ul>
@@ -12315,6 +12297,8 @@ time, <a href="#previous-current-time">3.5.13</a>
    <dd>Nikos Andronikos; et al. <a href="http://www.w3.org/TR/SVG2/">Scalable Vector Graphics (SVG) 2</a>. 9 April 2015. WD. URL: <a href="http://www.w3.org/TR/SVG2/">http://www.w3.org/TR/SVG2/</a>
    <dt id="biblio-webidl"><a class="self-link" href="#biblio-webidl"></a>[WebIDL]
    <dd>Cameron McCormack. <a href="http://www.w3.org/TR/WebIDL/">Web IDL</a>. 19 April 2012. CR. URL: <a href="http://www.w3.org/TR/WebIDL/">http://www.w3.org/TR/WebIDL/</a>
+   <dt id="biblio-css-cascade-3"><a class="self-link" href="#biblio-css-cascade-3"></a>[CSS-CASCADE-3]
+   <dd>Elika Etemad; Tab Atkins Jr.. <a href="http://www.w3.org/TR/css-cascade-3/">CSS Cascading and Inheritance Level 3</a>. 16 April 2015. CR. URL: <a href="http://www.w3.org/TR/css-cascade-3/">http://www.w3.org/TR/css-cascade-3/</a>
    <dt id="biblio-css-overflow-3"><a class="self-link" href="#biblio-css-overflow-3"></a>[CSS-OVERFLOW-3]
    <dd>David Baron. <a href="http://www.w3.org/TR/css-overflow-3/">CSS Overflow Module Level 3</a>. 18 April 2013. WD. URL: <a href="http://www.w3.org/TR/css-overflow-3/">http://www.w3.org/TR/css-overflow-3/</a>
    <dt id="biblio-cssom"><a class="self-link" href="#biblio-cssom"></a>[CSSOM]
@@ -12566,8 +12550,6 @@ partial interface <a class="idl-code" data-link-type="interface" href="https://h
 </pre>
   <h2 class="no-num heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
-   <div class="issue"> Should this actually be based on when the animation is attached to
-    a timeline? Or when it leaves the idle state?<a href="#issue-beb79231"> ↵ </a></div>
    <div class="issue"> If <var>new timeline</var> is null, we should ensure that <a data-link-type="dfn" href="#custom-effect">custom
 effects</a> get called with an <a data-link-type="dfn" href="#unresolved">unresolved</a> <a data-link-type="dfn" href="#iteration-progress">iteration progress</a>
 (unless a subsequent change in the same script execution context makes this
@@ -12675,7 +12657,7 @@ map arbitrary curves (e.g. bounce functions) to timing functions.</p>
 <a href="#issue-9e5dcac9"> ↵ </a>
    </div>
    <div class="issue"> The default <a data-link-type="dfn" href="#animation-behavior">animation behavior</a> for CSS properties is "as
-       string".  Should this be defined here or in CSS Animations Level 4?<a href="#issue-48287af4"> ↵ </a></div>
+       string".  Should this be defined here or in CSS Animations Level 2?<a href="#issue-f8dba5e7"> ↵ </a></div>
    <div class="issue">
   We should probably expand 2d functions to their 3d
   equivalents before matching?
@@ -12792,14 +12774,11 @@ percentages)</p>
 </ul>
     
 
-    <p>Should we define these here or in the CSS Animation 4 spec?</p>
+    <p>Should we define these here or in the CSS Animation 2 spec?</p>
     
 
-<a href="#issue-2b25d150"> ↵ </a>
+<a href="#issue-6e37162d"> ↵ </a>
    </div>
-   <div class="issue"> Now that we’ve renamed this from “intermediate animation
-value”, would it be ok to rename this to simply “effect
-value”?<a href="#issue-b7707b18"> ↵ </a></div>
    <div class="issue"> The above algorithm is quite complex.
     It attempts to cover all possible combinations of input where
     keyframe offsets and or paced property values may be missing.
@@ -12848,12 +12827,6 @@ value”?<a href="#issue-b7707b18"> ↵ </a></div>
     
 <a href="#issue-e5c1f2ca"> ↵ </a>
    </div>
-   <div class="issue"> Recent changes in CSS Animations and CSS Transitions mean this
-  description is no longer accurate. This section needs to be significantly
-  reworked.<a href="#issue-337796cc"> ↵ </a></div>
-   <div class="issue"> This needs to be reworked since the interaction between CSS Animations
-and CSS Transitions is more complex than this arrangement allows.<a href="#issue-78a8a330"> ↵ </a></div>
-   <div class="issue"> This is probably no longer accurate.<a href="#issue-49163874"> ↵ </a></div>
    <div class="issue"> This whole feature needs to be revisited. The current thinking is that
        rather than having custom effects, we should simply have an
        <code>onsample</code> callback on each <a data-link-type="dfn" href="#animation-effect">animation effect</a>.  That
@@ -12959,14 +12932,14 @@ easily updated.</p>
 
 
      <li data-md="">
-      <p>Perform an additional step before calculating intermediate
+      <p>Perform an additional step before calculating
 effect values and before returning from
 <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getframes">getFrames()</a></code> that
 does spacing and merging.</p>
       
 </ul>
     
-<a href="#issue-ad5692a9"> ↵ </a>
+<a href="#issue-3d6469de"> ↵ </a>
    </div>
    <div class="issue"> The procedure for spacing probably needs to be refactored
 to just take a sequence of keyframes and a spacing mode.<a href="#issue-ad080607"> ↵ </a></div>
