@@ -172,7 +172,7 @@ pre[class*="language-"] {
    <h1 class="p-name no-ref" id="title">Web Animations</h1>
   
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft,
-    <time class="dt-updated" datetime="2015-06-15">15 June 2015</time></span></h2>
+    <time class="dt-updated" datetime="2015-06-16">16 June 2015</time></span></h2>
   
    <div data-fill-with="spec-metadata">
     <dl>
@@ -390,7 +390,7 @@ calculations</span></a>
        </ul>
       <li><a href="#combining-effects"><span class="secno">4.3</span> <span class="content">Combining effects</span></a>
        <ul class="toc">
-        <li><a href="#animation-brands"><span class="secno">4.3.1</span> <span class="content">Animation brands</span></a>
+        <li><a href="#animation-types"><span class="secno">4.3.1</span> <span class="content">Animation types</span></a>
         <li><a href="#the-effect-stack"><span class="secno">4.3.2</span> <span class="content">The effect stack</span></a>
         <li><a href="#calculating-the-result-of-an-effect-stack"><span class="secno">4.3.3</span> <span class="content">Calculating the result of an effect stack</span></a>
         <li><a href="#effect-composition"><span class="secno">4.3.4</span> <span class="content">Effect composition</span></a>
@@ -6156,29 +6156,29 @@ animated property.</p>
 </div>
 
 
-   <h4 class="heading settled" data-level="4.3.1" id="animation-brands"><span class="secno">4.3.1. </span><span class="content">Animation brands</span><a class="self-link" href="#animation-brands"></a></h4>
+   <h4 class="heading settled" data-level="4.3.1" id="animation-types"><span class="secno">4.3.1. </span><span class="content">Animation types</span><a class="self-link" href="#animation-types"></a></h4>
 
 
    <p>This specification provides a common animation model intended to be used
 by other specifications that define markup or programming interfaces on
 top of this model. The particular markup or programming interface that
-generated an <a data-link-type="dfn" href="#concept-animation">animation</a> defines its <dfn data-dfn-type="dfn" data-noexport="" id="brand">brand<a class="self-link" href="#brand"></a></dfn>.</p>
+generated an <a data-link-type="dfn" href="#concept-animation">animation</a> defines its <dfn data-dfn-type="dfn" data-noexport="" id="animation-type">animation type<a class="self-link" href="#animation-type"></a></dfn>.</p>
 
 
    <p>Further specifications may define specialized behavior for prioritizing
-animations between brands or within a particular <a data-link-type="dfn" href="#brand">brand</a>.</p>
+animations between types or within a particular type.</p>
 
 
    <div class="informative-bg"><em>This section is non-normative</em>
 
 
-    <p>For example, animations whose <a data-link-type="dfn" href="#brand">brand</a> is ‘CSS animation’ are
-defined as having a <em>higher</em> priority than animations whose brand is
-‘CSS transition’ but <em>lower</em> than other animations without
-a specific brand.</p>
+    <p>For example, animations whose <a data-link-type="dfn" href="#animation-type">type</a> is ‘CSS
+animation’ are defined as having a <em>higher</em> priority than
+animations whose type is ‘CSS transition’ but <em>lower</em> than
+other animations without a specific type.</p>
 
 
-    <p>Within the set of ‘CSS animation’-branded objects, specialized
+    <p>Within the set of ‘CSS animation’ objects, specialized
 prioritization is defined based on the <code>animation-name</code> property
 amongst other factors.</p>
 
@@ -6216,14 +6216,14 @@ conditions in turn until the order is resolved,</p>
      <ol>
       <li data-md="">
        <p>If <var>A</var> and <var>B</var>’s associated animations differ by
-<a data-link-type="dfn" href="#brand">brand</a>, sort by any inter-brand prioritization defined for the
-corresponding brands.</p>
+<a data-link-type="dfn" href="#animation-type">type</a>, sort by any inter-type prioritization
+defined for the corresponding types.</p>
        
 
       <li data-md="">
        <p>If <var>A</var> and <var>B</var> are still not sorted,
-sort by any <a data-link-type="dfn" href="#brand">brand</a>-specific prioritization defined by
-the common brand of <var>A</var> and <var>B</var>’s
+sort by any <a data-link-type="dfn" href="#animation-type">type</a>-specific prioritization
+defined by the common type of <var>A</var> and <var>B</var>’s
 associated animations.</p>
        
 
@@ -6329,7 +6329,7 @@ is achieved by adding a specified value to the CSS cascade.</p>
 
 
    <p>The level of the cascade to which this specified value is added
-depends on the <a data-link-type="dfn" href="#brand">brand</a> of the <a data-link-type="dfn" href="#concept-animation">animation</a> <a data-link-type="dfn" href="#associated-animation-of-an-animation-effect">associated with</a> the
+depends on the <a data-link-type="dfn" href="#animation-type">type</a> of the <a data-link-type="dfn" href="#concept-animation">animation</a> <a data-link-type="dfn" href="#associated-animation-of-an-animation-effect">associated with</a> the
 highest priority effect in the <a data-link-type="dfn" href="#effect-stack">effect stack</a> for a given property.
 By default, the specified value is added to the ‘Animation
 declarations’ level of the cascade (<a data-link-type="biblio" href="#biblio-css-cascade-3">[css-cascade-3]</a>).</p>
@@ -6339,7 +6339,7 @@ declarations’ level of the cascade (<a data-link-type="biblio" href="#biblio-c
 
 
     <p>For example, if the highest priority effect is associated with a
-‘CSS transition’-branded animation, the <a data-link-type="dfn" href="#composited-value">composited value</a>
+‘CSS transition’-type animation, the <a data-link-type="dfn" href="#composited-value">composited value</a>
 will be added to ‘Transition declarations’ level of the cascade.</p>
 
 </div>
@@ -6368,10 +6368,10 @@ as the initial <a data-link-type="dfn" href="#underlying-value">underlying value
 
     <li data-md="">
      <p>Insert the <a data-link-type="dfn" href="#composited-value">composited value</a> into the CSS cascade at the
-level defined for the <a data-link-type="dfn" href="#brand">brand</a> of the <a data-link-type="dfn" href="#concept-animation">animation</a>
-<a data-link-type="dfn" href="#associated-animation-of-an-animation-effect">associated with</a>
-the effect at the top of the <a data-link-type="dfn" href="#effect-stack">effect stack</a> established for the
-target property.</p>
+level defined for the <a data-link-type="dfn" href="#animation-type">type</a> of the
+<a data-link-type="dfn" href="#concept-animation">animation</a> <a data-link-type="dfn" href="#associated-animation-of-an-animation-effect">associated with</a> the
+effect at the top of the <a data-link-type="dfn" href="#effect-stack">effect stack</a> established for the target
+property.</p>
      
 </ol>
 
@@ -10110,6 +10110,7 @@ behavior, <a href="#animation-behavior">4.1.3</a>
    <li>animation sequence number, <a href="#animation-sequence-number">3.5</a>
    <li>animation start time, <a href="#animation-start-time">3.5</a>
    <li>AnimationTimeline, <a href="#animationtimeline">5.2</a>
+   <li>animation type, <a href="#animation-type">4.3.1</a>
    <li>assert, <a href="#assert">Unnumbered section</a>
    <li>associated animation of an animation effect, <a href="#associated-animation-of-an-animation-effect">4.3.2</a>
    <li>associated with an animation, <a href="#associated-with-an-animation">3.6.1</a>
@@ -10117,7 +10118,6 @@ behavior, <a href="#animation-behavior">4.1.3</a>
 a timeline, <a href="#associated-with-a-timeline">3.6.1</a>
    <li>before flag, <a href="#before-flag">3.11.4</a>
    <li>before phase, <a href="#before-phase">3.6.5</a>
-   <li>brand, <a href="#brand">4.3.1</a>
    <li>cancel(), <a href="#dom-animation-cancel">5.4</a>
    <li>cancel an animation, <a href="#cancel-an-animation">3.5.15</a>
    <li>clone(), <a href="#dom-keyframeeffectreadonly-clone">5.10</a>
