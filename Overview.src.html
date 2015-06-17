@@ -424,15 +424,24 @@ weakened even further.
 A <a>time value</a> may also be <dfn>unresolved</dfn> if, for example,
 a timing node is not in a state to produce a <a>time value</a>.
 
-Periodically, the user agent will queue a task to update the timing
-model in a process called <dfn>sampling</dfn>.
-On each <dfn lt='single-sample'>sample</dfn> the 
+Periodically, the user agent will update the timing model in a process called
+<dfn>sampling</dfn>.
+On each <dfn lt='single-sample'>sample</dfn> the
 <a>time values</a> of each timing node are updated.
 
-Note: A more precise definition of when the model is updated when scripting is
-    involved is provided in <a
-    href="#script-execution-and-live-updates-to-the-model"
-    section></a>.
+Further requirements on the frequency and sequencing of <a>sampling</a>
+are specified by HTML's <a
+  href="https://html.spec.whatwg.org/multipage/webappapis.html#processing-model-9">processing
+  model</a> [[!HTML]].
+
+Note: HTML currently refers to a &ldquo;<a
+  href="https://html.spec.whatwg.org/multipage/webappapis.html#run-css-animations-and-send-events">run
+  CSS animations and send events</a>&rdquo; operation but this should be
+understood to include sampling <em>all</em> animations covered by this
+specification, not only CSS animations.
+Furthermore, the <var>now</var> parameter passed to this operation is ignored
+in this specification since we define a more general model that supports
+timelines whose time origin is not relative to <code>navigationStart</code>.
 
 <h3 id="the-global-clock">The global clock</h3>
 
@@ -474,6 +483,11 @@ This offset is established by designating some moment as the timeline's
 At subsequent moments, the <a>time value</a> of the timeline is
 calculated as the difference between the current <a>time value</a> of
 the <a>global clock</a> and the value recorded at the <a>zero time</a>.
+
+On each <a lt=single-sample>sample</a>, the <a>time value</a> of the
+<a>global clock</a> at the beginning of the sample is recorded and this
+recorded value is used as the time value of the global clock until the
+next sample.
 
 Note: We anticipate that other types of timelines may be introduced
   in the future that are not tied to the global clock.
@@ -532,8 +546,7 @@ relative to the <code>navigationStart</code> time,
 <code>Performance.now()</code></a>
 [[HR-TIME]] with the exception that
 <code>document.timeline.currentTime</code> does not change within
-a script execution block as defined in <a
-href="#script-execution-and-live-updates-to-the-model" section></a>.
+a <a>sample</a>.
 
 </div>
 
@@ -1233,7 +1246,7 @@ considered to be <a lt="paused play state">paused</a> rather than
 Issue: This needs to be fixed. It should be finished in both cases.
 
 The crossing of this boundary is checked on each modification to the
-animation object using the procedure for <a>update an animation's finished
+animation object using the procedure to <a>update an animation's finished
 state</a> defined below.
 
 Issue: We should mention that this gets run at the end of each sample as well.
@@ -3614,7 +3627,8 @@ DOM attributes of an element or pseudo-element such as <code>::before</code> or
 
 Since the result of a <a>keyframe effect</a> is based on the
 <a>iteration progress</a> and <a>current iteration</a> value, it is updated
-whenever the timing model is <a lt="sampling">sampled</a>.
+whenever the timing model is updated including whenever it is
+<a lt="sampling">sampled</a>.
 
 <h4 id="target-properties">Target properties</h4>
 
@@ -7450,28 +7464,20 @@ Issue: This interface is marked at-risk in the <a class="externalDFN"
     If it is removed, we will need to provide an equivalent definition
     here.
 
-<h3 id="script-execution-and-live-updates-to-the-model">Script execution and live updates to the model</h3>
+<h3 id="model-liveness">Model liveness</h3>
 
-Issue: This whole section needs to be rewritten in terms of tasks and its
-interaction with the <a
-  href="https://html.spec.whatwg.org/multipage/webappapis.html#processing-model-9">HTML
-  event loop</a>. Likewise all references to sampling.
+Changes made to any part of the model, cause the entire timing model to be
+updated and any dependent style.
 
-The interaction between script execution and the state and effects of
-the Web Animations model is as follows:
 
-*   Changes made to the Web Animations model via the programming
-    interface are reflected immediately in the values returned by the
-    interfaces defined in this specification.
+<div class="informative-bg"><em>This section is non-normative</em>
 
-    Similarly, methods that operate on the current state of the model
-    such as pausing or reversing are applied to a fully-updated timing
-    model, that is, after all previous modifications have been
-    incorporated.
+Based on the above requirement and normative requirements elsewhere
+in this specification, the following invariants can be observed:
 
-    <div class="informative-bg"><em>This section is non-normative</em>
+:   Changes made to the Web Animations model take effect immediately
 
-    For example, if the {{KeyframeEffect}}
+::  For example, if the {{KeyframeEffect}}
     associated with an {{Animation}} is seeked (see <a section
     href="#setting-the-current-time-of-an-animation"></a>) via the programming
     interface, the value returned when querying the
@@ -7489,17 +7495,10 @@ alert(animation.effect.computedTiming.localTime); // Displays &lsquo;5000&rsquo;
     an {{GroupEffect}}.
 <!-- @endif -->
 
-    </div>
+:   Querying the computed style of a property affected by animation
+    returns the fully up-to-date state of the animation
 
-*   Querying the computed style of a property affected by
-    animation, or the value of an attribute affected by animation,
-    returns the value based the <em>current state</em> of the
-    model, that is, after incorporating any modifications made using
-    the programming interface.
-
-    <div class="informative-bg"><em>This section is non-normative</em>
-
-    For example, if the used style of an element is queried
+::  For example, if the used style of an element is queried
     immediately after applying a new {{Animation}} to that
     element, the result of the new animation will be
     incorporated in the value returned.
@@ -7509,28 +7508,25 @@ alert(animation.effect.computedTiming.localTime); // Displays &lsquo;5000&rsquo;
 elem.animate({ opacity: 0 }, { fill: 'forwards' });
 alert(window.getComputedStyle(elem).opacity); // Displays &lsquo;0&rsquo;</pre></div>
 
-    The means of querying the animated value of an attribute depends
-    on the interface defined for the attribute.
+    The same principle applies to attributes although the means of querying
+    the animated value of an attribute depends on the interface defined for the
+    attribute.
     SVG 1.1 [[!SVG11]] defines an additional interface for querying
-    animated values.
+    animated values as shown below.
 
     <div><pre class="example lang-javascript">
 // Set width to 0 immediately
 rect.animate({ width: '100px' }, { fill: 'forwards' });
 alert(rect.width.animVal.value); // Displays &lsquo;100&rsquo;</pre></div>
 
-    </div>
-
 <!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
-*   Changes made to the model using the programming interface do
+:   Changes made to the model using the programming interface do
     <em>not</em> cause any {{EffectCallback}} functions to be
-    called.
+    called
 
-    <div class="informative-bg"><em>This section is non-normative</em>
-
-    For example, in the following code, the callback function will
+::  For example, in the following code, the callback function will
     not be called until <em>after</em> the script block has
-    completed during regular sampling.
+    completed during regular <a>sampling</a>.
 
     <div><pre class="example lang-javascript">
 var timesCalled = 0;
@@ -7539,22 +7535,18 @@ elem.animate(function() {
 }, 10000);
 alert(timesCalled); // Displays &lsquo;0&rsquo;</pre></div>
 
-    </div>
+    Note: Need to spec this properly somewhere.
+
 <!-- @endif -->
 
-*   Changes to specified style, specified attribute values, and the
-    state of the Web Animations model made within the same execution
-    block must be synchronized when rendering such that the whole set
-    of changes is rendered together.
+:   Changes made within the same task are synchronized such
+    that the whole set of changes is rendered together
 
-    <div class="informative-bg"><em>This section is non-normative</em>
-
-    For example, a user agent must not render only the changes to
-    specified style made in a script execution block whilst ignoring
-    changes to animations.
-    This guarantees that the following usage will never produce
-    a situation where <em>only</em> the change to specified style is
-    rendered without the animation.
+::  As a result of changes to the model taking effect immediately
+    combined with ECMAScript's run-to-completion semantics,
+    there should never be a situation where, for example,
+    <em>only</em> the changes to specified style are rendered without
+    applying animation.
 
     <div><pre class="example lang-javascript">
 // Fade the opacity with fallback for browsers that don't
@@ -7562,21 +7554,20 @@ alert(timesCalled); // Displays &lsquo;0&rsquo;</pre></div>
 elem.style.opacity = '0';
 elem.animate([ { opacity: 1 }, { opacity: 0 } ], 500);</pre></div>
 
-    Note that a user agent may render a frame with <em>none</em> of
-    the changes made in a script execution block.
+    Note, however, that in the example above, a user agent may render a
+    frame with <em>none</em> of the above changes applied.
     This might happen, for example, if rendering occurs in
     a separate process that is scheduled to run shortly after
-    a script execution block completes but before changes made via
-    script can be communicated to the process.
+    the above task completes but before the changes
+    can be communicated to the process.
 
-    </div>
+:   The value returned by the <code>currentTime</code> attribute of
+    a <a>document timeline</a> will not change within a task
 
-*   The value returned by the <code>currentTime</code> attribute of
-    a <a>document timeline</a> will not change within a script block.
-
-    <div class="informative-bg"><em>This section is non-normative</em>
-
-    For example, querying the <code>currentTime</code> twice within
+::  Due to the requirement on <a>timelines</a> to store the <a>time value</a>
+    of the <a>global clock</a> at the start of a <a>sample</a>
+    (see <a href=#timelines class=sectionRef></a>),
+    querying the <code>currentTime</code> twice within
     a long block of code that is executed in the same script block
     will return the same value as shown in the following example.
 
@@ -7586,41 +7577,26 @@ var a = document.timeline.currentTime;
 var b = document.timeline.currentTime;
 alert(b - a); // Displays 0</pre></div>
 
-    </div>
+:   The time passed to a <code>requestAnimationFrame</code> callback
+    will be equal to <code>document.timeline.currentTime</code>
 
-*   User agents that support Timing control for script-based
-    animations [[ANIMATION-TIMING]], prior to <a
-    href="http://www.w3.org/TR/animation-timing/#dfn-sample-all-animations"
-    class="externalDFN">sampling animation frame request
-    callbacks</a> for a given <a
-    href="http://www.w3.org/TR/html5/browsers.html#top-level-browsing-context"
-    class="externalDFN">top-level browsing context</a>,
-    must perform a <a lt='single-sample'>sample</a>
-<!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
-    including executing any eligible
-    <a>custom effects</a> (see <a href="#sampling-custom-effects"
-    section></a>)
-<!-- @endif -->
-    for all <a>animation effects</a>
-    <a>associated with a timeline</a> that is associated with a document
-    which is the <a href="https://html.spec.whatwg.org/#active-document"
-    class="externalDFN">active document</a> of the <a
-    href="http://www.w3.org/TR/html5/browsers.html#top-level-browsing-context"
-    class="externalDFN">top-level browsing context</a> or
-    of any of its <a
-    href="http://www.w3.org/TR/html5/browsers.html#list-of-the-descendant-browsing-contexts"
-    class="externalDFN">descendant browsing contexts</a>.
-    When performing this <a lt='single-sample'>sample</a>, the 
-    <a>time value</a> of
-    each <a>document timeline</a> must be equal to the <var>time</var>
-    passed to animation frame request callbacks for that browsing
-    context.
+::  For user agent that support Timing control for script-based
+    animations [[ANIMATION-TIMING]],
+    HTML's <a
+      href="https://html.spec.whatwg.org/multipage/webappapis.html#processing-model-9"
+      class="externalDFN">processing
+    model</a> defines that animations are updated prior to running animation
+    frame callbacks.
 
-    <div class="informative-bg"><em>This section is non-normative</em>
+    Furthermore, the time passed to such callbacks is the stored value of
+    the <code>Performance</code> object's <code>now()</code> method
+    as recorded at the beginning of the <a>sample</a>.
 
-    As a result of this definition, the time passed to
-    a <code>requestAnimationFrame</code> callback acts as
-    an alias for <code>document.timeline.currentTime</code>.
+    Since both <code>performance.now()</code> and <a>time values</a> from the
+    <a>default document timeline</a> are measured from the
+    <code>navigationStart</code> moment, and since both <a>timelines</a>
+    and animation frame callbacks use the time recorded at the start of the
+    <a>sample</a>, they should be equivalent.
 
     <div><pre class="example lang-javascript">
 window.requestAnimationFrame(function(sampleTime) {
@@ -7628,7 +7604,7 @@ window.requestAnimationFrame(function(sampleTime) {
   alert(sampleTime - document.timeline.currentTime);
 });</pre></div>
 
-    </div>
+</div>
 
 
 <h2 id="integration-with-media-fragments">Integration with Media Fragments</h2>
@@ -7830,6 +7806,10 @@ The following changes have been made since the <a
     animation effects have been removed.
 *   Removed the <code>getCurrentAnimations</code> method from the {{Animatable}}
     interface.
+*   Rewrote the section previously titled, &ldquo;Script execution and live
+    updates to the model&rdquo; as the much simpler <a href=#model-liveness
+    class=sectionRef></a> since many of the requirements there can be implied
+    from requirements elsewhere.
 
 Changes since the <a
   href="http://www.w3.org/TR/2013/WD-web-animations-20130625/">25 June
