@@ -172,7 +172,7 @@ pre[class*="language-"] {
    <h1 class="p-name no-ref" id="title">Web Animations</h1>
   
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft,
-    <time class="dt-updated" datetime="2015-06-16">16 June 2015</time></span></h2>
+    <time class="dt-updated" datetime="2015-06-17">17 June 2015</time></span></h2>
   
    <div data-fill-with="spec-metadata">
     <dl>
@@ -447,7 +447,7 @@ Processing <code>PropertyIndexedKeyframe</code> objects</span></a>
       <li><a href="#extensions-to-the-document-interface"><span class="secno">5.18</span> <span class="content">Extensions to the <code>Document</code> interface</span></a>
       <li><a href="#extensions-to-the-element-interface"><span class="secno">5.19</span> <span class="content">Extensions to the <code>Element</code> interface</span></a>
       <li><a href="#extensions-to-the-pseudoelement-interface"><span class="secno">5.20</span> <span class="content">Extensions to the <code>PseudoElement</code> interface</span></a>
-      <li><a href="#script-execution-and-live-updates-to-the-model"><span class="secno">5.21</span> <span class="content">Script execution and live updates to the model</span></a>
+      <li><a href="#model-liveness"><span class="secno">5.21</span> <span class="content">Model liveness</span></a>
      </ul>
     <li><a href="#integration-with-media-fragments"><span class="secno">6</span> <span class="content">Integration with Media Fragments</span></a>
     <li><a href="#interaction-with-page-display"><span class="secno">7</span> <span class="content">Interaction with page display</span></a>
@@ -963,14 +963,24 @@ weakened even further.
 a timing node is not in a state to produce a <a data-link-type="dfn" href="#time-value">time value</a>.</p>
 
 
-   <p>Periodically, the user agent will queue a task to update the timing
-model in a process called <dfn data-dfn-type="dfn" data-noexport="" id="sampling">sampling<a class="self-link" href="#sampling"></a></dfn>.
-On each <dfn data-dfn-type="dfn" data-lt="single-sample" data-noexport="" id="single_sample">sample<a class="self-link" href="#single_sample"></a></dfn> the 
+   <p>Periodically, the user agent will update the timing model in a process called
+<dfn data-dfn-type="dfn" data-noexport="" id="sampling">sampling<a class="self-link" href="#sampling"></a></dfn>.
+On each <dfn data-dfn-type="dfn" data-lt="single-sample" data-noexport="" id="single_sample">sample<a class="self-link" href="#single_sample"></a></dfn> the
 <a data-link-type="dfn" href="#time-value">time values</a> of each timing node are updated.</p>
 
 
-   <p class="note" role="note">Note: A more precise definition of when the model is updated when scripting is
-    involved is provided in <a href="#script-execution-and-live-updates-to-the-model">§5.21 Script execution and live updates to the model</a>.</p>
+   <p>Further requirements on the frequency and sequencing of <a data-link-type="dfn" href="#sampling">sampling</a>
+are specified by HTML’s <a href="https://html.spec.whatwg.org/multipage/webappapis.html#processing-model-9">processing
+  model</a> <a data-link-type="biblio" href="#biblio-html">[HTML]</a>.</p>
+
+
+   <p class="note" role="note">Note: HTML currently refers to a “<a href="https://html.spec.whatwg.org/multipage/webappapis.html#run-css-animations-and-send-events">run
+  CSS animations and send events</a>” operation but this should be
+understood to include sampling <em>all</em> animations covered by this
+specification, not only CSS animations.
+Furthermore, the <var>now</var> parameter passed to this operation is ignored
+in this specification since we define a more general model that supports
+timelines whose time origin is not relative to <code>navigationStart</code>.</p>
 
 
    <h3 class="heading settled" data-level="3.3" id="the-global-clock"><span class="secno">3.3. </span><span class="content">The global clock</span><a class="self-link" href="#the-global-clock"></a></h3>
@@ -1018,6 +1028,12 @@ This offset is established by designating some moment as the timeline’s
 At subsequent moments, the <a data-link-type="dfn" href="#time-value">time value</a> of the timeline is
 calculated as the difference between the current <a data-link-type="dfn" href="#time-value">time value</a> of
 the <a data-link-type="dfn" href="#global-clock">global clock</a> and the value recorded at the <a data-link-type="dfn" href="#zero-time">zero time</a>.</p>
+
+
+   <p>On each <a data-link-type="dfn" href="#single_sample">sample</a>, the <a data-link-type="dfn" href="#time-value">time value</a> of the
+<a data-link-type="dfn" href="#global-clock">global clock</a> at the beginning of the sample is recorded and this
+recorded value is used as the time value of the global clock until the
+next sample.</p>
 
 
    <p class="note" role="note">Note: We anticipate that other types of timelines may be introduced
@@ -1085,7 +1101,7 @@ relative to the <code>navigationStart</code> time,
 <code>Performance.now()</code></a>
 <a data-link-type="biblio" href="#biblio-hr-time">[HR-TIME]</a> with the exception that
 <code>document.timeline.currentTime</code> does not change within
-a script execution block as defined in <a href="#script-execution-and-live-updates-to-the-model">§5.21 Script execution and live updates to the model</a>.</p>
+a <a data-link-type="dfn" href="#sampling">sample</a>.</p>
 
 </div>
 
@@ -2178,7 +2194,7 @@ considered to be <a data-link-type="dfn" href="#paused-play-state">paused</a> ra
 
 
    <p>The crossing of this boundary is checked on each modification to the
-animation object using the procedure for <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished
+animation object using the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished
 state</a> defined below.</p>
 
 
@@ -4536,7 +4552,8 @@ DOM attributes of an element or pseudo-element such as <code>::before</code> or
 
    <p>Since the result of a <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> is based on the
 <a data-link-type="dfn" href="#iteration-progress">iteration progress</a> and <a data-link-type="dfn" href="#current-iteration">current iteration</a> value, it is updated
-whenever the timing model is <a data-link-type="dfn" href="#sampling">sampled</a>.</p>
+whenever the timing model is updated including whenever it is
+<a data-link-type="dfn" href="#sampling">sampled</a>.</p>
 
 
    <h4 class="heading settled" data-level="4.1.1" id="target-properties"><span class="secno">4.1.1. </span><span class="content">Target properties</span><a class="self-link" href="#target-properties"></a></h4>
@@ -9436,41 +9453,34 @@ interface <a data-link-type="biblio" href="#biblio-cssom">[CSSOM]</a> is also de
     here.</p>
 
 
-    <h3 class="heading settled" data-level="5.21" id="script-execution-and-live-updates-to-the-model"><span class="secno">5.21. </span><span class="content">Script execution and live updates to the model</span><a class="self-link" href="#script-execution-and-live-updates-to-the-model"></a></h3>
+    <h3 class="heading settled" data-level="5.21" id="model-liveness"><span class="secno">5.21. </span><span class="content">Model liveness</span><a class="self-link" href="#model-liveness"></a></h3>
 
 
-    <p class="issue" id="issue-a8dd9f54"><a class="self-link" href="#issue-a8dd9f54"></a> This whole section needs to be rewritten in terms of tasks and its
-interaction with the <a href="https://html.spec.whatwg.org/multipage/webappapis.html#processing-model-9">HTML
-  event loop</a>. Likewise all references to sampling.</p>
+    <p>Changes made to any part of the model, cause the entire timing model to be
+updated and any dependent style.</p>
 
 
-    <p>The interaction between script execution and the state and effects of
-the Web Animations model is as follows:</p>
+
+    <div class="informative-bg"><em>This section is non-normative</em>
 
 
-    <ul>
-     <li data-md="">
-      <p>Changes made to the Web Animations model via the programming
-interface are reflected immediately in the values returned by the
-interfaces defined in this specification.</p>
-      
+     <p>Based on the above requirement and normative requirements elsewhere
+in this specification, the following invariants can be observed:</p>
 
 
-      <p>Similarly, methods that operate on the current state of the model
-such as pausing or reversing are applied to a fully-updated timing
-model, that is, after all previous modifications have been
-incorporated.</p>
-      
+     <dl>
+      <dt data-md="">
+       <p>Changes made to the Web Animations model take effect immediately</p>
+       
 
 
-      <div class="informative-bg"><em>This section is non-normative</em>
-
-
+      <dd data-md="">
        <p>For example, if the <code class="idl"><a data-link-type="idl" href="#keyframeeffect">KeyframeEffect</a></code>
 associated with an <code class="idl"><a data-link-type="idl" href="#animation">Animation</a></code> is seeked (see <a href="#setting-the-current-time-of-an-animation">§3.5.4 Setting the current time of an animation</a>) via the programming
 interface, the value returned when querying the
 animation’s <code>startTime</code> will reflect updated state of
 the model immediately.</p>
+       
 
     
        <div>
@@ -9478,27 +9488,21 @@ the model immediately.</p>
 animation.currentTime += 2000;
 alert(animation.effect.computedTiming.localTime); // Displays ‘5000’</pre>
        </div>
-
-</div>
-      
+       
 
 
-     <li data-md="">
-      <p>Querying the computed style of a property affected by
-animation, or the value of an attribute affected by animation,
-returns the value based the <em>current state</em> of the
-model, that is, after incorporating any modifications made using
-the programming interface.</p>
-      
+      <dt data-md="">
+       <p>Querying the computed style of a property affected by animation
+returns the fully up-to-date state of the animation</p>
+       
 
 
-      <div class="informative-bg"><em>This section is non-normative</em>
-
-
+      <dd data-md="">
        <p>For example, if the used style of an element is queried
 immediately after applying a new <code class="idl"><a data-link-type="idl" href="#animation">Animation</a></code> to that
 element, the result of the new animation will be
 incorporated in the value returned.</p>
+       
 
     
        <div>
@@ -9506,12 +9510,15 @@ incorporated in the value returned.</p>
 elem.animate({ opacity: 0 }, { fill: 'forwards' });
 alert(window.getComputedStyle(elem).opacity); // Displays ‘0’</pre>
        </div>
+       
 
 
-       <p>The means of querying the animated value of an attribute depends
-on the interface defined for the attribute.
+       <p>The same principle applies to attributes although the means of querying
+the animated value of an attribute depends on the interface defined for the
+attribute.
 SVG 1.1 <a data-link-type="biblio" href="#biblio-svg11">[SVG11]</a> defines an additional interface for querying
-animated values.</p>
+animated values as shown below.</p>
+       
 
     
        <div>
@@ -9519,28 +9526,22 @@ animated values.</p>
 rect.animate({ width: '100px' }, { fill: 'forwards' });
 alert(rect.width.animVal.value); // Displays ‘100’</pre>
        </div>
-
-</div>
-      
+       
 
 
-     <li data-md="">
-      <p>Changes to specified style, specified attribute values, and the
-state of the Web Animations model made within the same execution
-block must be synchronized when rendering such that the whole set
-of changes is rendered together.</p>
-      
+      <dt data-md="">
+       <p>Changes made within the same task are synchronized such
+that the whole set of changes is rendered together</p>
+       
 
 
-      <div class="informative-bg"><em>This section is non-normative</em>
-
-
-       <p>For example, a user agent must not render only the changes to
-specified style made in a script execution block whilst ignoring
-changes to animations.
-This guarantees that the following usage will never produce
-a situation where <em>only</em> the change to specified style is
-rendered without the animation.</p>
+      <dd data-md="">
+       <p>As a result of changes to the model taking effect immediately
+combined with ECMAScript’s run-to-completion semantics,
+there should never be a situation where, for example,
+<em>only</em> the changes to specified style are rendered without
+applying animation.</p>
+       
 
     
        <div>
@@ -9549,31 +9550,32 @@ rendered without the animation.</p>
 elem.style.opacity = '0';
 elem.animate([ { opacity: 1 }, { opacity: 0 } ], 500);</pre>
        </div>
+       
 
 
-       <p>Note that a user agent may render a frame with <em>none</em> of
-the changes made in a script execution block.
+       <p class="note" role="note">Note, however, that in the example above, a user agent may render a
+frame with <em>none</em> of the above changes applied.
 This might happen, for example, if rendering occurs in
 a separate process that is scheduled to run shortly after
-a script execution block completes but before changes made via
-script can be communicated to the process.</p>
-
-</div>
-      
+the above task completes but before the changes
+can be communicated to the process.</p>
+       
 
 
-     <li data-md="">
-      <p>The value returned by the <code>currentTime</code> attribute of
-a <a data-link-type="dfn" href="#document-timeline">document timeline</a> will not change within a script block.</p>
-      
+      <dt data-md="">
+       <p>The value returned by the <code>currentTime</code> attribute of
+a <a data-link-type="dfn" href="#document-timeline">document timeline</a> will not change within a task</p>
+       
 
 
-      <div class="informative-bg"><em>This section is non-normative</em>
-
-
-       <p>For example, querying the <code>currentTime</code> twice within
+      <dd data-md="">
+       <p>Due to the requirement on <a data-link-type="dfn" href="#timeline">timelines</a> to store the <a data-link-type="dfn" href="#time-value">time value</a>
+of the <a data-link-type="dfn" href="#global-clock">global clock</a> at the start of a <a data-link-type="dfn" href="#sampling">sample</a>
+(see <a class="sectionRef" href="#timelines">§3.4 Timelines</a>),
+querying the <code>currentTime</code> twice within
 a long block of code that is executed in the same script block
 will return the same value as shown in the following example.</p>
+       
 
     
        <div>
@@ -9582,34 +9584,36 @@ will return the same value as shown in the following example.</p>
 var b = document.timeline.currentTime;
 alert(b - a); // Displays 0</pre>
        </div>
-
-</div>
-      
+       
 
 
-     <li data-md="">
-      <p>User agents that support Timing control for script-based
-animations <a data-link-type="biblio" href="#biblio-animation-timing">[ANIMATION-TIMING]</a>, prior to <a class="externalDFN" href="http://www.w3.org/TR/animation-timing/#dfn-sample-all-animations">sampling animation frame request
-callbacks</a> for a given <a class="externalDFN" href="http://www.w3.org/TR/html5/browsers.html#top-level-browsing-context">top-level browsing context</a>,
-must perform a <a data-link-type="dfn" href="#single_sample">sample</a>
-for all <a data-link-type="dfn" href="#animation-effect">animation effects</a>
-<a data-link-type="dfn" href="#associated-with-a-timeline">associated with a timeline</a> that is associated with a document
-which is the <a class="externalDFN" href="https://html.spec.whatwg.org/#active-document">active document</a> of the <a class="externalDFN" href="http://www.w3.org/TR/html5/browsers.html#top-level-browsing-context">top-level browsing context</a> or
-of any of its <a class="externalDFN" href="http://www.w3.org/TR/html5/browsers.html#list-of-the-descendant-browsing-contexts">descendant browsing contexts</a>.
-When performing this <a data-link-type="dfn" href="#single_sample">sample</a>, the 
-<a data-link-type="dfn" href="#time-value">time value</a> of
-each <a data-link-type="dfn" href="#document-timeline">document timeline</a> must be equal to the <var>time</var>
-passed to animation frame request callbacks for that browsing
-context.</p>
-      
+      <dt data-md="">
+       <p>The time passed to a <code>requestAnimationFrame</code> callback
+will be equal to <code>document.timeline.currentTime</code></p>
+       
 
 
-      <div class="informative-bg"><em>This section is non-normative</em>
+      <dd data-md="">
+       <p>For user agent that support Timing control for script-based
+animations <a data-link-type="biblio" href="#biblio-animation-timing">[ANIMATION-TIMING]</a>,
+HTML’s <a class="externalDFN" href="https://html.spec.whatwg.org/multipage/webappapis.html#processing-model-9">processing
+model</a> defines that animations are updated prior to running animation
+frame callbacks.</p>
+       
 
 
-       <p>As a result of this definition, the time passed to
-a <code>requestAnimationFrame</code> callback acts as
-an alias for <code>document.timeline.currentTime</code>.</p>
+       <p>Furthermore, the time passed to such callbacks is the stored value of
+the <code>Performance</code> object’s <code>now()</code> method
+as recorded at the beginning of the <a data-link-type="dfn" href="#sampling">sample</a>.</p>
+       
+
+
+       <p>Since both <code>performance.now()</code> and <a data-link-type="dfn" href="#time-value">time values</a> from the
+<a data-link-type="dfn" href="#default-document-timeline">default document timeline</a> are measured from the
+<code>navigationStart</code> moment, and since both <a data-link-type="dfn" href="#timeline">timelines</a>
+and animation frame callbacks use the time recorded at the start of the
+<a data-link-type="dfn" href="#sampling">sample</a>, they should be equivalent.</p>
+       
 
     
        <div>
@@ -9618,11 +9622,11 @@ an alias for <code>document.timeline.currentTime</code>.</p>
   alert(sampleTime - document.timeline.currentTime);
 });</pre>
        </div>
-
+       
+</dl>
 </div>
-      
 
-</ul>
+
 
     <h2 class="heading settled" data-level="6" id="integration-with-media-fragments"><span class="secno">6. </span><span class="content">Integration with Media Fragments</span><a class="self-link" href="#integration-with-media-fragments"></a></h2>
 
@@ -9997,6 +10001,12 @@ animation effects have been removed.</p>
      <li data-md="">
       <p>Removed the <code>getCurrentAnimations</code> method from the <code class="idl"><a data-link-type="idl" href="#animatable">Animatable</a></code>
 interface.</p>
+      
+
+     <li data-md="">
+      <p>Rewrote the section previously titled, “Script execution and live
+updates to the model” as the much simpler <a class="sectionRef" href="#model-liveness">§5.21 Model liveness</a> since many of the requirements there can be implied
+from requirements elsewhere.</p>
       
 </ul>
 
@@ -10985,9 +10995,6 @@ SharedKeyframeList())</code> anyway?<a href="#issue-c07e92fd"> ↵ </a></div>
     of CSSOM</a>.
     If it is removed, we will need to provide an equivalent definition
     here.<a href="#issue-05667543"> ↵ </a></div>
-   <div class="issue"> This whole section needs to be rewritten in terms of tasks and its
-interaction with the <a href="https://html.spec.whatwg.org/multipage/webappapis.html#processing-model-9">HTML
-  event loop</a>. Likewise all references to sampling.<a href="#issue-a8dd9f54"> ↵ </a></div>
    <div class="issue"> Is this at odds with those <a data-link-type="dfn" href="#time-value">time values</a> being relative to
     <code>navigationStart</code> and with <code>requestAnimationFrame</code>
     using the same time as <code>document.timeline.currentTime</code>?<a href="#issue-d06e8e73"> ↵ </a></div></div>
