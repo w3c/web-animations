@@ -172,7 +172,7 @@ pre[class*="language-"] {
    <h1 class="p-name no-ref" id="title">Web Animations</h1>
   
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft,
-    <time class="dt-updated" datetime="2015-06-17">17 June 2015</time></span></h2>
+    <time class="dt-updated" datetime="2015-06-18">18 June 2015</time></span></h2>
   
    <div data-fill-with="spec-metadata">
     <dl>
@@ -2182,25 +2182,23 @@ rate</a>, the <a data-link-type="dfn" href="#current-time">current time</a> cont
 reaches zero.</p>
 
 
-   <p>An animation that has reached this boundary (or overshot it) and has a
+   <p>A running animation that has reached this boundary (or overshot it) and has a
 <a data-link-type="dfn" href="#unresolved">resolved</a> <a data-link-type="dfn" href="#animation-start-time">animation start time</a>
-is said to be <a data-link-type="dfn" href="#finished-play-state">finished</a>.
-(If the animation has an <a data-link-type="dfn" href="#unresolved">unresolved</a> <a data-link-type="dfn" href="#animation-start-time">animation start time</a> it is
-considered to be <a data-link-type="dfn" href="#paused-play-state">paused</a> rather than
-<a data-link-type="dfn" href="#finished-play-state">finished</a>.)</p>
-
-
-   <p class="issue" id="issue-26934df1"><a class="self-link" href="#issue-26934df1"></a> This needs to be fixed. It should be finished in both cases.</p>
+is said to be <a data-link-type="dfn" href="#finished-play-state">finished</a>.</p>
 
 
    <p>The crossing of this boundary is checked on each modification to the
 animation object using the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished
-state</a> defined below.</p>
+state</a> defined below. This procedure is also run on each <a data-link-type="dfn" href="#sampling">sample</a>
+and each time the timing properties of the <a data-link-type="dfn" href="#target-effect">target effect</a> associated
+with an <a data-link-type="dfn" href="#concept-animation">animation</a> are updated.</p>
 
 
-   <p class="issue" id="issue-1bd5d417"><a class="self-link" href="#issue-1bd5d417"></a> We should mention that this gets run at the end of each sample as well.
-       Likewise at the end of any update to the timing of the <a data-link-type="dfn" href="#target-effect">target
-       effect</a>.</p>
+   <p class="issue" id="issue-0c36d61c"><a class="self-link" href="#issue-0c36d61c"></a> At least with regards to resolving promises / dispatching finish events,
+       it might be better to queue a task for that, and if the animation is
+       still finished when the task runs, resolve the promise / dispatch
+       the event. That way scripts don’t need to be so careful about the order
+       in which they make timing changes.</p>
 
 
    <p>For each animation, the user agent maintains a <dfn data-dfn-type="dfn" data-noexport="" id="previous-current-time">previous current
@@ -2596,7 +2594,7 @@ non-normative description is also provided:</p>
 
     <dl>
      <dt data-md="">
-      <p><dfn data-dfn-type="dfn" data-lt="idle play state" data-noexport="" id="idle-play-state">idle<a class="self-link" href="#idle-play-state"></a></dfn></p>
+      <p><a data-link-type="dfn" href="#idle-play-state">idle</a></p>
       
 
      <dd data-md="">
@@ -2606,7 +2604,7 @@ In this state the animation has no effect.</p>
       
 
      <dt data-md="">
-      <p><dfn data-dfn-type="dfn" data-lt="pending play state" data-noexport="" id="pending-play-state">pending<a class="self-link" href="#pending-play-state"></a></dfn></p>
+      <p><a data-link-type="dfn" href="#pending-play-state">pending</a></p>
       
 
      <dd data-md="">
@@ -2614,7 +2612,7 @@ In this state the animation has no effect.</p>
       
 
      <dt data-md="">
-      <p><dfn data-dfn-type="dfn" data-lt="running play state" data-noexport="" id="running-play-state">running<a class="self-link" href="#running-play-state"></a></dfn></p>
+      <p><a data-link-type="dfn" href="#running-play-state">running</a></p>
       
 
      <dd data-md="">
@@ -2623,7 +2621,7 @@ In this state the animation has no effect.</p>
       
 
      <dt data-md="">
-      <p><dfn data-dfn-type="dfn" data-lt="paused play state" data-noexport="" id="paused-play-state">paused<a class="self-link" href="#paused-play-state"></a></dfn></p>
+      <p><a data-link-type="dfn" href="#paused-play-state">paused</a></p>
       
 
      <dd data-md="">
@@ -2632,7 +2630,7 @@ is no longer changing.</p>
       
 
      <dt data-md="">
-      <p><dfn data-dfn-type="dfn" data-lt="finished play state" data-noexport="" id="finished-play-state">finished<a class="self-link" href="#finished-play-state"></a></dfn></p>
+      <p><a data-link-type="dfn" href="#finished-play-state">finished</a></p>
       
 
      <dd data-md="">
@@ -2658,7 +2656,7 @@ condition from the following:</p>
       
 
      <dd data-md="">
-      <p>→ <a data-link-type="dfn" href="#pending-play-state">pending</a></p>
+      <p>→ <dfn data-dfn-type="dfn" data-lt="pending play state" data-noexport="" id="pending-play-state">pending<a class="self-link" href="#pending-play-state"></a></dfn></p>
       
 
      <dt data-md="">
@@ -2667,7 +2665,7 @@ condition from the following:</p>
       
 
      <dd data-md="">
-      <p>→ <a data-link-type="dfn" href="#idle-play-state">idle</a></p>
+      <p>→ <dfn data-dfn-type="dfn" data-lt="idle play state" data-noexport="" id="idle-play-state">idle<a class="self-link" href="#idle-play-state"></a></dfn></p>
       
 
      <dt data-md="">
@@ -2676,7 +2674,7 @@ condition from the following:</p>
       
 
      <dd data-md="">
-      <p>→ <a data-link-type="dfn" href="#paused-play-state">paused</a></p>
+      <p>→ <dfn data-dfn-type="dfn" data-lt="paused play state" data-noexport="" id="paused-play-state">paused<a class="self-link" href="#paused-play-state"></a></dfn></p>
       
 
      <dt data-md="">
@@ -2688,7 +2686,7 @@ condition from the following:</p>
       
 
      <dd data-md="">
-      <p>→ <a data-link-type="dfn" href="#finished-play-state">finished</a></p>
+      <p>→ <dfn data-dfn-type="dfn" data-lt="finished play state" data-noexport="" id="finished-play-state">finished<a class="self-link" href="#finished-play-state"></a></dfn></p>
       
 
      <dt data-md="">
@@ -2696,7 +2694,7 @@ condition from the following:</p>
       
 
      <dd data-md="">
-      <p>→ <a data-link-type="dfn" href="#running-play-state">running</a></p>
+      <p>→ <dfn data-dfn-type="dfn" data-lt="running play state" data-noexport="" id="running-play-state">running<a class="self-link" href="#running-play-state"></a></dfn></p>
       
 </dl>
 </div>
@@ -9750,6 +9748,11 @@ referred to as animations are now <a data-link-type="dfn" href="#keyframe-effect
       
 
      <li data-md="">
+      <p>Made the <a data-link-type="dfn" href="#animation-sequence-number">animation sequence number</a> increment on each transition
+out of the idle state (not on creation).</p>
+      
+
+     <li data-md="">
       <p>Made the association between an <a data-link-type="dfn" href="#concept-animation">animation</a> and a <a data-link-type="dfn" href="#timeline">timeline</a>
 optional.</p>
       
@@ -9833,6 +9836,11 @@ playback rate.</p>
 </ul>
      <li data-md="">
       <p>Renamed intermediate animation values to <a data-link-type="dfn" href="#effect-value">effect values</a>.</p>
+      
+
+     <li data-md="">
+      <p>Added the concept of <a data-link-type="dfn" href="#animation-type">animation types</a> and clarified prioritization
+in a way that can be easily extended by CSS Animations and CSS Transitions.</p>
       
 
      <li data-md="">
@@ -9982,6 +9990,11 @@ keyframes with an offset outside the range [0, 1].</p>
      <li data-md="">
       <p>Removed <code>paced</code> as a valid value for <code class="idl"><a data-link-type="idl" href="#keyframeeffect">KeyframeEffect</a></code>'s
 <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-spacing">spacing</a></code> attribute.</p>
+      
+
+     <li data-md="">
+      <p>Added <code class="idl"><a data-link-type="idl" href="#dictdef-propertyindexedkeyframe">PropertyIndexedKeyframe</a></code> as a convenient way of specifying a
+list of property values.</p>
       
 
      <li data-md="">
@@ -10661,10 +10674,11 @@ partial interface <a class="idl-code" data-link-type="interface" href="https://h
 now finished, should the current time jump to the end of the target effect, or
 be allowed to sit past the end of the target effect?<a href="#issue-e68d97d4"> ↵ </a></div>
    <div class="issue"> Should we throw an exception for <a data-link-type="dfn" href="#animation-playback-rate">playback rate</a> = 0?<a href="#issue-380aae41"> ↵ </a></div>
-   <div class="issue"> This needs to be fixed. It should be finished in both cases.<a href="#issue-26934df1"> ↵ </a></div>
-   <div class="issue"> We should mention that this gets run at the end of each sample as well.
-       Likewise at the end of any update to the timing of the <a data-link-type="dfn" href="#target-effect">target
-       effect</a>.<a href="#issue-1bd5d417"> ↵ </a></div>
+   <div class="issue"> At least with regards to resolving promises / dispatching finish events,
+       it might be better to queue a task for that, and if the animation is
+       still finished when the task runs, resolve the promise / dispatch
+       the event. That way scripts don’t need to be so careful about the order
+       in which they make timing changes.<a href="#issue-0c36d61c"> ↵ </a></div>
    <div class="issue"> If <var>animation</var> is already <a data-link-type="dfn" href="#idle-play-state">idle</a>
 should we just keep the existing finished promise and not reject it?
 That seems more intuitive but the current behavior where
