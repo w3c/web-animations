@@ -1575,6 +1575,30 @@ animation.ready.then(function() {
 
 </div>
 
+<h4 id="animation-events-section">Animation events</h4>
+
+As <a>animations</a> play, they report changes to their status through
+<dfn>animation events</dfn>.
+
+<a>Animation events</a> are a property of the timing model. As a result they
+are dispatched even when the <a>target effect</a> of the <a>animation</a> is
+absent or has no observable result.
+
+<h5 id="animation-event-types">Types of animation events</h5>
+
+:   finish
+::  TBD
+:   cancel
+::  TBD
+
+<h5 id="animation-event-parameters">Event parameters</h5>
+
+TBD
+
+<h5 id="animation-event-propagation-path">Propagation path</h5>
+
+TBD
+
 <h3 id="animation-effects">Animation effects</h3>
 
 An <dfn>animation effect</dfn> is an abstract term referring to an item in
@@ -5186,7 +5210,7 @@ API by the {{Animation}} interface.
 <pre class='idl'>
 [Constructor (optional AnimationEffectReadOnly? effect = null,
               optional AnimationTimeline? timeline = null)]
-interface Animation {
+interface Animation : EventTarget {
              attribute AnimationEffectReadOnly? effect;
              attribute AnimationTimeline?       timeline;
              attribute double?                  startTime;
@@ -5195,6 +5219,8 @@ interface Animation {
     readonly attribute AnimationPlayState       playState;
     readonly attribute Promise&lt;Animation&gt;       ready;
     readonly attribute Promise&lt;Animation&gt;       finished;
+             attribute EventHandler             onfinish;
+             attribute EventHandler             oncancel;
     void cancel ();
     void finish ();
     void play ();
@@ -5272,6 +5298,10 @@ interface Animation {
 ::  Returns the <a>current ready promise</a> for this object.
 :   <dfn attribute for=Animation>finished</dfn>
 ::  Returns the <a>current finished promise</a> for this object.
+:   <dfn attribute for=Animation>onfinish</dfn>
+::  The event handler for the finish event.
+:   <dfn attribute for=Animation>oncancel</dfn>
+::  The event handler for the cancel event.
 
 </div>
 
