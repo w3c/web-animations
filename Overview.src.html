@@ -4241,8 +4241,9 @@ offset.
 </div>
 
 Before calculating effect values from a <a>keyframe effect</a>,
-an absolute value must be computed for the <a>keyframe offset</a> of each
-<a>keyframe</a> with a null offset.
+an absolute value must be computed for <a>keyframe offset</a>
+of each <a>keyframe</a> with a null offset.
+
 The values computed depend on the <dfn>keyframe spacing mode</dfn>
 specified for the <a>keyframe effect</a>.
 The keyframe spacing modes are:
@@ -4259,52 +4260,61 @@ The keyframe spacing modes are:
     procedure defined by the <a>animation behavior</a> associated
     with the <a>paced property</a>.
 
+Since the absolute value calculated for a <a>keyframe offset</a> may change
+depending on the keyframe values, the number of values, or external context
+(such as when using <a>paced keyframe spacing mode</a> in combination with
+percentage values or em-based units), the original null values are not
+overwritten, rather, the calculated absolute values are stored as a separate
+value on each keyframe known as its <dfn>computed keyframe offset</dfn>.
+
 <h5 id="applying-spacing-to-keyframes">Applying spacing to keyframes</h5>
 
 We define a generic procedure for <dfn>evenly distributing
 a keyframe</dfn>, <var>keyframe</var>, between two reference
-keyframes, <var>start</var> and <var>end</var>, whose <a>keyframe
+keyframes, <var>start</var> and <var>end</var>, whose <a>computed keyframe
 offsets</a> are <em>not</em> null, as follows:
 
-1.  Let <dfn>offset<sub><var>k</var></sub></dfn> be the <a>keyframe
-    offset</a> of a <a>keyframe</a> <var>k</var>.
-2.  Let <var>n</var> be the number of keyframes <em>between</em> and
+1.  Let <dfn>offset<sub><var>k</var></sub></dfn> be the <a>computed
+    keyframe offset</a> of a <a>keyframe</a> <var>k</var>.
+1.  Let <var>n</var> be the number of keyframes <em>between</em> and
     including <var>start</var> and <var>end</var> minus 1.
-3.  Let <var>index</var> refer to the position of
+1.  Let <var>index</var> refer to the position of
     <var>keyframe</var> in the sequence of keyframes between
     <var>start</var> and <var>end</var> such that the first keyframe
     after <var>start</var> has an <var>index</var> of 1.
-4.  Set the <a>keyframe offset</a> of <var>keyframe</var> to
+1.  Set the <a>computed keyframe offset</a> of <var>keyframe</var> to
     <a lt="offsetk">offset</a><sub><var>start</var></sub> +
     (<a lt="offsetk">offset</a><sub><var>end</var></sub> &minus;
      <a lt="offsetk">offset</a><sub><var>start</var></sub>)
     &times; <var>index</var> / <var>n</var>.
 
-The computed <a>keyframe offset</a> values of each <a>keyframe</a>
-with a null keyframe offset are determined using the following
-procedure.
+The <a>computed keyframe offset</a> values of each <a>keyframe</a>
+are determined using the following procedure.
 
 1.  Let <var>keyframes</var> refer to the list of <a>keyframes</a>
     associated with the <a>keyframe effect</a>.
-2.  If <var>keyframes</var> contains more than one
-    <a>keyframe</a> and the <a>keyframe offset</a> of
+1.  For each <a>keyframe</a>, in <var>keyframes</var>,
+    let the <a>computed keyframe offset</a> of the <a>keyframe</a>
+    be equal to its <a>keyframe offset</a> value.
+1.  If <var>keyframes</var> contains more than one
+    <a>keyframe</a> and the <a>computed keyframe offset</a> of
     the first <a>keyframe</a> in <var>keyframes</var> is null,
-    set the <a>keyframe offset</a> of
+    set the <a>computed keyframe offset</a> of
     the first <a>keyframe</a> to 0.
-3.  If the <a>keyframe offset</a> of the last <a>keyframe</a> in
-    <var>distributed keyframes</var> is null, set its
-    <a>keyframe offset</a> to 1.
+1.  If the <a>computed keyframe offset</a> of the last <a>keyframe</a> in
+    <var>keyframes</var> is null, set its
+    <a>computed keyframe offset</a> to 1.
 4.  For each pair of <a>keyframes</a> <var>A</var> and <var>B</var>
     where:
 
     *   <var>A</var> appears before <var>B</var> in
         <var>keyframes</var>, and
-    *   <var>A</var> and <var>B</var> have a <a>keyframe
+    *   <var>A</var> and <var>B</var> have a <a>computed keyframe
         offset</a> that is not null, and
     *   all <a>keyframes</a> between <var>A</var> and <var>B</var>
-        have a null <a>keyframe offset</a>,
+        have a null <a>computed keyframe offset</a>,
 
-    calculate the <a>keyframe offset</a> of
+    calculate the <a>computed keyframe offset</a> of
     each <a>keyframe</a> between <var>A</var> and <var>B</var>
     depending on the <a>keyframe spacing mode</a> as follows:
 
@@ -4361,7 +4371,7 @@ procedure.
                 values of the <a>paced property</a> on each pair of
                 successive <a>paceable</a> keyframes in the range
                 [<var>paced A</var>, <var>k</var>].
-            2.  Set the offset of <var>k</var> to
+            2.  Set the <a>computed keyframe offset</a> of <var>k</var> to
                 <a lt="offsetk">offset</a><sub><var>paced
                   A</var></sub> +
                 (<a lt="offsetk">offset</a><sub><var>paced
@@ -4373,12 +4383,12 @@ procedure.
                   B</var></sub>
         7.  For each keyframe in the range (<var>paced A</var>,
             <var>paced B</var>) that still has
-            a null <a>keyframe offset</a> (because it is not
+            a null <a>computed keyframe offset</a> (because it is not
             <a>paceable</a>), apply the procedure
             for <a>evenly distributing a keyframe</a> using
             the nearest <a>keyframe</a> before and after the
             keyframe in question in <var>keyframes</var> that has
-            a <a>keyframe offset</a> that is not null, as the
+            a <a>computed keyframe offset</a> that is not null, as the
             <var>start</var> and <var>end</var> keyframes
             respectively.
     :   Otherwise,</dt>
@@ -4423,16 +4433,16 @@ referenced by a <a>keyframe effect</a> as one of its
 6.  If <var>property-specific keyframes</var> is empty, return
     <var>underlying value</var>.
 7.  If there is no <a>keyframe</a> in <var>property-specific
-    keyframes</var> with a <a>keyframe offset</a> of
-    0, create a new <a>keyframe</a> with a <a>keyframe offset</a> of
+    keyframes</var> with a <a>computed keyframe offset</a> of
+    0, create a new <a>keyframe</a> with a <a>computed keyframe offset</a> of
     0, a property value set to the <a>neutral value for
     composition</a>, and a <a>composite operation</a> of <a
     lt="composite operation add">add</a>, and prepend it to the
     beginning of <var>property-specific keyframes</var>.
 8.  Similarly, if there is no <a>keyframe</a> in
-    <var>property-specific keyframes</var> with a <a>keyframe
+    <var>property-specific keyframes</var> with a <a>computed keyframe
     offset</a> of 1,
-    create a new <a>keyframe</a> with a <a>keyframe offset</a> of 1,
+    create a new <a>keyframe</a> with a <a>computed keyframe offset</a> of 1,
     a property value set to the <a>neutral value for composition</a>,
     and a <a>composite operation</a> of <a
     lt="composite operation add">add</a>, and append it to the
@@ -4446,13 +4456,13 @@ referenced by a <a>keyframe effect</a> as one of its
 
     :   If <var>iteration progress</var> &lt; 0 and there is more
         than one <a>keyframe</a> in <var>property-specific
-        keyframes</var> with a <a>keyframe offset</a> of
+        keyframes</var> with a <a>computed keyframe offset</a> of
         0,
     ::  Add the first <a>keyframe</a> in <var>property-specific
         keyframes</var> to <var>interval endpoints</var>.
     :   If <var>iteration progress</var> &ge; 1 and there is more
         than one <a>keyframe</a> in <var>property-specific
-        keyframes</var> with a <a>keyframe offset</a> of
+        keyframes</var> with a <a>computed keyframe offset</a> of
         1,
     ::  Add the last <a>keyframe</a> in <var>property-specific
         keyframes</var> to <var>interval endpoints</var>.
@@ -4461,11 +4471,11 @@ referenced by a <a>keyframe effect</a> as one of its
 
         1.  Append to <var>interval endpoints</var> the last
             <a>keyframe</a> in <var>property-specific
-            keyframes</var> whose <a>keyframe offset</a> is less than
+            keyframes</var> whose <a>computed keyframe offset</a> is less than
             or equal to <var>iteration progress</var> and less than 1.  If
             there is no such <a>keyframe</a> (because, for example,
             the <a>iteration progress</a> is negative), add the last
-            <a>keyframe</a> whose <a>keyframe offset</a> is 0.
+            <a>keyframe</a> whose <a>computed keyframe offset</a> is 0.
         2.  Append to <var>interval endpoints</var> the next
             <a>keyframe</a> in <var>property-specific keyframes</var>
             after the one added in the previous step.
@@ -4518,9 +4528,9 @@ referenced by a <a>keyframe effect</a> as one of its
 12. If there is only one keyframe in <var>interval endpoints</var>
     return the property value of <var>target property</var> on that
     keyframe.
-13. Let <var>start offset</var> be the <a>keyframe offset</a> of the
+13. Let <var>start offset</var> be the <a>computed keyframe offset</a> of the
     first keyframe in <var>interval endpoints</var>.
-14. Let <var>end offset</var> be the <a>keyframe offset</a> of
+14. Let <var>end offset</var> be the <a>computed keyframe offset</a> of
     last keyframe in <var>interval endpoints</var>.
 15. Let <var>interval distance</var> be the result of evaluating
     <code>(<var>iteration progress</var> - <var>start offset</var>) /
@@ -4539,12 +4549,12 @@ referenced by a <a>keyframe effect</a> as one of its
     Note that this procedure assumes the following about the list of
     <a>keyframes</a> specified on the effect:</p>
 
-    *   Each <a>keyframe</a> has a specified <a>keyframe offset</a> in
+    *   Each <a>keyframe</a> has a specified <a>computed keyframe offset</a> in
         the range [0, 1].
     *   The list of <a>keyframes</a> is sorted in ascending order by
-        <a>keyframe offset</a>.
+        <a>computed keyframe offset</a>.
     *   Each specified property value is a valid and supported value.
-    *   For a given property, there is a most one specified property
+    *   For a given property, there is at most one specified property
         value on each keyframe.
 
     It is the responsibility of the user of the model (for example,
@@ -6527,7 +6537,7 @@ KeyframeEffect implements AnimationEffectMutable;
             of {{Keyframe}} objects, and
         *   Invalid or unsupported properties being removed.
 
-    *   The result of computing the <a>keyframe offset</a>
+    *   The result of calculating the <a>computed keyframe offset</a>
         of each <a>keyframe</a> as defined in <a
         href="#spacing-keyframes" section></a> is stored in
         the {{ComputedKeyframe/computedOffset}} member of each frame.
@@ -7207,7 +7217,7 @@ dictionary ComputedKeyframe : Keyframe {
 <div class='attributes'>
 
 :   <dfn dict-member for=ComputedKeyframe>computedOffset</dfn>
-::  The <a>keyframe offset</a> calculated for this <a>keyframe</a> as
+::  The <a>computed keyframe offset</a> calculated for this <a>keyframe</a> as
     a result of applying the spacing procedure defined in
     <a href="#spacing-keyframes" section></a>.
 
