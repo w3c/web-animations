@@ -1430,7 +1430,7 @@ as follows:
 
 1.  Run the procedure to <a>reset an animation's pending tasks</a> on
     <var>animation</var>.
-2.  <a lt="reject a Promise">Reject</a> the <a>current finished promise</a>
+1.  <a lt="reject a Promise">Reject</a> the <a>current finished promise</a>
     with a DOMException named "AbortError".
 
     Issue: If <var>animation</var> is already <a lt="idle play state">idle</a>
@@ -1439,14 +1439,29 @@ as follows:
     <code>cancel()</code> <em>always</em> rejects the <a>current finished
     promise</a> might also be more useful/reliable?
 
-3.  Let <a>current finished promise</a> be a new (pending) <a>Promise</a>
+1.  If <var>animation</var> is <em>not</em>
+    <a lt="idle play state">idle</a>, <a
+    href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task"
+    class="externalDFN">queue a task</a> to <a
+    href="https://html.spec.whatwg.org/multipage/infrastructure.html#concept-event-fire"
+    class="externalDFN">fire</a> a <a>cancel event</a> at <var>animation</var>.
+    The task source for this task is the <a
+    href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-manipulation-task-source"
+    class="externalDFN">DOM manipulation task source</a>.
+
+    The <a>event current time</a> for the dispatched <a>cancel event</a> is
+    <a>unresolved</a> and the <a>event timeline time</a> is the current
+    <a>time value</a> of the <a>timeline</a> associated with <a>animation</a>
+    at the moment the task is queued.
+
+1.  Let <a>current finished promise</a> be a new (pending) <a>Promise</a>
     object.
-4.  Make <var>animation</var>'s <a>hold time</a> <a>unresolved</a>.
-5.  Make <var>animation</var>'s <a lt="animation start time">start time</a>
+1.  Make <var>animation</var>'s <a>hold time</a> <a>unresolved</a>.
+1.  Make <var>animation</var>'s <a lt="animation start time">start time</a>
     <a>unresolved</a>.
 
 <!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
-6.  Queue a task to call any <a>custom effects</a> associated with
+1.  Queue a task to call any <a>custom effects</a> associated with
     <a>inclusive descendants</a> of
     <var>animation</var>'s <a>target effect</a>
     with an <a>unresolved</a> iteration progress.
