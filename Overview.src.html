@@ -1316,21 +1316,31 @@ current time</a>), is as follows:
 
     </div>
 
-1.  Let <var>current finished state</var> be true if the <a>play
-    state</a> of <var>animation</var> is finished. Otherwise, let it be
-    false.
-1.  If <var>current finished state</var> is true and <a>previous
-    finished state</a> is false,
-    <a lt="resolve a promise">resolve</a> <var>animation</var>'s <a>current
-    finished promise</a> object with <var>animation</var>.
-1.  If <var>current finished state</var> is false and <a>previous
-    finished state</a> is true,
-    set <var>animation</var>'s <a>current finished promise</a> to a new
-    (pending) Promise object.
-1.  Set <var>animation</var>'s <a>previous finished state</a> to
-    <var>current finished state</var>.
 1.  Set the <a>previous current time</a> of <var>animation</var> be the
     result of calculating its <a>current time</a>.
+1.  Let <var>current finished state</var> be true if the <a>play
+    state</a> of <var>animation</var> is
+    <a lt="finished play state">finished</a>.
+    Otherwise, let it be false.
+1.  If <var>current finished state</var> is not equal to <a>previous finished
+    state</a>, <a
+    href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask"
+    class="externalDFN">queue a microtask</a> to perform the following steps:
+
+    1.  Let <var>current finished state</var> be true if the <a>play
+        state</a> of <var>animation</var> is
+        <a lt="finished play state">finished</a>.
+        Otherwise, let it be false.
+    1.  If <var>current finished state</var> is true and <a>previous
+        finished state</a> is false,
+        <a lt="resolve a promise">resolve</a> <var>animation</var>'s <a>current
+        finished promise</a> object with <var>animation</var>.
+    1.  If <var>current finished state</var> is false and <a>previous
+        finished state</a> is true,
+        set <var>animation</var>'s <a>current finished promise</a> to a new
+        (pending) Promise object.
+    1.  Set <var>animation</var>'s <a>previous finished state</a> to
+        <var>current finished state</var>.
 
 <h4 id="finishing-an-animation-section">Finishing an animation</h4>
 
