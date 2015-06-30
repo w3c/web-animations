@@ -1332,9 +1332,18 @@ current time</a>), is as follows:
         <a lt="finished play state">finished</a>.
         Otherwise, let it be false.
     1.  If <var>current finished state</var> is true and <a>previous
-        finished state</a> is false,
-        <a lt="resolve a promise">resolve</a> <var>animation</var>'s <a>current
-        finished promise</a> object with <var>animation</var>.
+        finished state</a> is false, perform the following steps:
+        1.  <a lt="resolve a promise">Resolve</a> <var>animation</var>'s
+            <a>current finished promise</a> object with <var>animation</var>.
+        1.  <a
+            href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task"
+            class="externalDFN">Queue a task</a> to <a
+            href="https://html.spec.whatwg.org/multipage/infrastructure.html#concept-event-fire"
+            class="externalDFN">fire</a> a <a>finish event</a>
+            at <var>animation</var>.
+            The task source for this task is the <a
+            href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-manipulation-task-source"
+            class="externalDFN">DOM manipulation task source</a>.
     1.  If <var>current finished state</var> is false and <a>previous
         finished state</a> is true,
         set <var>animation</var>'s <a>current finished promise</a> to a new
