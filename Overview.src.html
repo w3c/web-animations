@@ -6302,7 +6302,6 @@ Mutable <a>keyframe effects</a> are represented by the
               optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
     readonly attribute Animatable?                 target;
-    readonly attribute DOMString                   name;
     readonly attribute IterationCompositeOperation iterationComposite;
     readonly attribute CompositeOperation          composite;
     readonly attribute DOMString                   spacing;
@@ -6315,7 +6314,6 @@ interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
               optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffect : KeyframeEffectReadOnly {
     inherit attribute Animatable?                 target;
-    inherit attribute DOMString                   name;
     inherit attribute IterationCompositeOperation iterationComposite;
     inherit attribute CompositeOperation          composite;
     inherit attribute DOMString                   spacing;
@@ -6366,8 +6364,7 @@ KeyframeEffect implements AnimationEffectMutable;
         that here.
 
     1.  If <var>options</var> is a {{KeyframeEffectOptions}} object,
-        set the {{KeyframeEffectReadOnly/name}},
-        {{KeyframeEffectReadOnly/iterationComposite}},
+        set the {{KeyframeEffectReadOnly/iterationComposite}},
         {{KeyframeEffectReadOnly/composite}}, and
         {{KeyframeEffectReadOnly/spacing}} properties of <var>effect</var> to
         the corresponding value from <var>options</var>.
@@ -6428,15 +6425,6 @@ KeyframeEffect implements AnimationEffectMutable;
     This may be <code>null</code> for animations that do not target
     a specific element such as an animation that produces a sound
     using an audio API.
-
-:   <dfn attribute for=KeyframeEffectReadOnly><dfn attribute
-    for=KeyframeEffect>name</dfn></dfn>
-::  A string used to identify this effect.
-
-    On setting, replaces the string with the provided DOMString.
-
-    Issue: We should define the name as an internal member in the model and
-    reference that here.
 
 :   <dfn attribute for=KeyframeEffectReadOnly><dfn attribute
     for=KeyframeEffect>iterationComposite</dfn></dfn>
@@ -6504,8 +6492,8 @@ KeyframeEffect implements AnimationEffectMutable;
     1.   Let <var>source</var> be the {{KeyframeEffectReadOnly}} object on which
          this method was called.
     2.   Let <var>dest</var> be a new {{KeyframeEffect}} object.
-    3.   Set each of the {{KeyframeEffect/name}},
-         {{KeyframeEffect/iterationComposite}}, {{KeyframeEffect/composite}},
+    3.   Set each of the {{KeyframeEffect/iterationComposite}},
+         {{KeyframeEffect/composite}},
          and {{KeyframeEffect/spacing}} attributes on <var>dest</var> using
          the value returned by the getter of the corresponding attribute on
          <var>source</var>.
@@ -6573,7 +6561,6 @@ object.
 
 <pre class='idl'>
 dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
-    DOMString                   name = "";
     IterationCompositeOperation iterationComposite = "replace";
     CompositeOperation          composite = "replace";
     DOMString                   spacing = "distribute";
@@ -6581,10 +6568,6 @@ dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
 </pre>
 
 <div class="attributes">
-
-:   <dfn dict-member for=KeyframeEffectOptions>name</dfn>
-::  The value to set for the {{KeyframeEffect}}'s
-    {{KeyframeEffectReadOnly/name}} property.
 
 :   <dfn dict-member for=KeyframeEffectOptions>iterationComposite</dfn>
 ::  The <a>iteration composite operation</a> used to define the way
