@@ -5187,6 +5187,7 @@ API by the {{Animation}} interface.
 [Constructor (optional AnimationEffectReadOnly? effect = null,
               optional AnimationTimeline? timeline = null)]
 interface Animation {
+             attribute DOMString                id;
              attribute AnimationEffectReadOnly? effect;
              attribute AnimationTimeline?       timeline;
              attribute double?                  startTime;
@@ -5236,6 +5237,8 @@ interface Animation {
 
 <div class='attributes'>
 
+:   <dfn attribute for=Animation>id</dfn>
+::  A string used to identify the animation.
 :   <dfn attribute for=Animation>effect</dfn>
 ::  The <a>target effect</a> associated with this animation.
     Setting this attribute updates the object's <a>target effect</a> using
@@ -7324,8 +7327,11 @@ the {{Animatable}} interface.
 [NoInterfaceObject]
 interface Animatable {
     Animation           animate ((PropertyIndexedKeyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
-                                 optional (double or KeyframeEffectOptions) options);
+                                 optional (double or KeyframeAnimationOptions) options);
     sequence&lt;Animation&gt; getAnimations ();
+};
+dictionary KeyframeAnimationOptions : KeyframeEffectOptions {
+    DOMString id = "";
 };
 </pre>
 
@@ -7339,17 +7345,20 @@ interface Animatable {
         <var>target</var> argument,
         and the <var>frames</var> and <var>options</var> arguments as supplied.
 
-    2.  Construct a new {{Animation}} object, <var>animation</var>, passing
+    1.  Construct a new {{Animation}} object, <var>animation</var>, passing
         <var>effect</var> as the argument of the same name, and the
         the <a>default document timeline</a> of the
         <a href="http://www.w3.org/TR/dom/#concept-node-document">node
         document</a> [[!DOM]] of the element on which this method was called
         as the <var>timeline</var> argument.
 
-    3.  Run the procedure to <a>play an animation</a> for
+    1.  Assign the value of the <code>id</code> member of <var>options</var> to
+        <var>animation</var>'s {{Animation/id}} attribute.
+
+    1.  Run the procedure to <a>play an animation</a> for
         <var>animation</var>.
 
-    4.  Return <var>animation</var>.
+    1.  Return <var>animation</var>.
 
     The following code fragment:
 
@@ -7401,6 +7410,14 @@ animation.play();</pre></div>
     The returned list reflects the state <em>after</em> applying any pending
     changes to animation such as changes to animation-related style properties
     that have yet to be processed.
+
+</div>
+
+<div class="members">
+
+:   <dfn dict-member for=KeyframeAnimationOptions>id</dfn>
+::  The string to assign to the generated {{Animation}}'s {{Animation/id}}
+    attribute.
 
 </div>
 
@@ -7756,6 +7773,7 @@ The following changes have been made since the <a
 *   Updated the {{Animation}} interface:
 
     *   Added the {{Animation()}} constructor.
+    *   Added the {{Animation/id}} attribute.
     *   Made {{Animation/startTime}} nullable.
     *   Added the {{Animation/playState}} member and corresponding
         {{AnimationPlayState}} enum.
@@ -7805,6 +7823,9 @@ The following changes have been made since the <a
     animation effects have been removed.
 *   Removed the <code>getCurrentAnimations</code> method from the {{Animatable}}
     interface.
+*   Made the {{Animatable/animate()}} method of the {{Animatable}} interface
+    take a {{KeyframeAnimationOptions}} parameter so that the {{Animation/id}}
+    of an {{Animation}} can be specified.
 *   Rewrote the section previously titled, &ldquo;Script execution and live
     updates to the model&rdquo; as the much simpler <a href=#model-liveness
     class=sectionRef></a> since many of the requirements there can be implied
