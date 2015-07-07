@@ -13,11 +13,12 @@ Status: UD
 Warning: not ready
 <!-- @endif -->
 Shortname: web-animations
-TR: http://www.w3.org/TR/web-animations/
+TR: https://www.w3.org/TR/web-animations-1/
 <!-- @if LEVEL=1 -->
 ED: https://w3c.github.io/web-animations/
-Previous version: http://www.w3.org/TR/2014/WD-web-animations-20140605/
-Previous version: http://www.w3.org/TR/2013/WD-web-animations-20130625/
+Previous version: https://www.w3.org/TR/2015/WD-web-animations-1-20150707/
+Previous version: https://www.w3.org/TR/2014/WD-web-animations-20140605/
+Previous version: https://www.w3.org/TR/2013/WD-web-animations-20130625/
 <!-- @endif -->
 <!-- @if LEVEL=2 -->
 ED: https://w3c.github.io/web-animations/level-2/
@@ -7701,141 +7702,17 @@ animations.
 <h2 id="changes-since-last-publication">Changes since last publication</h2>
 
 The following changes have been made since the <a
-  href="http://www.w3.org/TR/2014/WD-web-animations-20140605/">5 June
-2014 Working Draft</a>:
+  href="https://www.w3.org/TR/2015/WD-web-animations-1-20150707/">7 July
+2015 Working Draft</a>:
 
-*   Rewrote <a href="#use-cases" section></a> to provide specific
-    code examples and describe scenarios that do not involve using timing groups
-    which have been deferred to a subsequent level of this specification.
-*   Added definition of <a>unresolved</a> <a>time values</a>.
-*   Introduced <a>document timelines</a>.
-*   Renamed &ldquo;not started&rdquo; timelines as <a>inactive timelines</a>.
-*   Renamed animation players to <a>animations</a> (what were previously
-    referred to as animations are now <a>keyframe effects</a>).
-*   Made the <a>animation sequence number</a> increment on each transition
-    out of the idle state (not on creation).
-*   Made the association between an <a>animation</a> and a <a>timeline</a>
-    optional.
-*   Removed the concepts of effective timeline time and effective
-    current time.
-*   Renamed the source content of an <a>animation</a> (previously, player),
-    to its <a>target effect</a>.
-*   Removed the non-normative description of seeking behavior.
-*   Added the <a>current finished promise</a> and <a>current ready
-    promise</a> objects to <a>animations</a>.
-*   Modified the procedure to <a>finish an animation</a> so that pause
-    state is not changed by finishing.
-*   Added animation <a>play states</a>.
-*   Removed player events.
-*   Rewrote most of the algorithms for <a>animations</a> to accommodate
-    asynchronous play/pause/reverse operations.
-*   Renamed animation nodes to <a>animation effects</a> and what were previously
-    known as an animations to <a>keyframe effects</a>.
-*   Removed the start time specific to an <a>animation effect</a> since it is
-    always zero in the absence of groups effects.
-*   Removed the term &lsquo;inherited time&rsquo; since, in the absence of
-    animation effect-specific start times, <a>local time</a> is equivalent to
-    &lsquo;inherited time&rsquo;.
-*   Renamed the &ldquo;time fraction&rdquo; to <a>iteration progress</a>.
-*   Deferred group effects (previously known as animation groups) to a <a
-    href="https://w3c.github.io/web-animations/level-2/">subsequent level</a>
-    of this specification.
-    Deferring this feature also lead to the following simplifications.
-    *   Deferred the <a>animation effect</a>-specific playback rate since it was
-        considered to be not particularly useful without group effects and
-        potentially confusing (since <a>animations</a>s also have an
-        <a>animation playback rate</a>).
-    *   Removed the &lsquo;repeated duration&rsquo; definition since it is
-        redundant in the absence of the <a>animation effect</a>-specific
-        playback rate.
-*   Renamed intermediate animation values to <a>effect values</a>.
-*   Added the concept of <a>animation types</a> and clarified prioritization
-    in a way that can be easily extended by CSS Animations and CSS Transitions.
-*   Removed motion path animation effects since this functionality can be
-    achieved using the <a href="http://dev.w3.org/fxtf/motion-1/">Motion Path
-    Module</a>.
-*   Deferred custom effects to a <a
-    href="https://w3c.github.io/web-animations/level-2/">subsequent level</a>
-    of this specification.
-*   Defined that <a>unresolved</a> <a>time values</a> are represented
-    by <code>null</code>.
-*   Added the {{DocumentTimeline}} interface.
-*   Renamed the <code>getAnimationPlayers</code> method of the
-    {{AnimationTimeline}} interface to
-    {{AnimationTimeline/getAnimations()}}.
-*   Made the {{AnimationTimeline/getAnimations()}} method on the
-    {{AnimationTimeline}} and {{Animatable}} interfaces return all
-    <a>animations</a> that are <em>either</em> <a>current</a> <em>or</em> <a>in
-    effect</a>.
-*   Moved the <code>play()</code> method of {{AnimationTimeline}} to
-    a subsequent level of this specification.
-*   Renamed the <code>AnimationPlayer</code> interface to {{Animation}}.
 *   Updated the {{Animation}} interface:
 
-    *   Added the {{Animation()}} constructor.
     *   Added the {{Animation/id}} attribute.
-    *   Made {{Animation/startTime}} nullable.
-    *   Added the {{Animation/playState}} member and corresponding
-        {{AnimationPlayState}} enum.
-    *   Added the {{Animation/ready}} and {{Animation/finished}} Promise
-        attributes.
-    *   Removed the <code>paused</code> and <code>finished</code>
-        boolean attributes.
-    *   Removed the <code>onfinish</code> attribute.
-    *   Renamed the <code>source</code> member to {{Animation/effect}}.
 
-*   Added a read-only version of interfaces for <a>animation effects</a> and
-    related interfaces as follows:
-    *   <a>Animation effects</a> are now represented by the
-        {{AnimationEffectReadOnly}} interface.
-    *   <a>Animation effects</a> are now represented by the
-        {{KeyframeEffectReadOnly}} and {{Animation}} interfaces.
-    *   <a>Keyframe effects</a> are now represented by the
-        {{KeyframeEffectReadOnly}} and {{KeyframeEffect}} interfaces.
-    *   A number of references to {{Animation}} and
-        {{KeyframeEffect}} have been updated to refer to their read-only
-        equivalents since the read-only interface is the super-interface in each
-        case
-
-*   Fixed the grammar for <a>&lt;cubic-bezier-timing-function&gt;</a> to
-    match CSS Transitions.
-*   Introduced the {{ComputedTimingProperties}} dictionary and
-    {{AnimationEffectTimingReadOnly}} interface.
-*   Moved computed timing from {{AnimationEffectReadOnly}} to a
-    {{AnimationEffectReadOnly/computedTiming}} attribute of type
-    {{ComputedTimingProperties}}.
-*   Removed the <code>player</code> attribute from the
-    {{AnimationEffectReadOnly}} interface.
-*   Exposed the <a>iteration progress</a> (was &ldquo;time fraction&rdquo;) to
-    script as <code>effect.computedTiming.progress</code>.
-*   Made the procedure defined in <a
-    href="#processing-a-frames-argument" section></a> throw an exception
-    if the keyframes are not <a>loosely sorted by offset</a> or if there are any
-    keyframes with an offset outside the range [0, 1].
-*   Removed <code>paced</code> as a valid value for {{KeyframeEffect}}'s
-    {{KeyframeEffect/spacing}} attribute.
-*   Added {{PropertyIndexedKeyframe}} as a convenient way of specifying a
-    list of property values.
-*   Added an opaque, immutable representation of {{SharedKeyframeList}}s.
-*   Added special handling for animating SVG's offset attribute on stop elements
-    by using the &lsquo;svgOffset&rsquo; property name.
-*   Removed the <code>MotionPathEffect</code> interface now that motion path
-    animation effects have been removed.
-*   Removed the <code>getCurrentAnimations</code> method from the {{Animatable}}
-    interface.
 *   Made the {{Animatable/animate()}} method of the {{Animatable}} interface
     take a {{KeyframeAnimationOptions}} parameter so that the {{Animation/id}}
     of an {{Animation}} can be specified.
-*   Rewrote the section previously titled, &ldquo;Script execution and live
-    updates to the model&rdquo; as the much simpler <a href=#model-liveness
-    class=sectionRef></a> since many of the requirements there can be implied
-    from requirements elsewhere.
 
-Changes since the <a
-  href="http://www.w3.org/TR/2013/WD-web-animations-20130625/">25 June
-2013 Working Draft</a> are included in <a
-  href="http://www.w3.org/TR/2014/WD-web-animations-20140605/#changes-since-last-publication">Appendix
-C of the 5 June 2014 Working Draft</a>.
 <!-- @endif -->
 
 The <a
