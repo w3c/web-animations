@@ -13,11 +13,12 @@ Status: UD
 Warning: not ready
 <!-- @endif -->
 Shortname: web-animations
-TR: http://www.w3.org/TR/web-animations/
+TR: https://www.w3.org/TR/web-animations-1/
 <!-- @if LEVEL=1 -->
 ED: https://w3c.github.io/web-animations/
-Previous version: http://www.w3.org/TR/2014/WD-web-animations-20140605/
-Previous version: http://www.w3.org/TR/2013/WD-web-animations-20130625/
+Previous version: https://www.w3.org/TR/2015/WD-web-animations-1-20150707/
+Previous version: https://www.w3.org/TR/2014/WD-web-animations-20140605/
+Previous version: https://www.w3.org/TR/2013/WD-web-animations-20130625/
 <!-- @endif -->
 <!-- @if LEVEL=2 -->
 ED: https://w3c.github.io/web-animations/level-2/
@@ -44,9 +45,9 @@ url: https://dom.spec.whatwg.org/#interface-element; type: interface; text: Elem
 url: https://html.spec.whatwg.org/#document; type: interface; text: Document; spec: html
 </pre>
 
-<link href='https://drafts.fxtf.org/default.css' rel='stylesheet' test='text/css'>
 <link href='web-animations.css' rel='stylesheet' type='text/css'>
 <script src='MathJax/MathJax.js?config=MML_SVGorMML,local/local' type='text/javascript'></script>
+<link href='https://drafts.fxtf.org/default.css' rel='stylesheet' type='text/css'>
 
 <h2 id="introduction">Introduction</h2>
 <div class='informative-bg'><em>This section is non-normative</em>
@@ -135,7 +136,7 @@ elem.animate({ transform: 'scale(0)', opacity: 0 }, 300);
 // Print the name of any opacity animations on elem
 elem.getAnimations().filter(
   animation =&gt;
-    animation.effect instanceof KeyframeEffect &&
+    animation.effect instanceof KeyframeEffectReadOnly &&
     animation.effect.getFrames().some(
       frame =&gt; frame.hasOwnProperty('opacity')
     )
@@ -149,7 +150,7 @@ elem.getAnimations().filter(
 // Slow down and replay any transform animations
 elem.getAnimations().filter(
   animation =&gt;
-    animation.effect instanceof KeyframeEffect &&
+    animation.effect instanceof KeyframeEffectReadOnly &&
     animation.effect.getFrames().some(
       frame =&gt; frame.hasOwnProperty('transform')
     )
@@ -236,7 +237,7 @@ such that the two interfaces can be used simultaneously without conflict.
 The programming interface component of this specification makes
 some additions to interfaces defined in HTML5 [[HTML5]].
 
-<h3 id="overview-of this-specification">Overview of this specification</h3>
+<h3 id="overview-of-this-specification">Overview of this specification</h3>
 
 This specification begins by defining an abstract model for animation.
 This is followed by a programming interface defined in terms of the
@@ -4137,7 +4138,7 @@ The set of <a>animation behaviors</a> defined here may be extended
 by other specifications.
 For example, properties with using the &lt;image&gt; type are
 animated using the interpolation behavior defined in <a
-href="http://dev.w3.org/csswg/css-images-4/#interpolation">CSS Image
+href="http://dev.w3.org/csswg/css-images-3/#interpolation">CSS Image
 Values and Replaced Content</a>
 [[CSS4-IMAGES]].
 
@@ -5270,6 +5271,7 @@ API by the {{Animation}} interface.
 [Constructor (optional AnimationEffectReadOnly? effect = null,
               optional AnimationTimeline? timeline = null)]
 interface Animation : EventTarget {
+             attribute DOMString                id;
              attribute AnimationEffectReadOnly? effect;
              attribute AnimationTimeline?       timeline;
              attribute double?                  startTime;
@@ -5321,6 +5323,8 @@ interface Animation : EventTarget {
 
 <div class='attributes'>
 
+:   <dfn attribute for=Animation>id</dfn>
+::  A string used to identify the animation.
 :   <dfn attribute for=Animation>effect</dfn>
 ::  The <a>target effect</a> associated with this animation.
     Setting this attribute updates the object's <a>target effect</a> using
@@ -5864,7 +5868,7 @@ dictionary AnimationEffectTimingProperties {
 };
 </pre>
 
-<div class='attributes'>
+<div class='members'>
 
 :   <dfn dict-member for=AnimationEffectTimingProperties>delay</dfn>
 ::  See the {{AnimationEffectTiming/delay}} attribute of
@@ -5925,7 +5929,7 @@ dictionary ComputedTimingProperties : AnimationEffectTimingProperties {
 };
 </pre>
 
-<div class='attributes'>
+<div class='members'>
 
 <!-- @ifdef INCLUDE_GROUPS -->
 :   <dfn dict-member for=ComputedTimingProperties>startTime</dfn>
@@ -6391,7 +6395,6 @@ Mutable <a>keyframe effects</a> are represented by the
               optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
     readonly attribute Animatable?                 target;
-    readonly attribute DOMString                   name;
     readonly attribute IterationCompositeOperation iterationComposite;
     readonly attribute CompositeOperation          composite;
     readonly attribute DOMString                   spacing;
@@ -6404,7 +6407,6 @@ interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
               optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffect : KeyframeEffectReadOnly {
     inherit attribute Animatable?                 target;
-    inherit attribute DOMString                   name;
     inherit attribute IterationCompositeOperation iterationComposite;
     inherit attribute CompositeOperation          composite;
     inherit attribute DOMString                   spacing;
@@ -6455,8 +6457,7 @@ KeyframeEffect implements AnimationEffectMutable;
         that here.
 
     1.  If <var>options</var> is a {{KeyframeEffectOptions}} object,
-        set the {{KeyframeEffectReadOnly/name}},
-        {{KeyframeEffectReadOnly/iterationComposite}},
+        set the {{KeyframeEffectReadOnly/iterationComposite}},
         {{KeyframeEffectReadOnly/composite}}, and
         {{KeyframeEffectReadOnly/spacing}} properties of <var>effect</var> to
         the corresponding value from <var>options</var>.
@@ -6469,25 +6470,25 @@ KeyframeEffect implements AnimationEffectMutable;
 
     :   <dfn argument
         for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)"
-        lt="target"><dfn argument
+        lt="target"></dfn><dfn argument
         for="KeyframeEffect/KeyframeEffect(target, frames, options)"
-        lt="target">Animatable? target</dfn></dfn>
+        lt="target">Animatable? target</dfn>
     ::  The <a>target element</a> or target pseudo-element.
         This may be <code>null</code> for animations that do not target
         a specific element.
 
     :   <dfn argument
         for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)"
-        lt="frames"><dfn argument
+        lt="frames"></dfn><dfn argument
         for="KeyframeEffect/KeyframeEffect(target, frames, options)"
-        lt="frames">(PropertyIndexedKeyframe or sequence&lt;Keyframe&gt;) frames</dfn></dfn>
+        lt="frames">(PropertyIndexedKeyframe or sequence&lt;Keyframe&gt;) frames</dfn>
     ::  The set of <a>keyframes</a> to use.
 
     :   <dfn argument
         for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)"
-        lt="options"><dfn argument
+        lt="options"></dfn><dfn argument
         for="KeyframeEffect/KeyframeEffect(target, frames, options)"
-        lt="options">optional KeyframeEffectOptions options</dfn></dfn>
+        lt="options">optional KeyframeEffectOptions options</dfn>
     ::  Either a number specifying the <a>iteration duration</a> of the effect,
         or a collection of properties specifying the timing and behavior of
         the effect.
@@ -6511,24 +6512,15 @@ KeyframeEffect implements AnimationEffectMutable;
 
 <div class="attributes">
 
-:   <dfn attribute for=KeyframeEffectReadOnly><dfn attribute
-    for=KeyframeEffect>target</dfn></dfn>
+:   <dfn attribute for=KeyframeEffectReadOnly>target</dfn><dfn attribute
+    for=KeyframeEffect lt='target'></dfn>
 ::  The element or pseudo-element being animated by this object.
     This may be <code>null</code> for animations that do not target
     a specific element such as an animation that produces a sound
     using an audio API.
 
-:   <dfn attribute for=KeyframeEffectReadOnly><dfn attribute
-    for=KeyframeEffect>name</dfn></dfn>
-::  A string used to identify this effect.
-
-    On setting, replaces the string with the provided DOMString.
-
-    Issue: We should define the name as an internal member in the model and
-    reference that here.
-
-:   <dfn attribute for=KeyframeEffectReadOnly><dfn attribute
-    for=KeyframeEffect>iterationComposite</dfn></dfn>
+:   <dfn attribute for=KeyframeEffectReadOnly>iterationComposite</dfn><dfn attribute
+    for=KeyframeEffect lt='iterationComposite'></dfn>
 ::  The <a>iteration composite operation</a> property of this
     <a>keyframe effect</a> as specified by one of the
     <a>IterationCompositeOperation</a> enumeration values.
@@ -6536,8 +6528,8 @@ KeyframeEffect implements AnimationEffectMutable;
     On setting, sets the <a>iteration composite operation</a> property of this
     <a>animation effect</a> to the provided value.
 
-:   <dfn attribute for=KeyframeEffectReadOnly><dfn attribute
-    for=KeyframeEffect>composite</dfn></dfn>
+:   <dfn attribute for=KeyframeEffectReadOnly>composite</dfn><dfn attribute
+    for=KeyframeEffect lt='composite'></dfn>
 ::  The <a>composite operation</a> used to composite this
     <a>keyframe effect</a> with the <a>effect stack</a>, as
     specified by one of the <a>CompositeOperation</a> enumeration
@@ -6546,8 +6538,8 @@ KeyframeEffect implements AnimationEffectMutable;
     On setting, sets the <a>composite operation</a> property of this
     <a>animation effect</a> to the provided value.
 
-:   <dfn attribute for=KeyframeEffectReadOnly><dfn attribute
-    for=KeyframeEffect>spacing</dfn></dfn>
+:   <dfn attribute for=KeyframeEffectReadOnly>spacing</dfn><dfn attribute
+    for=KeyframeEffect lt='spacing'></dfn>
 ::  On getting, returns the <a lt="keyframe spacing mode">spacing mode</a> to
     use for this <a>keyframe effect</a>.
 
@@ -6593,8 +6585,8 @@ KeyframeEffect implements AnimationEffectMutable;
     1.   Let <var>source</var> be the {{KeyframeEffectReadOnly}} object on which
          this method was called.
     2.   Let <var>dest</var> be a new {{KeyframeEffect}} object.
-    3.   Set each of the {{KeyframeEffect/name}},
-         {{KeyframeEffect/iterationComposite}}, {{KeyframeEffect/composite}},
+    3.   Set each of the {{KeyframeEffect/iterationComposite}},
+         {{KeyframeEffect/composite}},
          and {{KeyframeEffect/spacing}} attributes on <var>dest</var> using
          the value returned by the getter of the corresponding attribute on
          <var>source</var>.
@@ -6662,18 +6654,13 @@ object.
 
 <pre class='idl'>
 dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
-    DOMString                   name = "";
     IterationCompositeOperation iterationComposite = "replace";
     CompositeOperation          composite = "replace";
     DOMString                   spacing = "distribute";
 };
 </pre>
 
-<div class="attributes">
-
-:   <dfn dict-member for=KeyframeEffectOptions>name</dfn>
-::  The value to set for the {{KeyframeEffect}}'s
-    {{KeyframeEffectReadOnly/name}} property.
+<div class="members">
 
 :   <dfn dict-member for=KeyframeEffectOptions>iterationComposite</dfn>
 ::  The <a>iteration composite operation</a> used to define the way
@@ -6991,7 +6978,7 @@ dictionary Keyframe {
 };
 </pre>
 
-<div class='attributes'>
+<div class='members'>
 
 :   <dfn dict-member for=Keyframe>offset</dfn>
 ::  The <a>keyframe offset</a> of the <a>keyframe</a> specified as
@@ -7258,7 +7245,7 @@ dictionary PropertyIndexedKeyframe {
 };
 </pre>
 
-<div class='attributes'>
+<div class='members'>
 
 :   <dfn dict-member for=PropertyIndexedKeyframe>easing</dfn>
 ::  The <a>timing function</a> used to transform the progress of time
@@ -7304,7 +7291,7 @@ dictionary ComputedKeyframe : Keyframe {
 };
 </pre>
 
-<div class='attributes'>
+<div class='members'>
 
 :   <dfn dict-member for=ComputedKeyframe>computedOffset</dfn>
 ::  The <a>computed keyframe offset</a> calculated for this <a>keyframe</a> as
@@ -7430,8 +7417,11 @@ the {{Animatable}} interface.
 [NoInterfaceObject]
 interface Animatable {
     Animation           animate ((PropertyIndexedKeyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
-                                 optional (double or KeyframeEffectOptions) options);
+                                 optional (double or KeyframeAnimationOptions) options);
     sequence&lt;Animation&gt; getAnimations ();
+};
+dictionary KeyframeAnimationOptions : KeyframeEffectOptions {
+    DOMString id = "";
 };
 </pre>
 
@@ -7445,17 +7435,20 @@ interface Animatable {
         <var>target</var> argument,
         and the <var>frames</var> and <var>options</var> arguments as supplied.
 
-    2.  Construct a new {{Animation}} object, <var>animation</var>, passing
+    1.  Construct a new {{Animation}} object, <var>animation</var>, passing
         <var>effect</var> as the argument of the same name, and the
         the <a>default document timeline</a> of the
         <a href="http://www.w3.org/TR/dom/#concept-node-document">node
         document</a> [[!DOM]] of the element on which this method was called
         as the <var>timeline</var> argument.
 
-    3.  Run the procedure to <a>play an animation</a> for
+    1.  Assign the value of the <code>id</code> member of <var>options</var> to
+        <var>animation</var>'s {{Animation/id}} attribute.
+
+    1.  Run the procedure to <a>play an animation</a> for
         <var>animation</var>.
 
-    4.  Return <var>animation</var>.
+    1.  Return <var>animation</var>.
 
     The following code fragment:
 
@@ -7507,6 +7500,14 @@ animation.play();</pre></div>
     The returned list reflects the state <em>after</em> applying any pending
     changes to animation such as changes to animation-related style properties
     that have yet to be processed.
+
+</div>
+
+<div class="members">
+
+:   <dfn dict-member for=KeyframeAnimationOptions>id</dfn>
+::  The string to assign to the generated {{Animation}}'s {{Animation/id}}
+    attribute.
 
 </div>
 
@@ -7776,7 +7777,7 @@ scroll position [[HTML5]].
 
 
 User agents that pause and resume <a class="externalDFN"
-  href="http://www.w3.org/TR/html51/embedded-content-0.html#media-element">media
+  href="http://www.w3.org/TR/html5/embedded-content-0.html#media-element">media
 elements</a> when the referencing document is
 unloaded and traversed,
 are encouraged to apply consistent handling to documents containing Web
@@ -7830,137 +7831,17 @@ animations.
 <h2 id="changes-since-last-publication">Changes since last publication</h2>
 
 The following changes have been made since the <a
-  href="http://www.w3.org/TR/2013/WD-web-animations-20140605/">5 June
-2014 Working Draft</a>:
+  href="https://www.w3.org/TR/2015/WD-web-animations-1-20150707/">7 July
+2015 Working Draft</a>:
 
-*   Rewrote <a href="#use-cases" section></a> to provide specific
-    code examples and describe scenarios that do not involve using timing groups
-    which have been deferred to a subsequent level of this specification.
-*   Added definition of <a>unresolved</a> <a>time values</a>.
-*   Introduced <a>document timelines</a>.
-*   Renamed &ldquo;not started&rdquo; timelines as <a>inactive timelines</a>.
-*   Renamed animation players to <a>animations</a> (what were previously
-    referred to as animations are now <a>keyframe effects</a>).
-*   Made the <a>animation sequence number</a> increment on each transition
-    out of the idle state (not on creation).
-*   Made the association between an <a>animation</a> and a <a>timeline</a>
-    optional.
-*   Removed the concepts of effective timeline time and effective
-    current time.
-*   Renamed the source content of an <a>animation</a> (previously, player),
-    to its <a>target effect</a>.
-*   Removed the non-normative description of seeking behavior.
-*   Added the <a>current finished promise</a> and <a>current ready
-    promise</a> objects to <a>animations</a>.
-*   Modified the procedure to <a>finish an animation</a> so that pause
-    state is not changed by finishing.
-*   Added animation <a>play states</a>.
-*   Removed player events.
-*   Rewrote most of the algorithms for <a>animations</a> to accommodate
-    asynchronous play/pause/reverse operations.
-*   Renamed animation nodes to <a>animation effects</a> and what were previously
-    known as an animations to <a>keyframe effects</a>.
-*   Removed the start time specific to an <a>animation effect</a> since it is
-    always zero in the absence of groups effects.
-*   Removed the term &lsquo;inherited time&rsquo; since, in the absence of
-    animation effect-specific start times, <a>local time</a> is equivalent to
-    &lsquo;inherited time&rsquo;.
-*   Renamed the &ldquo;time fraction&rdquo; to <a>iteration progress</a>.
-*   Deferred group effects (previously known as animation groups) to a <a
-    href="https://w3c.github.io/web-animations/level-2/">subsequent level</a>
-    of this specification.
-    Deferring this feature also lead to the following simplifications.
-    *   Deferred the <a>animation effect</a>-specific playback rate since it was
-        considered to be not particularly useful without group effects and
-        potentially confusing (since <a>animations</a>s also have an
-        <a>animation playback rate</a>).
-    *   Removed the &lsquo;repeated duration&rsquo; definition since it is
-        redundant in the absence of the <a>animation effect</a>-specific
-        playback rate.
-*   Renamed intermediate animation values to <a>effect values</a>.
-*   Added the concept of <a>animation types</a> and clarified prioritization
-    in a way that can be easily extended by CSS Animations and CSS Transitions.
-*   Removed motion path animation effects since this functionality can be
-    achieved using the <a href="http://dev.w3.org/fxtf/motion-1/">Motion Path
-    Module</a>.
-*   Deferred custom effects to a <a
-    href="https://w3c.github.io/web-animations/level-2/">subsequent level</a>
-    of this specification.
-*   Defined that <a>unresolved</a> <a>time values</a> are represented
-    by <code>null</code>.
-*   Added the {{DocumentTimeline}} interface.
-*   Renamed the <code>getAnimationPlayers</code> method of the
-    {{AnimationTimeline}} interface to
-    {{AnimationTimeline/getAnimations()}}.
-*   Made the {{AnimationTimeline/getAnimations()}} method on the
-    {{AnimationTimeline}} and {{Animatable}} interfaces return all
-    <a>animations</a> that are <em>either</em> <a>current</a> <em>or</em> <a>in
-    effect</a>.
-*   Moved the <code>play()</code> method of {{AnimationTimeline}} to
-    a subsequent level of this specification.
-*   Renamed the <code>AnimationPlayer</code> interface to {{Animation}}.
 *   Updated the {{Animation}} interface:
 
-    *   Added the {{Animation()}} constructor.
-    *   Made {{Animation/startTime}} nullable.
-    *   Added the {{Animation/playState}} member and corresponding
-        {{AnimationPlayState}} enum.
-    *   Added the {{Animation/ready}} and {{Animation/finished}} Promise
-        attributes.
-    *   Removed the <code>paused</code> and <code>finished</code>
-        boolean attributes.
-    *   Removed the <code>onfinish</code> attribute.
-    *   Renamed the <code>source</code> member to {{Animation/effect}}.
+    *   Added the {{Animation/id}} attribute.
 
-*   Added a read-only version of interfaces for <a>animation effects</a> and
-    related interfaces as follows:
-    *   <a>Animation effects</a> are now represented by the
-        {{AnimationEffectReadOnly}} interface.
-    *   <a>Animation effects</a> are now represented by the
-        {{KeyframeEffectReadOnly}} and {{Animation}} interfaces.
-    *   <a>Keyframe effects</a> are now represented by the
-        {{KeyframeEffectReadOnly}} and {{KeyframeEffect}} interfaces.
-    *   A number of references to {{Animation}} and
-        {{KeyframeEffect}} have been updated to refer to their read-only
-        equivalents since the read-only interface is the super-interface in each
-        case
+*   Made the {{Animatable/animate()}} method of the {{Animatable}} interface
+    take a {{KeyframeAnimationOptions}} parameter so that the {{Animation/id}}
+    of an {{Animation}} can be specified.
 
-*   Fixed the grammar for <a>&lt;cubic-bezier-timing-function&gt;</a> to
-    match CSS Transitions.
-*   Introduced the {{ComputedTimingProperties}} dictionary and
-    {{AnimationEffectTimingReadOnly}} interface.
-*   Moved computed timing from {{AnimationEffectReadOnly}} to a
-    {{AnimationEffectReadOnly/computedTiming}} attribute of type
-    {{ComputedTimingProperties}}.
-*   Removed the <code>player</code> attribute from the
-    {{AnimationEffectReadOnly}} interface.
-*   Exposed the <a>iteration progress</a> (was &ldquo;time fraction&rdquo;) to
-    script as <code>effect.computedTiming.progress</code>.
-*   Made the procedure defined in <a
-    href="#processing-a-frames-argument" section></a> throw an exception
-    if the keyframes are not <a>loosely sorted by offset</a> or if there are any
-    keyframes with an offset outside the range [0, 1].
-*   Removed <code>paced</code> as a valid value for {{KeyframeEffect}}'s
-    {{KeyframeEffect/spacing}} attribute.
-*   Added {{PropertyIndexedKeyframe}} as a convenient way of specifying a
-    list of property values.
-*   Added an opaque, immutable representation of {{SharedKeyframeList}}s.
-*   Added special handling for animating SVG's offset attribute on stop elements
-    by using the &lsquo;svgOffset&rsquo; property name.
-*   Removed the <code>MotionPathEffect</code> interface now that motion path
-    animation effects have been removed.
-*   Removed the <code>getCurrentAnimations</code> method from the {{Animatable}}
-    interface.
-*   Rewrote the section previously titled, &ldquo;Script execution and live
-    updates to the model&rdquo; as the much simpler <a href=#model-liveness
-    class=sectionRef></a> since many of the requirements there can be implied
-    from requirements elsewhere.
-
-Changes since the <a
-  href="http://www.w3.org/TR/2013/WD-web-animations-20130625/">25 June
-2013 Working Draft</a> are included in <a
-  href="http://www.w3.org/TR/2014/WD-web-animations-20140605/#changes-since-last-publication">Appendix
-C of the 5 June 2014 Working Draft</a>.
 <!-- @endif -->
 
 The <a
