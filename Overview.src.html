@@ -623,7 +623,7 @@ follows:
 <!-- @endif -->
 1.  Run the procedure to <a>update an animation's finished state</a> for
     <var>animation</var> with the <var>did seek</var> flag set to false, and
-    the <var>synchronously queue events</var> flag set to false.
+    the <var>synchronously notify</var> flag set to false.
 
 The procedure to <dfn>reset an animation's pending tasks</dfn> for
 <var>animation</var> is as follows:
@@ -707,7 +707,7 @@ follows:
 <!-- @endif -->
 1.  Run the procedure to <a>update an animation's finished state</a> for
     <var>animation</var> with the <var>did seek</var> flag set to false, and
-    the <var>synchronously queue events</var> flag set to false.
+    the <var>synchronously notify</var> flag set to false.
 
 <h4 id="the-current-time-of-an-animation">The current time of an animation</h4>
 
@@ -823,7 +823,7 @@ The procedure to <dfn>set the current time</dfn> of an animation,
         <a>current ready promise</a> with <var>animation</var>.
 1.  Run the procedure to <a>update an animation's finished state</a> for
     <var>animation</var> with the <var>did seek</var> flag set to true, and
-    the <var>synchronously queue events</var> flag set to false.
+    the <var>synchronously notify</var> flag set to false.
 
 <h4 id='setting-the-start-time-of-an-animation'>Setting the start time of an animation</h4>
 
@@ -882,7 +882,7 @@ is as follows:
 
 1.  Run the procedure to <a>update an animation's finished state</a> for
     <var>animation</var> with the <var>did seek</var> flag set to false, and
-    the <var>synchronously queue events</var> flag set to false.
+    the <var>synchronously notify</var> flag set to false.
 
 Issue: Is this right? If you shift an animation backwards in time so that it is
 now finished, should the current time jump to the end of the target effect, or
@@ -1074,7 +1074,7 @@ follows:
         ready promise</a> with <var>animation</var>.
     1.  Run the procedure to <a>update an animation's finished state</a> for
         <var>animation</var> with the <var>did seek</var> flag set to false,
-        and the <var>synchronously queue events</var> flag set to false.
+        and the <var>synchronously notify</var> flag set to false.
 
         <div class="annotation">
             Note that the order of the above two steps is important
@@ -1093,7 +1093,7 @@ follows:
 
 1.  Run the procedure to <a>update an animation's finished state</a> for
     <var>animation</var> with the <var>did seek</var> flag set to false, and
-    the <var>synchronously queue events</var> flag set to false.
+    the <var>synchronously notify</var> flag set to false.
 
 <h4 id='pausing-an-animation-section'>Pausing an animation</h4>
 
@@ -1177,7 +1177,7 @@ follows:
         ready promise</a> with <var>animation</var>.
     1.  Run the procedure to <a>update an animation's finished state</a> for
         <var>animation</var> with the <var>did seek</var> flag set to false,
-        and the <var>synchronously queue events</var> flag set to false.
+        and the <var>synchronously notify</var> flag set to false.
 
     So long as the above task is scheduled but has yet to run,
     <var>animation</var> is described as having a <dfn>pending pause task</dfn>.
@@ -1186,7 +1186,7 @@ follows:
 
 1.  Run the procedure to <a>update an animation's finished state</a> for
     <var>animation</var> with the <var>did seek</var> flag set to false,
-    and the <var>synchronously queue events</var> flag set to false.
+    and the <var>synchronously notify</var> flag set to false.
 
 <h4 id="reaching-the-end">Reaching the end</h4>
 
@@ -1288,7 +1288,7 @@ procedure to <a>set the current time</a> of an <a>animation</a>.
 The procedure to <dfn>update an animation's finished state</dfn> for
 <var>animation</var>, given a flag <var>did seek</var> (to indicate if
 the update is being performed after <a lt="set the current time">setting the
-current time</a>), and a flag <var>synchronously queue events</var> (to indicate
+current time</a>), and a flag <var>synchronously notify</var> (to indicate
 the update was called in a context where we expect the finished event to be
 queued immediately, if at all) is as follows:
 
@@ -1374,12 +1374,12 @@ queued immediately, if at all) is as follows:
                 The task source for this task is the <a
                 href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-manipulation-task-source"
                 class="externalDFN">DOM manipulation task source</a>.
-        1.  If <var>synchronously queue events</var> is true, cancel any queued
+        1.  If <var>synchronously notify</var> is true, cancel any queued
             microtask to run the <var>finish notification steps</var> for this
             <var>animation</var>, and run the <var>finish notification
             steps</var> immediately.
 
-            Otherwise, if <var>synchronously queue events</var> is false, <a
+            Otherwise, if <var>synchronously notify</var> is false, <a
             href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask"
             class="externalDFN">queue a microtask</a> to run <var>finish
             notification steps</var> for <var>animation</var> unless there is
@@ -1484,7 +1484,7 @@ for <var>animation</var> defined below:
 
 1.  Run the procedure to <a>update an animation's finished state</a>
     <var>animation</var> with the <var>did seek</var> flag set to true,
-    and the <var>synchronously queue events</var> flag set to true.
+    and the <var>synchronously notify</var> flag set to true.
 
 <h4 id='cancelling-an-animation-section'>Cancelling an animation</h4>
 
@@ -7897,7 +7897,7 @@ The following changes have been made since the <a
 
 *   Made the procedure to <a>update an animation's finished state</a>
     conditionally check the <a lt="finished play state">finished state</a>
-    in an asynchronous manner based on the <var>synchronously queue events</var>
+    in an asynchronous manner based on the <var>synchronously notify</var>
     flag.
 *   Added <a href="#animation-events-section" class="sectionRef"></a>.
 *   Updated the {{Animation}} interface:
