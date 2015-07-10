@@ -622,7 +622,8 @@ follows:
     redundant).
 <!-- @endif -->
 1.  Run the procedure to <a>update an animation's finished state</a> for
-    <var>animation</var> with the <var>did seek</var> flag set to false.
+    <var>animation</var> with the <var>did seek</var> flag set to false, and
+    the <var>synchronously queue events</var> flag set to false.
 
 The procedure to <dfn>reset an animation's pending tasks</dfn> for
 <var>animation</var> is as follows:
@@ -705,7 +706,8 @@ follows:
     </div>
 <!-- @endif -->
 1.  Run the procedure to <a>update an animation's finished state</a> for
-    <var>animation</var> with the <var>did seek</var> flag set to false.
+    <var>animation</var> with the <var>did seek</var> flag set to false, and
+    the <var>synchronously queue events</var> flag set to false.
 
 <h4 id="the-current-time-of-an-animation">The current time of an animation</h4>
 
@@ -820,7 +822,8 @@ The procedure to <dfn>set the current time</dfn> of an animation,
     1.  <a lt="resolve a Promise">Resolve</a> <var>animation</var>'s
         <a>current ready promise</a> with <var>animation</var>.
 1.  Run the procedure to <a>update an animation's finished state</a> for
-    <var>animation</var> with the <var>did seek</var> flag set to true.
+    <var>animation</var> with the <var>did seek</var> flag set to true, and
+    the <var>synchronously queue events</var> flag set to false.
 
 <h4 id='setting-the-start-time-of-an-animation'>Setting the start time of an animation</h4>
 
@@ -878,7 +881,8 @@ is as follows:
     <a>current ready promise</a> with <var>animation</var>.
 
 1.  Run the procedure to <a>update an animation's finished state</a> for
-    <var>animation</var> with the <var>did seek</var> flag set to false.
+    <var>animation</var> with the <var>did seek</var> flag set to false, and
+    the <var>synchronously queue events</var> flag set to false.
 
 Issue: Is this right? If you shift an animation backwards in time so that it is
 now finished, should the current time jump to the end of the target effect, or
@@ -1069,7 +1073,8 @@ follows:
     1.  <a lt="resolve a Promise">Resolve</a> <var>animation</var>'s <a>current
         ready promise</a> with <var>animation</var>.
     1.  Run the procedure to <a>update an animation's finished state</a> for
-        <var>animation</var> with the <var>did seek</var> flag set to false.
+        <var>animation</var> with the <var>did seek</var> flag set to false,
+        and the <var>synchronously queue events</var> flag set to false.
 
         <div class="annotation">
             Note that the order of the above two steps is important
@@ -1087,7 +1092,8 @@ follows:
         bypassing the <a>pending play state</a> altogether.
 
 1.  Run the procedure to <a>update an animation's finished state</a> for
-    <var>animation</var> with the <var>did seek</var> flag set to false.
+    <var>animation</var> with the <var>did seek</var> flag set to false, and
+    the <var>synchronously queue events</var> flag set to false.
 
 <h4 id='pausing-an-animation-section'>Pausing an animation</h4>
 
@@ -1170,7 +1176,8 @@ follows:
     1.  <a lt="resolve a Promise">Resolve</a> <var>animation</var>'s <a>current
         ready promise</a> with <var>animation</var>.
     1.  Run the procedure to <a>update an animation's finished state</a> for
-        <var>animation</var> with the <var>did seek</var> flag set to false.
+        <var>animation</var> with the <var>did seek</var> flag set to false,
+        and the <var>synchronously queue events</var> flag set to false.
 
     So long as the above task is scheduled but has yet to run,
     <var>animation</var> is described as having a <dfn>pending pause task</dfn>.
@@ -1178,7 +1185,8 @@ follows:
     <em>not</em> have a <a>pending pause task</a>.
 
 1.  Run the procedure to <a>update an animation's finished state</a> for
-    <var>animation</var> with the <var>did seek</var> flag set to false.
+    <var>animation</var> with the <var>did seek</var> flag set to false,
+    and the <var>synchronously queue events</var> flag set to false.
 
 <h4 id="reaching-the-end">Reaching the end</h4>
 
@@ -1280,7 +1288,9 @@ procedure to <a>set the current time</a> of an <a>animation</a>.
 The procedure to <dfn>update an animation's finished state</dfn> for
 <var>animation</var>, given a flag <var>did seek</var> (to indicate if
 the update is being performed after <a lt="set the current time">setting the
-current time</a>), is as follows:
+current time</a>), and a flag <var>synchronously queue events</var> (to indicate
+the update was called in a context where we expect the finished event to be
+queued immediately, if at all) is as follows:
 
 1.  If both of the following conditions are true,
 
@@ -1348,23 +1358,83 @@ current time</a>), is as follows:
         Otherwise, let it be false.
     1.  If <var>current finished state</var> is true and <a>previous
         finished state</a> is false, perform the following steps:
-        1.  <a lt="resolve a promise">Resolve</a> <var>animation</var>'s
-            <a>current finished promise</a> object with <var>animation</var>.
-        1.  <a
-            href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task"
-            class="externalDFN">Queue a task</a> to <a
-            href="https://html.spec.whatwg.org/multipage/infrastructure.html#concept-event-fire"
-            class="externalDFN">fire</a> a <a>finish event</a>
-            at <var>animation</var>.
-            The task source for this task is the <a
-            href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-manipulation-task-source"
-            class="externalDFN">DOM manipulation task source</a>.
+        1.  Let <var>finish notification steps</var> refer to the following
+            procedure:
+            1.  If <var>current finished state</var> of <var>animation</var>
+                is false, abort these steps.
+            1.  <a lt="resolve a promise">Resolve</a> <var>animation</var>'s
+                <a>current finished promise</a> object with
+                <var>animation</var>.
+            1.  <a
+                href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task"
+                class="externalDFN">Queue a task</a> to <a
+                href="https://html.spec.whatwg.org/multipage/infrastructure.html#concept-event-fire"
+                class="externalDFN">fire</a> a <a>finish event</a>
+                at <var>animation</var>.
+                The task source for this task is the <a
+                href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-manipulation-task-source"
+                class="externalDFN">DOM manipulation task source</a>.
+        1.  If <var>synchronously queue events</var> is true, cancel any queued
+            microtask to run the <var>finish notification steps</var> for this
+            <var>animation</var>, and run the <var>finish notification
+            steps</var> immediately.
+
+            Otherwise, if <var>synchronously queue events</var> is false, <a
+            href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask"
+            class="externalDFN">queue a microtask</a> to run <var>finish
+            notification steps</var> for <var>animation</var> unless there is
+            already a microtask queued to run those steps for
+            <var>animation</var>.
     1.  If <var>current finished state</var> is false and <a>previous
         finished state</a> is true,
         set <var>animation</var>'s <a>current finished promise</a> to a new
         (pending) Promise object.
     1.  Set <var>animation</var>'s <a>previous finished state</a> to
         <var>current finished state</var>.
+
+<div class="informative-bg">
+
+Typically, notification about the finished state of an animation is
+performed asynchronously. This allows for the animation to temporarily
+enter the <a href="finished playback state">finished state</a> without
+triggering events to be fired or promises to be resolved.
+
+For example, in the following code fragment, <code>animation</code> temporarily
+enters the finished state. If notification of the finished state occurred
+synchronously this code would cause the <a>finish event</a> to be queued
+and the <a>current finished promise</a> to be resolved. However, if we
+reverse the order of the two statements such that the
+<code>iterationCount</code> is updated first, this would not happen.
+To avoid this surprising behavior, notification about the finished state of
+an animation is typically performed asynchronously.
+
+<pre class='example lang-javascript'>
+var animation = elem.animate({ left: '100px' }, 1000);
+animation.currentTime = 500;
+animation.playbackRate = 2; // animation is now finished
+animation.effect.timing.iterationCount = 2; // animation is no longer finished
+</pre>
+
+The one exception to this asynchronous behavior is when the <a>finish an
+animation</a> procedure is performed (typically by calling the
+{{Animation/finish()}} method). In this case the author's intention to finish
+the animation is clear so the notification about the finished state of the
+animation occurs synchronously as demonstrated below.
+
+<pre class='example lang-javascript'>
+var animation = elem.animate({ left: '100px' }, 1000);
+animation.finish(); // finish event is queued immediately and finished promise
+                    // is resolved despite the fact that the following statement
+                    // causes the animation to leave the finished state
+animation.currentTime = 0;
+</pre>
+
+Note that like the procedure to <a>finish an animation</a>, 
+the procedure to <a>cancel an animation</a> similarly queues the
+<a>cancel event</a> and rejects the <a>current finished promise</a> and
+<a>current ready promise</a> in a <em>synchronous</em> manner.
+
+</div>
 
 <h4 id="finishing-an-animation-section">Finishing an animation</h4>
 
@@ -1413,7 +1483,8 @@ for <var>animation</var> defined below:
     ready promise</a> of <var>animation</var> with <var>animation</var>.
 
 1.  Run the procedure to <a>update an animation's finished state</a>
-    <var>animation</var> with the <var>did seek</var> flag set to true.
+    <var>animation</var> with the <var>did seek</var> flag set to true,
+    and the <var>synchronously queue events</var> flag set to true.
 
 Note: Finishing an animation does not necessarily cause that animation
 to enter the <a>finished play state</a>. In particular, if an animation was in the
@@ -1429,34 +1500,29 @@ become <a>unresolved</a> hence removing any effects caused by the
 The procedure to <dfn>cancel an animation</dfn> for <var>animation</var> is
 as follows:
 
-1.  Run the procedure to <a>reset an animation's pending tasks</a> on
-    <var>animation</var>.
-1.  <a lt="reject a Promise">Reject</a> the <a>current finished promise</a>
-    with a DOMException named "AbortError".
+1.  If <var>animation</var>'s <a>play state</a> is <em>not</em>
+    <a lt="idle play state">idle</a>, perform the following steps:
+    1.  Run the procedure to <a>reset an animation's pending tasks</a> on
+        <var>animation</var>.
+    1.  <a lt="reject a Promise">Reject</a> the <a>current finished promise</a>
+        with a DOMException named "AbortError".
+    1.  Let <a>current finished promise</a> be a new (pending) <a>Promise</a>
+        object.
+    1.  If <var>animation</var> is <em>not</em>
+        <a lt="idle play state">idle</a>, <a
+        href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task"
+        class="externalDFN">queue a task</a> to <a
+        href="https://html.spec.whatwg.org/multipage/infrastructure.html#concept-event-fire"
+        class="externalDFN">fire</a> a <a>cancel event</a> at <var>animation</var>.
+        The task source for this task is the <a
+        href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-manipulation-task-source"
+        class="externalDFN">DOM manipulation task source</a>.
 
-    Issue: If <var>animation</var> is already <a lt="idle play state">idle</a>
-    should we just keep the existing finished promise and not reject it?
-    That seems more intuitive but the current behavior where
-    <code>cancel()</code> <em>always</em> rejects the <a>current finished
-    promise</a> might also be more useful/reliable?
+        The <a>event current time</a> for the dispatched <a>cancel event</a> is
+        <a>unresolved</a> and the <a>event timeline time</a> is the current
+        <a>time value</a> of the <a>timeline</a> associated with <a>animation</a>
+        at the moment the task is queued.
 
-1.  If <var>animation</var> is <em>not</em>
-    <a lt="idle play state">idle</a>, <a
-    href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task"
-    class="externalDFN">queue a task</a> to <a
-    href="https://html.spec.whatwg.org/multipage/infrastructure.html#concept-event-fire"
-    class="externalDFN">fire</a> a <a>cancel event</a> at <var>animation</var>.
-    The task source for this task is the <a
-    href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-manipulation-task-source"
-    class="externalDFN">DOM manipulation task source</a>.
-
-    The <a>event current time</a> for the dispatched <a>cancel event</a> is
-    <a>unresolved</a> and the <a>event timeline time</a> is the current
-    <a>time value</a> of the <a>timeline</a> associated with <a>animation</a>
-    at the moment the task is queued.
-
-1.  Let <a>current finished promise</a> be a new (pending) <a>Promise</a>
-    object.
 1.  Make <var>animation</var>'s <a>hold time</a> <a>unresolved</a>.
 1.  Make <var>animation</var>'s <a lt="animation start time">start time</a>
     <a>unresolved</a>.
