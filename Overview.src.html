@@ -1461,13 +1461,7 @@ for <var>animation</var> defined below:
 
     </div>
 
-1.  <a>Set the current time</a> to <var>limit</var>.
-
-    <div class="annotation">
-        The procedure for setting the current time has the side effect of
-        cancelling any <a>pending pause task</a> so we don't need to
-        handle that here.
-    </div>
+1.  <a>Silently set the current time</a> to <var>limit</var>.
 
 1.  If <var>animation</var>'s <a lt="animation start time">start time</a> is
     <a>unresolved</a> and <var>animation</var> has an associated <a
@@ -1477,6 +1471,21 @@ for <var>animation</var> defined below:
     (<var>limit</var> / <a lt="animation playback rate">playback
     rate</a>)</code> where <var>timeline time</var> is the current <a>time
     value</a> of the associated <a>timeline</a>.
+
+  1.  If there is a <a>pending pause task</a> and
+      <a lt="animation start time">start time</a> is <a
+      lt="unresolved">resolved</a>,
+
+    1.  Let the <a>hold time</a> be <a>unresolved</a>.
+
+        <div class="note">Typically the <a>hold time</a> will already be
+        unresolved except in the case when the animation was previously <a
+        lt="idle play state">idle</a>.</div>
+
+    1.  Cancel the <a>pending pause task</a>.
+
+    1.  <a lt="resolve a Promise">Resolve</a> the <a>current ready promise</a>
+        of <var>animation with <var>animation</var>.
 
 1.  If there is a <a>pending play task</a> and <a
     lt="animation start time">start time</a> is <a lt="unresolved">resolved</a>,
@@ -7900,6 +7909,9 @@ The following changes have been made since the <a
     conditionally check the <a lt="finished play state">finished state</a>
     in an asynchronous manner based on the <var>synchronously notify</var>
     flag.
+*   Made the procedure to <a>finish an animation</a> correctly handle
+    pause-pending animations and delay updating the finished state until
+    the end of the procedure.
 *   Added <a href="#animation-events-section" class="sectionRef"></a>.
 *   Updated the {{Animation}} interface:
 
