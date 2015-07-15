@@ -98,7 +98,7 @@
    <h1 class="p-name no-ref" id="title">Web Animations Level 2</h1>
   
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft,
-    <time class="dt-updated" datetime="2015-07-13">13 July 2015</time></span></h2>
+    <time class="dt-updated" datetime="2015-07-15">15 July 2015</time></span></h2>
   
    <div data-fill-with="spec-metadata">
     <dl>
@@ -2414,10 +2414,10 @@ already a microtask queued to run those steps for
          
 </ol>
       <li data-md="">
-       <p>If <var>current finished state</var> is false and <a data-link-type="dfn" href="#previous-finished-state">previous
-finished state</a> is true,
-set <var>animation</var>’s <a data-link-type="dfn" href="#current-finished-promise">current finished promise</a> to a new
-(pending) Promise object.</p>
+       <p>If <var>current finished state</var> is false and
+<var>animation</var>’s <a data-link-type="dfn" href="#current-finished-promise">current finished promise</a> is already
+resolved, set <var>animation</var>’s <a data-link-type="dfn" href="#current-finished-promise">current finished promise</a> to
+a new (pending) Promise object.</p>
        
 
       <li data-md="">
@@ -2521,15 +2521,7 @@ infinity,
 
 
     <li data-md="">
-     <p><a data-link-type="dfn" href="#set-the-current-time">Set the current time</a> to <var>limit</var>.</p>
-     
-
-
-     <div class="annotation">
-    The procedure for setting the current time has the side effect of
-    cancelling any <a data-link-type="dfn" href="#pending-pause-task">pending pause task</a> so we don’t need to
-    handle that here.
-</div>
+     <p><a data-link-type="dfn" href="#silently-set-the-current-time">Silently set the current time</a> to <var>limit</var>.</p>
      
 
 
@@ -2542,6 +2534,35 @@ rate</a>)</code> where <var>timeline time</var> is the current <a data-link-type
 value</a> of the associated <a data-link-type="dfn" href="#timeline">timeline</a>.</p>
      
 
+
+    <li data-md="">
+     <p>If there is a <a data-link-type="dfn" href="#pending-pause-task">pending pause task</a> and
+  <a data-link-type="dfn" href="#animation-start-time">start time</a> is <a data-link-type="dfn" href="#unresolved">resolved</a>,</p>
+     
+
+
+     <ol>
+      <li data-md="">
+       <p>Let the <a data-link-type="dfn" href="#hold-time">hold time</a> be <a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
+       
+
+
+       <div class="note" role="note">Typically the <a data-link-type="dfn" href="#hold-time">hold time</a> will already be
+unresolved except in the case when the animation was previously <a data-link-type="dfn" href="#idle-play-state">idle</a>.</div>
+       
+
+
+      <li data-md="">
+       <p>Cancel the <a data-link-type="dfn" href="#pending-pause-task">pending pause task</a>.</p>
+       
+
+
+      <li data-md="">
+       <p><a data-link-type="dfn" href="#resolve-a-promise">Resolve</a> the <a data-link-type="dfn" href="#current-ready-promise">current ready promise</a>
+of <var>animation with <var>animation</var>.</var></p>
+       
+</ol>
+     
 
     <li data-md="">
      <p>If there is a <a data-link-type="dfn" href="#pending-play-task">pending play task</a> and <a data-link-type="dfn" href="#animation-start-time">start time</a> is <a data-link-type="dfn" href="#unresolved">resolved</a>,
