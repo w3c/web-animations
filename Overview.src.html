@@ -1386,10 +1386,10 @@ follows:
             notification steps</var> for <var>animation</var> unless there is
             already a microtask queued to run those steps for
             <var>animation</var>.
-    1.  If <var>current finished state</var> is false and <a>previous
-        finished state</a> is true,
-        set <var>animation</var>'s <a>current finished promise</a> to a new
-        (pending) Promise object.
+    1.  If <var>current finished state</var> is false and
+        <var>animation</var>'s <a>current finished promise</a> is already
+        resolved, set <var>animation</var>'s <a>current finished promise</a> to
+        a new (pending) Promise object.
     1.  Set <var>animation</var>'s <a>previous finished state</a> to
         <var>current finished state</var>.
 
@@ -7909,6 +7909,8 @@ The following changes have been made since the <a
     conditionally check the <a lt="finished play state">finished state</a>
     in an asynchronous manner based on the <var>synchronously notify</var>
     flag.
+    *   Also, made this procedure only replace the <a>current finished
+        promise</a> if it has already been resolved.
 *   Made the procedure to <a>finish an animation</a> correctly handle
     pause-pending animations and delay updating the finished state until
     the end of the procedure.
