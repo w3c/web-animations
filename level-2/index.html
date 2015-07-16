@@ -98,7 +98,7 @@
    <h1 class="p-name no-ref" id="title">Web Animations Level 2</h1>
   
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft,
-    <time class="dt-updated" datetime="2015-07-15">15 July 2015</time></span></h2>
+    <time class="dt-updated" datetime="2015-07-16">16 July 2015</time></span></h2>
   
    <div data-fill-with="spec-metadata">
     <dl>
@@ -2373,13 +2373,41 @@ Otherwise, let it be false.</p>
        
 
       <li data-md="">
-       <p>If <var>current finished state</var> is true and <a data-link-type="dfn" href="#previous-finished-state">previous
-finished state</a> is false, perform the following steps:</p>
+       <p>If <var>current finished state</var> is true and <a data-link-type="dfn" href="#current-finished-promise">current
+finished promise</a> is not yet resolved, perform the following steps:</p>
        
+
+
+       <div class="informative-bg">
+
+
+        <p><em>This section is non-normative</em></p>
+
+
+        <p>For user agents that lazily generate the <a data-link-type="dfn" href="#current-finished-promise">current finished
+  promise</a>, the above condition is equivalent to saying,
+  “If <var>current finished state</var> is true and
+  <em>either</em> of the following conditions is true:</p>
+
+
+        <ul>
+         <li data-md="">
+          <p><var>previous finished state</var> is false, <em>or</em></p>
+          
+
+         <li data-md="">
+          <p><var>synchronously notify</var> is true and
+  there is a microtask queued to perform the <a data-link-type="dfn" href="#finish-notification-steps">finish
+  notification steps</a> for <var>animation</var>.”</p>
+          
+</ul>
+</div>
+       
+
 
        <ol>
         <li data-md="">
-         <p>Let <var>finish notification steps</var> refer to the following
+         <p>Let <dfn data-dfn-type="dfn" data-noexport="" id="finish-notification-steps">finish notification steps<a class="self-link" href="#finish-notification-steps"></a></dfn> refer to the following
 procedure:</p>
          
 
@@ -2401,14 +2429,14 @@ The task source for this task is the <a class="externalDFN" href="https://html.s
 </ol>
         <li data-md="">
          <p>If <var>synchronously notify</var> is true, cancel any queued
-microtask to run the <var>finish notification steps</var> for this
-<var>animation</var>, and run the <var>finish notification
-steps</var> immediately.</p>
+microtask to run the <a data-link-type="dfn" href="#finish-notification-steps">finish notification steps</a> for this
+<var>animation</var>, and run the <a data-link-type="dfn" href="#finish-notification-steps">finish notification
+steps</a> immediately.</p>
          
 
 
-         <p>Otherwise, if <var>synchronously notify</var> is false, <a class="externalDFN" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask">queue a microtask</a> to run <var>finish
-notification steps</var> for <var>animation</var> unless there is
+         <p>Otherwise, if <var>synchronously notify</var> is false, <a class="externalDFN" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask">queue a microtask</a> to run <a data-link-type="dfn" href="#finish-notification-steps">finish
+notification steps</a> for <var>animation</var> unless there is
 already a microtask queued to run those steps for
 <var>animation</var>.</p>
          
@@ -12249,6 +12277,7 @@ a keyframe, <a href="#evenly-distributing-a-keyframe">4.2.1.1</a>
    <li>finished, <a href="#dom-animation-finished">5.4</a>
    <li>finished play state, <a href="#finished-play-state">3.5.19</a>
    <li>finish event, <a href="#finish-event">3.5.20.1</a>
+   <li>finish notification steps, <a href="#finish-notification-steps">3.5.14</a>
    <li>firstChild, <a href="#dom-groupeffectreadonly-firstchild">5.10</a>
    <li>first child, <a href="#first-child">3.13</a>
    <li>frames
