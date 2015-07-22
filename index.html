@@ -98,7 +98,7 @@
    <h1 class="p-name no-ref" id="title">Web Animations</h1>
   
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft,
-    <time class="dt-updated" datetime="2015-07-16">16 July 2015</time></span></h2>
+    <time class="dt-updated" datetime="2015-07-22">22 July 2015</time></span></h2>
   
    <div data-fill-with="spec-metadata">
     <dl>
@@ -2153,9 +2153,7 @@ with an <a data-link-type="dfn" href="#concept-animation">animation</a> are upda
 
 
    <p>For each animation, the user agent maintains a <dfn data-dfn-type="dfn" data-noexport="" id="previous-current-time">previous current
-time<a class="self-link" href="#previous-current-time"></a></dfn> <a data-link-type="dfn" href="#time-value">time value</a> that is originally <a data-link-type="dfn" href="#unresolved">unresolved</a>,
-and a <dfn data-dfn-type="dfn" data-noexport="" id="previous-finished-state">previous finished state<a class="self-link" href="#previous-finished-state"></a></dfn> boolean flag that is
-initially false.</p>
+time<a class="self-link" href="#previous-current-time"></a></dfn> <a data-link-type="dfn" href="#time-value">time value</a> that is originally <a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
 
 
    <p>Whilst during normal playback the <a data-link-type="dfn" href="#current-time">current time</a> of an <a data-link-type="dfn" href="#concept-animation">animation</a> is
@@ -2279,100 +2277,53 @@ Otherwise, let it be false.</p>
      
 
     <li data-md="">
-     <p>If <var>current finished state</var> is not equal to <a data-link-type="dfn" href="#previous-finished-state">previous finished
-state</a>, <a class="externalDFN" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask">queue a microtask</a> to perform the following steps:</p>
+     <p>If <var>current finished state</var> is true and the <a data-link-type="dfn" href="#current-finished-promise">current finished
+promise</a> is not yet resolved, perform the following steps:</p>
      
 
 
      <ol>
       <li data-md="">
-       <p>Let <var>current finished state</var> be true if the <a data-link-type="dfn" href="#play-state">play
-state</a> of <var>animation</var> is
-<a data-link-type="dfn" href="#finished-play-state">finished</a>.
-Otherwise, let it be false.</p>
+       <p>Let <dfn data-dfn-type="dfn" data-noexport="" id="finish-notification-steps">finish notification steps<a class="self-link" href="#finish-notification-steps"></a></dfn> refer to the following
+procedure:</p>
        
-
-      <li data-md="">
-       <p>If <var>current finished state</var> is true and <a data-link-type="dfn" href="#current-finished-promise">current
-finished promise</a> is not yet resolved, perform the following steps:</p>
-       
-
-
-       <div class="informative-bg">
-
-
-        <p><em>This section is non-normative</em></p>
-
-
-        <p>For user agents that lazily generate the <a data-link-type="dfn" href="#current-finished-promise">current finished
-  promise</a>, the above condition is equivalent to saying,
-  “If <var>current finished state</var> is true and
-  <em>either</em> of the following conditions is true:</p>
-
-
-        <ul>
-         <li data-md="">
-          <p><var>previous finished state</var> is false, <em>or</em></p>
-          
-
-         <li data-md="">
-          <p><var>synchronously notify</var> is true and
-  there is a microtask queued to perform the <a data-link-type="dfn" href="#finish-notification-steps">finish
-  notification steps</a> for <var>animation</var>.”</p>
-          
-</ul>
-</div>
-       
-
 
        <ol>
         <li data-md="">
-         <p>Let <dfn data-dfn-type="dfn" data-noexport="" id="finish-notification-steps">finish notification steps<a class="self-link" href="#finish-notification-steps"></a></dfn> refer to the following
-procedure:</p>
+         <p>If <var>animation</var>’s <a data-link-type="dfn" href="#play-state">play state</a> is not equal to <a data-link-type="dfn" href="#finished-play-state">finished</a>, abort these steps.</p>
          
 
-         <ol>
-          <li data-md="">
-           <p>If <var>current finished state</var> of <var>animation</var>
-is false, abort these steps.</p>
-           
-
-          <li data-md="">
-           <p><a data-link-type="dfn" href="#resolve-a-promise">Resolve</a> <var>animation</var>’s
+        <li data-md="">
+         <p><a data-link-type="dfn" href="#resolve-a-promise">Resolve</a> <var>animation</var>’s
 <a data-link-type="dfn" href="#current-finished-promise">current finished promise</a> object with
 <var>animation</var>.</p>
-           
+         
 
-          <li data-md=""><a class="externalDFN" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">Queue a task</a> to <a class="externalDFN" href="https://html.spec.whatwg.org/multipage/infrastructure.html#concept-event-fire">fire</a> a <a data-link-type="dfn" href="#finish-event">finish event</a>
+        <li data-md=""><a class="externalDFN" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">Queue a task</a> to <a class="externalDFN" href="https://html.spec.whatwg.org/multipage/infrastructure.html#concept-event-fire">fire</a> a <a data-link-type="dfn" href="#finish-event">finish event</a>
 at <var>animation</var>.
 The task source for this task is the <a class="externalDFN" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-manipulation-task-source">DOM manipulation task source</a>.
 </ol>
-        <li data-md="">
-         <p>If <var>synchronously notify</var> is true, cancel any queued
+      <li data-md="">
+       <p>If <var>synchronously notify</var> is true, cancel any queued
 microtask to run the <a data-link-type="dfn" href="#finish-notification-steps">finish notification steps</a> for this
 <var>animation</var>, and run the <a data-link-type="dfn" href="#finish-notification-steps">finish notification
 steps</a> immediately.</p>
-         
+       
 
 
-         <p>Otherwise, if <var>synchronously notify</var> is false, <a class="externalDFN" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask">queue a microtask</a> to run <a data-link-type="dfn" href="#finish-notification-steps">finish
+       <p>Otherwise, if <var>synchronously notify</var> is false, <a class="externalDFN" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask">queue a microtask</a> to run <a data-link-type="dfn" href="#finish-notification-steps">finish
 notification steps</a> for <var>animation</var> unless there is
 already a microtask queued to run those steps for
 <var>animation</var>.</p>
-         
+       
 </ol>
-      <li data-md="">
-       <p>If <var>current finished state</var> is false and
+    <li data-md="">
+     <p>If <var>current finished state</var> is false and
 <var>animation</var>’s <a data-link-type="dfn" href="#current-finished-promise">current finished promise</a> is already
 resolved, set <var>animation</var>’s <a data-link-type="dfn" href="#current-finished-promise">current finished promise</a> to
 a new (pending) Promise object.</p>
-       
-
-      <li data-md="">
-       <p>Set <var>animation</var>’s <a data-link-type="dfn" href="#previous-finished-state">previous finished state</a> to
-<var>current finished state</var>.</p>
-       
-</ol></ol>
+     
+</ol>
 
    <div class="informative-bg">
 
@@ -3360,7 +3311,7 @@ rather than continuing to extrapolate along their defined behavior
 directly).
 
 
-     <p>To fix this it is possible we will wish to introduce <a class="property" data-link-type="propdesc" href="http://dev.w3.org/csswg/css-overflow-3/#propdef-overflow">overflow</a> fill
+     <p>To fix this it is possible we will wish to introduce <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css-overflow-3/#propdef-overflow">overflow</a> fill
 modes that respond to time values larger than or smaller than the
 active time range by extrapolating rather than filling.</p>
 
@@ -8959,7 +8910,7 @@ property to IDL attribute</a> algorithm <a data-link-type="biblio" href="#biblio
       
 
      <li data-md="">
-      <p>If the user agent supports animation of the <a class="property" data-link-type="propdesc" href="http://dev.w3.org/csswg/css2/visuren.html#propdef-float">float</a>
+      <p>If the user agent supports animation of the <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visuren.html#propdef-float">float</a>
 CSS property, replace "float" in
 <var>supported properties</var> with "cssFloat".</p>
       
@@ -9632,7 +9583,7 @@ pseudo-elements, the <a class="externalDFN" href="http://www.w3.org/TR/cssom/#th
 interface <a data-link-type="biblio" href="#biblio-cssom">[CSSOM]</a> is also defined to be animatable.</p>
 
 
-    <pre class="idl"><a data-link-type="idl-name" href="http://dev.w3.org/csswg/cssom-1/#pseudoelement">PseudoElement</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
+    <pre class="idl"><a data-link-type="idl-name" href="https://drafts.csswg.org/cssom-1/#pseudoelement">PseudoElement</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
 </pre>
 
 
@@ -10095,376 +10046,375 @@ Document conventions</span><a class="self-link" href="#conventions"></a></h3>
   <h2 class="no-num heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
   <h3 class="no-num heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="indexlist">
-   <li>active duration, <a href="#active-duration">3.9.2</a>
-   <li>activeDuration, <a href="#dom-computedtimingproperties-activeduration">5.9</a>
-   <li>active interval, <a href="#active-interval">3.6.3</a>
-   <li>active phase, <a href="#active-phase">3.6.5</a>
-   <li>active time, <a href="#active-time">3.9.3.1</a>
-   <li>after phase, <a href="#after-phase">3.6.5</a>
-   <li>animatable, <a href="#concept-animatable">4.1.2</a>
-   <li>Animatable, <a href="#animatable">5.17</a>
-   <li>animatable as color, <a href="#animatable-as-color">4.1.3.5</a>
-   <li>animatable as length,
-percentage, or calc, <a href="#animatable-as-length-percentage-or-calc">4.1.3.4</a>
-   <li>animatable as real
-number, <a href="#animatable-as-real-number">4.1.3.3</a>
-   <li>animatable as string, <a href="#animatable-as-string">4.1.3.2</a>
-   <li>animatable as transform
-list, <a href="#animatable-as-transform-list">4.1.3.6</a>
-   <li>animated
-attribute value, <a href="#animated-attribute-value">4.3.5.2</a>
-   <li>animate(frames, options), <a href="#dom-animatable-animate">5.17</a>
-   <li>animation, <a href="#concept-animation">3.5</a>
-   <li>Animation, <a href="#animation">5.4</a>
-   <li>animation accumulation, <a href="#animation-accumulation">4.1.2</a>
-   <li>animation addition, <a href="#animation-addition">4.1.2</a>
-   <li>animation
-behavior, <a href="#animation-behavior">4.1.3</a>
-   <li>animation effect, <a href="#animation-effect">3.6</a>
-   <li>AnimationEffectReadOnly, <a href="#animationeffectreadonly">5.5</a>
-   <li>Animation(effect, timeline), <a href="#dom-animation-animation">5.4</a>
-   <li>AnimationEffectTiming, <a href="#animationeffecttiming">5.7</a>
-   <li>AnimationEffectTimingProperties, <a href="#dictdef-animationeffecttimingproperties">5.8</a>
-   <li>AnimationEffectTimingReadOnly, <a href="#animationeffecttimingreadonly">5.6</a>
-   <li>animation events, <a href="#animation-events">3.5.20</a>
-   <li>animation interpolation, <a href="#animation-interpolation">4.1.2</a>
-   <li>AnimationPlaybackEvent, <a href="#animationplaybackevent">5.21</a>
-   <li>AnimationPlaybackEventInit, <a href="#dictdef-animationplaybackeventinit">5.21</a>
-   <li>AnimationPlaybackEvent(type, eventInitDict), <a href="#dom-animationplaybackevent-animationplaybackevent">5.21</a>
-   <li>animation playback rate, <a href="#animation-playback-rate">3.5.17</a>
-   <li>AnimationPlayState, <a href="#enumdef-animationplaystate">5.4.1</a>
-   <li>animation sequence number, <a href="#animation-sequence-number">3.5</a>
-   <li>animation start time, <a href="#animation-start-time">3.5</a>
-   <li>AnimationTimeline, <a href="#animationtimeline">5.2</a>
-   <li>animation type, <a href="#animation-type">4.3.1</a>
-   <li>assert, <a href="#assert">Unnumbered section</a>
-   <li>associated animation of an animation effect, <a href="#associated-animation-of-an-animation-effect">4.3.2</a>
-   <li>associated with an animation, <a href="#associated-with-an-animation">3.6.1</a>
-   <li>associated with
-a timeline, <a href="#associated-with-a-timeline">3.6.1</a>
-   <li>before flag, <a href="#before-flag">3.11.4</a>
-   <li>before phase, <a href="#before-phase">3.6.5</a>
-   <li>cancel(), <a href="#dom-animation-cancel">5.4</a>
-   <li>cancel an animation, <a href="#cancel-an-animation">3.5.16</a>
-   <li>cancel event, <a href="#cancel-event">3.5.20.1</a>
-   <li>clone(), <a href="#dom-keyframeeffectreadonly-clone">5.10</a>
+   <li><a href="#active-duration">active duration</a><span>, in §3.9.2</span>
+   <li><a href="#dom-computedtimingproperties-activeduration">activeDuration</a><span>, in §5.9</span>
+   <li><a href="#active-interval">active interval</a><span>, in §3.6.3</span>
+   <li><a href="#active-phase">active phase</a><span>, in §3.6.5</span>
+   <li><a href="#active-time">active time</a><span>, in §3.9.3.1</span>
+   <li><a href="#after-phase">after phase</a><span>, in §3.6.5</span>
+   <li><a href="#concept-animatable">animatable</a><span>, in §4.1.2</span>
+   <li><a href="#animatable">Animatable</a><span>, in §5.17</span>
+   <li><a href="#animatable-as-color">animatable as color</a><span>, in §4.1.3.5</span>
+   <li><a href="#animatable-as-length-percentage-or-calc">animatable as length,
+percentage, or calc</a><span>, in §4.1.3.4</span>
+   <li><a href="#animatable-as-real-number">animatable as real
+number</a><span>, in §4.1.3.3</span>
+   <li><a href="#animatable-as-string">animatable as string</a><span>, in §4.1.3.2</span>
+   <li><a href="#animatable-as-transform-list">animatable as transform
+list</a><span>, in §4.1.3.6</span>
+   <li><a href="#animated-attribute-value">animated
+attribute value</a><span>, in §4.3.5.2</span>
+   <li><a href="#dom-animatable-animate">animate(frames, options)</a><span>, in §5.17</span>
+   <li><a href="#concept-animation">animation</a><span>, in §3.5</span>
+   <li><a href="#animation">Animation</a><span>, in §5.4</span>
+   <li><a href="#animation-accumulation">animation accumulation</a><span>, in §4.1.2</span>
+   <li><a href="#animation-addition">animation addition</a><span>, in §4.1.2</span>
+   <li><a href="#animation-behavior">animation
+behavior</a><span>, in §4.1.3</span>
+   <li><a href="#animation-effect">animation effect</a><span>, in §3.6</span>
+   <li><a href="#animationeffectreadonly">AnimationEffectReadOnly</a><span>, in §5.5</span>
+   <li><a href="#dom-animation-animation">Animation(effect, timeline)</a><span>, in §5.4</span>
+   <li><a href="#animationeffecttiming">AnimationEffectTiming</a><span>, in §5.7</span>
+   <li><a href="#dictdef-animationeffecttimingproperties">AnimationEffectTimingProperties</a><span>, in §5.8</span>
+   <li><a href="#animationeffecttimingreadonly">AnimationEffectTimingReadOnly</a><span>, in §5.6</span>
+   <li><a href="#animation-events">animation events</a><span>, in §3.5.20</span>
+   <li><a href="#animation-interpolation">animation interpolation</a><span>, in §4.1.2</span>
+   <li><a href="#animationplaybackevent">AnimationPlaybackEvent</a><span>, in §5.21</span>
+   <li><a href="#dictdef-animationplaybackeventinit">AnimationPlaybackEventInit</a><span>, in §5.21</span>
+   <li><a href="#dom-animationplaybackevent-animationplaybackevent">AnimationPlaybackEvent(type, eventInitDict)</a><span>, in §5.21</span>
+   <li><a href="#animation-playback-rate">animation playback rate</a><span>, in §3.5.17</span>
+   <li><a href="#enumdef-animationplaystate">AnimationPlayState</a><span>, in §5.4.1</span>
+   <li><a href="#animation-sequence-number">animation sequence number</a><span>, in §3.5</span>
+   <li><a href="#animation-start-time">animation start time</a><span>, in §3.5</span>
+   <li><a href="#animationtimeline">AnimationTimeline</a><span>, in §5.2</span>
+   <li><a href="#animation-type">animation type</a><span>, in §4.3.1</span>
+   <li><a href="#assert">assert</a><span>, in §Unnumbered section</span>
+   <li><a href="#associated-animation-of-an-animation-effect">associated animation of an animation effect</a><span>, in §4.3.2</span>
+   <li><a href="#associated-with-an-animation">associated with an animation</a><span>, in §3.6.1</span>
+   <li><a href="#associated-with-a-timeline">associated with
+a timeline</a><span>, in §3.6.1</span>
+   <li><a href="#before-flag">before flag</a><span>, in §3.11.4</span>
+   <li><a href="#before-phase">before phase</a><span>, in §3.6.5</span>
+   <li><a href="#dom-animation-cancel">cancel()</a><span>, in §5.4</span>
+   <li><a href="#cancel-an-animation">cancel an animation</a><span>, in §3.5.16</span>
+   <li><a href="#cancel-event">cancel event</a><span>, in §3.5.20.1</span>
+   <li><a href="#dom-keyframeeffectreadonly-clone">clone()</a><span>, in §5.10</span>
    <li>composite
     <ul>
-     <li>attribute for KeyframeEffectReadOnly, <a href="#dom-keyframeeffectreadonly-composite">5.10</a>
-     <li>attribute for KeyframeEffect, <a href="#dom-keyframeeffect-composite">5.10</a>
-     <li>dict-member for KeyframeEffectOptions, <a href="#dom-keyframeeffectoptions-composite">5.10.1</a>
-     <li>dict-member for Keyframe, <a href="#dom-keyframe-composite">5.13</a>
-     <li>dict-member for PropertyIndexedKeyframe, <a href="#dom-propertyindexedkeyframe-composite">5.14</a>
+     <li><a href="#dom-keyframeeffectreadonly-composite">attribute for KeyframeEffectReadOnly</a><span>, in §5.10</span>
+     <li><a href="#dom-keyframeeffect-composite">attribute for KeyframeEffect</a><span>, in §5.10</span>
+     <li><a href="#dom-keyframeeffectoptions-composite">dict-member for KeyframeEffectOptions</a><span>, in §5.10.1</span>
+     <li><a href="#dom-keyframe-composite">dict-member for Keyframe</a><span>, in §5.13</span>
+     <li><a href="#dom-propertyindexedkeyframe-composite">dict-member for PropertyIndexedKeyframe</a><span>, in §5.14</span>
     </ul>
-   <li>composited value, <a href="#composited-value">4.3.3</a>
+   <li><a href="#composited-value">composited value</a><span>, in §4.3.3</span>
    <li>CompositeOperation
     <ul>
-     <li>definition of, <a href="#compositeoperation">5.12</a>
-     <li>(enum), <a href="#enumdef-compositeoperation">5.12</a>
+     <li><a href="#compositeoperation">definition of</a><span>, in §5.12</span>
+     <li><a href="#enumdef-compositeoperation">(enum)</a><span>, in §5.12</span>
     </ul>
-   <li>composite operation, <a href="#composite-operation">4.3.4</a>
-   <li>composite operation accumulate, <a href="#composite-operation-accumulate">4.3.4</a>
-   <li>composite operation add, <a href="#composite-operation-add">4.3.4</a>
-   <li>composite operation replace, <a href="#composite-operation-replace">4.3.4</a>
-   <li>composition, <a href="#composition">4.3</a>
-   <li>ComputedKeyframe, <a href="#dictdef-computedkeyframe">5.15</a>
-   <li>computed keyframe offset, <a href="#computed-keyframe-offset">4.2.1</a>
-   <li>computedOffset, <a href="#dom-computedkeyframe-computedoffset">5.15</a>
-   <li>computedTiming, <a href="#dom-animationeffectreadonly-computedtiming">5.5</a>
-   <li>ComputedTimingProperties, <a href="#dictdef-computedtimingproperties">5.9</a>
-   <li>conforming scripted Web Animations user agent, <a href="#conforming-scripted-web-animations-user-agent">8.2</a>
-   <li>convert an ECMAScript keyframe-like object to an IDL keyframe, <a href="#convert-an-ecmascript-keyframe_like-object-to-an-idl-keyframe">5.13.1</a>
-   <li>convert an ECMAScript object to an IDL
-Keyframe object, <a href="#convert-an-ecmascript-object-to-an-idl-keyframe-object">5.13.1</a>
-   <li>convert an ECMAScript object to an IDL
-PropertyIndexedKeyframe object, <a href="#convert-an-ecmascript-object-to-an-idl-propertyindexedkeyframe-object">5.14.1</a>
-   <li>create a new resolved Promise, <a href="#create-a-new-resolved-promise">3.5.8</a>
-   <li>&lt;cubic-bezier-timing-function>, <a href="#typedef-cubic-bezier-timing-function">3.11.3</a>
-   <li>cubic Bézier timing function, <a href="#cubic-bzier-timing-function">3.11.3</a>
-   <li>current, <a href="#current">3.6.5</a>
-   <li>current finished promise, <a href="#current-finished-promise">3.5.13</a>
-   <li>current iteration, <a href="#current-iteration">3.9.4</a>
-   <li>currentIteration, <a href="#dom-computedtimingproperties-currentiteration">5.9</a>
-   <li>current ready promise, <a href="#current-ready-promise">3.5.9</a>
-   <li>current time, <a href="#current-time">3.5.4</a>
+   <li><a href="#composite-operation">composite operation</a><span>, in §4.3.4</span>
+   <li><a href="#composite-operation-accumulate">composite operation accumulate</a><span>, in §4.3.4</span>
+   <li><a href="#composite-operation-add">composite operation add</a><span>, in §4.3.4</span>
+   <li><a href="#composite-operation-replace">composite operation replace</a><span>, in §4.3.4</span>
+   <li><a href="#composition">composition</a><span>, in §4.3</span>
+   <li><a href="#dictdef-computedkeyframe">ComputedKeyframe</a><span>, in §5.15</span>
+   <li><a href="#computed-keyframe-offset">computed keyframe offset</a><span>, in §4.2.1</span>
+   <li><a href="#dom-computedkeyframe-computedoffset">computedOffset</a><span>, in §5.15</span>
+   <li><a href="#dom-animationeffectreadonly-computedtiming">computedTiming</a><span>, in §5.5</span>
+   <li><a href="#dictdef-computedtimingproperties">ComputedTimingProperties</a><span>, in §5.9</span>
+   <li><a href="#conforming-scripted-web-animations-user-agent">conforming scripted Web Animations user agent</a><span>, in §8.2</span>
+   <li><a href="#convert-an-ecmascript-keyframe_like-object-to-an-idl-keyframe">convert an ECMAScript keyframe-like object to an IDL keyframe</a><span>, in §5.13.1</span>
+   <li><a href="#convert-an-ecmascript-object-to-an-idl-keyframe-object">convert an ECMAScript object to an IDL
+Keyframe object</a><span>, in §5.13.1</span>
+   <li><a href="#convert-an-ecmascript-object-to-an-idl-propertyindexedkeyframe-object">convert an ECMAScript object to an IDL
+PropertyIndexedKeyframe object</a><span>, in §5.14.1</span>
+   <li><a href="#create-a-new-resolved-promise">create a new resolved Promise</a><span>, in §3.5.8</span>
+   <li><a href="#typedef-cubic-bezier-timing-function">&lt;cubic-bezier-timing-function></a><span>, in §3.11.3</span>
+   <li><a href="#cubic-bzier-timing-function">cubic Bézier timing function</a><span>, in §3.11.3</span>
+   <li><a href="#current">current</a><span>, in §3.6.5</span>
+   <li><a href="#current-finished-promise">current finished promise</a><span>, in §3.5.13</span>
+   <li><a href="#current-iteration">current iteration</a><span>, in §3.9.4</span>
+   <li><a href="#dom-computedtimingproperties-currentiteration">currentIteration</a><span>, in §5.9</span>
+   <li><a href="#current-ready-promise">current ready promise</a><span>, in §3.5.9</span>
+   <li><a href="#current-time">current time</a><span>, in §3.5.4</span>
    <li>currentTime
     <ul>
-     <li>attribute for AnimationTimeline, <a href="#dom-animationtimeline-currenttime">5.2</a>
-     <li>attribute for Animation, <a href="#dom-animation-currenttime">5.4</a>
-     <li>attribute for AnimationPlaybackEvent, <a href="#dom-animationplaybackevent-currenttime">5.21</a>
-     <li>dict-member for AnimationPlaybackEventInit, <a href="#dom-animationplaybackeventinit-currenttime">5.21</a>
+     <li><a href="#dom-animationtimeline-currenttime">attribute for AnimationTimeline</a><span>, in §5.2</span>
+     <li><a href="#dom-animation-currenttime">attribute for Animation</a><span>, in §5.4</span>
+     <li><a href="#dom-animationplaybackevent-currenttime">attribute for AnimationPlaybackEvent</a><span>, in §5.21</span>
+     <li><a href="#dom-animationplaybackeventinit-currenttime">dict-member for AnimationPlaybackEventInit</a><span>, in §5.21</span>
     </ul>
-   <li>default document
-timeline, <a href="#default-document-timeline">3.4.2</a>
+   <li><a href="#default-document-timeline">default document
+timeline</a><span>, in §3.4.2</span>
    <li>delay
     <ul>
-     <li>attribute for AnimationEffectTimingReadOnly, <a href="#dom-animationeffecttimingreadonly-delay">5.6</a>
-     <li>attribute for AnimationEffectTiming, <a href="#dom-animationeffecttiming-delay">5.7</a>
-     <li>dict-member for AnimationEffectTimingProperties, <a href="#dom-animationeffecttimingproperties-delay">5.8</a>
+     <li><a href="#dom-animationeffecttimingreadonly-delay">attribute for AnimationEffectTimingReadOnly</a><span>, in §5.6</span>
+     <li><a href="#dom-animationeffecttiming-delay">attribute for AnimationEffectTiming</a><span>, in §5.7</span>
+     <li><a href="#dom-animationeffecttimingproperties-delay">dict-member for AnimationEffectTimingProperties</a><span>, in §5.8</span>
     </ul>
-   <li>directed time, <a href="#directed-time">3.10.1</a>
+   <li><a href="#directed-time">directed time</a><span>, in §3.10.1</span>
    <li>direction
     <ul>
-     <li>attribute for AnimationEffectTimingReadOnly, <a href="#dom-animationeffecttimingreadonly-direction">5.6</a>
-     <li>attribute for AnimationEffectTiming, <a href="#dom-animationeffecttiming-direction">5.7</a>
-     <li>dict-member for AnimationEffectTimingProperties, <a href="#dom-animationeffecttimingproperties-direction">5.8</a>
+     <li><a href="#dom-animationeffecttimingreadonly-direction">attribute for AnimationEffectTimingReadOnly</a><span>, in §5.6</span>
+     <li><a href="#dom-animationeffecttiming-direction">attribute for AnimationEffectTiming</a><span>, in §5.7</span>
+     <li><a href="#dom-animationeffecttimingproperties-direction">dict-member for AnimationEffectTimingProperties</a><span>, in §5.8</span>
     </ul>
-   <li>distance computation, <a href="#distance-computation">4.1.2</a>
-   <li>distk, <a href="#distk">4.2.1.1</a>
-   <li>distribute keyframe spacing mode, <a href="#distribute-keyframe-spacing-mode">4.2.1</a>
-   <li>DocumentTimeline, <a href="#documenttimeline">5.3</a>
-   <li>document timeline, <a href="#document-timeline">3.4.1</a>
-   <li>DocumentTimeline(originTime), <a href="#dom-documenttimeline-documenttimeline">5.3</a>
+   <li><a href="#distance-computation">distance computation</a><span>, in §4.1.2</span>
+   <li><a href="#distk">distk</a><span>, in §4.2.1.1</span>
+   <li><a href="#distribute-keyframe-spacing-mode">distribute keyframe spacing mode</a><span>, in §4.2.1</span>
+   <li><a href="#documenttimeline">DocumentTimeline</a><span>, in §5.3</span>
+   <li><a href="#document-timeline">document timeline</a><span>, in §3.4.1</span>
+   <li><a href="#dom-documenttimeline-documenttimeline">DocumentTimeline(originTime)</a><span>, in §5.3</span>
    <li>duration
     <ul>
-     <li>attribute for AnimationEffectTimingReadOnly, <a href="#dom-animationeffecttimingreadonly-duration">5.6</a>
-     <li>attribute for AnimationEffectTiming, <a href="#dom-animationeffecttiming-duration">5.7</a>
-     <li>dict-member for AnimationEffectTimingProperties, <a href="#dom-animationeffecttimingproperties-duration">5.8</a>
+     <li><a href="#dom-animationeffecttimingreadonly-duration">attribute for AnimationEffectTimingReadOnly</a><span>, in §5.6</span>
+     <li><a href="#dom-animationeffecttiming-duration">attribute for AnimationEffectTiming</a><span>, in §5.7</span>
+     <li><a href="#dom-animationeffecttimingproperties-duration">dict-member for AnimationEffectTimingProperties</a><span>, in §5.8</span>
     </ul>
    <li>easing
     <ul>
-     <li>attribute for AnimationEffectTimingReadOnly, <a href="#dom-animationeffecttimingreadonly-easing">5.6</a>
-     <li>attribute for AnimationEffectTiming, <a href="#dom-animationeffecttiming-easing">5.7</a>
-     <li>dict-member for AnimationEffectTimingProperties, <a href="#dom-animationeffecttimingproperties-easing">5.8</a>
-     <li>dict-member for Keyframe, <a href="#dom-keyframe-easing">5.13</a>
-     <li>dict-member for PropertyIndexedKeyframe, <a href="#dom-propertyindexedkeyframe-easing">5.14</a>
+     <li><a href="#dom-animationeffecttimingreadonly-easing">attribute for AnimationEffectTimingReadOnly</a><span>, in §5.6</span>
+     <li><a href="#dom-animationeffecttiming-easing">attribute for AnimationEffectTiming</a><span>, in §5.7</span>
+     <li><a href="#dom-animationeffecttimingproperties-easing">dict-member for AnimationEffectTimingProperties</a><span>, in §5.8</span>
+     <li><a href="#dom-keyframe-easing">dict-member for Keyframe</a><span>, in §5.13</span>
+     <li><a href="#dom-propertyindexedkeyframe-easing">dict-member for PropertyIndexedKeyframe</a><span>, in §5.14</span>
     </ul>
    <li>effect
     <ul>
-     <li>argument for Animation/Animation(effect, timeline), <a href="#dom-animation-animation-effect-timeline-effect">5.4</a>
-     <li>attribute for Animation, <a href="#dom-animation-effect">5.4</a>
+     <li><a href="#dom-animation-animation-effect-timeline-effect">argument for Animation/Animation(effect, timeline)</a><span>, in §5.4</span>
+     <li><a href="#dom-animation-effect">attribute for Animation</a><span>, in §5.4</span>
     </ul>
-   <li>effect
-stack, <a href="#effect-stack">4.3.2</a>
-   <li>effect value, <a href="#effect-value">4.1.4</a>
-   <li>end delay, <a href="#end-delay">3.6.3</a>
+   <li><a href="#effect-stack">effect
+stack</a><span>, in §4.3.2</span>
+   <li><a href="#effect-value">effect value</a><span>, in §4.1.4</span>
+   <li><a href="#end-delay">end delay</a><span>, in §3.6.3</span>
    <li>endDelay
     <ul>
-     <li>attribute for AnimationEffectTimingReadOnly, <a href="#dom-animationeffecttimingreadonly-enddelay">5.6</a>
-     <li>attribute for AnimationEffectTiming, <a href="#dom-animationeffecttiming-enddelay">5.7</a>
-     <li>dict-member for AnimationEffectTimingProperties, <a href="#dom-animationeffecttimingproperties-enddelay">5.8</a>
+     <li><a href="#dom-animationeffecttimingreadonly-enddelay">attribute for AnimationEffectTimingReadOnly</a><span>, in §5.6</span>
+     <li><a href="#dom-animationeffecttiming-enddelay">attribute for AnimationEffectTiming</a><span>, in §5.7</span>
+     <li><a href="#dom-animationeffecttimingproperties-enddelay">dict-member for AnimationEffectTimingProperties</a><span>, in §5.8</span>
     </ul>
-   <li>endTime, <a href="#dom-computedtimingproperties-endtime">5.9</a>
-   <li>end time, <a href="#end-time">3.6.3</a>
-   <li>evenly distributing
-a keyframe, <a href="#evenly-distributing-a-keyframe">4.2.1.1</a>
-   <li>event current time, <a href="#event-current-time">3.5.20.2</a>
-   <li>eventInitDict, <a href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-eventinitdict">5.21</a>
-   <li>event timeline time, <a href="#event-timeline-time">3.5.20.2</a>
+   <li><a href="#dom-computedtimingproperties-endtime">endTime</a><span>, in §5.9</span>
+   <li><a href="#end-time">end time</a><span>, in §3.6.3</span>
+   <li><a href="#evenly-distributing-a-keyframe">evenly distributing
+a keyframe</a><span>, in §4.2.1.1</span>
+   <li><a href="#event-current-time">event current time</a><span>, in §3.5.20.2</span>
+   <li><a href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-eventinitdict">eventInitDict</a><span>, in §5.21</span>
+   <li><a href="#event-timeline-time">event timeline time</a><span>, in §3.5.20.2</span>
    <li>fill
     <ul>
-     <li>attribute for AnimationEffectTimingReadOnly, <a href="#dom-animationeffecttimingreadonly-fill">5.6</a>
-     <li>attribute for AnimationEffectTiming, <a href="#dom-animationeffecttiming-fill">5.7</a>
-     <li>dict-member for AnimationEffectTimingProperties, <a href="#dom-animationeffecttimingproperties-fill">5.8</a>
+     <li><a href="#dom-animationeffecttimingreadonly-fill">attribute for AnimationEffectTimingReadOnly</a><span>, in §5.6</span>
+     <li><a href="#dom-animationeffecttiming-fill">attribute for AnimationEffectTiming</a><span>, in §5.7</span>
+     <li><a href="#dom-animationeffecttimingproperties-fill">dict-member for AnimationEffectTimingProperties</a><span>, in §5.8</span>
     </ul>
-   <li>FillMode, <a href="#enumdef-fillmode">5.9.1</a>
-   <li>fill mode, <a href="#fill-mode">3.7</a>
-   <li>finish(), <a href="#dom-animation-finish">5.4</a>
-   <li>finish an animation, <a href="#finish-an-animation">3.5.15</a>
-   <li>finished, <a href="#dom-animation-finished">5.4</a>
-   <li>finished play state, <a href="#finished-play-state">3.5.19</a>
-   <li>finish event, <a href="#finish-event">3.5.20.1</a>
-   <li>finish notification steps, <a href="#finish-notification-steps">3.5.14</a>
+   <li><a href="#enumdef-fillmode">FillMode</a><span>, in §5.9.1</span>
+   <li><a href="#fill-mode">fill mode</a><span>, in §3.7</span>
+   <li><a href="#dom-animation-finish">finish()</a><span>, in §5.4</span>
+   <li><a href="#finish-an-animation">finish an animation</a><span>, in §3.5.15</span>
+   <li><a href="#dom-animation-finished">finished</a><span>, in §5.4</span>
+   <li><a href="#finished-play-state">finished play state</a><span>, in §3.5.19</span>
+   <li><a href="#finish-event">finish event</a><span>, in §3.5.20.1</span>
+   <li><a href="#finish-notification-steps">finish notification steps</a><span>, in §3.5.14</span>
    <li>frames
     <ul>
-     <li>argument for KeyframeEffect/setFrames(frames), <a href="#dom-keyframeeffect-setframes-frames-frames">5.10</a>
-     <li>argument for KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options), <a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-frames">5.10</a>
-     <li>argument for KeyframeEffect/KeyframeEffect(target, frames, options), <a href="#dom-keyframeeffect-keyframeeffect-target-frames-options-frames">5.10</a>
-     <li>argument for KeyframeEffect/setFrames, <a href="#dom-keyframeeffect-setframes-frames">5.10</a>
-     <li>argument for SharedKeyframeList/SharedKeyframeList(frames), <a href="#dom-sharedkeyframelist-sharedkeyframelist-frames-frames">5.16</a>
-     <li>argument for Animatable/animate(frames, options), <a href="#dom-animatable-animate-frames-options-frames">5.17</a>
+     <li><a href="#dom-keyframeeffect-setframes-frames-frames">argument for KeyframeEffect/setFrames(frames)</a><span>, in §5.10</span>
+     <li><a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-frames">argument for KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)</a><span>, in §5.10</span>
+     <li><a href="#dom-keyframeeffect-keyframeeffect-target-frames-options-frames">argument for KeyframeEffect/KeyframeEffect(target, frames, options)</a><span>, in §5.10</span>
+     <li><a href="#dom-keyframeeffect-setframes-frames">argument for KeyframeEffect/setFrames</a><span>, in §5.10</span>
+     <li><a href="#dom-sharedkeyframelist-sharedkeyframelist-frames-frames">argument for SharedKeyframeList/SharedKeyframeList(frames)</a><span>, in §5.16</span>
+     <li><a href="#dom-animatable-animate-frames-options-frames">argument for Animatable/animate(frames, options)</a><span>, in §5.17</span>
     </ul>
    <li>getAnimations()
     <ul>
-     <li>method for AnimationTimeline, <a href="#dom-animationtimeline-getanimations">5.2</a>
-     <li>method for Animatable, <a href="#dom-animatable-getanimations">5.17</a>
+     <li><a href="#dom-animationtimeline-getanimations">method for AnimationTimeline</a><span>, in §5.2</span>
+     <li><a href="#dom-animatable-getanimations">method for Animatable</a><span>, in §5.17</span>
     </ul>
-   <li>getFrames(), <a href="#dom-keyframeeffectreadonly-getframes">5.10</a>
-   <li>global clock, <a href="#global-clock">3.3</a>
-   <li>hold time, <a href="#hold-time">3.5</a>
+   <li><a href="#dom-keyframeeffectreadonly-getframes">getFrames()</a><span>, in §5.10</span>
+   <li><a href="#global-clock">global clock</a><span>, in §3.3</span>
+   <li><a href="#hold-time">hold time</a><span>, in §3.5</span>
    <li>id
     <ul>
-     <li>attribute for Animation, <a href="#dom-animation-id">5.4</a>
-     <li>dict-member for KeyframeAnimationOptions, <a href="#dom-keyframeanimationoptions-id">5.17</a>
+     <li><a href="#dom-animation-id">attribute for Animation</a><span>, in §5.4</span>
+     <li><a href="#dom-keyframeanimationoptions-id">dict-member for KeyframeAnimationOptions</a><span>, in §5.17</span>
     </ul>
-   <li>idle play state, <a href="#idle-play-state">3.5.19</a>
-   <li>inactive timeline, <a href="#inactive-timeline">3.4</a>
-   <li>in effect, <a href="#in-effect">3.6.5</a>
-   <li>in play, <a href="#in-play">3.6.5</a>
+   <li><a href="#idle-play-state">idle play state</a><span>, in §3.5.19</span>
+   <li><a href="#inactive-timeline">inactive timeline</a><span>, in §3.4</span>
+   <li><a href="#in-effect">in effect</a><span>, in §3.6.5</span>
+   <li><a href="#in-play">in play</a><span>, in §3.6.5</span>
    <li>iterationComposite
     <ul>
-     <li>attribute for KeyframeEffectReadOnly, <a href="#dom-keyframeeffectreadonly-iterationcomposite">5.10</a>
-     <li>attribute for KeyframeEffect, <a href="#dom-keyframeeffect-iterationcomposite">5.10</a>
-     <li>dict-member for KeyframeEffectOptions, <a href="#dom-keyframeeffectoptions-iterationcomposite">5.10.1</a>
+     <li><a href="#dom-keyframeeffectreadonly-iterationcomposite">attribute for KeyframeEffectReadOnly</a><span>, in §5.10</span>
+     <li><a href="#dom-keyframeeffect-iterationcomposite">attribute for KeyframeEffect</a><span>, in §5.10</span>
+     <li><a href="#dom-keyframeeffectoptions-iterationcomposite">dict-member for KeyframeEffectOptions</a><span>, in §5.10.1</span>
     </ul>
    <li>IterationCompositeOperation
     <ul>
-     <li>definition of, <a href="#iterationcompositeoperation">5.11</a>
-     <li>(enum), <a href="#enumdef-iterationcompositeoperation">5.11</a>
+     <li><a href="#iterationcompositeoperation">definition of</a><span>, in §5.11</span>
+     <li><a href="#enumdef-iterationcompositeoperation">(enum)</a><span>, in §5.11</span>
     </ul>
-   <li>iteration composite operation, <a href="#iteration-composite-operation">4.3.6</a>
-   <li>iteration composite operation accumulate, <a href="#iteration-composite-operation-accumulate">4.3.6</a>
-   <li>iteration composite operation replace, <a href="#iteration-composite-operation-replace">4.3.6</a>
-   <li>iteration count, <a href="#iteration-count">3.8.2</a>
-   <li>iteration
-duration, <a href="#iteration-duration">3.8.1</a>
-   <li>iteration interval, <a href="#iteration-interval">3.8.1</a>
-   <li>iteration progress, <a href="#iteration-progress">3.11.6</a>
+   <li><a href="#iteration-composite-operation">iteration composite operation</a><span>, in §4.3.6</span>
+   <li><a href="#iteration-composite-operation-accumulate">iteration composite operation accumulate</a><span>, in §4.3.6</span>
+   <li><a href="#iteration-composite-operation-replace">iteration composite operation replace</a><span>, in §4.3.6</span>
+   <li><a href="#iteration-count">iteration count</a><span>, in §3.8.2</span>
+   <li><a href="#iteration-duration">iteration
+duration</a><span>, in §3.8.1</span>
+   <li><a href="#iteration-interval">iteration interval</a><span>, in §3.8.1</span>
+   <li><a href="#iteration-progress">iteration progress</a><span>, in §3.11.6</span>
    <li>iterations
     <ul>
-     <li>attribute for AnimationEffectTimingReadOnly, <a href="#dom-animationeffecttimingreadonly-iterations">5.6</a>
-     <li>attribute for AnimationEffectTiming, <a href="#dom-animationeffecttiming-iterations">5.7</a>
-     <li>dict-member for AnimationEffectTimingProperties, <a href="#dom-animationeffecttimingproperties-iterations">5.8</a>
+     <li><a href="#dom-animationeffecttimingreadonly-iterations">attribute for AnimationEffectTimingReadOnly</a><span>, in §5.6</span>
+     <li><a href="#dom-animationeffecttiming-iterations">attribute for AnimationEffectTiming</a><span>, in §5.7</span>
+     <li><a href="#dom-animationeffecttimingproperties-iterations">dict-member for AnimationEffectTimingProperties</a><span>, in §5.8</span>
     </ul>
    <li>iterationStart
     <ul>
-     <li>attribute for AnimationEffectTimingReadOnly, <a href="#dom-animationeffecttimingreadonly-iterationstart">5.6</a>
-     <li>attribute for AnimationEffectTiming, <a href="#dom-animationeffecttiming-iterationstart">5.7</a>
-     <li>dict-member for AnimationEffectTimingProperties, <a href="#dom-animationeffecttimingproperties-iterationstart">5.8</a>
+     <li><a href="#dom-animationeffecttimingreadonly-iterationstart">attribute for AnimationEffectTimingReadOnly</a><span>, in §5.6</span>
+     <li><a href="#dom-animationeffecttiming-iterationstart">attribute for AnimationEffectTiming</a><span>, in §5.7</span>
+     <li><a href="#dom-animationeffecttimingproperties-iterationstart">dict-member for AnimationEffectTimingProperties</a><span>, in §5.8</span>
     </ul>
-   <li>iteration start, <a href="#iteration-start">3.8.2</a>
-   <li>iteration time, <a href="#iteration-time">3.9.3.3</a>
-   <li>Keyframe, <a href="#dictdef-keyframe">5.13</a>
-   <li>keyframe, <a href="#keyframe">4.2</a>
-   <li>KeyframeAnimationOptions, <a href="#dictdef-keyframeanimationoptions">5.17</a>
-   <li>KeyframeEffect, <a href="#keyframeeffect">5.10</a>
-   <li>keyframe effect, <a href="#keyframe-effect">4.1</a>
-   <li>KeyframeEffectOptions, <a href="#dictdef-keyframeeffectoptions">5.10.1</a>
-   <li>KeyframeEffectReadOnly, <a href="#keyframeeffectreadonly">5.10</a>
-   <li>KeyframeEffectReadOnly(target, frames, options), <a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly">5.10</a>
-   <li>KeyframeEffect(target, frames, options), <a href="#dom-keyframeeffect-keyframeeffect">5.10</a>
-   <li>keyframe offset, <a href="#keyframe-offset">4.2</a>
-   <li>keyframe spacing mode, <a href="#keyframe-spacing-mode">4.2.1</a>
-   <li>keyframe-specific composite
-operation, <a href="#keyframe_specific-composite-operation">4.2</a>
-   <li>lacuna value, <a href="#lacuna-value">4.3.5.2</a>
-   <li>linear timing
-function, <a href="#linear-timing-function">3.11.2</a>
-   <li>local time, <a href="#local-time">3.6.4</a>
-   <li>localTime, <a href="#dom-computedtimingproperties-localtime">5.9</a>
-   <li>loosely sorted by offset, <a href="#loosely-sorted-by-offset">4.2</a>
-   <li>neutral value for composition, <a href="#neutral-value-for-composition">4.2.2</a>
-   <li>normalized sequence of Keyframe
-objects, <a href="#normalized-sequence-of-keyframe-objects">5.10.2</a>
-   <li>not additive, <a href="#not-additive">4.1.3</a>
-   <li>not animatable, <a href="#concept-not-animatable">4.1.3.1</a>
-   <li>not
-paceable, <a href="#not-paceable">4.1.3</a>
-   <li>offset, <a href="#dom-keyframe-offset">5.13</a>
-   <li>offsetk, <a href="#offsetk">4.2.1.1</a>
-   <li>oncancel, <a href="#dom-animation-oncancel">5.4</a>
-   <li>onfinish, <a href="#dom-animation-onfinish">5.4</a>
+   <li><a href="#iteration-start">iteration start</a><span>, in §3.8.2</span>
+   <li><a href="#iteration-time">iteration time</a><span>, in §3.9.3.3</span>
+   <li><a href="#dictdef-keyframe">Keyframe</a><span>, in §5.13</span>
+   <li><a href="#keyframe">keyframe</a><span>, in §4.2</span>
+   <li><a href="#dictdef-keyframeanimationoptions">KeyframeAnimationOptions</a><span>, in §5.17</span>
+   <li><a href="#keyframeeffect">KeyframeEffect</a><span>, in §5.10</span>
+   <li><a href="#keyframe-effect">keyframe effect</a><span>, in §4.1</span>
+   <li><a href="#dictdef-keyframeeffectoptions">KeyframeEffectOptions</a><span>, in §5.10.1</span>
+   <li><a href="#keyframeeffectreadonly">KeyframeEffectReadOnly</a><span>, in §5.10</span>
+   <li><a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly">KeyframeEffectReadOnly(target, frames, options)</a><span>, in §5.10</span>
+   <li><a href="#dom-keyframeeffect-keyframeeffect">KeyframeEffect(target, frames, options)</a><span>, in §5.10</span>
+   <li><a href="#keyframe-offset">keyframe offset</a><span>, in §4.2</span>
+   <li><a href="#keyframe-spacing-mode">keyframe spacing mode</a><span>, in §4.2.1</span>
+   <li><a href="#keyframe_specific-composite-operation">keyframe-specific composite
+operation</a><span>, in §4.2</span>
+   <li><a href="#lacuna-value">lacuna value</a><span>, in §4.3.5.2</span>
+   <li><a href="#linear-timing-function">linear timing
+function</a><span>, in §3.11.2</span>
+   <li><a href="#local-time">local time</a><span>, in §3.6.4</span>
+   <li><a href="#dom-computedtimingproperties-localtime">localTime</a><span>, in §5.9</span>
+   <li><a href="#loosely-sorted-by-offset">loosely sorted by offset</a><span>, in §4.2</span>
+   <li><a href="#neutral-value-for-composition">neutral value for composition</a><span>, in §4.2.2</span>
+   <li><a href="#normalized-sequence-of-keyframe-objects">normalized sequence of Keyframe
+objects</a><span>, in §5.10.2</span>
+   <li><a href="#not-additive">not additive</a><span>, in §4.1.3</span>
+   <li><a href="#concept-not-animatable">not animatable</a><span>, in §4.1.3.1</span>
+   <li><a href="#not-paceable">not
+paceable</a><span>, in §4.1.3</span>
+   <li><a href="#dom-keyframe-offset">offset</a><span>, in §5.13</span>
+   <li><a href="#offsetk">offsetk</a><span>, in §4.2.1.1</span>
+   <li><a href="#dom-animation-oncancel">oncancel</a><span>, in §5.4</span>
+   <li><a href="#dom-animation-onfinish">onfinish</a><span>, in §5.4</span>
    <li>options
     <ul>
-     <li>argument for KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options), <a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-options">5.10</a>
-     <li>argument for KeyframeEffect/KeyframeEffect(target, frames, options), <a href="#dom-keyframeeffect-keyframeeffect-target-frames-options-options">5.10</a>
-     <li>argument for Animatable/animate(frames, options), <a href="#dom-animatable-animate-frames-options-options">5.17</a>
+     <li><a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-options">argument for KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)</a><span>, in §5.10</span>
+     <li><a href="#dom-keyframeeffect-keyframeeffect-target-frames-options-options">argument for KeyframeEffect/KeyframeEffect(target, frames, options)</a><span>, in §5.10</span>
+     <li><a href="#dom-animatable-animate-frames-options-options">argument for Animatable/animate(frames, options)</a><span>, in §5.17</span>
     </ul>
-   <li>origin time, <a href="#origin-time">3.4.1</a>
-   <li>originTime, <a href="#dom-documenttimeline-documenttimeline-origintime-origintime">5.3</a>
-   <li>paceable, <a href="#paceable">4.2.1.1</a>
-   <li>paced keyframe spacing mode, <a href="#paced-keyframe-spacing-mode">4.2.1</a>
-   <li>paced property, <a href="#paced-property">4.2.1</a>
-   <li>pause(), <a href="#dom-animation-pause">5.4</a>
-   <li>pause an animation, <a href="#pause-an-animation">3.5.11</a>
-   <li>paused play state, <a href="#paused-play-state">3.5.19</a>
-   <li>pending pause task, <a href="#pending-pause-task">3.5.11</a>
-   <li>pending play state, <a href="#pending-play-state">3.5.19</a>
-   <li>pending play task, <a href="#pending-play-task">3.5.10</a>
-   <li>play(), <a href="#dom-animation-play">5.4</a>
-   <li>play an animation, <a href="#play-an-animation">3.5.10</a>
-   <li>PlaybackDirection, <a href="#enumdef-playbackdirection">5.9.2</a>
-   <li>playback
-direction, <a href="#playback-direction">3.10</a>
-   <li>playbackRate, <a href="#dom-animation-playbackrate">5.4</a>
-   <li>playState, <a href="#dom-animation-playstate">5.4</a>
-   <li>play state, <a href="#play-state">3.5.19</a>
-   <li>previous current
-time, <a href="#previous-current-time">3.5.14</a>
-   <li>previous finished state, <a href="#previous-finished-state">3.5.14</a>
-   <li>progress, <a href="#dom-computedtimingproperties-progress">5.9</a>
-   <li>Promise, <a href="#promise">3.5.8</a>
-   <li>PropertyIndexedKeyframe, <a href="#dictdef-propertyindexedkeyframe">5.14</a>
+   <li><a href="#origin-time">origin time</a><span>, in §3.4.1</span>
+   <li><a href="#dom-documenttimeline-documenttimeline-origintime-origintime">originTime</a><span>, in §5.3</span>
+   <li><a href="#paceable">paceable</a><span>, in §4.2.1.1</span>
+   <li><a href="#paced-keyframe-spacing-mode">paced keyframe spacing mode</a><span>, in §4.2.1</span>
+   <li><a href="#paced-property">paced property</a><span>, in §4.2.1</span>
+   <li><a href="#dom-animation-pause">pause()</a><span>, in §5.4</span>
+   <li><a href="#pause-an-animation">pause an animation</a><span>, in §3.5.11</span>
+   <li><a href="#paused-play-state">paused play state</a><span>, in §3.5.19</span>
+   <li><a href="#pending-pause-task">pending pause task</a><span>, in §3.5.11</span>
+   <li><a href="#pending-play-state">pending play state</a><span>, in §3.5.19</span>
+   <li><a href="#pending-play-task">pending play task</a><span>, in §3.5.10</span>
+   <li><a href="#dom-animation-play">play()</a><span>, in §5.4</span>
+   <li><a href="#play-an-animation">play an animation</a><span>, in §3.5.10</span>
+   <li><a href="#enumdef-playbackdirection">PlaybackDirection</a><span>, in §5.9.2</span>
+   <li><a href="#playback-direction">playback
+direction</a><span>, in §3.10</span>
+   <li><a href="#dom-animation-playbackrate">playbackRate</a><span>, in §5.4</span>
+   <li><a href="#dom-animation-playstate">playState</a><span>, in §5.4</span>
+   <li><a href="#play-state">play state</a><span>, in §3.5.19</span>
+   <li><a href="#previous-current-time">previous current
+time</a><span>, in §3.5.14</span>
+   <li><a href="#dom-computedtimingproperties-progress">progress</a><span>, in §5.9</span>
+   <li><a href="#promise">Promise</a><span>, in §3.5.8</span>
+   <li><a href="#dictdef-propertyindexedkeyframe">PropertyIndexedKeyframe</a><span>, in §5.14</span>
    <li>ready
     <ul>
-     <li>definition of, <a href="#ready">3.5.7</a>
-     <li>attribute for Animation, <a href="#dom-animation-ready">5.4</a>
+     <li><a href="#ready">definition of</a><span>, in §3.5.7</span>
+     <li><a href="#dom-animation-ready">attribute for Animation</a><span>, in §5.4</span>
     </ul>
-   <li>reject a Promise, <a href="#reject-a-promise">3.5.8</a>
-   <li>reset an animation’s pending tasks, <a href="#reset-an-animations-pending-tasks">3.5.1</a>
-   <li>resolve a Promise, <a href="#resolve-a-promise">3.5.8</a>
-   <li>reverse(), <a href="#dom-animation-reverse">5.4</a>
-   <li>reverse an animation, <a href="#reverse-an-animation">3.5.18</a>
-   <li>running play state, <a href="#running-play-state">3.5.19</a>
-   <li>sampling, <a href="#sampling">3.2</a>
-   <li>scaled active time, <a href="#scaled-active-time">3.9.3.2</a>
-   <li>setFrames(frames), <a href="#dom-keyframeeffect-setframes">5.10</a>
-   <li>set the animation playback rate, <a href="#set-the-animation-playback-rate">3.5.17.1</a>
-   <li>set the animation start time, <a href="#set-the-animation-start-time">3.5.6</a>
-   <li>set the current time, <a href="#set-the-current-time">3.5.5</a>
-   <li>set the target effect of an animation, <a href="#set-the-target-effect-of-an-animation">3.5.3</a>
-   <li>set the timeline of an animation, <a href="#set-the-timeline-of-an-animation">3.5.1</a>
-   <li>SharedKeyframeList, <a href="#sharedkeyframelist">5.16</a>
-   <li>SharedKeyframeList(frames), <a href="#dom-sharedkeyframelist-sharedkeyframelist">5.16</a>
-   <li>silently set the animation playback rate, <a href="#silently-set-the-animation-playback-rate">3.5.17.1</a>
-   <li>silently set the current time, <a href="#silently-set-the-current-time">3.5.5</a>
-   <li>single-sample, <a href="#single_sample">3.2</a>
+   <li><a href="#reject-a-promise">reject a Promise</a><span>, in §3.5.8</span>
+   <li><a href="#reset-an-animations-pending-tasks">reset an animation’s pending tasks</a><span>, in §3.5.1</span>
+   <li><a href="#resolve-a-promise">resolve a Promise</a><span>, in §3.5.8</span>
+   <li><a href="#dom-animation-reverse">reverse()</a><span>, in §5.4</span>
+   <li><a href="#reverse-an-animation">reverse an animation</a><span>, in §3.5.18</span>
+   <li><a href="#running-play-state">running play state</a><span>, in §3.5.19</span>
+   <li><a href="#sampling">sampling</a><span>, in §3.2</span>
+   <li><a href="#scaled-active-time">scaled active time</a><span>, in §3.9.3.2</span>
+   <li><a href="#dom-keyframeeffect-setframes">setFrames(frames)</a><span>, in §5.10</span>
+   <li><a href="#set-the-animation-playback-rate">set the animation playback rate</a><span>, in §3.5.17.1</span>
+   <li><a href="#set-the-animation-start-time">set the animation start time</a><span>, in §3.5.6</span>
+   <li><a href="#set-the-current-time">set the current time</a><span>, in §3.5.5</span>
+   <li><a href="#set-the-target-effect-of-an-animation">set the target effect of an animation</a><span>, in §3.5.3</span>
+   <li><a href="#set-the-timeline-of-an-animation">set the timeline of an animation</a><span>, in §3.5.1</span>
+   <li><a href="#sharedkeyframelist">SharedKeyframeList</a><span>, in §5.16</span>
+   <li><a href="#dom-sharedkeyframelist-sharedkeyframelist">SharedKeyframeList(frames)</a><span>, in §5.16</span>
+   <li><a href="#silently-set-the-animation-playback-rate">silently set the animation playback rate</a><span>, in §3.5.17.1</span>
+   <li><a href="#silently-set-the-current-time">silently set the current time</a><span>, in §3.5.5</span>
+   <li><a href="#single_sample">single-sample</a><span>, in §3.2</span>
    <li>spacing
     <ul>
-     <li>attribute for KeyframeEffectReadOnly, <a href="#dom-keyframeeffectreadonly-spacing">5.10</a>
-     <li>attribute for KeyframeEffect, <a href="#dom-keyframeeffect-spacing">5.10</a>
-     <li>dict-member for KeyframeEffectOptions, <a href="#dom-keyframeeffectoptions-spacing">5.10.1</a>
+     <li><a href="#dom-keyframeeffectreadonly-spacing">attribute for KeyframeEffectReadOnly</a><span>, in §5.10</span>
+     <li><a href="#dom-keyframeeffect-spacing">attribute for KeyframeEffect</a><span>, in §5.10</span>
+     <li><a href="#dom-keyframeeffectoptions-spacing">dict-member for KeyframeEffectOptions</a><span>, in §5.10.1</span>
     </ul>
-   <li>start delay, <a href="#start-delay">3.6.3</a>
-   <li>start offset, <a href="#start-offset">3.9.3.2</a>
-   <li>startTime, <a href="#dom-animation-starttime">5.4</a>
-   <li>step timing function, <a href="#step-timing-function">3.11.4</a>
-   <li>&lt;step-timing-function>, <a href="#typedef-step-timing-function">3.11.4</a>
+   <li><a href="#start-delay">start delay</a><span>, in §3.6.3</span>
+   <li><a href="#start-offset">start offset</a><span>, in §3.9.3.2</span>
+   <li><a href="#dom-animation-starttime">startTime</a><span>, in §5.4</span>
+   <li><a href="#step-timing-function">step timing function</a><span>, in §3.11.4</span>
+   <li><a href="#typedef-step-timing-function">&lt;step-timing-function></a><span>, in §3.11.4</span>
    <li>target
     <ul>
-     <li>argument for KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options), <a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-target">5.10</a>
-     <li>argument for KeyframeEffect/KeyframeEffect(target, frames, options), <a href="#dom-keyframeeffect-keyframeeffect-target-frames-options-target">5.10</a>
-     <li>attribute for KeyframeEffectReadOnly, <a href="#dom-keyframeeffectreadonly-target">5.10</a>
-     <li>attribute for KeyframeEffect, <a href="#dom-keyframeeffect-target">5.10</a>
+     <li><a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-target">argument for KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)</a><span>, in §5.10</span>
+     <li><a href="#dom-keyframeeffect-keyframeeffect-target-frames-options-target">argument for KeyframeEffect/KeyframeEffect(target, frames, options)</a><span>, in §5.10</span>
+     <li><a href="#dom-keyframeeffectreadonly-target">attribute for KeyframeEffectReadOnly</a><span>, in §5.10</span>
+     <li><a href="#dom-keyframeeffect-target">attribute for KeyframeEffect</a><span>, in §5.10</span>
     </ul>
-   <li>target effect, <a href="#target-effect">3.5</a>
-   <li>target effect end, <a href="#target-effect-end">3.5.14</a>
-   <li>target element, <a href="#target-element">4.1</a>
-   <li>target property, <a href="#target-property">4.1.1</a>
+   <li><a href="#target-effect">target effect</a><span>, in §3.5</span>
+   <li><a href="#target-effect-end">target effect end</a><span>, in §3.5.14</span>
+   <li><a href="#target-element">target element</a><span>, in §4.1</span>
+   <li><a href="#target-property">target property</a><span>, in §4.1.1</span>
    <li>timeline
     <ul>
-     <li>definition of, <a href="#timeline">3.4</a>
-     <li>argument for Animation/Animation(effect, timeline), <a href="#dom-animation-animation-effect-timeline-timeline">5.4</a>
-     <li>attribute for Animation, <a href="#dom-animation-timeline">5.4</a>
-     <li>attribute for Document, <a href="#dom-document-timeline">5.18</a>
+     <li><a href="#timeline">definition of</a><span>, in §3.4</span>
+     <li><a href="#dom-animation-animation-effect-timeline-timeline">argument for Animation/Animation(effect, timeline)</a><span>, in §5.4</span>
+     <li><a href="#dom-animation-timeline">attribute for Animation</a><span>, in §5.4</span>
+     <li><a href="#dom-document-timeline">attribute for Document</a><span>, in §5.18</span>
     </ul>
    <li>timelineTime
     <ul>
-     <li>attribute for AnimationPlaybackEvent, <a href="#dom-animationplaybackevent-timelinetime">5.21</a>
-     <li>dict-member for AnimationPlaybackEventInit, <a href="#dom-animationplaybackeventinit-timelinetime">5.21</a>
+     <li><a href="#dom-animationplaybackevent-timelinetime">attribute for AnimationPlaybackEvent</a><span>, in §5.21</span>
+     <li><a href="#dom-animationplaybackeventinit-timelinetime">dict-member for AnimationPlaybackEventInit</a><span>, in §5.21</span>
     </ul>
-   <li>time value, <a href="#time-value">3.2</a>
-   <li>timing, <a href="#dom-animationeffectreadonly-timing">5.5</a>
-   <li>timing function, <a href="#timing-function">3.11.2</a>
-   <li>transformed time, <a href="#transformed-time">3.11.5</a>
-   <li>type, <a href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-type">5.21</a>
-   <li>underlying value, <a href="#underlying-value">4.3.3</a>
-   <li>unresolved, <a href="#unresolved">3.2</a>
-   <li>update an animation’s finished state, <a href="#update-an-animations-finished-state">3.5.14</a>
-   <li>zero time, <a href="#zero-time">3.4</a></ul>
+   <li><a href="#time-value">time value</a><span>, in §3.2</span>
+   <li><a href="#dom-animationeffectreadonly-timing">timing</a><span>, in §5.5</span>
+   <li><a href="#timing-function">timing function</a><span>, in §3.11.2</span>
+   <li><a href="#transformed-time">transformed time</a><span>, in §3.11.5</span>
+   <li><a href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-type">type</a><span>, in §5.21</span>
+   <li><a href="#underlying-value">underlying value</a><span>, in §4.3.3</span>
+   <li><a href="#unresolved">unresolved</a><span>, in §3.2</span>
+   <li><a href="#update-an-animations-finished-state">update an animation’s finished state</a><span>, in §3.5.14</span>
+   <li><a href="#zero-time">zero time</a><span>, in §3.4</span></ul>
   <h3 class="no-num heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="indexlist">
    <li><a data-link-type="biblio" href="#biblio-css-overflow-3">[css-overflow-3]</a> defines the following terms:
     <ul>
-     <li><a href="http://dev.w3.org/csswg/css-overflow-3/#propdef-overflow">overflow</a>
+     <li><a href="https://drafts.csswg.org/css-overflow-3/#propdef-overflow">overflow</a>
     </ul>
    <li><a data-link-type="biblio" href="#biblio-css21">[CSS21]</a> defines the following terms:
     <ul>
-     <li><a href="http://dev.w3.org/csswg/css2/visuren.html#propdef-float">float</a>
+     <li><a href="https://drafts.csswg.org/css2/visuren.html#propdef-float">float</a>
     </ul>
-   <li><a data-link-type="biblio" href="#biblio-cssom-1">[cssom-1]</a> defines the following terms:
+   <li><a data-link-type="biblio" href="#biblio-cssom-1">[cssom]</a> defines the following terms:
     <ul>
-     <li><a href="http://dev.w3.org/csswg/cssom-1/#pseudoelement">PseudoElement</a>
+     <li><a href="https://drafts.csswg.org/cssom-1/#pseudoelement">PseudoElement</a>
     </ul>
    <li><a data-link-type="biblio" href="#biblio-dom-ls">[dom-ls]</a> defines the following terms:
     <ul>
@@ -10507,8 +10457,6 @@ time, <a href="#previous-current-time">3.5.14</a>
    <dd>David Baron. <a href="http://www.w3.org/TR/css-overflow-3/">CSS Overflow Module Level 3</a>. 18 April 2013. WD. URL: <a href="http://www.w3.org/TR/css-overflow-3/">http://www.w3.org/TR/css-overflow-3/</a>
    <dt id="biblio-cssom"><a class="self-link" href="#biblio-cssom"></a>[CSSOM]
    <dd>Simon Pieters; Glenn Adams. <a href="http://www.w3.org/TR/cssom/">CSS Object Model (CSSOM)</a>. 5 December 2013. WD. URL: <a href="http://www.w3.org/TR/cssom/">http://www.w3.org/TR/cssom/</a>
-   <dt id="biblio-cssom-1"><a class="self-link" href="#biblio-cssom-1"></a>[CSSOM-1]
-   <dd>CSS Object Model Level 1 URL: <a href="http://www.w3.org/TR/cssom/">http://www.w3.org/TR/cssom/</a>
    <dt id="biblio-dom"><a class="self-link" href="#biblio-dom"></a>[DOM]
    <dd>Anne van Kesteren; et al. <a href="http://www.w3.org/TR/dom/">W3C DOM4</a>. 18 June 2015. LCWD. URL: <a href="http://www.w3.org/TR/dom/">http://www.w3.org/TR/dom/</a>
    <dt id="biblio-dom-ls"><a class="self-link" href="#biblio-dom-ls"></a>[DOM-LS]
@@ -10692,7 +10640,7 @@ partial interface <a class="idl-code" data-link-type="interface" href="https://h
 
 <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#interface-element">Element</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
 
-<a data-link-type="idl-name" href="http://dev.w3.org/csswg/cssom-1/#pseudoelement">PseudoElement</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
+<a data-link-type="idl-name" href="https://drafts.csswg.org/cssom-1/#pseudoelement">PseudoElement</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
 
 [<a class="idl-code" data-link-type="constructor" href="#dom-animationplaybackevent-animationplaybackevent">Constructor</a> (DOMString <a href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-type">type</a>, optional <a data-link-type="idl-name" href="#dictdef-animationplaybackeventinit">AnimationPlaybackEventInit</a> <a href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-eventinitdict">eventInitDict</a>)]
 interface <a href="#animationplaybackevent">AnimationPlaybackEvent</a> : <a data-link-type="idl-name" href="http://dom.spec.whatwg.org/#event">Event</a> {
@@ -10720,7 +10668,7 @@ rather than continuing to extrapolate along their defined behavior
 directly).
 
 
-    <p>To fix this it is possible we will wish to introduce <a class="property" data-link-type="propdesc" href="http://dev.w3.org/csswg/css-overflow-3/#propdef-overflow">overflow</a> fill
+    <p>To fix this it is possible we will wish to introduce <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css-overflow-3/#propdef-overflow">overflow</a> fill
 modes that respond to time values larger than or smaller than the
 active time range by extrapolating rather than filling.</p>
     
