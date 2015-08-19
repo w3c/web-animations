@@ -552,14 +552,14 @@ running animations to answer questions such as,
       
 
 
-      <pre class="example lang-javascript" id="example-53cbf932"><a class="self-link" href="#example-53cbf932"></a>// Print the name of any opacity animations on elem
+      <pre class="example lang-javascript" id="example-5a6b0d24"><a class="self-link" href="#example-5a6b0d24"></a>// Print the id of any opacity animations on elem
 elem.getAnimations().filter(
   animation =>
     animation.effect instanceof KeyframeEffectReadOnly &amp;&amp;
     animation.effect.getFrames().some(
       frame => frame.hasOwnProperty('opacity')
     )
-).forEach(animation => console.log(animation.effect.name));
+).forEach(animation => console.log(animation.id));
 </pre>
       
 
@@ -994,7 +994,7 @@ This offset is established by designating some moment as the timeline’s
 <a data-link-type="dfn" href="#global-clock">global clock</a> at that moment.
 At subsequent moments, the <a data-link-type="dfn" href="#time-value">time value</a> of the timeline is
 calculated as the difference between the current <a data-link-type="dfn" href="#time-value">time value</a> of
-the <a data-link-type="dfn" href="#global-clock">global clock</a> and the value recorded at the <a data-link-type="dfn" href="#zero-time">zero time</a>.</p>
+the <a data-link-type="dfn" href="#global-clock">global clock</a> and the value recorded as the <a data-link-type="dfn" href="#zero-time">zero time</a>.</p>
 
 
    <p>On each <a data-link-type="dfn" href="#single_sample">sample</a>, the <a data-link-type="dfn" href="#time-value">time value</a> of the
@@ -1020,8 +1020,8 @@ when its <a data-link-type="dfn" href="#time-value">time value</a> is <a data-li
    <h4 class="heading settled" data-level="3.4.1" id="document-timelines"><span class="secno">3.4.1. </span><span class="content">Document timelines</span><a class="self-link" href="#document-timelines"></a></h4>
 
 
-   <p>A <dfn data-dfn-type="dfn" data-noexport="" id="document-timeline">document timeline<a class="self-link" href="#document-timeline"></a></dfn> is a <a data-link-type="dfn" href="#timeline">timeline</a> that is associated with
-a document.</p>
+   <p>A <dfn data-dfn-type="dfn" data-noexport="" id="document-timeline">document timeline<a class="self-link" href="#document-timeline"></a></dfn> is a type of <a data-link-type="dfn" href="#timeline">timeline</a> that is associated
+with a document.</p>
 
 
    <p>The <a data-link-type="dfn" href="#time-value">time values</a> of a <a data-link-type="dfn" href="#document-timeline">document timeline</a> are calculated
@@ -1111,10 +1111,11 @@ which is used to fix the animation’s output <a data-link-type="dfn" href="#tim
 The <a data-link-type="dfn" href="#hold-time">hold time</a> is initially <a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
 
 
-   <p>In order to establish the priority of conflicting <a data-link-type="dfn" href="#concept-animation">animations</a>, each
-animation has an associated <dfn data-dfn-type="dfn" data-noexport="" id="animation-sequence-number">animation sequence number<a class="self-link" href="#animation-sequence-number"></a></dfn> that is
-assigned a globally unique sequence number each time it transitions
-out of the <a data-link-type="dfn" href="#idle-play-state">idle play state</a>.</p>
+   <p>In order to establish the relative ordering of conflicting <a data-link-type="dfn" href="#concept-animation">animations</a>,
+animations are appended to a <dfn data-dfn-type="dfn" data-noexport="" id="global-animation-list">global animation list<a class="self-link" href="#global-animation-list"></a></dfn> in the order
+in which they are created. Certain <a data-link-type="dfn" href="#animation-type">types of
+animations</a>, however, may provide alternative means of ordering animations
+(see <a class="sectionRef" href="#animation-types">§4.3.1 Animation types</a>).</p>
 
 
    <h4 class="heading settled" data-level="3.5.1" id="setting-the-timeline"><span class="secno">3.5.1. </span><span class="content">Setting the timeline of a animation</span><a class="self-link" href="#setting-the-timeline"></a></h4>
@@ -7233,8 +7234,8 @@ associated animations.</p>
 
       <li data-md="">
        <p>If <var>A</var> and <var>B</var> are still not sorted,
-sort by the <a data-link-type="dfn" href="#animation-sequence-number">animation sequence number</a> of their
-associated animations so that lower sequence numbers sort first.</p>
+sort by their corresponding position in the <a data-link-type="dfn" href="#global-animation-list">global animation
+list</a>.</p>
        
 
 
@@ -12081,7 +12082,6 @@ behavior</a><span>, in §4.1.3</span>
    <li><a href="#dom-animationplaybackevent-animationplaybackevent">AnimationPlaybackEvent(type, eventInitDict)</a><span>, in §5.25</span>
    <li><a href="#animation-playback-rate">animation playback rate</a><span>, in §3.5.17</span>
    <li><a href="#enumdef-animationplaystate">AnimationPlayState</a><span>, in §5.4.1</span>
-   <li><a href="#animation-sequence-number">animation sequence number</a><span>, in §3.5</span>
    <li><a href="#animation-start-time">animation start time</a><span>, in §3.5</span>
    <li><a href="#animationtimeline">AnimationTimeline</a><span>, in §5.2</span>
    <li><a href="#animation-type">animation type</a><span>, in §4.3.1</span>
@@ -12257,6 +12257,7 @@ a keyframe</a><span>, in §4.2.1.1</span>
      <li><a href="#dom-animatable-getanimations">method for Animatable</a><span>, in §5.21</span>
     </ul>
    <li><a href="#dom-keyframeeffectreadonly-getframes">getFrames()</a><span>, in §5.13</span>
+   <li><a href="#global-animation-list">global animation list</a><span>, in §3.5</span>
    <li><a href="#global-clock">global clock</a><span>, in §3.3</span>
    <li><a href="#group-effect">group effect</a><span>, in §3.13</span>
    <li><a href="#groupeffect">GroupEffect</a><span>, in §5.10</span>
@@ -12422,8 +12423,8 @@ time</a><span>, in §3.5.14</span>
    <li><a href="#sequence-effect">sequence effect</a><span>, in §3.13.4</span>
    <li><a href="#sequenceeffect">SequenceEffect</a><span>, in §5.12</span>
    <li><a href="#dom-sequenceeffect-sequenceeffect">SequenceEffect()</a><span>, in §5.12</span>
-   <li><a href="#sequenceeffectreadonly">SequenceEffectReadOnly</a><span>, in §5.12</span>
    <li><a href="#dom-sequenceeffectreadonly-sequenceeffectreadonly">SequenceEffectReadOnly()</a><span>, in §5.12</span>
+   <li><a href="#sequenceeffectreadonly">SequenceEffectReadOnly</a><span>, in §5.12</span>
    <li><a href="#dom-keyframeeffect-setframes">setFrames(frames)</a><span>, in §5.13</span>
    <li><a href="#set-the-animation-playback-rate">set the animation playback rate</a><span>, in §3.5.17.1</span>
    <li><a href="#set-the-animation-start-time">set the animation start time</a><span>, in §3.5.6</span>
