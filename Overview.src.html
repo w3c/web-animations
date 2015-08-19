@@ -4798,13 +4798,13 @@ determine both
 <em>how</em> <a>keyframe effects</a>
 are combined with one another,
 as well as the <em>order</em> in which they are applied, that is,
-their relative <em>priority</em>.
+their relative <em>composite order</em>.
 
 The matter of <em>how</em> <a>effect values</a> are
 combined is governed by the <a>composite operation</a> of
 the corresponding <a>keyframe effects</a>.
 
-The relative <em>priority</em> of <a>effect values</a>
+The relative <em>composite order</em> of <a>effect values</a>
 is determined by an <a>effect stack</a> established for each
 animated property.
 </div>
@@ -4816,18 +4816,18 @@ by other specifications that define markup or programming interfaces on
 top of this model. The particular markup or programming interface that
 generated an <a>animation</a> defines its <dfn>animation type</dfn>.
 
-Further specifications may define specialized behavior for prioritizing
-animations between types or within a particular type.
+Further specifications may define specialized behavior for composite
+ordering between different types of animations or within a particular type.
 
 <div class='informative-bg'><em>This section is non-normative</em>
 
 For example, animations whose <a lt="animation type">type</a> is &lsquo;CSS
-animation&rsquo; are defined as having a <em>higher</em> priority than
+animation&rsquo; are defined as having a <em>higher</em> composite order than
 animations whose type is &lsquo;CSS transition&rsquo; but <em>lower</em> than
 other animations without a specific type.
 
 Within the set of &lsquo;CSS animation&rsquo; objects, specialized
-prioritization is defined based on the <code>animation-name</code> property
+composite ordering is defined based on the <code>animation-name</code> property
 amongst other factors.
 
 </div>
@@ -4836,10 +4836,10 @@ amongst other factors.
 
 Associated with each property <a lt="target property">targetted</a>
 by one or more <a>keyframe effects</a> is an <dfn>effect
-stack</dfn> that establishes the relative priority of the <a>keyframe
+stack</dfn> that establishes the relative composite order of the <a>keyframe
 effects</a>.
 
-The relative priority of any two <a>keyframe effects</a>,
+The relative composite order of any two <a>keyframe effects</a>,
 <var>A</var> and <var>B</var>, within an <a>effect stack</a> is
 established by comparing their properties as follows:
 
@@ -4852,10 +4852,10 @@ established by comparing their properties as follows:
     conditions in turn until the order is resolved,
 
     1.  If <var>A</var> and <var>B</var>'s associated animations differ by
-        <a lt="animation type">type</a>, sort by any inter-type prioritization
+        <a lt="animation type">type</a>, sort by any inter-type composite order
         defined for the corresponding types.
     1.  If <var>A</var> and <var>B</var> are still not sorted,
-        sort by any <a lt="animation type">type</a>-specific prioritization
+        sort by any <a lt="animation type">type</a>-specific composite order
         defined by the common type of <var>A</var> and <var>B</var>'s
         associated animations.
     1.  If <var>A</var> and <var>B</var> are still not sorted,
@@ -4871,14 +4871,13 @@ established by comparing their properties as follows:
 <!-- @endif -->
 
 <a>Animation effects</a> that sort earlier have <em>lower</em>
-priority.
+composite order.
 
 <h4 id="calculating-the-result-of-an-effect-stack">Calculating the result of an effect stack</h4>
 
 In order to calculate the final value of an <a>effect stack</a>,
-the <a>effect values</a> of each
-<a>keyframe effect</a> in the stack are combined in order of priority
-from lowest to highest priority.
+the <a>effect values</a> of each <a>keyframe effect</a> in the stack are
+combined in composite order.
 
 Each step in the process of evaluating an <a>effect stack</a> takes
 an <dfn>underlying value</dfn> as input.
@@ -4891,7 +4890,7 @@ the next <a>keyframe effect</a> in the stack.
 
 The final value of an <a>effect stack</a>, called the
 <dfn>composited value</dfn>, is simply the result of combining the
-<a>effect value</a> of the final (highest priority)
+<a>effect value</a> of the final (highest composite order)
 <a>keyframe effect</a> in the stack with the <a>underlying value</a>
 at that point.
 
@@ -4938,14 +4937,15 @@ is achieved by adding a specified value to the CSS cascade.
 The level of the cascade to which this specified value is added
 depends on the <a lt="animation type">type</a> of the <a>animation</a> <a
 lt="associated animation of an animation effect">associated with</a> the
-highest priority effect in the <a>effect stack</a> for a given property.
+effect with the highest composite order in the <a>effect stack</a> for a given
+property.
 By default, the specified value is added to the &lsquo;Animation
 declarations&rsquo; level of the cascade ([[!css-cascade-3]]).
 
 <div class='informative-bg'><em>This section is non-normative</em>
 
-For example, if the highest priority effect is associated with a
-&lsquo;CSS transition&rsquo;-type animation, the <a>composited value</a>
+For example, if the effect with the highest composite order is associated with
+a &lsquo;CSS transition&rsquo;-type animation, the <a>composited value</a>
 will be added to &lsquo;Transition declarations&rsquo; level of the cascade.
 
 </div>
@@ -5262,7 +5262,7 @@ interface AnimationTimeline {
     associated with this <a>timeline</a> that have associated
     <a>target effect</a> which is <a>current</a> or <a>in effect</a>.
 
-    The returned list is sorted using the prioritization described
+    The returned list is sorted using the composite order described
     for the associated <a>animations</a> of effects in <a
     href="#the-effect-stack" class=sectionRef></a>.
 
@@ -7552,7 +7552,7 @@ animation.play();</pre></div>
     object will still only appear in the returned list once.
 <!-- @endif -->
 
-    The returned list is sorted using the prioritization described
+    The returned list is sorted using the composite order described
     for the associated <a>animations</a> of effects in <a
     href="#the-effect-stack" class=sectionRef></a>.
 
