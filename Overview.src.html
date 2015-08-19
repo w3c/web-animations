@@ -483,7 +483,7 @@ This offset is established by designating some moment as the timeline's
 <a>global clock</a> at that moment.
 At subsequent moments, the <a>time value</a> of the timeline is
 calculated as the difference between the current <a>time value</a> of
-the <a>global clock</a> and the value recorded at the <a>zero time</a>.
+the <a>global clock</a> and the value recorded as the <a>zero time</a>.
 
 On each <a lt=single-sample>sample</a>, the <a>time value</a> of the
 <a>global clock</a> at the beginning of the sample is recorded and this
@@ -504,8 +504,8 @@ when its <a>time value</a> is <a>unresolved</a>.
 
 <h4 id="document-timelines">Document timelines</h4>
 
-A <dfn>document timeline</dfn> is a <a>timeline</a> that is associated with
-a document.
+A <dfn>document timeline</dfn> is a type of <a>timeline</a> that is associated
+with a document.
 
 The <a>time values</a> of a <a>document timeline</a> are calculated
 as a fixed offset from the <a>global clock</a> such that the <a>zero
@@ -584,10 +584,11 @@ which is used to fix the animation's output <a>time value</a>, called its
 <a>current time</a>, in circumstances such as pausing</a>.
 The <a>hold time</a> is initially <a>unresolved</a>.
 
-In order to establish the priority of conflicting <a>animations</a>, each
-animation has an associated <dfn>animation sequence number</dfn> that is
-assigned a globally unique sequence number each time it transitions
-out of the <a>idle play state</a>.
+In order to establish the relative ordering of conflicting <a>animations</a>,
+animations are appended to a <dfn>global animation list</dfn> in the order
+in which they are created. Certain <a lt="animation type">types of
+animations</a>, however, may provide alternative means of ordering animations
+(see <a href="#animation-types" class="sectionRef"></a>).
 
 <h4 id="setting-the-timeline">Setting the timeline of a animation</h4>
 
@@ -4859,8 +4860,8 @@ established by comparing their properties as follows:
         defined by the common type of <var>A</var> and <var>B</var>'s
         associated animations.
     1.  If <var>A</var> and <var>B</var> are still not sorted,
-        sort by the <a>animation sequence number</a> of their
-        associated animations so that lower sequence numbers sort first.
+        sort by their corresponding position in the <a>global animation
+        list</a>.
 
 <!-- @ifdef INCLUDE_GROUPS -->
     1.  Sort <var>A</var> and <var>B</var> in <a>tree order</a>.
