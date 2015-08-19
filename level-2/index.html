@@ -80,8 +80,8 @@
 .highlight .vi { color: #0077aa } /* Name.Variable.Instance */
 .highlight .il { color: #990055 } /* Literal.Number.Integer.Long */
         .highlight { background: hsl(24, 20%, 95%); }
-        pre.highlight { padding: 1em; margin: .5em 0; overflow: auto; }
-        :not(pre).highlight { padding: .1em; border-radius: .3em; }
+        code.highlight { padding: .1em; border-radius: .3em; }
+        pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em 0; overflow: auto; border-radius: 0; }
         </style>
  </head>
  
@@ -98,7 +98,7 @@
    <h1 class="p-name no-ref" id="title">Web Animations Level 2</h1>
   
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft,
-    <time class="dt-updated" datetime="2015-07-22">22 July 2015</time></span></h2>
+    <time class="dt-updated" datetime="2015-08-19">19 August 2015</time></span></h2>
   
    <div data-fill-with="spec-metadata">
     <dl>
@@ -475,10 +475,11 @@ SVG animations, or created directly using the programming interface.</p>
       
 
 
-      <pre class="example lang-javascript highlight" id="example-a99056c8"><span class="c1">// Wait until all animations have finished before removing the element</span>
-<span class="nx">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span>
-  <span class="nx">elem</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">map</span><span class="p">(</span><span class="nx">animation</span> <span class="o">=></span> <span class="nx">animation</span><span class="p">.</span><span class="nx">finished</span><span class="p">)</span>
-<span class="p">).</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=></span> <span class="nx">elem</span><span class="p">.</span><span class="nx">remove</span><span class="p">());</span></pre>
+      <pre class="example lang-javascript" id="example-a99056c8"><a class="self-link" href="#example-a99056c8"></a>// Wait until all animations have finished before removing the element
+Promise.all(
+  elem.getAnimations().map(animation => animation.finished)
+).then(() => elem.remove());
+</pre>
       
 
 
@@ -487,9 +488,10 @@ animations without waiting.</p>
       
 
 
-      <pre class="example lang-javascript highlight" id="example-460fcf00"><span class="kd">var</span> <span class="nx">isAnimating</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">some</span><span class="p">(</span>
-  <span class="nx">animation</span> <span class="o">=></span> <span class="nx">animation</span><span class="p">.</span><span class="nx">playState</span> <span class="o">==</span> <span class="s1">'running'</span>
-<span class="p">);</span></pre>
+      <pre class="example lang-javascript" id="example-460fcf00"><a class="self-link" href="#example-460fcf00"></a>var isAnimating = elem.getAnimations().some(
+  animation => animation.playState == 'running'
+);
+</pre>
       
 
 
@@ -506,10 +508,11 @@ attention.</p>
       
 
 
-      <pre class="example lang-javascript highlight" id="example-7c26c54b"><span class="c1">// Pause all existing animations in the document</span>
-<span class="nb">document</span><span class="p">.</span><span class="nx">timeline</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">forEach</span><span class="p">(</span>
-  <span class="nx">animation</span> <span class="o">=></span> <span class="nx">animation</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span>
-<span class="p">);</span></pre>
+      <pre class="example lang-javascript" id="example-7c26c54b"><a class="self-link" href="#example-7c26c54b"></a>// Pause all existing animations in the document
+document.timeline.getAnimations().forEach(
+  animation => animation.pause()
+);
+</pre>
       
 
 
@@ -530,8 +533,9 @@ characteristics as declarative animations.</p>
       
 
 
-      <pre class="example lang-javascript highlight" id="example-df74f6da"><span class="c1">// Fade out quickly</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">transform</span><span class="o">:</span> <span class="s1">'scale(0)'</span><span class="p">,</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span> <span class="mi">300</span><span class="p">);</span></pre>
+      <pre class="example lang-javascript" id="example-df74f6da"><a class="self-link" href="#example-df74f6da"></a>// Fade out quickly
+elem.animate({ transform: 'scale(0)', opacity: 0 }, 300);
+</pre>
       
 
 
@@ -548,14 +552,15 @@ running animations to answer questions such as,
       
 
 
-      <pre class="example lang-javascript highlight" id="example-53cbf932"><span class="c1">// Print the name of any opacity animations on elem</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">filter</span><span class="p">(</span>
-  <span class="nx">animation</span> <span class="o">=></span>
-    <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span> <span class="k">instanceof</span> <span class="nx">KeyframeEffectReadOnly</span> <span class="o">&amp;&amp;</span>
-    <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">getFrames</span><span class="p">().</span><span class="nx">some</span><span class="p">(</span>
-      <span class="nx">frame</span> <span class="o">=></span> <span class="nx">frame</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="s1">'opacity'</span><span class="p">)</span>
-    <span class="p">)</span>
-<span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">animation</span> <span class="o">=></span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">name</span><span class="p">));</span></pre>
+      <pre class="example lang-javascript" id="example-53cbf932"><a class="self-link" href="#example-53cbf932"></a>// Print the name of any opacity animations on elem
+elem.getAnimations().filter(
+  animation =>
+    animation.effect instanceof KeyframeEffectReadOnly &amp;&amp;
+    animation.effect.getFrames().some(
+      frame => frame.hasOwnProperty('opacity')
+    )
+).forEach(animation => console.log(animation.effect.name));
+</pre>
       
 
 
@@ -564,17 +569,18 @@ reduce their playback rate and replay them.</p>
       
 
 
-      <pre class="example lang-javascript highlight" id="example-48c0a9af"><span class="c1">// Slow down and replay any transform animations</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">filter</span><span class="p">(</span>
-  <span class="nx">animation</span> <span class="o">=></span>
-    <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span> <span class="k">instanceof</span> <span class="nx">KeyframeEffectReadOnly</span> <span class="o">&amp;&amp;</span>
-    <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">getFrames</span><span class="p">().</span><span class="nx">some</span><span class="p">(</span>
-      <span class="nx">frame</span> <span class="o">=></span> <span class="nx">frame</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="s1">'transform'</span><span class="p">)</span>
-    <span class="p">)</span>
-<span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">animation</span> <span class="o">=></span> <span class="p">{</span>
-  <span class="nx">animation</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="nx">animation</span><span class="p">.</span><span class="nx">playbackRate</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">;</span>
-<span class="p">});</span></pre>
+      <pre class="example lang-javascript" id="example-48c0a9af"><a class="self-link" href="#example-48c0a9af"></a>// Slow down and replay any transform animations
+elem.getAnimations().filter(
+  animation =>
+    animation.effect instanceof KeyframeEffectReadOnly &amp;&amp;
+    animation.effect.getFrames().some(
+      frame => frame.hasOwnProperty('transform')
+    )
+).forEach(animation => {
+  animation.currentTime = 0;
+  animation.playbackRate = 0.5;
+});
+</pre>
       
 
 
@@ -589,24 +595,25 @@ Rather, it is desirable to seek the animations to specific times.</p>
       
 
 
-      <pre class="example lang-javascript highlight" id="example-b6887419"><span class="c1">// Seek to the half-way point of an animation and check that the opacity is 50%</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">forEach</span><span class="p">(</span>
-  <span class="nx">animation</span> <span class="o">=></span>
-    <span class="nx">animation</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">=</span>
-      <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">computedTiming</span><span class="p">.</span><span class="nx">delay</span> <span class="o">+</span>
-      <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">computedTiming</span><span class="p">.</span><span class="nx">activeDuration</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
-<span class="p">);</span>
-<span class="nx">assert_equals</span><span class="p">(</span><span class="nx">getComputedStyle</span><span class="p">(</span><span class="nx">elem</span><span class="p">).</span><span class="nx">opacity</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">);</span>
+      <pre class="example lang-javascript" id="example-b6887419"><a class="self-link" href="#example-b6887419"></a>// Seek to the half-way point of an animation and check that the opacity is 50%
+elem.getAnimations().forEach(
+  animation =>
+    animation.currentTime =
+      animation.effect.computedTiming.delay +
+      animation.effect.computedTiming.activeDuration / 2;
+);
+assert_equals(getComputedStyle(elem).opacity, 0.5);
 
-<span class="c1">// Check that the loading screen is hidden after the animations finish</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">forEach</span><span class="p">(</span>
-  <span class="nx">animation</span> <span class="o">=></span> <span class="nx">animation</span><span class="p">.</span><span class="nx">finish</span><span class="p">()</span>
-<span class="p">);</span>
-<span class="c1">// Wait one frame so that event handlers have a chance to run</span>
-<span class="nx">requestAnimationFrame</span><span class="p">(()</span> <span class="o">=></span> <span class="p">{</span>
-  <span class="nx">assert_equals</span><span class="p">(</span>
-    <span class="nx">getComputedStyle</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">'#loading'</span><span class="p">)).</span><span class="nx">display</span><span class="p">,</span> <span class="s1">'none'</span><span class="p">);</span>
-<span class="p">});</span></pre>
+// Check that the loading screen is hidden after the animations finish
+elem.getAnimations().forEach(
+  animation => animation.finish()
+);
+// Wait one frame so that event handlers have a chance to run
+requestAnimationFrame(() => {
+  assert_equals(
+    getComputedStyle(document.querySelector('#loading')).display, 'none');
+});
+</pre>
       
 </dl>
 
@@ -1746,12 +1753,12 @@ cancelled (see <a href="#cancelling-an-animation-section">§3.5.16 Cancelling an
     not change.</p>
 
     
-    <pre class="example lang-javascript highlight" id="example-9effe8af"><span class="nx">animation</span><span class="p">.</span><span class="nx">pause</span><span class="p">();</span>
-<span class="nx">animation</span><span class="p">.</span><span class="nx">ready</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="c1">// Displays 'running'</span>
-  <span class="nx">alert</span><span class="p">(</span><span class="nx">animation</span><span class="p">.</span><span class="nx">playState</span><span class="p">);</span>
-<span class="p">});</span>
-<span class="nx">animation</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span></pre>
+    <pre class="example lang-javascript" id="example-9effe8af"><a class="self-link" href="#example-9effe8af"></a>animation.pause();
+animation.ready.then(function() {
+  // Displays 'running'
+  alert(animation.playState);
+});
+animation.play();</pre>
 
 </div>
 
@@ -2424,10 +2431,11 @@ To avoid this surprising behavior, notification about the finished state of
 an animation is typically performed asynchronously.</p>
 
 
-    <pre class="example lang-javascript highlight" id="example-8d62e105"><span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
-<span class="nx">animation</span><span class="p">.</span><span class="nx">playbackRate</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
-<span class="nx">animation</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">;</span> <span class="c1">// animation is now finished</span>
-<span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">timing</span><span class="p">.</span><span class="nx">iterationCount</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// animation is no longer finished</span></pre>
+    <pre class="example lang-javascript" id="example-8d62e105"><a class="self-link" href="#example-8d62e105"></a>var animation = elem.animate({ left: '100px' }, 2000);
+animation.playbackRate = 2;
+animation.currentTime = 1000; // animation is now finished
+animation.effect.timing.iterationCount = 2; // animation is no longer finished
+</pre>
 
 
     <p>The one exception to this asynchronous behavior is when the <a data-link-type="dfn" href="#finish-an-animation">finish an
@@ -2437,11 +2445,12 @@ the animation is clear so the notification about the finished state of the
 animation occurs synchronously as demonstrated below.</p>
 
 
-    <pre class="example lang-javascript highlight" id="example-3520d1b0"><span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="mi">1000</span><span class="p">);</span>
-<span class="nx">animation</span><span class="p">.</span><span class="nx">finish</span><span class="p">();</span> <span class="c1">// finish event is queued immediately and finished promise</span>
-                    <span class="c1">// is resolved despite the fact that the following statement</span>
-                    <span class="c1">// causes the animation to leave the finished state</span>
-<span class="nx">animation</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span></pre>
+    <pre class="example lang-javascript" id="example-3520d1b0"><a class="self-link" href="#example-3520d1b0"></a>var animation = elem.animate({ left: '100px' }, 1000);
+animation.finish(); // finish event is queued immediately and finished promise
+                    // is resolved despite the fact that the following statement
+                    // causes the animation to leave the finished state
+animation.currentTime = 0;
+</pre>
 
 
     <p>Note that like the procedure to <a data-link-type="dfn" href="#finish-an-animation">finish an animation</a>,
@@ -2867,16 +2876,16 @@ animation into a <a data-link-type="dfn" href="#finished-play-state">finished</a
 without restarting by setting the <a data-link-type="dfn" href="#animation-start-time">animation start time</a> such as below:</p>
 
 
-    <pre class="example lang-javascript highlight" id="example-cd511908"><span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">timing</span><span class="p">.</span><span class="nx">duration</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">;</span>
-<span class="nx">animation</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">=</span> <span class="mi">4000</span><span class="p">;</span>
-<span class="nx">animation</span><span class="p">.</span><span class="nx">pause</span><span class="p">();</span>
-<span class="nx">animation</span><span class="p">.</span><span class="nx">ready</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">timing</span><span class="p">.</span><span class="nx">duration</span> <span class="o">=</span> <span class="mi">3000</span><span class="p">;</span>
-  <span class="nx">alert</span><span class="p">(</span><span class="nx">animation</span><span class="p">.</span><span class="nx">playState</span><span class="p">);</span> <span class="c1">// Displays 'paused'</span>
-  <span class="nx">animation</span><span class="p">.</span><span class="nx">startTime</span> <span class="o">=</span>
-    <span class="nb">document</span><span class="p">.</span><span class="nx">timeline</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">-</span> <span class="nx">animation</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">*</span> <span class="nx">animation</span><span class="p">.</span><span class="nx">playbackRate</span><span class="p">;</span>
-  <span class="nx">alert</span><span class="p">(</span><span class="nx">animation</span><span class="p">.</span><span class="nx">playState</span><span class="p">);</span> <span class="c1">// Displays 'finished'</span>
-<span class="p">});</span></pre>
+    <pre class="example lang-javascript" id="example-cd511908"><a class="self-link" href="#example-cd511908"></a>animation.effect.timing.duration = 5000;
+animation.currentTime = 4000;
+animation.pause();
+animation.ready.then(function() {
+  animation.effect.timing.duration = 3000;
+  alert(animation.playState); // Displays 'paused'
+  animation.startTime =
+    document.timeline.currentTime - animation.currentTime * animation.playbackRate;
+  alert(animation.playState); // Displays 'finished'
+});</pre>
 
 </div>
 
@@ -5000,52 +5009,52 @@ such structures and are defined in <a data-link-type="biblio" href="#biblio-dom"
 
    <ul>
     <li data-md="">
-     <p><dfn data-dfn-type="dfn" data-noexport="" id="tree-order"><a href="http://www.w3.org/TR/dom/#concept-tree-order">
+     <p><dfn data-dfn-type="dfn" data-lt="tree order" data-noexport="" id="tree-order"><a href="http://www.w3.org/TR/dom/#concept-tree-order">
 tree order</a><a class="self-link" href="#tree-order"></a></dfn></p>
      
 
     <li data-md="">
-     <p><dfn data-dfn-type="dfn" data-noexport="" id="root"><a href="http://www.w3.org/TR/dom/#concept-tree-root">
+     <p><dfn data-dfn-type="dfn" data-lt="root" data-noexport="" id="root"><a href="http://www.w3.org/TR/dom/#concept-tree-root">
 root</a><a class="self-link" href="#root"></a></dfn></p>
      
 
     <li data-md="">
-     <p><dfn data-dfn-type="dfn" data-noexport="" id="ancestor"><a href="http://www.w3.org/TR/dom/#concept-tree-ancestor">
+     <p><dfn data-dfn-type="dfn" data-lt="ancestor" data-noexport="" id="ancestor"><a href="http://www.w3.org/TR/dom/#concept-tree-ancestor">
 ancestor</a><a class="self-link" href="#ancestor"></a></dfn></p>
      
 
     <li data-md="">
-     <p><dfn data-dfn-type="dfn" data-noexport="" id="descendant"><a href="http://www.w3.org/TR/dom/#concept-tree-descendant">
+     <p><dfn data-dfn-type="dfn" data-lt="descendant" data-noexport="" id="descendant"><a href="http://www.w3.org/TR/dom/#concept-tree-descendant">
 descendant</a><a class="self-link" href="#descendant"></a></dfn></p>
      
 
     <li data-md="">
-     <p><dfn data-dfn-type="dfn" data-noexport="" id="inclusive-ancestor"><a href="http://www.w3.org/TR/dom/#concept-tree-inclusive-ancestor">
+     <p><dfn data-dfn-type="dfn" data-lt="inclusive ancestor" data-noexport="" id="inclusive-ancestor"><a href="http://www.w3.org/TR/dom/#concept-tree-inclusive-ancestor">
 inclusive ancestor</a><a class="self-link" href="#inclusive-ancestor"></a></dfn></p>
      
 
     <li data-md="">
-     <p><dfn data-dfn-type="dfn" data-noexport="" id="inclusive-descendant"><a href="http://www.w3.org/TR/dom/#concept-tree-inclusive-descendant">
+     <p><dfn data-dfn-type="dfn" data-lt="inclusive descendant" data-noexport="" id="inclusive-descendant"><a href="http://www.w3.org/TR/dom/#concept-tree-inclusive-descendant">
 inclusive descendant</a><a class="self-link" href="#inclusive-descendant"></a></dfn></p>
      
 
     <li data-md="">
-     <p><dfn data-dfn-type="dfn" data-noexport="" id="next-sibling"><a href="http://www.w3.org/TR/dom/#concept-tree-next-sibling">
+     <p><dfn data-dfn-type="dfn" data-lt="next sibling" data-noexport="" id="next-sibling"><a href="http://www.w3.org/TR/dom/#concept-tree-next-sibling">
 next sibling</a><a class="self-link" href="#next-sibling"></a></dfn></p>
      
 
     <li data-md="">
-     <p><dfn data-dfn-type="dfn" data-noexport="" id="previous-sibling"><a href="http://www.w3.org/TR/dom/#concept-tree-previous-sibling">
+     <p><dfn data-dfn-type="dfn" data-lt="previous sibling" data-noexport="" id="previous-sibling"><a href="http://www.w3.org/TR/dom/#concept-tree-previous-sibling">
 previous sibling</a><a class="self-link" href="#previous-sibling"></a></dfn></p>
      
 
     <li data-md="">
-     <p><dfn data-dfn-type="dfn" data-noexport="" id="first-child"><a href="http://www.w3.org/TR/dom/#concept-tree-first-child">
+     <p><dfn data-dfn-type="dfn" data-lt="first child" data-noexport="" id="first-child"><a href="http://www.w3.org/TR/dom/#concept-tree-first-child">
 first child</a><a class="self-link" href="#first-child"></a></dfn></p>
      
 
     <li data-md="">
-     <p><dfn data-dfn-type="dfn" data-noexport="" id="last-child"><a href="http://www.w3.org/TR/dom/#concept-tree-last-child">
+     <p><dfn data-dfn-type="dfn" data-lt="last child" data-noexport="" id="last-child"><a href="http://www.w3.org/TR/dom/#concept-tree-last-child">
 last child</a><a class="self-link" href="#last-child"></a></dfn></p>
      
 </ul>
@@ -6378,10 +6387,10 @@ time but instead to rely on some automatic spacing.</p>
     <p>For example, rather than typing:</p>
 
 
-    <pre class="example lang-javascript highlight" id="example-880b643e"><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'blue'</span><span class="p">,</span> <span class="nx">offset</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'green'</span><span class="p">,</span> <span class="nx">offset</span><span class="o">:</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'red'</span><span class="p">,</span> <span class="nx">offset</span><span class="o">:</span> <span class="mi">2</span><span class="o">/</span><span class="mi">3</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'yellow'</span><span class="p">,</span> <span class="nx">offset</span><span class="o">:</span> <span class="mi">1</span> <span class="p">}</span> <span class="p">],</span> <span class="mi">2000</span><span class="p">);</span></pre>
+    <pre class="example lang-javascript" id="example-880b643e"><a class="self-link" href="#example-880b643e"></a>elem.animate([ { color: 'blue', offset: 0 },
+               { color: 'green', offset: 1/3 },
+               { color: 'red', offset: 2/3 },
+               { color: 'yellow', offset: 1 } ], 2000);</pre>
 
 
     <p>It should be possible to type the following and allow the user agent
@@ -6389,10 +6398,10 @@ to calculate the <a data-link-type="dfn" href="#keyframe-offset">offset</a> of e
 keyframe:</p>
 
 
-    <pre class="example lang-javascript highlight" id="example-2442e6c6"><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'blue'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'green'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'red'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'yellow'</span> <span class="p">}</span> <span class="p">],</span> <span class="mi">2000</span><span class="p">);</span></pre>
+    <pre class="example lang-javascript" id="example-2442e6c6"><a class="self-link" href="#example-2442e6c6"></a>elem.animate([ { color: 'blue' },
+               { color: 'green' },
+               { color: 'red' },
+               { color: 'yellow' } ], 2000);</pre>
 
 
     <p>Web Animations provides spacing modes for this purpose. The default
@@ -6409,10 +6418,10 @@ animation.</p>
     <p>For example, consider the following animation:</p>
 
 
-    <pre class="example lang-javascript highlight" id="example-d0695eae"><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'0px'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'-20px'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'50px'</span> <span class="p">}</span> <span class="p">],</span> <span class="mi">1000</span><span class="p">);</span></pre>
+    <pre class="example lang-javascript" id="example-d0695eae"><a class="self-link" href="#example-d0695eae"></a>elem.animate([ { left: '0px' },
+               { left: '-20px' },
+               { left: '100px' },
+               { left: '50px' } ], 1000);</pre>
 
 
     <p>The resulting value of the <span class="prop-name">left</span>
@@ -6437,11 +6446,11 @@ for each segment as indicated the varying slope of the graph.
 spacing mode as follows:</p>
 
 
-    <pre class="example lang-javascript highlight" id="example-6751e723"><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'0px'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'-20px'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'50px'</span> <span class="p">}</span> <span class="p">],</span>
-             <span class="p">{</span> <span class="nx">duration</span><span class="o">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="nx">spacing</span><span class="o">:</span> <span class="s2">"paced(left)"</span> <span class="p">});</span></pre>
+    <pre class="example lang-javascript" id="example-6751e723"><a class="self-link" href="#example-6751e723"></a>elem.animate([ { left: '0px' },
+               { left: '-20px' },
+               { left: '100px' },
+               { left: '50px' } ],
+             { duration: 1000, spacing: "paced(left)" });</pre>
 
 
     <p>The result is illustrated below:</p>
@@ -6464,11 +6473,11 @@ of the animation indicating a constant rate of change.
 spacing modes as follows:</p>
 
 
-    <pre class="example lang-javascript highlight" id="example-cdc62e39"><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'0px'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'-20px'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span><span class="p">,</span> <span class="nx">offset</span><span class="o">:</span> <span class="mf">0.5</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'50px'</span> <span class="p">}</span> <span class="p">],</span>
-             <span class="p">{</span> <span class="nx">duration</span><span class="o">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="nx">spacing</span><span class="o">:</span> <span class="s2">"paced(left)"</span> <span class="p">});</span></pre>
+    <pre class="example lang-javascript" id="example-cdc62e39"><a class="self-link" href="#example-cdc62e39"></a>elem.animate([ { left: '0px' },
+               { left: '-20px' },
+               { left: '100px', offset: 0.5 },
+               { left: '50px' } ],
+             { duration: 1000, spacing: "paced(left)" });</pre>
 
 
     <p>The result is illustrated below:</p>
@@ -7137,7 +7146,7 @@ determine both
 <em>how</em> <a data-link-type="dfn" href="#keyframe-effect">keyframe effects</a>
 are combined with one another,
 as well as the <em>order</em> in which they are applied, that is,
-their relative <em>priority</em>.</p>
+their relative <em>composite order</em>.</p>
 
 
     <p>The matter of <em>how</em> <a data-link-type="dfn" href="#effect-value">effect values</a> are
@@ -7145,7 +7154,7 @@ combined is governed by the <a data-link-type="dfn" href="#composite-operation">
 the corresponding <a data-link-type="dfn" href="#keyframe-effect">keyframe effects</a>.</p>
 
 
-    <p>The relative <em>priority</em> of <a data-link-type="dfn" href="#effect-value">effect values</a>
+    <p>The relative <em>composite order</em> of <a data-link-type="dfn" href="#effect-value">effect values</a>
 is determined by an <a data-link-type="dfn" href="#effect-stack">effect stack</a> established for each
 animated property.</p>
 </div>
@@ -7160,21 +7169,21 @@ top of this model. The particular markup or programming interface that
 generated an <a data-link-type="dfn" href="#concept-animation">animation</a> defines its <dfn data-dfn-type="dfn" data-noexport="" id="animation-type">animation type<a class="self-link" href="#animation-type"></a></dfn>.</p>
 
 
-   <p>Further specifications may define specialized behavior for prioritizing
-animations between types or within a particular type.</p>
+   <p>Further specifications may define specialized behavior for composite
+ordering between different types of animations or within a particular type.</p>
 
 
    <div class="informative-bg"><em>This section is non-normative</em>
 
 
     <p>For example, animations whose <a data-link-type="dfn" href="#animation-type">type</a> is ‘CSS
-animation’ are defined as having a <em>higher</em> priority than
+animation’ are defined as having a <em>higher</em> composite order than
 animations whose type is ‘CSS transition’ but <em>lower</em> than
 other animations without a specific type.</p>
 
 
     <p>Within the set of ‘CSS animation’ objects, specialized
-prioritization is defined based on the <code>animation-name</code> property
+composite ordering is defined based on the <code>animation-name</code> property
 amongst other factors.</p>
 
 </div>
@@ -7185,11 +7194,11 @@ amongst other factors.</p>
 
    <p>Associated with each property <a data-link-type="dfn" href="#target-property">targetted</a>
 by one or more <a data-link-type="dfn" href="#keyframe-effect">keyframe effects</a> is an <dfn data-dfn-type="dfn" data-noexport="" id="effect-stack">effect
-stack<a class="self-link" href="#effect-stack"></a></dfn> that establishes the relative priority of the <a data-link-type="dfn" href="#keyframe-effect">keyframe
+stack<a class="self-link" href="#effect-stack"></a></dfn> that establishes the relative composite order of the <a data-link-type="dfn" href="#keyframe-effect">keyframe
 effects</a>.</p>
 
 
-   <p>The relative priority of any two <a data-link-type="dfn" href="#keyframe-effect">keyframe effects</a>,
+   <p>The relative composite order of any two <a data-link-type="dfn" href="#keyframe-effect">keyframe effects</a>,
 <var>A</var> and <var>B</var>, within an <a data-link-type="dfn" href="#effect-stack">effect stack</a> is
 established by comparing their properties as follows:</p>
 
@@ -7211,13 +7220,13 @@ conditions in turn until the order is resolved,</p>
      <ol>
       <li data-md="">
        <p>If <var>A</var> and <var>B</var>’s associated animations differ by
-<a data-link-type="dfn" href="#animation-type">type</a>, sort by any inter-type prioritization
+<a data-link-type="dfn" href="#animation-type">type</a>, sort by any inter-type composite order
 defined for the corresponding types.</p>
        
 
       <li data-md="">
        <p>If <var>A</var> and <var>B</var> are still not sorted,
-sort by any <a data-link-type="dfn" href="#animation-type">type</a>-specific prioritization
+sort by any <a data-link-type="dfn" href="#animation-type">type</a>-specific composite order
 defined by the common type of <var>A</var> and <var>B</var>’s
 associated animations.</p>
        
@@ -7238,16 +7247,15 @@ resolved in the previous step.)</p>
 </ol></ol>
 
    <p><a data-link-type="dfn" href="#animation-effect">Animation effects</a> that sort earlier have <em>lower</em>
-priority.</p>
+composite order.</p>
 
 
    <h4 class="heading settled" data-level="4.3.3" id="calculating-the-result-of-an-effect-stack"><span class="secno">4.3.3. </span><span class="content">Calculating the result of an effect stack</span><a class="self-link" href="#calculating-the-result-of-an-effect-stack"></a></h4>
 
 
    <p>In order to calculate the final value of an <a data-link-type="dfn" href="#effect-stack">effect stack</a>,
-the <a data-link-type="dfn" href="#effect-value">effect values</a> of each
-<a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> in the stack are combined in order of priority
-from lowest to highest priority.</p>
+the <a data-link-type="dfn" href="#effect-value">effect values</a> of each <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> in the stack are
+combined in composite order.</p>
 
 
    <p>Each step in the process of evaluating an <a data-link-type="dfn" href="#effect-stack">effect stack</a> takes
@@ -7263,7 +7271,7 @@ the next <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> in 
 
    <p>The final value of an <a data-link-type="dfn" href="#effect-stack">effect stack</a>, called the
 <dfn data-dfn-type="dfn" data-noexport="" id="composited-value">composited value<a class="self-link" href="#composited-value"></a></dfn>, is simply the result of combining the
-<a data-link-type="dfn" href="#effect-value">effect value</a> of the final (highest priority)
+<a data-link-type="dfn" href="#effect-value">effect value</a> of the final (highest composite order)
 <a data-link-type="dfn" href="#keyframe-effect">keyframe effect</a> in the stack with the <a data-link-type="dfn" href="#underlying-value">underlying value</a>
 at that point.</p>
 
@@ -7333,7 +7341,8 @@ is achieved by adding a specified value to the CSS cascade.</p>
 
    <p>The level of the cascade to which this specified value is added
 depends on the <a data-link-type="dfn" href="#animation-type">type</a> of the <a data-link-type="dfn" href="#concept-animation">animation</a> <a data-link-type="dfn" href="#associated-animation-of-an-animation-effect">associated with</a> the
-highest priority effect in the <a data-link-type="dfn" href="#effect-stack">effect stack</a> for a given property.
+effect with the highest composite order in the <a data-link-type="dfn" href="#effect-stack">effect stack</a> for a given
+property.
 By default, the specified value is added to the ‘Animation
 declarations’ level of the cascade (<a data-link-type="biblio" href="#biblio-css-cascade-3">[css-cascade-3]</a>).</p>
 
@@ -7341,8 +7350,8 @@ declarations’ level of the cascade (<a data-link-type="biblio" href="#biblio-c
    <div class="informative-bg"><em>This section is non-normative</em>
 
 
-    <p>For example, if the highest priority effect is associated with a
-‘CSS transition’-type animation, the <a data-link-type="dfn" href="#composited-value">composited value</a>
+    <p>For example, if the effect with the highest composite order is associated with
+a ‘CSS transition’-type animation, the <a data-link-type="dfn" href="#composited-value">composited value</a>
 will be added to ‘Transition declarations’ level of the cascade.</p>
 
 </div>
@@ -7797,7 +7806,7 @@ associated with this <a data-link-type="dfn" href="#timeline">timeline</a> that 
       
 
 
-      <p>The returned list is sorted using the prioritization described
+      <p>The returned list is sorted using the composite order described
 for the associated <a data-link-type="dfn" href="#concept-animation">animations</a> of effects in <a class="sectionRef" href="#the-effect-stack">§4.3.2 The effect stack</a>.</p>
       
 
@@ -7808,7 +7817,7 @@ that have yet to be processed.</p>
       
 
 
-      <p class="issue" id="issue-7650a456"><a class="self-link" href="#issue-7650a456"></a> Both this method and <code class="idl"><a data-link-type="idl" href="#dom-animatable-getanimations">getAnimations()</a></code> on the
+      <p class="issue" id="issue-8748c168"><a class="self-link" href="#issue-8748c168"></a> Both this method and <code class="idl"><a data-link-type="idl" href="#dom-animatable-getanimations">getAnimations()</a></code> on the
        <code class="idl"><a data-link-type="idl" href="#animatable">Animatable</a></code> interface require retaining forwards-filling
        <a data-link-type="dfn" href="#animation-effect">animation effects</a> and their <a data-link-type="dfn" href="#concept-animation">animations</a>
        such that a document that
@@ -7880,7 +7889,7 @@ API by the <code class="idl"><a data-link-type="idl" href="#animation">Animation
 
     <pre class="idl">[<a class="idl-code" data-link-type="constructor" href="#dom-animation-animation">Constructor</a> (optional <a data-link-type="idl-name" href="#animationeffectreadonly">AnimationEffectReadOnly</a>? <a class="idl-code" data-link-type="argument" href="#dom-animation-animation-effect-timeline-effect">effect</a> = null,
               optional <a data-link-type="idl-name" href="#animationtimeline">AnimationTimeline</a>? <a class="idl-code" data-link-type="argument" href="#dom-animation-animation-effect-timeline-timeline">timeline</a> = null)]
-interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animation">Animation<a class="self-link" href="#animation"></a></dfn> : <a data-link-type="idl-name" href="http://dom.spec.whatwg.org/#eventtarget">EventTarget</a> {
+interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animation">Animation<a class="self-link" href="#animation"></a></dfn> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget">EventTarget</a> {
              attribute DOMString                <a class="idl-code" data-link-type="attribute" data-type="DOMString                " href="#dom-animation-id">id</a>;
              attribute <a data-link-type="idl-name" href="#animationeffectreadonly">AnimationEffectReadOnly</a>? <a class="idl-code" data-link-type="attribute" data-type="AnimationEffectReadOnly? " href="#dom-animation-effect">effect</a>;
              attribute <a data-link-type="idl-name" href="#animationtimeline">AnimationTimeline</a>?       <a class="idl-code" data-link-type="attribute" data-type="AnimationTimeline?       " href="#dom-animation-timeline">timeline</a>;
@@ -8381,7 +8390,7 @@ this <a data-link-type="dfn" href="#animation-effect">animation effect</a>.</p>
 
         
         <div>
-         <pre class="example lang-javascript highlight" id="example-54d13182"><span class="nx">effect</span><span class="p">.</span><span class="nx">before</span><span class="p">(</span><span class="nx">effect</span><span class="p">);</span> <span class="c1">// throws HierarchyRequestError</span></pre>
+         <pre class="example lang-javascript" id="example-54d13182"><a class="self-link" href="#example-54d13182"></a>effect.before(effect); // throws HierarchyRequestError</pre>
         </div>
 </div>
        
@@ -9841,7 +9850,7 @@ object with all members set to their default values.</p>
 the value of the member of the same name on <var>timing input</var>.</p>
 
 
-         <p class="issue" id="issue-c3c8f282"><a class="self-link" href="#issue-c3c8f282"></a> Make a constructor for <code class="idl"><a data-link-type="idl" href="#animationeffecttimingreadonly">AnimationEffectTimingReadOnly</a></code> and call
+         <p class="issue" id="issue-c84185b9"><a class="self-link" href="#issue-c84185b9"></a> Make a constructor for <code class="idl"><a data-link-type="idl" href="#animationeffecttimingreadonly">AnimationEffectTimingReadOnly</a></code> and call
 that here.</p>
 
 
@@ -10177,7 +10186,7 @@ argument</a>.</p>
           
 
 
-          <p class="issue" id="issue-1bf79fb0"><a class="self-link" href="#issue-1bf79fb0"></a> Why doesn’t this take a <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code>?</p>
+          <p class="issue" id="issue-e94c80f2"><a class="self-link" href="#issue-e94c80f2"></a> Why doesn’t this take a <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code>?</p>
           
 </dl>
 </div>
@@ -10403,7 +10412,7 @@ dictionary values.</p>
              
 
 
-             <div class="issue" id="issue-3d6469de"><a class="self-link" href="#issue-3d6469de"></a>
+             <div class="issue" id="issue-c754b7f7"><a class="self-link" href="#issue-c754b7f7"></a>
 
 
               <p>Applying this procedure here means that offsets are fixed and
@@ -10529,18 +10538,18 @@ a number of approaches to creating a new <code class="idl"><a data-link-type="id
 seconds can be constructed as follows:</p>
 
 
-     <pre class="example lang-javascript highlight" id="example-7a28f33c"><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="mi">3000</span><span class="p">);</span></pre>
+     <pre class="example lang-javascript" id="example-7a28f33c"><a class="self-link" href="#example-7a28f33c"></a>var effect = new KeyframeEffect(elem, { left: '100px' }, 3000);</pre>
 
 
      <p>The second parameter, representing the list of keyframes, may
 specify multiple properties.</p>
 
 
-     <pre class="example lang-javascript highlight" id="example-3435c024"><span class="c1">// Specify multiple properties at once</span>
-<span class="kd">var</span> <span class="nx">effectA</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span><span class="p">,</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'300px'</span> <span class="p">},</span> <span class="mi">3000</span><span class="p">);</span>
+     <pre class="example lang-javascript" id="example-3435c024"><a class="self-link" href="#example-3435c024"></a>// Specify multiple properties at once
+var effectA = new KeyframeEffect(elem, { left: '100px', top: '300px' }, 3000);
 
-<span class="c1">// Specify multiple frames</span>
-<span class="kd">var</span> <span class="nx">effectB</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">[</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'300px'</span> <span class="p">}</span> <span class="p">],</span> <span class="mi">3000</span><span class="p">);</span></pre>
+// Specify multiple frames
+var effectB = new KeyframeEffect(elem, [ { left: '100px' }, { left: '300px' } ], 3000);</pre>
 
 
      <p>The third parameter, representing the animation’s timing, may
@@ -10550,8 +10559,8 @@ as the <a data-link-type="dfn" href="#start-delay">start delay</a>, an <code cla
 be used, as follows:</p>
 
 
-     <pre class="example lang-javascript highlight" id="example-140b8fe7"><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span>
-  <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">duration</span><span class="o">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="nx">delay</span><span class="o">:</span> <span class="mi">2000</span> <span class="p">});</span></pre>
+     <pre class="example lang-javascript" id="example-140b8fe7"><a class="self-link" href="#example-140b8fe7"></a>var effect =
+  new KeyframeEffect(elem, { left: '100px' }, { duration: 3000, delay: 2000 });</pre>
 
 
      <p>If the duration is not specified, the <a data-link-type="dfn" href="#intrinsic-iteration-duration">intrinsic iteration
@@ -10560,7 +10569,7 @@ It is possible to create an animation that simply sets a property
 without any interpolation as follows:</p>
 
 
-     <pre class="example lang-javascript highlight" id="example-5566bd96"><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">display</span><span class="o">:</span> <span class="s1">'none'</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">fill</span><span class="o">:</span> <span class="s1">'forwards'</span> <span class="p">});</span></pre>
+     <pre class="example lang-javascript" id="example-5566bd96"><a class="self-link" href="#example-5566bd96"></a>var effect = new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' });</pre>
 
 
 
@@ -10570,12 +10579,12 @@ For example, fading an element before switching
 follows,</p>
 
 
-     <pre class="example lang-javascript highlight" id="example-ae78ea69"><span class="k">new</span> <span class="nx">SequenceEffect</span><span class="p">(</span>
-  <span class="p">[</span>
-    <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span> <span class="mi">1000</span><span class="p">),</span>
-    <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">display</span><span class="o">:</span> <span class="s1">'none'</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">fill</span><span class="o">:</span> <span class="s1">'forwards'</span> <span class="p">})</span>
-  <span class="p">]</span>
-<span class="p">);</span></pre>
+     <pre class="example lang-javascript" id="example-ae78ea69"><a class="self-link" href="#example-ae78ea69"></a>new SequenceEffect(
+  [
+    new KeyframeEffect(elem, { opacity: 0 }, 1000),
+    new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' })
+  ]
+);</pre>
 
      <p>Having created a <code class="idl"><a data-link-type="idl" href="#keyframeeffect">KeyframeEffect</a></code>, it can be played by adding it to
 an <code class="idl"><a data-link-type="idl" href="#animation">Animation</a></code> and then playing that animation.
@@ -10584,7 +10593,7 @@ shortcut is more convenient since it performs these steps
 automatically. For example,</p>
 
 
-     <pre class="example lang-javascript highlight" id="example-a7ce65dd"><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="mi">3000</span><span class="p">);</span></pre>
+     <pre class="example lang-javascript" id="example-a7ce65dd"><a class="self-link" href="#example-a7ce65dd"></a>elem.animate({ left: '100px' }, 3000);</pre>
 
 </div>
 
@@ -11071,26 +11080,27 @@ warranted by the improvement in usability.</p>
 animations. For example:</p>
 
 
-     <pre class="example lang-javascript highlight" id="example-b418b276"><span class="c1">// The following two expressions produce the same result:</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'blue'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'green'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'red'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'yellow'</span> <span class="p">}</span> <span class="p">],</span> <span class="mi">2000</span><span class="p">);</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">color</span><span class="o">:</span> <span class="p">[</span> <span class="s1">'blue'</span><span class="p">,</span> <span class="s1">'green'</span><span class="p">,</span> <span class="s1">'red'</span><span class="p">,</span> <span class="s1">'yellow'</span> <span class="p">]</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
+     <pre class="example lang-javascript" id="example-b418b276"><a class="self-link" href="#example-b418b276"></a>// The following two expressions produce the same result:
+elem.animate([ { color: 'blue' },
+               { color: 'green' },
+               { color: 'red' },
+               { color: 'yellow' } ], 2000);
+elem.animate({ color: [ 'blue', 'green', 'red', 'yellow' ] }, 2000);
 
-<span class="c1">// Likewise, for a multi-property animation, the following two</span>
-<span class="c1">// expressions are equivalent:</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'blue'</span><span class="p">,</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'0px'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'green'</span><span class="p">,</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'-20px'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'red'</span><span class="p">,</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span>
-               <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'yellow'</span><span class="p">,</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'50px'</span><span class="p">}</span> <span class="p">],</span> <span class="mi">2000</span><span class="p">);</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">color</span><span class="o">:</span> <span class="p">[</span> <span class="s1">'blue'</span><span class="p">,</span> <span class="s1">'green'</span><span class="p">,</span> <span class="s1">'red'</span><span class="p">,</span> <span class="s1">'yellow'</span> <span class="p">],</span>
-               <span class="nx">left</span><span class="o">:</span> <span class="p">[</span> <span class="s1">'0px'</span><span class="p">,</span> <span class="s1">'-20px'</span><span class="p">,</span> <span class="s1">'100px'</span><span class="p">,</span> <span class="s1">'50px'</span> <span class="p">]</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
+// Likewise, for a multi-property animation, the following two
+// expressions are equivalent:
+elem.animate([ { color: 'blue', left: '0px' },
+               { color: 'green', left: '-20px' },
+               { color: 'red', left: '100px' },
+               { color: 'yellow', left: '50px'} ], 2000);
+elem.animate({ color: [ 'blue', 'green', 'red', 'yellow' ],
+               left: [ '0px', '-20px', '100px', '50px' ] }, 2000);
 
-<span class="c1">// Incidentally, the following three expressions are all equivalent:</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'red'</span> <span class="p">}</span> <span class="p">],</span> <span class="mi">1000</span><span class="p">);</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">color</span><span class="o">:</span> <span class="p">[</span> <span class="s1">'red'</span> <span class="p">]</span> <span class="p">},</span> <span class="mi">1000</span><span class="p">);</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'red'</span> <span class="p">},</span> <span class="mi">1000</span><span class="p">);</span></pre>
+// Incidentally, the following three expressions are all equivalent:
+elem.animate([ { color: 'red' } ], 1000);
+elem.animate({ color: [ 'red' ] }, 1000);
+elem.animate({ color: 'red' }, 1000);
+</pre>
 
 </div>
 
@@ -11224,12 +11234,13 @@ multiple times.</p>
 
      <p>For example:</p>
 
-     <pre class="example lang-javascript highlight" id="example-1db77dc4"><span class="kd">var</span> <span class="nx">keyframes</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SharedKeyframeList</span><span class="p">([</span>
- <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span><span class="p">,</span> <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">'red'</span> <span class="p">},</span>
- <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'200px'</span><span class="p">,</span> <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">'green'</span><span class="p">,</span> <span class="nx">offset</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">},</span>
- <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'400px'</span><span class="p">,</span> <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">'blue'</span> <span class="p">}</span> <span class="p">]);</span>
-<span class="kd">var</span> <span class="nx">player1</span> <span class="o">=</span> <span class="nx">element1</span><span class="p">.</span><span class="nx">animate</span><span class="p">(</span><span class="nx">keyframes</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">player2</span> <span class="o">=</span> <span class="nx">element2</span><span class="p">.</span><span class="nx">animate</span><span class="p">(</span><span class="nx">keyframes</span><span class="p">,</span> <span class="p">{</span> <span class="nx">duration</span><span class="o">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="nx">delay</span><span class="o">:</span> <span class="mi">1000</span> <span class="p">});</span></pre>
+     <pre class="example lang-javascript" id="example-1db77dc4"><a class="self-link" href="#example-1db77dc4"></a>var keyframes = new SharedKeyframeList([
+ { left: '100px', backgroundColor: 'red' },
+ { left: '200px', backgroundColor: 'green', offset: 0.4 },
+ { left: '400px', backgroundColor: 'blue' } ]);
+var player1 = element1.animate(keyframes, 1000);
+var player2 = element2.animate(keyframes, { duration: 1000, delay: 1000 });
+</pre>
 
 </div>
 
@@ -11436,7 +11447,7 @@ as the <var>timeline</var> argument.</p>
 
     
        <div>
-        <pre class="example lang-javascript highlight" id="example-c4879eae"><span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span></pre>
+        <pre class="example lang-javascript" id="example-c4879eae"><a class="self-link" href="#example-c4879eae"></a>var animation = elem.animate({ opacity: 0 }, 2000);</pre>
        </div>
        
 
@@ -11446,9 +11457,9 @@ as the <var>timeline</var> argument.</p>
 
     
        <div>
-        <pre class="example lang-javascript highlight" id="example-5618e801"><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">effect</span><span class="p">,</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">ownerDocument</span><span class="p">.</span><span class="nx">timeline</span><span class="p">);</span>
-<span class="nx">animation</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span></pre>
+        <pre class="example lang-javascript" id="example-5618e801"><a class="self-link" href="#example-5618e801"></a>var effect = new KeyframeEffect(elem, { opacity: 0 }, 2000);
+var animation = new Animation(effect, elem.ownerDocument.timeline);
+animation.play();</pre>
        </div>
        
 
@@ -11500,7 +11511,7 @@ contains at least one <a data-link-type="dfn" href="#animation-effect">animation
 <a data-link-type="dfn" href="#animation-effect">animation effects</a> which are associated with the
 same <a data-link-type="dfn" href="#concept-animation">animation</a>, the corresponding <code class="idl"><a data-link-type="idl" href="#animation">Animation</a></code>
 object will still only appear in the returned list once.
-The returned list is sorted using the prioritization described
+The returned list is sorted using the composite order described
 for the associated <a data-link-type="dfn" href="#concept-animation">animations</a> of effects in <a class="sectionRef" href="#the-effect-stack">§4.3.2 The effect stack</a>.</p>
        
 
@@ -11573,7 +11584,7 @@ interface <a data-link-type="biblio" href="#biblio-dom">[DOM]</a> is extended as
     <p>This allows the following kind of usage.</p>
 
 
-    <pre class="example lang-javascript highlight" id="example-3abce906"><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'red'</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span></pre>
+    <pre class="example lang-javascript" id="example-3abce906"><a class="self-link" href="#example-3abce906"></a>elem.animate({ color: 'red' }, 2000);</pre>
 
 
 
@@ -11603,11 +11614,11 @@ interface.</p>
 
 
     <pre class="idl">[<a class="idl-code" data-link-type="constructor" href="#dom-animationplaybackevent-animationplaybackevent">Constructor</a> (DOMString <dfn class="idl-code" data-dfn-for="AnimationPlaybackEvent/AnimationPlaybackEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-type">type<a class="self-link" href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-type"></a></dfn>, optional <a data-link-type="idl-name" href="#dictdef-animationplaybackeventinit">AnimationPlaybackEventInit</a> <dfn class="idl-code" data-dfn-for="AnimationPlaybackEvent/AnimationPlaybackEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-eventinitdict">eventInitDict<a class="self-link" href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-eventinitdict"></a></dfn>)]
-interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animationplaybackevent">AnimationPlaybackEvent<a class="self-link" href="#animationplaybackevent"></a></dfn> : <a data-link-type="idl-name" href="http://dom.spec.whatwg.org/#event">Event</a> {
+interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animationplaybackevent">AnimationPlaybackEvent<a class="self-link" href="#animationplaybackevent"></a></dfn> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event">Event</a> {
     readonly attribute double? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="double? " href="#dom-animationplaybackevent-currenttime">currentTime</a>;
     readonly attribute double? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="double? " href="#dom-animationplaybackevent-timelinetime">timelineTime</a>;
 };
-dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-animationplaybackeventinit">AnimationPlaybackEventInit<a class="self-link" href="#dictdef-animationplaybackeventinit"></a></dfn> : <a data-link-type="idl-name" href="http://dom.spec.whatwg.org/#dictdef-eventinit">EventInit</a> {
+dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-animationplaybackeventinit">AnimationPlaybackEventInit<a class="self-link" href="#dictdef-animationplaybackeventinit"></a></dfn> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#dictdef-eventinit">EventInit</a> {
     double? <a class="idl-code" data-default="null" data-link-type="dict-member" data-type="double? " href="#dom-animationplaybackeventinit-currenttime">currentTime</a> = null;
     double? <a class="idl-code" data-default="null" data-link-type="dict-member" data-type="double? " href="#dom-animationplaybackeventinit-timelinetime">timelineTime</a> = null;
 };
@@ -11685,9 +11696,9 @@ the model immediately.</p>
 
     
        <div>
-        <pre class="example lang-javascript highlight" id="example-7901be6c"><span class="c1">// Initially animation.effect.computedTiming.localTime is 3000</span>
-<span class="nx">animation</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">+=</span> <span class="mi">2000</span><span class="p">;</span>
-<span class="nx">alert</span><span class="p">(</span><span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">computedTiming</span><span class="p">.</span><span class="nx">localTime</span><span class="p">);</span> <span class="c1">// Displays ‘5000’</span></pre>
+        <pre class="example lang-javascript" id="example-7901be6c"><a class="self-link" href="#example-7901be6c"></a>// Initially animation.effect.computedTiming.localTime is 3000
+animation.currentTime += 2000;
+alert(animation.effect.computedTiming.localTime); // Displays ‘5000’</pre>
        </div>
        
 
@@ -11712,9 +11723,9 @@ incorporated in the value returned.</p>
 
     
        <div>
-        <pre class="example lang-javascript highlight" id="example-414d118c"><span class="c1">// Set opacity to 0 immediately</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">fill</span><span class="o">:</span> <span class="s1">'forwards'</span> <span class="p">});</span>
-<span class="nx">alert</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">getComputedStyle</span><span class="p">(</span><span class="nx">elem</span><span class="p">).</span><span class="nx">opacity</span><span class="p">);</span> <span class="c1">// Displays ‘0’</span></pre>
+        <pre class="example lang-javascript" id="example-414d118c"><a class="self-link" href="#example-414d118c"></a>// Set opacity to 0 immediately
+elem.animate({ opacity: 0 }, { fill: 'forwards' });
+alert(window.getComputedStyle(elem).opacity); // Displays ‘0’</pre>
        </div>
        
 
@@ -11728,9 +11739,9 @@ animated values as shown below.</p>
 
     
        <div>
-        <pre class="example lang-javascript highlight" id="example-cc0c97f3"><span class="c1">// Set width to 0 immediately</span>
-<span class="nx">rect</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">width</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">fill</span><span class="o">:</span> <span class="s1">'forwards'</span> <span class="p">});</span>
-<span class="nx">alert</span><span class="p">(</span><span class="nx">rect</span><span class="p">.</span><span class="nx">width</span><span class="p">.</span><span class="nx">animVal</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// Displays ‘100’</span></pre>
+        <pre class="example lang-javascript" id="example-cc0c97f3"><a class="self-link" href="#example-cc0c97f3"></a>// Set width to 0 immediately
+rect.animate({ width: '100px' }, { fill: 'forwards' });
+alert(rect.width.animVal.value); // Displays ‘100’</pre>
        </div>
        
 
@@ -11750,11 +11761,11 @@ completed during regular <a data-link-type="dfn" href="#sampling">sampling</a>.<
 
     
        <div>
-        <pre class="example lang-javascript highlight" id="example-3f1fe701"><span class="kd">var</span> <span class="nx">timesCalled</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="nx">timesCalled</span><span class="o">++</span><span class="p">;</span>
-<span class="p">},</span> <span class="mi">10000</span><span class="p">);</span>
-<span class="nx">alert</span><span class="p">(</span><span class="nx">timesCalled</span><span class="p">);</span> <span class="c1">// Displays ‘0’</span></pre>
+        <pre class="example lang-javascript" id="example-3f1fe701"><a class="self-link" href="#example-3f1fe701"></a>var timesCalled = 0;
+elem.animate(function() {
+  timesCalled++;
+}, 10000);
+alert(timesCalled); // Displays ‘0’</pre>
        </div>
        
 
@@ -11779,10 +11790,10 @@ applying animation.</p>
 
     
        <div>
-        <pre class="example lang-javascript highlight" id="example-aea58e96"><span class="c1">// Fade the opacity with fallback for browsers that don’t</span>
-<span class="c1">// support Element.animate</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">opacity</span> <span class="o">=</span> <span class="s1">'0'</span><span class="p">;</span>
-<span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">1</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">}</span> <span class="p">],</span> <span class="mi">500</span><span class="p">);</span></pre>
+        <pre class="example lang-javascript" id="example-aea58e96"><a class="self-link" href="#example-aea58e96"></a>// Fade the opacity with fallback for browsers that don’t
+// support Element.animate
+elem.style.opacity = '0';
+elem.animate([ { opacity: 1 }, { opacity: 0 } ], 500);</pre>
        </div>
        
 
@@ -11813,10 +11824,10 @@ will return the same value as shown in the following example.</p>
 
     
        <div>
-        <pre class="example lang-javascript highlight" id="example-967d9ac7"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">timeline</span><span class="p">.</span><span class="nx">currentTime</span><span class="p">;</span>
-<span class="c1">// ... many lines of code ...</span>
-<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">timeline</span><span class="p">.</span><span class="nx">currentTime</span><span class="p">;</span>
-<span class="nx">alert</span><span class="p">(</span><span class="nx">b</span> <span class="o">-</span> <span class="nx">a</span><span class="p">);</span> <span class="c1">// Displays 0</span></pre>
+        <pre class="example lang-javascript" id="example-967d9ac7"><a class="self-link" href="#example-967d9ac7"></a>var a = document.timeline.currentTime;
+// ... many lines of code ...
+var b = document.timeline.currentTime;
+alert(b - a); // Displays 0</pre>
        </div>
        
 
@@ -11851,10 +11862,10 @@ and animation frame callbacks use the time recorded at the start of the
 
     
        <div>
-        <pre class="example lang-javascript highlight" id="example-2bc7b370"><span class="nb">window</span><span class="p">.</span><span class="nx">requestAnimationFrame</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">sampleTime</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">// Displays ‘0’</span>
-  <span class="nx">alert</span><span class="p">(</span><span class="nx">sampleTime</span> <span class="o">-</span> <span class="nb">document</span><span class="p">.</span><span class="nx">timeline</span><span class="p">.</span><span class="nx">currentTime</span><span class="p">);</span>
-<span class="p">});</span></pre>
+        <pre class="example lang-javascript" id="example-2bc7b370"><a class="self-link" href="#example-2bc7b370"></a>window.requestAnimationFrame(function(sampleTime) {
+  // Displays ‘0’
+  alert(sampleTime - document.timeline.currentTime);
+});</pre>
        </div>
        
 </dl>
@@ -12493,9 +12504,9 @@ time</a><span>, in §3.5.14</span>
    <li><a data-link-type="biblio" href="#biblio-dom-ls">[dom-ls]</a> defines the following terms:
     <ul>
      <li><a href="https://dom.spec.whatwg.org/#interface-element">Element</a>
-     <li><a href="http://dom.spec.whatwg.org/#event">Event</a>
-     <li><a href="http://dom.spec.whatwg.org/#dictdef-eventinit">EventInit</a>
-     <li><a href="http://dom.spec.whatwg.org/#eventtarget">EventTarget</a>
+     <li><a href="https://dom.spec.whatwg.org/#event">Event</a>
+     <li><a href="https://dom.spec.whatwg.org/#dictdef-eventinit">EventInit</a>
+     <li><a href="https://dom.spec.whatwg.org/#eventtarget">EventTarget</a>
     </ul>
    <li><a data-link-type="biblio" href="#biblio-html">[HTML]</a> defines the following terms:
     <ul>
@@ -12524,7 +12535,7 @@ time</a><span>, in §3.5.14</span>
    <dt id="biblio-svg2"><a class="self-link" href="#biblio-svg2"></a>[SVG2]
    <dd>Nikos Andronikos; et al. <a href="http://www.w3.org/TR/SVG2/">Scalable Vector Graphics (SVG) 2</a>. 9 July 2015. WD. URL: <a href="http://www.w3.org/TR/SVG2/">http://www.w3.org/TR/SVG2/</a>
    <dt id="biblio-webidl"><a class="self-link" href="#biblio-webidl"></a>[WebIDL]
-   <dd>Cameron McCormack. <a href="http://www.w3.org/TR/WebIDL/">Web IDL</a>. 19 April 2012. CR. URL: <a href="http://www.w3.org/TR/WebIDL/">http://www.w3.org/TR/WebIDL/</a>
+   <dd>Cameron McCormack; Boris Zbarsky. <a href="http://www.w3.org/TR/WebIDL-1/">WebIDL Level 1</a>. 4 August 2015. WD. URL: <a href="http://www.w3.org/TR/WebIDL-1/">http://www.w3.org/TR/WebIDL-1/</a>
    <dt id="biblio-css-cascade-3"><a class="self-link" href="#biblio-css-cascade-3"></a>[CSS-CASCADE-3]
    <dd>Elika Etemad; Tab Atkins Jr.. <a href="http://www.w3.org/TR/css-cascade-3/">CSS Cascading and Inheritance Level 3</a>. 16 April 2015. CR. URL: <a href="http://www.w3.org/TR/css-cascade-3/">http://www.w3.org/TR/css-cascade-3/</a>
    <dt id="biblio-css-overflow-3"><a class="self-link" href="#biblio-css-overflow-3"></a>[CSS-OVERFLOW-3]
@@ -12534,7 +12545,7 @@ time</a><span>, in §3.5.14</span>
    <dt id="biblio-dom"><a class="self-link" href="#biblio-dom"></a>[DOM]
    <dd>Anne van Kesteren; et al. <a href="http://www.w3.org/TR/dom/">W3C DOM4</a>. 18 June 2015. LCWD. URL: <a href="http://www.w3.org/TR/dom/">http://www.w3.org/TR/dom/</a>
    <dt id="biblio-dom-ls"><a class="self-link" href="#biblio-dom-ls"></a>[DOM-LS]
-   <dd>Document Object Model URL: <a href="http://dom.spec.whatwg.org/">http://dom.spec.whatwg.org/</a>
+   <dd>Document Object Model URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
    <dt id="biblio-html5"><a class="self-link" href="#biblio-html5"></a>[HTML5]
    <dd>Ian Hickson; et al. <a href="http://www.w3.org/TR/html5/">HTML5</a>. 28 October 2014. REC. URL: <a href="http://www.w3.org/TR/html5/">http://www.w3.org/TR/html5/</a>
    <dt id="biblio-media-frags"><a class="self-link" href="#biblio-media-frags"></a>[MEDIA-FRAGS]
@@ -12574,7 +12585,7 @@ interface <a href="#documenttimeline">DocumentTimeline</a> : <a data-link-type="
 
 [<a class="idl-code" data-link-type="constructor" href="#dom-animation-animation">Constructor</a> (optional <a data-link-type="idl-name" href="#animationeffectreadonly">AnimationEffectReadOnly</a>? <a class="idl-code" data-link-type="argument" href="#dom-animation-animation-effect-timeline-effect">effect</a> = null,
               optional <a data-link-type="idl-name" href="#animationtimeline">AnimationTimeline</a>? <a class="idl-code" data-link-type="argument" href="#dom-animation-animation-effect-timeline-timeline">timeline</a> = null)]
-interface <a href="#animation">Animation</a> : <a data-link-type="idl-name" href="http://dom.spec.whatwg.org/#eventtarget">EventTarget</a> {
+interface <a href="#animation">Animation</a> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget">EventTarget</a> {
              attribute DOMString                <a class="idl-code" data-link-type="attribute" data-type="DOMString                " href="#dom-animation-id">id</a>;
              attribute <a data-link-type="idl-name" href="#animationeffectreadonly">AnimationEffectReadOnly</a>? <a class="idl-code" data-link-type="attribute" data-type="AnimationEffectReadOnly? " href="#dom-animation-effect">effect</a>;
              attribute <a data-link-type="idl-name" href="#animationtimeline">AnimationTimeline</a>?       <a class="idl-code" data-link-type="attribute" data-type="AnimationTimeline?       " href="#dom-animation-timeline">timeline</a>;
@@ -12777,11 +12788,11 @@ partial interface <a class="idl-code" data-link-type="interface" href="https://h
 <a data-link-type="idl-name" href="https://drafts.csswg.org/cssom-1/#pseudoelement">PseudoElement</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
 
 [<a class="idl-code" data-link-type="constructor" href="#dom-animationplaybackevent-animationplaybackevent">Constructor</a> (DOMString <a href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-type">type</a>, optional <a data-link-type="idl-name" href="#dictdef-animationplaybackeventinit">AnimationPlaybackEventInit</a> <a href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-eventinitdict">eventInitDict</a>)]
-interface <a href="#animationplaybackevent">AnimationPlaybackEvent</a> : <a data-link-type="idl-name" href="http://dom.spec.whatwg.org/#event">Event</a> {
+interface <a href="#animationplaybackevent">AnimationPlaybackEvent</a> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event">Event</a> {
     readonly attribute double? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="double? " href="#dom-animationplaybackevent-currenttime">currentTime</a>;
     readonly attribute double? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="double? " href="#dom-animationplaybackevent-timelinetime">timelineTime</a>;
 };
-dictionary <a href="#dictdef-animationplaybackeventinit">AnimationPlaybackEventInit</a> : <a data-link-type="idl-name" href="http://dom.spec.whatwg.org/#dictdef-eventinit">EventInit</a> {
+dictionary <a href="#dictdef-animationplaybackeventinit">AnimationPlaybackEventInit</a> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#dictdef-eventinit">EventInit</a> {
     double? <a class="idl-code" data-default="null" data-link-type="dict-member" data-type="double? " href="#dom-animationplaybackeventinit-currenttime">currentTime</a> = null;
     double? <a class="idl-code" data-default="null" data-link-type="dict-member" data-type="double? " href="#dom-animationplaybackeventinit-timelinetime">timelineTime</a> = null;
 };
@@ -13118,7 +13129,7 @@ feedback</a>).<a href="#issue-d0344606"> ↵ </a></div>
        We may need to revise this definition (previously these methods
        only returned animations whose <a data-link-type="dfn" href="#target-effect">target effect</a> was
        <a data-link-type="dfn" href="#current">current</a>) or provide a loophole for implementations to discard
-       old animations in such conditions.<a href="#issue-7650a456"> ↵ </a></div>
+       old animations in such conditions.<a href="#issue-8748c168"> ↵ </a></div>
    <div class="issue"> This behavior is intended to prevent authors for relying
 on the <code>currentTime</code> while an animation is waiting to pause
 but is also somewhat confusing.<a href="#issue-b9772448"> ↵ </a></div>
@@ -13126,9 +13137,9 @@ but is also somewhat confusing.<a href="#issue-b9772448"> ↵ </a></div>
    <div class="issue"> This interface needs a constructor.<a href="#issue-f6fa9df9"> ↵ </a></div>
    <div class="issue"> This interface needs a constructor.<a href="#issue-f6fa9df90"> ↵ </a></div>
    <div class="issue"> Make a constructor for <code class="idl"><a data-link-type="idl" href="#animationeffecttimingreadonly">AnimationEffectTimingReadOnly</a></code> and call
-that here.<a href="#issue-c3c8f282"> ↵ </a></div>
+that here.<a href="#issue-c84185b9"> ↵ </a></div>
    <div class="issue"> Replace this with a <code>frames</code> attribute.<a href="#issue-8e94dcc4"> ↵ </a></div>
-   <div class="issue"> Why doesn’t this take a <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code>?<a href="#issue-1bf79fb0"> ↵ </a></div>
+   <div class="issue"> Why doesn’t this take a <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code>?<a href="#issue-e94c80f2"> ↵ </a></div>
    <div class="issue">
 
 
@@ -13167,7 +13178,7 @@ does spacing and merging.</p>
       
 </ul>
     
-<a href="#issue-3d6469de"> ↵ </a>
+<a href="#issue-c754b7f7"> ↵ </a>
    </div>
    <div class="issue"> The procedure for spacing probably needs to be refactored
 to just take a sequence of keyframes and a spacing mode.<a href="#issue-ad080607"> ↵ </a></div>
