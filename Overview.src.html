@@ -6451,7 +6451,7 @@ Mutable <a>keyframe effects</a> are represented by the
 
 <pre class='idl'>
 [Constructor (Animatable? target,
-              (PropertyIndexedKeyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
+              (PropertyIndexedKeyframes or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
               optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
     readonly attribute Animatable?                 target;
@@ -6463,14 +6463,14 @@ interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
 };
 
 [Constructor (Animatable? target,
-              (PropertyIndexedKeyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
+              (PropertyIndexedKeyframes or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
               optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffect : KeyframeEffectReadOnly {
     inherit attribute Animatable?                 target;
     inherit attribute IterationCompositeOperation iterationComposite;
     inherit attribute CompositeOperation          composite;
     inherit attribute DOMString                   spacing;
-    void setFrames ((PropertyIndexedKeyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames);
+    void setFrames ((PropertyIndexedKeyframes or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames);
 };
 <!-- @ifdef INCLUDE_GROUPS -->
 KeyframeEffect implements AnimationEffectMutable;
@@ -6541,7 +6541,7 @@ KeyframeEffect implements AnimationEffectMutable;
         for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)"
         lt="frames"></dfn><dfn argument
         for="KeyframeEffect/KeyframeEffect(target, frames, options)"
-        lt="frames">(PropertyIndexedKeyframe or sequence&lt;Keyframe&gt;) frames</dfn>
+        lt="frames">(PropertyIndexedKeyframes or sequence&lt;Keyframe&gt;) frames</dfn>
     ::  The set of <a>keyframes</a> to use.
 
     :   <dfn argument
@@ -6675,7 +6675,7 @@ KeyframeEffect implements AnimationEffectMutable;
 
         *   {{SharedKeyframeList}} objects being replaced
             with the set of {{Keyframe}} objects referred to by the shared list,
-        *   {{PropertyIndexedKeyframe}} objects being expanded into a sequence
+        *   {{PropertyIndexedKeyframes}} objects being expanded into a sequence
             of {{Keyframe}} objects, and
         *   Invalid or unsupported properties being removed.
 
@@ -6687,13 +6687,13 @@ KeyframeEffect implements AnimationEffectMutable;
     Issue: Replace this with a <code>frames</code> attribute.
 
 :   <dfn method for=KeyframeEffect lt='setFrames(frames)'>
-    void setFrames((PropertyIndexedKeyframe or sequence&lt;Keyframe&gt;) frames)</dfn>
+    void setFrames((PropertyIndexedKeyframes or sequence&lt;Keyframe&gt;) frames)</dfn>
 ::  Replaces the set of <a>keyframes</a> that make up this effect.
 
     <div class="parameters">
 
     :   <dfn argument for="KeyframeEffect/setFrames" lt="frames">frames</dfn>
-    ::  A {{PropertyIndexedKeyframe}} object or sequence of {{Keyframe}} objects
+    ::  A {{PropertyIndexedKeyframes}} object or sequence of {{Keyframe}} objects
         used to replace the set of <a>keyframes</a> that make up this effect.
 
         On calling, the implementation must perform the validation defined
@@ -6759,7 +6759,7 @@ verified and normalized according to the following procedure.
 Note that this occurs <em>after</em> converting to IDL types including the
 specific processing defined to <a>convert an ECMAScript object to an IDL
 Keyframe object</a> or <a lt="convert an ECMAScript object to
-an IDL PropertyIndexedKeyframe object">PropertyIndexedKeyframe object</a>.
+an IDL PropertyIndexedKeyframes object">PropertyIndexedKeyframes object</a>.
 
 The result of this procedure is a <dfn>normalized sequence of {{Keyframe}}
 objects</dfn> which forms the input for calculating <a>effect values</a>
@@ -6774,7 +6774,7 @@ section></a>).
 1.  Normalization depends on the type of <var>frames</var> as follows:
 
     <div class='switch'>
-    :   If <var>frames</var> is a {{PropertyIndexedKeyframe}} object,
+    :   If <var>frames</var> is a {{PropertyIndexedKeyframes}} object,
     ::
 
         1.  Let <var>expanded keyframe list</var> initially be an empty list.
@@ -7088,7 +7088,7 @@ properties:
 </div>
 
 Since much of the processing for {{Keyframe}} objects is shared with
-{{PropertyIndexedKeyframe}} objects, we define a generic procedure to
+{{PropertyIndexedKeyframes}} objects, we define a generic procedure to
 <dfn>convert an ECMAScript keyframe-like object to an IDL keyframe</dfn>
 that takes the following parameters:
 
@@ -7245,17 +7245,18 @@ a keyframe-like object</a> with the following parameter assignments:
 *   <var>allow offset</var> &ndash; true
 *   <var>allow list values</var> &ndash; false
 
-<h3 id="the-propertyindexedkeyframe-dictionary">The <code>PropertyIndexedKeyframe</code> dictionary</h3>
+<h3 id="the-propertyindexedkeyframe-dictionary">The
+  <code>PropertyIndexedKeyframes</code> dictionary</h3>
 
-Keyframe lists can also be specified using a {{PropertyIndexedKeyframe}}
+Keyframe lists can also be specified using a {{PropertyIndexedKeyframes}}
 dictionary type which provides a convenient syntax for specifying a sequence
 of values for each property.
 
-{{PropertyIndexedKeyframe}} objects are expanded into a sequence of {{Keyframe}}
-objects using the procedure defined in <a href="#processing-a-frames-argument"
-section></a>.
+{{PropertyIndexedKeyframes}} objects are expanded into a sequence of
+{{Keyframe}} objects using the procedure defined in <a
+href="#processing-a-frames-argument" section></a>.
 
-Unlike {{Keyframe}} objects, {{PropertyIndexedKeyframe}} objects do not permit
+Unlike {{Keyframe}} objects, {{PropertyIndexedKeyframes}} objects do not permit
 <a>keyframe offsets</a> to be specified.
 
 Issue: This feature is gated on implementation experience&mdash;it is currently
@@ -7298,7 +7299,7 @@ this type is defined in
 No handling is defined for other languages.
 
 <pre class='idl'>
-dictionary PropertyIndexedKeyframe {
+dictionary PropertyIndexedKeyframes {
     // ... property-value and property-valuelist pairs ...
     DOMString           easing = "linear";
     CompositeOperation? composite = null;
@@ -7307,7 +7308,7 @@ dictionary PropertyIndexedKeyframe {
 
 <div class='members'>
 
-:   <dfn dict-member for=PropertyIndexedKeyframe>easing</dfn>
+:   <dfn dict-member for=PropertyIndexedKeyframes>easing</dfn>
 ::  The <a>timing function</a> used to transform the progress of time
     between any two adjacent keyframes defined by this dictionary.
 
@@ -7315,7 +7316,7 @@ dictionary PropertyIndexedKeyframe {
     is identical to that defined for the <code>easing</code> attribute
     of the {{AnimationEffectTiming}} interface.
 
-:   <dfn dict-member for=PropertyIndexedKeyframe>composite</dfn>
+:   <dfn dict-member for=PropertyIndexedKeyframes>composite</dfn>
 ::  The <a>keyframe-specific composite operation</a> used to combine the
     values specified by any keyframe defined by this dictionary with the
     appropriate <a>underlying value</a>.
@@ -7326,16 +7327,16 @@ dictionary PropertyIndexedKeyframe {
 </div>
 
 <h4 id="processing-propertyindexedkeyframe-objects">
-Processing <code>PropertyIndexedKeyframe</code> objects</h4>
+Processing <code>PropertyIndexedKeyframes</code> objects</h4>
 
 The procedure to <dfn>convert an ECMAScript object to an IDL
-PropertyIndexedKeyframe object</dfn> with parameter <var>keyframe input</var>
+PropertyIndexedKeyframes object</dfn> with parameter <var>keyframe input</var>
 is simply the result of applying the procedure to <a
 lt="convert an ECMAScript keyframe-like object to an IDL keyframe">convert
 a keyframe-like object</a> with the following parameter assignments:
 
 *   <var>keyframe input</var> &ndash; as provided
-*   <var>&lt;&lt;OutputType&gt;&gt;</var> &ndash; {{PropertyIndexedKeyframe}}
+*   <var>&lt;&lt;OutputType&gt;&gt;</var> &ndash; {{PropertyIndexedKeyframes}}
 *   <var>allow offset</var> &ndash; false
 *   <var>allow list values</var> &ndash; true
 
@@ -7385,7 +7386,7 @@ var player2 = element2.animate(keyframes, { duration: 1000, delay: 1000 });
 </div>
 
 <pre class='idl'>
-[Constructor ((PropertyIndexedKeyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames)]
+[Constructor ((PropertyIndexedKeyframes or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames)]
 interface SharedKeyframeList {
 };
 </pre>
@@ -7476,7 +7477,7 @@ the {{Animatable}} interface.
 <pre class='idl'>
 [NoInterfaceObject]
 interface Animatable {
-    Animation           animate ((PropertyIndexedKeyframe or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
+    Animation           animate ((PropertyIndexedKeyframes or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
                                  optional (double or KeyframeAnimationOptions) options);
     sequence&lt;Animation&gt; getAnimations ();
 };
