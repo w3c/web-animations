@@ -71,7 +71,7 @@
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/Icons/w3c_home" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Web Animations</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2015-09-24">24 September 2015</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2015-09-28">28 September 2015</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1069,8 +1069,11 @@ animation.ready.then(function() {
 animation.play();</pre>
    </div>
    <h4 class="heading settled" data-level="3.5.10" id="playing-an-animation-section"><span class="secno">3.5.10. </span><span class="content">Playing an animation</span><a class="self-link" href="#playing-an-animation-section"></a></h4>
-   <p>The procedure to <dfn data-dfn-type="dfn" data-noexport="" id="play-an-animation">play an animation<a class="self-link" href="#play-an-animation"></a></dfn>, <var>animation</var>, is as
-follows:</p>
+   <p>The procedure to <dfn data-dfn-type="dfn" data-noexport="" id="play-an-animation">play an animation<a class="self-link" href="#play-an-animation"></a></dfn>, <var>animation</var>, given
+a flag <var>auto-rewind</var>, is as follows:</p>
+   <p class="note" role="note">Note: The <var>auto-rewind</var> flag is provided for other specifications
+that build on this model but do not require the rewinding behavior, such
+as CSS Animations <a data-link-type="biblio" href="#biblio-css3-animations">[CSS3-ANIMATIONS]</a>.</p>
    <ol>
     <li data-md="">
      <p>Let <var>aborted pause</var> be a boolean flag that is true if <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task">pending pause task</a>, and false otherwise.</p>
@@ -1083,7 +1086,8 @@ condition from the following, if any:</p>
      <div class="switch">
       <dl>
        <dt data-md="">
-        <p>If <a data-link-type="dfn" href="#animation-playback-rate">animation playback rate</a> > 0 and <em>either</em> <var>animation</var>’s:</p>
+        <p>If <a data-link-type="dfn" href="#animation-playback-rate">animation playback rate</a> > 0,
+the <var>auto-rewind</var> flag is true and <em>either</em> <var>animation</var>’s:</p>
         <ul>
          <li data-md="">
           <p><a data-link-type="dfn" href="#current-time">current time</a> is <a data-link-type="dfn" href="#unresolved">unresolved</a>, or</p>
@@ -1095,7 +1099,8 @@ condition from the following, if any:</p>
        <dd data-md="">
         <p>Set <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold time</a> to zero.</p>
        <dt data-md="">
-        <p>If <a data-link-type="dfn" href="#animation-playback-rate">animation playback rate</a> &lt; 0 and <em>either</em> <var>animation</var>’s:</p>
+        <p>If <a data-link-type="dfn" href="#animation-playback-rate">animation playback rate</a> &lt; 0,
+the <var>auto-rewind</var> flag is true and <em>either</em> <var>animation</var>’s:</p>
         <ul>
          <li data-md="">
           <p><a data-link-type="dfn" href="#current-time">current time</a> is <a data-link-type="dfn" href="#unresolved">unresolved</a>, or</p>
@@ -1532,7 +1537,7 @@ associated <a data-link-type="dfn" href="#timeline">timeline</a> is <a data-link
     the <a data-link-type="dfn" href="#current-ready-promise">current ready promise</a> when we do the compensatory
     seek despite the fact that we are most likely not exiting the <a data-link-type="dfn" href="#pending-play-state">pending play state</a>. </div>
     <li data-md="">
-     <p>Run the steps to <a data-link-type="dfn" href="#play-an-animation">play an animation</a> for <var>animation</var>.</p>
+     <p>Run the steps to <a data-link-type="dfn" href="#play-an-animation">play an animation</a> for <var>animation</var> with the <var>auto-rewind</var> flag set to true.</p>
    </ol>
    <h4 class="heading settled" data-level="3.5.19" id="play-states"><span class="secno">3.5.19. </span><span class="content">Play states</span><a class="self-link" href="#play-states"></a></h4>
    <p>An <a data-link-type="dfn" href="#concept-animation">animation</a> may be described as being in one of the following <dfn data-dfn-type="dfn" data-lt="play state" data-noexport="" id="play-state">play states<a class="self-link" href="#play-state"></a></dfn> for each of which, a 
@@ -3818,7 +3823,8 @@ rate</a> is zero, or if this animation’s <a data-link-type="dfn" href="#animat
        <p><dfn class="idl-code" data-dfn-for="Animation" data-dfn-type="method" data-export="" data-lt="play()" id="dom-animation-play">void play()<a class="self-link" href="#dom-animation-play"></a></dfn></p>
       <dd data-md="">
        <p>Unpauses the animation and rewinds if it has finished playing using
-the procedure to <a data-link-type="dfn" href="#play-an-animation">play an animation</a> for this object.</p>
+the procedure to <a data-link-type="dfn" href="#play-an-animation">play an animation</a> for this object
+with the <var>auto-rewind</var> flag set to true.</p>
       <dt data-md="">
        <p><dfn class="idl-code" data-dfn-for="Animation" data-dfn-type="method" data-export="" data-lt="pause()" id="dom-animation-pause">void pause()<a class="self-link" href="#dom-animation-pause"></a></dfn></p>
       <dd data-md="">
@@ -5072,7 +5078,7 @@ as the <var>timeline</var> argument.</p>
         <li data-md="">
          <p>Assign the value of the <code>id</code> member of <var>options</var> to <var>animation</var>’s <code class="idl"><a data-link-type="idl" href="#dom-animation-id">id</a></code> attribute.</p>
         <li data-md="">
-         <p>Run the procedure to <a data-link-type="dfn" href="#play-an-animation">play an animation</a> for <var>animation</var>.</p>
+         <p>Run the procedure to <a data-link-type="dfn" href="#play-an-animation">play an animation</a> for <var>animation</var> with the <var>auto-rewind</var> flag set to true.</p>
         <li data-md="">
          <p>Return <var>animation</var>.</p>
        </ol>
@@ -5338,6 +5344,9 @@ animations.</p>
     <p>The following changes have been made since the <a href="https://www.w3.org/TR/2015/WD-web-animations-1-20150707/">7 July
 2015 Working Draft</a>:</p>
     <ul>
+     <li data-md="">
+      <p>Made the procedure to <a data-link-type="dfn" href="#play-an-animation">play an animation</a> take an <var>auto-rewind</var> flag so that CSS Animations can re-use this
+procedure without invoking the rewinding behavior.</p>
      <li data-md="">
       <p>Made the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a> conditionally check the <a data-link-type="dfn" href="#finished-play-state">finished state</a> in an asynchronous manner based on the <var>synchronously notify</var> flag.</p>
       <ul>
