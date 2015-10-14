@@ -504,12 +504,12 @@ elem.getAnimations().filter(
       <p>In order to test applications that make use of animations it is often
 impractical to wait for such animations to run to completion.
 Rather, it is desirable to seek the animations to specific times.</p>
-<pre class="example lang-javascript" id="example-b6887419"><a class="self-link" href="#example-b6887419"></a>// Seek to the half-way point of an animation and check that the opacity is 50%
+<pre class="example lang-javascript" id="example-adac3286"><a class="self-link" href="#example-adac3286"></a>// Seek to the half-way point of an animation and check that the opacity is 50%
 elem.getAnimations().forEach(
   animation =>
     animation.currentTime =
-      animation.effect.computedTiming.delay +
-      animation.effect.computedTiming.activeDuration / 2;
+      animation.effect.getComputedTiming().delay +
+      animation.effect.getComputedTiming().activeDuration / 2;
 );
 assert_equals(getComputedStyle(elem).opacity, 0.5);
 
@@ -4499,7 +4499,7 @@ Animations API by the <code class="idl"><a data-link-type="idl" href="#animation
 to be mutable must also implement the additional <code class="idl"><a data-link-type="idl" href="#animationeffectmutable">AnimationEffectMutable</a></code> interface.</p>
 <pre class="idl">interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animationeffectreadonly">AnimationEffectReadOnly<a class="self-link" href="#animationeffectreadonly"></a></dfn> {
     readonly attribute <a data-link-type="idl-name" href="#animationeffecttimingreadonly">AnimationEffectTimingReadOnly</a> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="AnimationEffectTimingReadOnly " href="#dom-animationeffectreadonly-timing">timing</a>;
-    readonly attribute <a data-link-type="idl-name" href="#dictdef-computedtimingproperties">ComputedTimingProperties</a>      <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="ComputedTimingProperties      " href="#dom-animationeffectreadonly-computedtiming">computedTiming</a>;
+    <a data-link-type="idl-name" href="#dictdef-computedtimingproperties">ComputedTimingProperties</a> <a class="idl-code" data-link-type="method" href="#dom-animationeffectreadonly-getcomputedtiming">getComputedTiming</a>();
     // Timing hierarchy
     readonly attribute <a data-link-type="idl-name" href="#groupeffectreadonly">GroupEffectReadOnly</a>?     <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="GroupEffectReadOnly?     " href="#dom-animationeffectreadonly-parent">parent</a>;
     readonly attribute <a data-link-type="idl-name" href="#animationeffectreadonly">AnimationEffectReadOnly</a>? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="AnimationEffectReadOnly? " href="#dom-animationeffectreadonly-previoussibling">previousSibling</a>;
@@ -4525,14 +4525,14 @@ apart from the timing model. </div>
        <p>Returns the input timing properties specified for this <a data-link-type="dfn" href="#animation-effect">animation effect</a>.
 This is comparable to the specified style on an Element, <code>elem.style</code>.</p>
       <dt data-md="">
-       <p><dfn class="idl-code" data-dfn-for="AnimationEffectReadOnly" data-dfn-type="attribute" data-export="" id="dom-animationeffectreadonly-computedtiming">computedTiming<a class="self-link" href="#dom-animationeffectreadonly-computedtiming"></a></dfn>, <span> of type <a data-link-type="idl-name" href="#dictdef-computedtimingproperties">ComputedTimingProperties</a>, readonly</span></p>
+       <p><dfn class="idl-code" data-dfn-for="AnimationEffectReadOnly" data-dfn-type="method" data-export="" id="dom-animationeffectreadonly-getcomputedtiming">getComputedTiming()<a class="self-link" href="#dom-animationeffectreadonly-getcomputedtiming"></a></dfn></p>
       <dd data-md="">
        <p>Returns the calculated timing properties for this <a data-link-type="dfn" href="#animation-effect">animation
 effect</a>.
 This is comparable to the computed style of an Element, <code>window.getComputedStyle(elem)</code>.</p>
-       <p>Although several of the attributes of the this object are common
-to the <code class="idl"><a data-link-type="idl" href="#animationeffecttimingreadonly">AnimationEffectTimingReadOnly</a></code> object returned by the <code class="idl"><a data-link-type="idl" href="#dom-animationeffectreadonly-timing">timing</a></code> attribute, the values of this object represent the values <em>after</em> applying the adjustments described by the <code class="idl"><a data-link-type="idl" href="#animationeffecttiming">AnimationEffectTiming</a></code> interface as being <cite>“for the purpose of timing model
-calculations”</cite>.</p>
+       <p>Although several of the attributes of the returned object are common
+to the <code class="idl"><a data-link-type="idl" href="#animationeffecttimingreadonly">AnimationEffectTimingReadOnly</a></code> object returned by the <code class="idl"><a data-link-type="idl" href="#dom-animationeffectreadonly-timing">timing</a></code> attribute, the values of return returning object represent the values <em>after</em> applying the adjustments described by the <code class="idl"><a data-link-type="idl" href="#animationeffecttiming">AnimationEffectTiming</a></code> interface as being <cite>“for the purpose
+of timing model calculations”</cite>.</p>
        <p><code>auto</code> values are also expanded as follows:</p>
        <ul>
         <li data-md="">
@@ -4818,7 +4818,7 @@ for the purpose of timing model calculations.</p>
     <p>The <code class="idl"><a data-link-type="idl" href="#dictdef-animationeffecttimingproperties">AnimationEffectTimingProperties</a></code> dictionary encapsulates the timing
 properties of an <code class="idl"><a data-link-type="idl" href="#animationeffectreadonly">AnimationEffectReadOnly</a></code> so that they can be set in bulk (as
 with the <code class="idl"><a data-link-type="idl" href="#dom-animation-animation">Animation()</a></code> constructor) or returned as a readonly snapshot (as
-with the <code class="idl"><a data-link-type="idl" href="#dom-animationeffectreadonly-computedtiming">computedTiming</a></code> attribute of the <code class="idl"><a data-link-type="idl" href="#animationeffectreadonly">AnimationEffectReadOnly</a></code> interface).</p>
+with the <code class="idl"><a data-link-type="idl" href="#dom-animationeffectreadonly-getcomputedtiming">getComputedTiming()</a></code> method of the <code class="idl"><a data-link-type="idl" href="#animationeffectreadonly">AnimationEffectReadOnly</a></code> interface).</p>
     <p><code class="idl"><a data-link-type="idl" href="#dictdef-animationeffecttimingproperties">AnimationEffectTimingProperties</a></code> is simply a dictionary-equivalent of the <code class="idl"><a data-link-type="idl" href="#animationeffecttiming">AnimationEffectTiming</a></code> interface.
 The meaning and acceptable values for each of its members are identical.</p>
 <pre class="idl">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-animationeffecttimingproperties">AnimationEffectTimingProperties<a class="self-link" href="#dictdef-animationeffecttimingproperties"></a></dfn> {
@@ -6266,9 +6266,9 @@ interface, the value returned when querying the
 animation’s <code>startTime</code> will reflect updated state of
 the model immediately.</p>
        <div>
-<pre class="example lang-javascript" id="example-7901be6c"><a class="self-link" href="#example-7901be6c"></a>// Initially animation.effect.computedTiming.localTime is 3000
+<pre class="example lang-javascript" id="example-47bc3fe6"><a class="self-link" href="#example-47bc3fe6"></a>// Initially animation.effect.getComputedTiming().localTime is 3000
 animation.currentTime += 2000;
-alert(animation.effect.computedTiming.localTime); // Displays ‘5000’</pre>
+alert(animation.effect.getComputedTiming().localTime); // Displays ‘5000’</pre>
        </div>
        <p>The same concept applies to more complex modifications of the
 Web Animations model such as adding and removing children from
@@ -6552,7 +6552,6 @@ a timeline</a><span>, in §3.6.1</span>
    <li><a href="#dictdef-computedkeyframe">ComputedKeyframe</a><span>, in §5.18</span>
    <li><a href="#computed-keyframe-offset">computed keyframe offset</a><span>, in §4.2.1</span>
    <li><a href="#dom-computedkeyframe-computedoffset">computedOffset</a><span>, in §5.18</span>
-   <li><a href="#dom-animationeffectreadonly-computedtiming">computedTiming</a><span>, in §5.5</span>
    <li><a href="#dictdef-computedtimingproperties">ComputedTimingProperties</a><span>, in §5.9</span>
    <li><a href="#conforming-scripted-web-animations-user-agent">conforming scripted Web Animations user agent</a><span>, in §8.2</span>
    <li><a href="#convert-an-ecmascript-keyframe-like-object-to-an-idl-keyframe">convert an ECMAScript keyframe-like object to an IDL keyframe</a><span>, in §5.16.1</span>
@@ -6688,6 +6687,7 @@ a keyframe</a><span>, in §4.2.1.1</span>
      <li><a href="#dom-animationtimeline-getanimations">method for AnimationTimeline</a><span>, in §5.2</span>
      <li><a href="#dom-animatable-getanimations">method for Animatable</a><span>, in §5.21</span>
     </ul>
+   <li><a href="#dom-animationeffectreadonly-getcomputedtiming">getComputedTiming()</a><span>, in §5.5</span>
    <li><a href="#dom-keyframeeffectreadonly-getframes">getFrames()</a><span>, in §5.13</span>
    <li><a href="#global-animation-list">global animation list</a><span>, in §3.5</span>
    <li><a href="#global-clock">global clock</a><span>, in §3.3</span>
@@ -7067,7 +7067,7 @@ enum <a href="#enumdef-animationplaystate">AnimationPlayState</a> { "idle", "pen
 
 interface <a href="#animationeffectreadonly">AnimationEffectReadOnly</a> {
     readonly attribute <a data-link-type="idl-name" href="#animationeffecttimingreadonly">AnimationEffectTimingReadOnly</a> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="AnimationEffectTimingReadOnly " href="#dom-animationeffectreadonly-timing">timing</a>;
-    readonly attribute <a data-link-type="idl-name" href="#dictdef-computedtimingproperties">ComputedTimingProperties</a>      <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="ComputedTimingProperties      " href="#dom-animationeffectreadonly-computedtiming">computedTiming</a>;
+    <a data-link-type="idl-name" href="#dictdef-computedtimingproperties">ComputedTimingProperties</a> <a class="idl-code" data-link-type="method" href="#dom-animationeffectreadonly-getcomputedtiming">getComputedTiming</a>();
     // Timing hierarchy
     readonly attribute <a data-link-type="idl-name" href="#groupeffectreadonly">GroupEffectReadOnly</a>?     <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="GroupEffectReadOnly?     " href="#dom-animationeffectreadonly-parent">parent</a>;
     readonly attribute <a data-link-type="idl-name" href="#animationeffectreadonly">AnimationEffectReadOnly</a>? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="AnimationEffectReadOnly? " href="#dom-animationeffectreadonly-previoussibling">previousSibling</a>;
