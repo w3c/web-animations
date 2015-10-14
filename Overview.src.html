@@ -174,8 +174,8 @@ elem.getAnimations().filter(
 elem.getAnimations().forEach(
   animation =&gt;
     animation.currentTime =
-      animation.effect.computedTiming.delay +
-      animation.effect.computedTiming.activeDuration / 2;
+      animation.effect.getComputedTiming().delay +
+      animation.effect.getComputedTiming().activeDuration / 2;
 );
 assert_equals(getComputedStyle(elem).opacity, 0.5);
 
@@ -5531,7 +5531,7 @@ interface.
 <pre class='idl'>
 interface AnimationEffectReadOnly {
     readonly attribute AnimationEffectTimingReadOnly timing;
-    readonly attribute ComputedTimingProperties      computedTiming;
+    ComputedTimingProperties getComputedTiming();
 <!-- @ifdef INCLUDE_GROUPS -->
 
     // Timing hierarchy
@@ -5567,19 +5567,19 @@ apart from the timing model.
     This is comparable to the specified style on an Element,
     <code>elem.style</code>.
 
-:   <dfn attribute for=AnimationEffectReadOnly>computedTiming</dfn>
+:   <dfn method for=AnimationEffectReadOnly>getComputedTiming()</dfn>
 ::  Returns the calculated timing properties for this <a>animation
     effect</a>.
     This is comparable to the computed style of an Element,
     <code>window.getComputedStyle(elem)</code>.
 
-    Although several of the attributes of the this object are common
+    Although several of the attributes of the returned object are common
     to the {{AnimationEffectTimingReadOnly}} object returned by the
     {{AnimationEffectReadOnly/timing}}
-    attribute, the values of this object represent the values <em>after</em>
-    applying the adjustments described by the {{AnimationEffectTiming}}
-    interface as being <cite>&ldquo;for the purpose of timing model
-    calculations&rdquo;</cite>.
+    attribute, the values of return returning object represent the values
+    <em>after</em> applying the adjustments described by the
+    {{AnimationEffectTiming}} interface as being <cite>&ldquo;for the purpose
+    of timing model calculations&rdquo;</cite>.
 
     <code>auto</code> values are also expanded as follows:
 
@@ -5939,7 +5939,7 @@ interface AnimationEffectTiming : AnimationEffectTimingReadOnly {
 The {{AnimationEffectTimingProperties}} dictionary encapsulates the timing
 properties of an {{AnimationEffectReadOnly}} so that they can be set in bulk (as
 with the {{Animation()}} constructor) or returned as a readonly snapshot (as
-with the {{AnimationEffectReadOnly/computedTiming}} attribute of the
+with the {{AnimationEffectReadOnly/getComputedTiming()}} method of the
 {{AnimationEffectReadOnly}} interface).
 
 {{AnimationEffectTimingProperties}} is simply a dictionary-equivalent of the
@@ -7704,9 +7704,9 @@ in this specification, the following invariants can be observed:
     the model immediately.
 
     <div><pre class="example lang-javascript">
-// Initially animation.effect.computedTiming.localTime is 3000
+// Initially animation.effect.getComputedTiming().localTime is 3000
 animation.currentTime += 2000;
-alert(animation.effect.computedTiming.localTime); // Displays &lsquo;5000&rsquo;</pre></div>
+alert(animation.effect.getComputedTiming().localTime); // Displays &lsquo;5000&rsquo;</pre></div>
 
 <!-- @ifdef INCLUDE_GROUPS -->
     The same concept applies to more complex modifications of the
@@ -7936,6 +7936,9 @@ The following changes have been made since the <a
 *   Made the {{Animatable/animate()}} method of the {{Animatable}} interface
     take a {{KeyframeAnimationOptions}} parameter so that the {{Animation/id}}
     of an {{Animation}} can be specified.
+*   Replaced the <code>computedTiming</code> parameter on the
+    {{AnimationEffectReadOnly}} interface with
+    a {{AnimationEffectReadOnly/getComputedTiming()}} method.
 
 <!-- @endif -->
 
