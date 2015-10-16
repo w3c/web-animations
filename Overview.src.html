@@ -26,7 +26,6 @@ ED: https://w3c.github.io/web-animations/level-2/
 Version history: https://github.com/w3c/web-animations/commits/master
 Level: <!-- @echo LEVEL -->
 Group: fxtf
-Issue Tracking: GitHub https://github.com/w3c/web-animations/issues
 Editor: Brian Birtles, Mozilla Japan, bbirtles@mozilla.com
 Editor: Shane Stephens, Google Inc, shans@google.com
 Editor: Alex Danilo, Google Inc, adanilo@google.com
@@ -6485,7 +6484,7 @@ Mutable <a>keyframe effects</a> are represented by the
 
 <pre class='idl'>
 [Constructor (Animatable? target,
-              (PropertyIndexedKeyframes or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
+              object? frames,
               optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
     readonly attribute Animatable?                 target;
@@ -6497,14 +6496,14 @@ interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
 };
 
 [Constructor (Animatable? target,
-              (PropertyIndexedKeyframes or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
+              object? frames,
               optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffect : KeyframeEffectReadOnly {
     inherit attribute Animatable?                 target;
     inherit attribute IterationCompositeOperation iterationComposite;
     inherit attribute CompositeOperation          composite;
     inherit attribute DOMString                   spacing;
-    void setFrames ((PropertyIndexedKeyframes or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames);
+    void setFrames (object? frames);
 };
 <!-- @ifdef INCLUDE_GROUPS -->
 KeyframeEffect implements AnimationEffectMutable;
@@ -6785,23 +6784,220 @@ dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
 <h4 id="processing-a-frames-argument">Processing a <code>frames</code>
 argument</h4>
 
-On each call to {{KeyframeEffect/setFrames()}}, the {{KeyframeEffectReadOnly()}}
-constructor, the {{KeyframeEffect()}} constructor, or the
-{{SharedKeyframeList()}}, the passed-in <code>frames</code> argument is
-verified and normalized according to the following procedure.
+<div class='informative-bg'><em>This section is non-normative</em>
 
-Note that this occurs <em>after</em> converting to IDL types including the
-specific processing defined to <a>convert an ECMAScript object to an IDL
-Keyframe object</a> or <a lt="convert an ECMAScript object to
-an IDL PropertyIndexedKeyframes object">PropertyIndexedKeyframes object</a>.
+The following methods all accept a set of keyframes as an argument:
 
-The result of this procedure is a <dfn>normalized sequence of {{Keyframe}}
-objects</dfn> which forms the input for calculating <a>effect values</a>
-(see <a href="#the-effect-value-of-a-keyframe-animation-effect"
-section></a>).
+* the {{KeyframeEffectReadOnly()}} constructor,
+* the {{KeyframeEffect()}} constructor,
+* the {{KeyframeEffect/setFrames()}} method on the {{KeyframeEffect}} interface,
+* the {{SharedKeyframeList()}} constructor, and
+* the {{Animatable/animate()}} method of the {{Animatable}} interface.
+
+This argument may be specified in the one of two forms as illustrated below.
+
+<div class='example'>
+<pre class='lang-javascript'>
+// The following two expressions produce the same result:
+elem.animate([ { color: 'blue' },
+               { color: 'green' },
+               { color: 'red' },
+               { color: 'yellow' } ], 2000);
+elem.animate({ color: [ 'blue', 'green', 'red', 'yellow' ] }, 2000);
+
+// Likewise, for a multi-property animation, the following two
+// expressions are equivalent:
+elem.animate([ { color: 'blue', left: '0px' },
+               { color: 'green', left: '-20px' },
+               { color: 'red', left: '100px' },
+               { color: 'yellow', left: '50px'} ], 2000);
+elem.animate({ color: [ 'blue', 'green', 'red', 'yellow' ],
+               left: [ '0px', '-20px', '100px', '50px' ] }, 2000);
+
+// Incidentally, the following three expressions are all equivalent:
+elem.animate([ { color: 'red' } ], 1000);
+elem.animate({ color: [ 'red' ] }, 1000);
+elem.animate({ color: 'red' }, 1000);
+</pre>
+</div>
+
+The type of this argument cannot be expressed in WebIDL since it relies on
+a partially-open dictionary type.
+
+Conceptually, the type of this argument is equivalent to the following:
+
+<pre class='lang-javascript'>
+dictionary PropertyIndexedKeyframes {
+    // ... property-value and property-valuelist pairs ...
+    DOMString           easing = "linear";
+};
+
+dictionary Keyframe {
+    // ... property-value pairs ...
+    double?             offset = null;
+    DOMString           easing = "linear";
+    CompositeOperation? composite;
+};
+
+typedef KeyframeArgument (PropertyIndexedKeyframes or
+                          sequence&lt;Keyframe&gt; or
+                          SharedKeyframeList);
+</pre>
+
+Since this type cannot be expressed in WebIDL, its processing is defined in
+prose following.
+</div>
+
+For each method that takes a <code>frames</code> argument, the
+<a>procedure to process a frames argument</a> is run on the input and
+the result of that procedure is retained.
+
+The <dfn>procedure to process a keyframe-like</dfn> object, takes two
+arguments:
+
+* an ECMAScript object, <var>keyframe input</var>, and
+* an <var>allow lists</var> boolean flag
+
+and returns a sequence of property-indexed keyframe objects using the following
+procedure:
+
+1.  Run the procedure using <a
+    href="http://heycam.github.io/webidl/#es-to-dictionary"
+    class="externalDFN">convert an ECMAScript value to a dictionary type</a>
+    [[!WEBIDL]] with <var>keyframe input</var> as the ECMAScript value,
+    and the dictionary type depending on the value of the <var>allow lists</var>
+    flag as follows:
+
+    <div class='switch'>
+    :   If <var>allow lists</var> is true,
+    ::  Use the following dictionary type:
+
+        <pre class='idl'>
+        dictionary BasePropertyIndexedKeyframe {
+            DOMString          easing = "linear";
+        };
+        </pre>
+
+    :   Otherwise,
+    ::  Use the following dictionary type,
+
+        <pre class='idl'>
+        dictionary BaseKeyframe {
+            double?            offset = null;
+            DOMString          easing = "linear";
+            CompositeOperation composite;
+        };
+        </pre>
+
+        Issue: Do we need null offsets or is it enough to just test for the
+        absence of the property?
+
+    </div>
+
+    Store the result of this procedure as <var>keyframe output</var>.
+
+1.  Build up a list of <var>animatable properties</var> as follows:
+
+    1.  Let <var>animatable properties</var> be a list of property
+        names and attribute names that can be animated by the
+        implementation.
+    1.  Convert each property name in <var>animatable properties</var>
+        to the equivalent IDL attribute by applying the <a
+        href="http://dev.w3.org/csswg/cssom/#css-property-to-idl-attribute">CSS
+        property to IDL attribute</a> algorithm [[!CSSOM]].
+    1.  If the user agent supports animation of the 'float'
+        CSS property, replace "float" in
+        <var>animatable properties</var> with "cssFloat".
+    1.  If the user agent supports animation of the <a
+        href="http://www.w3.org/TR/SVG2/pservers.html#StopElementOffsetAttribute"
+        class="externalDFN">offset</a> attribute
+        of <a href="http://www.w3.org/TR/SVG2/pservers.html#StopElement"
+          class="externalDFN">SVG stop elements</a> [[!SVG2]], replace "offset" in
+        <var>animatable properties</var> with "svgOffset".
+
+
+1.  Let <var>input properties</var> be the result of calling the <a
+    href="http://www.ecma-international.org/ecma-262/6.0/#sec-enumerableownnames">EnumerableOwnNames</a> operation with <var>keyframe input</var> as the object.
+
+1.  Make up a new list <var>additional properties</var> that consists of
+    all of the properties that are in <var>both</var> <var>input
+    properties</var> and <var>animatable properties</var>.
+
+1.  Sort <var>animation properties</var> in ascending order by the Unicode
+    codepoints that define each property name.
+
+1.  For each <var>property name</var> in <var>animation properties</var>,
+
+    1.  Let <var>raw value</var> be the result of calling the <a
+        href="http://www.ecma-international.org/ecma-262/6.0/#sec-ordinary-object-internal-methods-and-internal-slots-get-p-receiver">\[[Get]]</a>
+        internal method on <var>keyframe input</var>, with <var>property
+        name</var> as the property key and <var>keyframe input</var> as the
+        receiver.
+
+    1.  Convert <var>raw value</var> to a DOMString or sequence of DOMStrings
+        <var>property values</var> as follows:
+
+        <div class="switch">
+        :   If <var>allow lists</var> is true,
+        ::  Let <var>property values</var> be the result of converting <var>raw
+            value</var> to IDL type <code>(DOMString or
+            sequence&lt;DOMString&gt;)</code> using the <a
+            href="http://heycam.github.io/webidl/#dfn-convert-ecmascript-to-idl-value"
+            class="externalDFN">procedures
+            defined for converting an ECMAScript value to an IDL value</a>
+            [[!WEBIDL]].
+
+        :   Otherwise,
+        ::  Let <var>property values</var> be the result of converting <var>raw
+            value</var> to a DOMString using the <a
+            href="http://heycam.github.io/webidl/#es-DOMString"
+            class="externalDFN">procedure for converting an ECMAScript value to
+            a DOMString</a> [[!WEBIDL]].
+
+        </div>
+
+    1.  If <var>property values</var> is a single DOMString, replace
+        <var>property values</var> with a sequence of DOMstrings with the
+        original value of <var>property values</var> only element.
+
+    1.  Calculate the <var>normalized property name</var> as the result of the
+        first matching condition from the following:
+
+        <div class="switch">
+        :   If <var>property name</var> is the string "cssFloat",
+        ::  "float".
+
+        :   If <var>property name</var> is the string "svgOffset",
+        ::  "offset"
+
+        :   Otherwise,
+        ::  the result of applying the <a
+            href="http://dev.w3.org/csswg/cssom/#idl-attribute-to-css-property"
+            class="externalDFN">IDL attribute to CSS property</a> algorithm
+            [[!CSSOM]] to <var>property name</var>.
+
+        </div>
+
+    1.  Add a property to to <var>keyframe output</var> with <var>normalized
+        property name</var> as the property name, and <var>property values</var>
+        as the property value.
+
+1.  Return <var>keyframe output</var>.
+
+The <dfn>procedure to process a frames argument</dfn> takes a ECMAScript
+object, <var>object</var> as input and returns either a sequence of keyframes
+or a {{SharedKeyframeList}} object using the following procedure:
+
+1.  TBD
+
+    Note this needs to check for invalid CSS values and define how they are
+    parsed.
+
+
+<h4 id="computed-keyframes">Computed keyframes</h4>
 
 1.  If <var>frames</var> is a {{SharedKeyframeList}} object, then
-    return the <a>normalized sequence of Keyframe objects</a> established
+    return the normalized sequence of Keyframe objects established
     when the {{SharedKeyframeList}} object was constructed and abort
     this procedure.
 
@@ -7495,7 +7691,7 @@ the {{Animatable}} interface.
 <pre class='idl'>
 [NoInterfaceObject]
 interface Animatable {
-    Animation           animate ((PropertyIndexedKeyframes or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames,
+    Animation           animate (object? frames,
                                  optional (unrestricted double or KeyframeAnimationOptions) options);
     sequence&lt;Animation&gt; getAnimations ();
 };
