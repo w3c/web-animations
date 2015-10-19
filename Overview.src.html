@@ -93,21 +93,23 @@ The use cases for the programming interface include the following:
     regardless of whether they are defined by CSS Transitions, CSS Animations,
     SVG animations, or created directly using the programming interface.
 
-<pre class='example lang-javascript'>
+    <div class='example'>
+    <pre class='lang-javascript'>
 // Wait until all animations have finished before removing the element
 Promise.all(
   elem.getAnimations().map(animation =&gt; animation.finished)
 ).then(() =&gt; elem.remove());
-</pre>
+    </pre>
+    </div>
 
     Alternatively, applications may wish to query the playback state of
     animations without waiting.
 
-<pre class='example lang-javascript'>
+    <div class='example'><pre class='lang-javascript'>
 var isAnimating = elem.getAnimations().some(
   animation =&gt; animation.playState == 'running'
 );
-</pre>
+    </pre></div>
 
 :   Controlling running animations
 ::  It is sometimes useful to perform playback control on animations
@@ -116,12 +118,12 @@ var isAnimating = elem.getAnimations().some(
     displaying a modal dialog so that they do not distract the user's
     attention.
 
-<pre class='example lang-javascript'>
+    <div class='example'><pre class='lang-javascript'>
 // Pause all existing animations in the document
 document.timeline.getAnimations().forEach(
   animation =&gt; animation.pause()
 );
-</pre>
+    </pre></div>
 
 :   Creating animations from script
 ::  While it is possible to use ECMAScript to perform animation using
@@ -134,10 +136,10 @@ document.timeline.getAnimations().forEach(
     create animations from script that have the same behavior and performance
     characteristics as declarative animations.
 
-<pre class='example lang-javascript'>
+    <div class='example'><pre class='lang-javascript'>
 // Fade out quickly
 elem.animate({ transform: 'scale(0)', opacity: 0 }, 300);
-</pre>
+    </pre></div>
 
 :   Animation debugging
 ::  In a complex application, it may be difficult to determine how an
@@ -146,7 +148,7 @@ elem.animate({ transform: 'scale(0)', opacity: 0 }, 300);
     running animations to answer questions such as,
     &ldquo;Why is the opacity of this element changing?&rdquo;
 
-<pre class='example lang-javascript'>
+    <div class='example'><pre class='lang-javascript'>
 // Print the id of any opacity animations on elem
 elem.getAnimations().filter(
   animation =&gt;
@@ -155,12 +157,12 @@ elem.getAnimations().filter(
       frame =&gt; frame.hasOwnProperty('opacity')
     )
 ).forEach(animation =&gt; console.log(animation.id));
-</pre>
+    </pre></div>
 
     Likewise, in order to fine tune animations, it is often necessary to
     reduce their playback rate and replay them.
 
-<pre class='example lang-javascript'>
+    <div class='example'><pre class='lang-javascript'>
 // Slow down and replay any transform animations
 elem.getAnimations().filter(
   animation =&gt;
@@ -172,14 +174,14 @@ elem.getAnimations().filter(
   animation.currentTime = 0;
   animation.playbackRate = 0.5;
 });
-</pre>
+    </pre></div>
 
 :   Testing animations
 ::  In order to test applications that make use of animations it is often
     impractical to wait for such animations to run to completion.
     Rather, it is desirable to seek the animations to specific times.
 
-<pre class='example lang-javascript'>
+<div class='example'><pre class='lang-javascript'>
 // Seek to the half-way point of an animation and check that the opacity is 50%
 elem.getAnimations().forEach(
   animation =&gt;
@@ -198,7 +200,7 @@ requestAnimationFrame(() =&gt; {
   assert_equals(
     getComputedStyle(document.querySelector('#loading')).display, 'none');
 });
-</pre>
+</pre></div>
 
 <!-- @if LEVEL=2 -->
 <h3 id="changes-since-level-1">Changes since level 1</h3>
@@ -993,13 +995,13 @@ canceled (see <a href="#canceling-an-animation-section" section></a>).
     <code>play</code> and hence the <a>current ready promise</a> does
     not change.
 
-    <pre class='example lang-javascript'>
+    <div class='example'><pre class='lang-javascript'>
 animation.pause();
 animation.ready.then(function() {
   // Displays 'running'
   alert(animation.playState);
 });
-animation.play();</pre>
+animation.play();</pre></div>
 
 </div>
 
@@ -1418,12 +1420,12 @@ reverse the order of the two statements such that the
 To avoid this surprising behavior, notification about the finished state of
 an animation is typically performed asynchronously.
 
-<pre class='example lang-javascript'>
+<div class='example'><pre class='lang-javascript'>
 var animation = elem.animate({ left: '100px' }, 2000);
 animation.playbackRate = 2;
 animation.currentTime = 1000; // animation is now finished
 animation.effect.timing.iterationCount = 2; // animation is no longer finished
-</pre>
+</pre></div>
 
 The one exception to this asynchronous behavior is when the <a>finish an
 animation</a> procedure is performed (typically by calling the
@@ -1431,13 +1433,13 @@ animation</a> procedure is performed (typically by calling the
 the animation is clear so the notification about the finished state of the
 animation occurs synchronously as demonstrated below.
 
-<pre class='example lang-javascript'>
+<div class='example'><pre class='lang-javascript'>
 var animation = elem.animate({ left: '100px' }, 1000);
 animation.finish(); // finish event is queued immediately and finished promise
                     // is resolved despite the fact that the following statement
                     // causes the animation to leave the finished state
 animation.currentTime = 0;
-</pre>
+</pre></div>
 
 Note that like the procedure to <a>finish an animation</a>, 
 the procedure to <a>cancel an animation</a> similarly queues the
@@ -1691,7 +1693,7 @@ be converted from a <a lt="paused play state">paused</a>
 animation into a <a lt="finished play state">finished</a> animation
 without restarting by setting the <a>animation start time</a> such as below:
 
-<pre class='example lang-javascript'>
+<div class='example'><pre class='lang-javascript'>
 animation.effect.timing.duration = 5000;
 animation.currentTime = 4000;
 animation.pause();
@@ -1701,7 +1703,7 @@ animation.ready.then(function() {
   animation.startTime =
     document.timeline.currentTime - animation.currentTime * animation.playbackRate;
   alert(animation.playState); // Displays 'finished'
-});</pre>
+});</pre></div>
 
 </div>
 
@@ -4302,21 +4304,21 @@ time but instead to rely on some automatic spacing.
 
 For example, rather than typing:
 
-<pre class='example lang-javascript'>
+<div class='example'><pre class='lang-javascript'>
 elem.animate([ { color: 'blue', offset: 0 },
                { color: 'green', offset: 1/3 },
                { color: 'red', offset: 2/3 },
-               { color: 'yellow', offset: 1 } ], 2000);</pre>
+               { color: 'yellow', offset: 1 } ], 2000);</pre></div>
 
 It should be possible to type the following and allow the user agent
 to calculate the <a lt="keyframe offset">offset</a> of each
 keyframe:
 
-<pre class='example lang-javascript'>
+<div class='example'><pre class='lang-javascript'>
 elem.animate([ { color: 'blue' },
                { color: 'green' },
                { color: 'red' },
-               { color: 'yellow' } ], 2000);</pre>
+               { color: 'yellow' } ], 2000);</pre></div>
 
 Web Animations provides spacing modes for this purpose. The default
 spacing mode for keyframe effects is
@@ -4331,11 +4333,11 @@ animation.
 
 For example, consider the following animation:
 
-<pre class='example lang-javascript'>
+<div class='example'><pre class='lang-javascript'>
 elem.animate([ { left: '0px' },
                { left: '-20px' },
                { left: '100px' },
-               { left: '50px' } ], 1000);</pre>
+               { left: '50px' } ], 1000);</pre></div>
 
 The resulting value of the <span class="prop-name">left</span>
 property is illustrated below:
@@ -4356,12 +4358,12 @@ for each segment as indicated the varying slope of the graph.
 We can use the <a lt="paced keyframe spacing mode">paced</a>
 spacing mode as follows:
 
-<pre class='example lang-javascript'>
+<div class='example'><pre class='lang-javascript'>
 elem.animate([ { left: '0px' },
                { left: '-20px' },
                { left: '100px' },
                { left: '50px' } ],
-             { duration: 1000, spacing: "paced(left)" });</pre>
+             { duration: 1000, spacing: "paced(left)" });</pre></div>
 
 The result is illustrated below:
 
@@ -4380,12 +4382,12 @@ of the animation indicating a constant rate of change.
 It is also possible to combine fixed <a>keyframe offsets</a> with
 spacing modes as follows:
 
-<pre class='example lang-javascript'>
+<div class='example'><pre class='lang-javascript'>
 elem.animate([ { left: '0px' },
                { left: '-20px' },
                { left: '100px', offset: 0.5 },
                { left: '50px' } ],
-             { duration: 1000, spacing: "paced(left)" });</pre>
+             { duration: 1000, spacing: "paced(left)" });</pre></div>
 
 The result is illustrated below:
 
@@ -7179,19 +7181,19 @@ At its simplest, an {{KeyframeEffect}} object that changes the
 &lsquo;left&rsquo; property of <var>elem</var> to 100px over three
 seconds can be constructed as follows:
 
-<pre class='example lang-javascript'>
-var effect = new KeyframeEffect(elem, { left: '100px' }, 3000);</pre>
+<div class='example'><pre class='lang-javascript'>
+var effect = new KeyframeEffect(elem, { left: '100px' }, 3000);</pre></div>
 
 The second parameter, representing the list of keyframes, may
 specify multiple properties. (See <a href="#processing-a-frames-argument"
 section></a>.)
 
-<pre class='example lang-javascript'>
+<div class='example'><pre class='lang-javascript'>
 // Specify multiple properties at once
 var effectA = new KeyframeEffect(elem, { left: '100px', top: '300px' }, 3000);
 
 // Specify multiple frames
-var effectB = new KeyframeEffect(elem, [ { left: '100px' }, { left: '300px' } ], 3000);</pre>
+var effectB = new KeyframeEffect(elem, [ { left: '100px' }, { left: '300px' } ], 3000);</pre></div>
 
 The third parameter, representing the animation's timing, may
 simply be a number representing the <a>iteration duration</a> in
@@ -7199,9 +7201,9 @@ milliseconds as above, or, to specify further timing properties such
 as the <a>start delay</a>, an {{AnimationEffectTimingProperties}} object can
 be used, as follows:
 
-<pre class='example lang-javascript'>
+<div class='example'><pre class='lang-javascript'>
 var effect =
-  new KeyframeEffect(elem, { left: '100px' }, { duration: 3000, delay: 2000 });</pre>
+  new KeyframeEffect(elem, { left: '100px' }, { duration: 3000, delay: 2000 });</pre></div>
 
 <!-- @ifdef INCLUDE_GROUPS -->
 If the duration is not specified, the <a>intrinsic iteration
@@ -7213,8 +7215,8 @@ If the duration is not specified, a value of zero is used.
 It is possible to create an animation that simply sets a property
 without any interpolation as follows:
 
-<pre class='example lang-javascript'>
-var effect = new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' });</pre>
+<div class='example'><pre class='lang-javascript'>
+var effect = new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' });</pre></div>
 
 
 <!-- @ifdef INCLUDE_GROUPS -->
@@ -7223,13 +7225,13 @@ For example, fading an element before switching
 &lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
 follows,
 
-<pre class='example lang-javascript'>
+<div class='example'><pre class='lang-javascript'>
 new SequenceEffect(
   [
     new KeyframeEffect(elem, { opacity: 0 }, 1000),
     new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' })
   ]
-);</pre>
+);</pre></div>
 <!-- @endif -->
 
 Having created a {{KeyframeEffect}}, it can be played by adding it to
@@ -7239,8 +7241,8 @@ href="#extensions-to-the-element-interface"><code>Element.animate</code></a>
 shortcut is more convenient since it performs these steps
 automatically. For example,
 
-<pre class='example lang-javascript'>
-elem.animate({ left: '100px' }, 3000);</pre>
+<div class='example'><pre class='lang-javascript'>
+elem.animate({ left: '100px' }, 3000);</pre></div>
 
 </div>
 
@@ -7374,7 +7376,7 @@ warranted by the improvement in usability.
 Property-indexed keyframes make it easy to create regularly spaced
 animations. For example:
 
-<pre class='example lang-javascript'>
+<div class='example'><pre class='lang-javascript'>
 // The following two expressions produce the same result:
 elem.animate([ { color: 'blue' },
                { color: 'green' },
@@ -7395,7 +7397,7 @@ elem.animate({ color: [ 'blue', 'green', 'red', 'yellow' ],
 elem.animate([ { color: 'red' } ], 1000);
 elem.animate({ color: [ 'red' ] }, 1000);
 elem.animate({ color: 'red' }, 1000);
-</pre>
+</pre></div>
 
 </div>
 
@@ -7466,14 +7468,14 @@ can re-use the same {{Keyframe}}s without paying the cost of parsing them
 multiple times.
 
 For example:
-<pre class="example lang-javascript">
+<div class="example"><pre class="lang-javascript">
 var keyframes = new SharedKeyframeList([
  { left: '100px', backgroundColor: 'red' },
  { left: '200px', backgroundColor: 'green', offset: 0.4 },
  { left: '400px', backgroundColor: 'blue' } ]);
 var player1 = element1.animate(keyframes, 1000);
 var player2 = element2.animate(keyframes, { duration: 1000, delay: 1000 });
-</pre>
+</pre></div>
 
 </div>
 
@@ -7696,8 +7698,8 @@ Element implements Animatable;
 
 This allows the following kind of usage.
 
-<pre class="example lang-javascript">
-elem.animate({ color: 'red' }, 2000);</pre>
+<div class="example"><pre class="lang-javascript">
+elem.animate({ color: 'red' }, 2000);</pre></div>
 
 
 <h3 id="extensions-to-the-pseudoelement-interface">Extensions to the <code>PseudoElement</code> interface</h3>
@@ -7777,7 +7779,7 @@ in this specification, the following invariants can be observed:
     animation's <code>startTime</code> will reflect updated state of
     the model immediately.
 
-    <div><pre class="example lang-javascript">
+    <div class="example"><pre class="lang-javascript">
 // Initially animation.effect.getComputedTiming().localTime is 3000
 animation.currentTime += 2000;
 alert(animation.effect.getComputedTiming().localTime); // Displays &lsquo;5000&rsquo;</pre></div>
@@ -7796,7 +7798,7 @@ alert(animation.effect.getComputedTiming().localTime); // Displays &lsquo;5000&r
     element, the result of the new animation will be
     incorporated in the value returned.
 
-    <div><pre class="example lang-javascript">
+    <div class="example"><pre class="lang-javascript">
 // Set opacity to 0 immediately
 elem.animate({ opacity: 0 }, { fill: 'forwards' });
 alert(window.getComputedStyle(elem).opacity); // Displays &lsquo;0&rsquo;</pre></div>
@@ -7807,7 +7809,7 @@ alert(window.getComputedStyle(elem).opacity); // Displays &lsquo;0&rsquo;</pre><
     SVG 1.1 [[!SVG11]] defines an additional interface for querying
     animated values as shown below.
 
-    <div><pre class="example lang-javascript">
+    <div class="example"><pre class="lang-javascript">
 // Set width to 0 immediately
 rect.animate({ width: '100px' }, { fill: 'forwards' });
 alert(rect.width.animVal.value); // Displays &lsquo;100&rsquo;</pre></div>
@@ -7821,7 +7823,7 @@ alert(rect.width.animVal.value); // Displays &lsquo;100&rsquo;</pre></div>
     not be called until <em>after</em> the script block has
     completed during regular <a>sampling</a>.
 
-    <div><pre class="example lang-javascript">
+    <div class="example"><pre class="lang-javascript">
 var timesCalled = 0;
 elem.animate(function() {
   timesCalled++;
@@ -7841,7 +7843,7 @@ alert(timesCalled); // Displays &lsquo;0&rsquo;</pre></div>
     <em>only</em> the changes to specified style are rendered without
     applying animation.
 
-    <div><pre class="example lang-javascript">
+    <div class="example"><pre class="lang-javascript">
 // Fade the opacity with fallback for browsers that don't
 // support Element.animate
 elem.style.opacity = '0';
@@ -7864,7 +7866,7 @@ elem.animate([ { opacity: 1 }, { opacity: 0 } ], 500);</pre></div>
     a long block of code that is executed in the same script block
     will return the same value as shown in the following example.
 
-    <div><pre class="example lang-javascript">
+    <div class="example"><pre class="lang-javascript">
 var a = document.timeline.currentTime;
 // ... many lines of code ...
 var b = document.timeline.currentTime;
@@ -7891,7 +7893,7 @@ alert(b - a); // Displays 0</pre></div>
     and animation frame callbacks use the time recorded at the start of the
     <a>sample</a>, they should be equivalent.
 
-    <div><pre class="example lang-javascript">
+    <div class="example"><pre class="lang-javascript">
 window.requestAnimationFrame(function(sampleTime) {
   // Displays &lsquo;0&rsquo;
   alert(sampleTime - document.timeline.currentTime);
