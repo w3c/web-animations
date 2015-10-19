@@ -7308,7 +7308,7 @@ members map to the properties to be animated.
 At the time of writing, this kind of open-ended dictionary cannot
 be represented using WebIDL and hence special
 ECMAScript-specific handling for this type is defined in
-<a href="#processing-a-keyframe-object" section></a>.
+<a href="#processing-a-frames-argument" section></a>.
 No handling is defined for other languages.
 
 <pre class='idl'>
@@ -7350,166 +7350,6 @@ dictionary Keyframe {
     specified on the {{AnimationEffectReadOnly}} will be used.
 
 </div>
-
-<h4 id="processing-a-keyframe-object">Processing a <code>Keyframe</code> object</h4>
-
-<div class="note">
-
-Since accessing the properties of an ECMAScript user object can
-have side effects, the manner in which these properties is
-accessed is important.
-In light of this consideration the procedure for converting an
-ECMAScript object into an IDL {{Keyframe}} object has the following
-properties:
-
-*   Each property that is read, is read only once.
-*   Properties are read in a well-defined order.
-*   Properties corresponding to unsupported target properties or
-    attributes are not read.
-
-</div>
-
-Since much of the processing for {{Keyframe}} objects is shared with
-{{PropertyIndexedKeyframes}} objects, we define a generic procedure to
-<dfn>convert an ECMAScript keyframe-like object to an IDL keyframe</dfn>
-that takes the following parameters:
-
-*   a <var>keyframe input</var> object,
-*   an <var>&lt;&lt;OutputType&gt;&gt;</var> type,
-*   an <var>allow offsets</var> boolean flag, and
-*   an <var>allow lists</var> boolean flag.
-
-The procedure is as follows:
-
-1.  Let <var>keyframe result</var> be an <var>&lt;&lt;OutputType&gt;&gt;</var>
-    IDL object with the <code>offset</code>, <code>easing</code> and
-    <code>composite</code> attributes set to the default dictionary
-    values.
-1.  Create a list, <var>supported properties</var>, of property
-    names and attribute names that can be animated by the
-    implementation.
-1.  Convert each property name in <var>supported properties</var>
-    to the equivalent IDL attribute by applying the <a
-    href="http://dev.w3.org/csswg/cssom/#css-property-to-idl-attribute">CSS
-    property to IDL attribute</a> algorithm [[!CSSOM]].
-1.  If the user agent supports animation of the 'float'
-    CSS property, replace "float" in
-    <var>supported properties</var> with "cssFloat".
-1.  If the user agent supports animation of the <a
-    href="http://www.w3.org/TR/SVG2/pservers.html#StopElementOffsetAttribute"
-    class="externalDFN">offset</a> attribute
-    of <a href="http://www.w3.org/TR/SVG2/pservers.html#StopElement"
-      class="externalDFN">SVG stop elements</a> [[!SVG2]], replace "offset" in
-    <var>supported properties</var> with "svgOffset".
-1.  Let <var>animation properties</var> be an empty sequence.
-1.  Use the internal \[[Enumerate]] operation on <var>keyframe
-    input</var> to iterate over its properties.
-    For each <var>property</var> perform the step corresponding to
-    the first matching condition from below, if any.
-
-    <div class="switch">
-
-    :   If <var>property</var> is a case-sensitive match for
-        the string "offset",</dt>
-    ::  If <var>allow offsets</var> is false,
-        <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
-        <span class=exceptionname>TypeError</span> and abort this procedure.
-
-        Otherwise, let <var>offset value</var> be the result of calling the
-        \[[Get]] internal method on <var>keyframe input</var> with property name
-        "offset".
-        If <var>offset value</var> is null, set the <code>offset</code>
-        member of <var>keyframe result</var> to null.
-        Otherwise, set it to the result of applying the <a
-        href="http://www.w3.org/TR/WebIDL/#es-double">procedure for
-        converting an ECMAScript value into an IDL double</a>
-        [[!WEBIDL]] to <var>offset value</a>.
-
-    :   If <var>property</var> is a case-sensitive match for
-        the string "easing",</dt>
-    ::  Set the <code>easing</code> member of <var>keyframe
-        result</var> to the result of applying the <a
-        href="http://www.w3.org/TR/WebIDL/#es-DOMString">procedure
-        for converting an ECMAScript value to an IDL
-        DOMString value</a> [[!WEBIDL]] with the <a
-        href="http://www.w3.org/TR/WebIDL/#TreatNullAs">[TreatNullAs=EmptyString]</a>
-        annotation in effect, to the result of calling
-        the \[[Get]] internal method of <var>keyframe
-        input</var> with property name "easing".
-
-        If the resulting string does not conform to the
-        grammar defined for the {{AnimationEffectTiming/easing}}
-        attribute of the {{AnimationEffectTiming}} interface or
-        is not supported by the implementation, then
-        set the <code>easing</code> of <var>keyframe result</var>
-        to the string &ldquo;linear&rdquo;.
-
-    :   If <var>property</var> is a case-sensitive match for
-        the string "composite",</dt>
-    ::  Let <var>composite value</var> be the result of calling the \[[Get]]
-        internal method on <var>keyframe input</var> with property name
-        "composite".
-        If <var>composite value</var> is null, set the <code>composite</code>
-        member of <var>keyframe result</var> to null.
-        Otherwise, set it to the result of applying the <a
-        href="http://www.w3.org/TR/WebIDL/#es-enumeration">procedure for
-        converting an ECMAScript value to an IDL enumeration type</a>
-        [[!WEBIDL]] with <a>CompositeOperation</a> as the enumeration type,
-        to <var>composite value</a>.
-
-    :   Otherwise, if <var>property</var> also exists in
-        <var>supported properties</var> based on a case-sensitive
-        comparison,</dt>
-    ::  append <var>property</var> to <var>animation
-        properties</var>.</dd>
-
-    </div>
-
-1.  For user agents that support both a prefixed and an
-    unprefixed version of some CSS properties, remove all
-    prefixed properties from <var>animation properties</var>
-    where the corresponding unprefixed version is also
-    present in <var>animation properties</var>.
-
-    Issue: I'd like to remove this step. Prefixes are history.
-
-1.  Sort <var>animation properties</var> lexicographically by
-    the Unicode codepoints that define each element.
-1.  Iterate over <var>animation properties</var> from beginning to
-    end and for each <var>name</var> in <var>animation
-    properties</var> add a new member pair to <var>keyframe
-    result</var> as follows:
-
-    *   <em>member key</em>: the result of applying the
-        the <a
-        href="http://dev.w3.org/csswg/cssom/#idl-attribute-to-css-property">IDL
-        attribute to CSS property</a> algorithm [[!CSSOM]] to
-        <var>name</var> unless <var>name</var> is
-        a case-sensitive match for the string "cssFloat" in
-        which case use the string "float".
-    *   <em>member value</em>: the result of <a
-        href="http://heycam.github.io/webidl/#dfn-convert-ecmascript-to-idl-value">converting</a>
-        the value returned from the \[[Get]] method of <var>keyframe input</var>
-        with property name, <var>name</var>.
-        The IDL type to use for conversion is <code>(DOMString or
-        sequence&lt;DOMString&gt;)</code> if <var>allow lists</var> is
-        true, and <code>DOMString</code> otherwise.
-        In both cases the conversion is performed with the <a
-        href="http://www.w3.org/TR/WebIDL/#TreatNullAs">[TreatNullAs=EmptyString]</a>
-        annotation in effect.
-
-1.  Return <var>keyframe result</var>.
-
-The procedure to <dfn>convert an ECMAScript object to an IDL
-Keyframe object</dfn> with parameter <var>keyframe input</var>
-is simply the result of applying the procedure to <a
-lt="convert an ECMAScript keyframe-like object to an IDL keyframe">convert
-a keyframe-like object</a> with the following parameter assignments:
-
-*   <var>keyframe input</var> &ndash; as provided
-*   <var>&lt;&lt;OutputType&gt;&gt;</var> &ndash; {{Keyframe}}
-*   <var>allow offset</var> &ndash; true
-*   <var>allow list values</var> &ndash; false
 
 <h3 id="the-propertyindexedkeyframe-dictionary">The
   <code>PropertyIndexedKeyframes</code> dictionary</h3>
@@ -7561,7 +7401,7 @@ elem.animate({ color: 'red' }, 1000);
 
 As with {{Keyframe}} dictionaries, special ECMAScript-specific handling for
 this type is defined in
-<a href="#processing-propertyindexedkeyframe-objects" section></a>.
+<a href="#processing-a-frames-argument" section></a>.
 No handling is defined for other languages.
 
 <pre class='idl'>
@@ -7591,20 +7431,6 @@ dictionary PropertyIndexedKeyframes {
     specified on the {{AnimationEffectReadOnly}} will be used.
 
 </div>
-
-<h4 id="processing-propertyindexedkeyframe-objects">
-Processing <code>PropertyIndexedKeyframes</code> objects</h4>
-
-The procedure to <dfn>convert an ECMAScript object to an IDL
-PropertyIndexedKeyframes object</dfn> with parameter <var>keyframe input</var>
-is simply the result of applying the procedure to <a
-lt="convert an ECMAScript keyframe-like object to an IDL keyframe">convert
-a keyframe-like object</a> with the following parameter assignments:
-
-*   <var>keyframe input</var> &ndash; as provided
-*   <var>&lt;&lt;OutputType&gt;&gt;</var> &ndash; {{PropertyIndexedKeyframes}}
-*   <var>allow offset</var> &ndash; false
-*   <var>allow list values</var> &ndash; true
 
 <h3 id="the-computedkeyframe-dictionary">The <code>ComputedKeyframe</code> dictionary</h3>
 
