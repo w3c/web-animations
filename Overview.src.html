@@ -42,6 +42,17 @@ Ignored Terms: double, boolean, DOMString, unsigned long, unrestricted double, (
 urlPrefix: http://www.w3.org/TR/hr-time/; type: interface; text: DOMHighResTimeStamp
 url: https://dom.spec.whatwg.org/#interface-element; type: interface; text: Element; spec: dom-ls
 url: https://html.spec.whatwg.org/#document; type: interface; text: Document; spec: html
+urlPrefix: https://heycam.github.io/webidl/#dfn-; type: dfn; spec: webidl
+    text: platform object
+    text: throw
+url: https://heycam.github.io/webidl/#dfn-platform-object; type: dfn; text: platform object; spec: webidl
+urlPrefix: http://www.ecma-international.org/ecma-262/6.0/#sec-; type: dfn; spec: ecma-262
+    text: GetIterator
+    text: GetMethod
+    text: IteratorStep
+    text: IteratorValue
+    text: ReturnIfAbrupt
+    text: well known symbols
 </pre>
 <pre class="link-defaults">
 spec:dom-ls; type:interface; text:EventTarget
@@ -6852,14 +6863,15 @@ For each method that takes a <code>frames</code> argument, the
 <a>procedure to process a frames argument</a> is run on the input and
 the result of that procedure is retained.
 
-The <dfn>procedure to process a keyframe-like</dfn> object, takes two
+The <dfn>procedure to process a keyframe-like object</dfn>, takes two
 arguments:
 
 * an ECMAScript object, <var>keyframe input</var>, and
 * an <var>allow lists</var> boolean flag
 
-and returns a sequence of property-indexed keyframe objects using the following
-procedure:
+and returns a map from either property names to DOMString values if <var>allow
+lists</var> is false, or a from property names to sequences of DOMString values
+otherwise, using the following procedure:
 
 1.  Run the procedure using <a
     href="http://heycam.github.io/webidl/#es-to-dictionary"
@@ -6947,6 +6959,10 @@ procedure:
             defined for converting an ECMAScript value to an IDL value</a>
             [[!WEBIDL]].
 
+            If <var>property values</var> is a single DOMString, replace
+            <var>property values</var> with a sequence of DOMStrings with the
+            original value of <var>property values</var> as the only element.
+
         :   Otherwise,
         ::  Let <var>property values</var> be the result of converting <var>raw
             value</var> to a DOMString using the <a
@@ -6955,10 +6971,6 @@ procedure:
             a DOMString</a> [[!WEBIDL]].
 
         </div>
-
-    1.  If <var>property values</var> is a single DOMString, replace
-        <var>property values</var> with a sequence of DOMstrings with the
-        original value of <var>property values</var> only element.
 
     1.  Calculate the <var>normalized property name</var> as the result of the
         first matching condition from the following:
@@ -6984,17 +6996,134 @@ procedure:
 
 1.  Return <var>keyframe output</var>.
 
-The <dfn>procedure to process a frames argument</dfn> takes a ECMAScript
-object, <var>object</var> as input and returns either a sequence of keyframes
-or a {{SharedKeyframeList}} object using the following procedure:
+The <dfn>procedure to process a frames argument</dfn> takes a nullable
+ECMAScript object, <var>object</var>, as input and returns either a sequence of
+keyframes or a {{SharedKeyframeList}} object using the following procedure:
 
-1.  TBD
+1.  If <var>object</var> is null or undefined, return an empty sequence of
+    keyframes.
 
-    Note this needs to check for invalid CSS values and define how they are
-    parsed.
+1.  If <var>object</var> is a <a>platform object</a> that implements
+    {{SharedKeyframeList}}, return <var>object</var>.
 
+1.  Let <var>processed frames</var> be an empty sequence of <a>keyframes</a>.
+
+1.  Let <var>method</var> be the result of <a>GetMethod</a>(<var>object</var>,
+    <a lt="well known symbols">@@iterator</a>).
+
+1.  <a>ReturnIfAbrupt</a>(<var>method</var>).
+
+1.  Perform the steps corresponding to the first matching condition from below,
+
+    <div class="switch">
+    :   If <var>method</var> is not <span class="esvalue">undefined</span>,
+    ::  1.  Let <var>iter</var> be <a>GetIterator</a>(<var>object</var>,
+            <var>method</var>).
+
+        1.  <a>ReturnIfAbrupt</a>(<var>iter</var>).
+
+        1.  Initialize <var>i</var> to be 0.
+
+        1.  Repeat:
+
+            1.  Let <var>next</var> be <a>IteratorStep</a>(<var>iter</var>).
+            1.  <a>ReturnIfAbrupt</a>(<var>next</var>).
+            1.  If <var>next</var> is false abort this loop.
+            1.  Let <var>nextItem</var> be <a>IteratorValue</a>(next).
+            1.  <a>ReturnIfAbrupt</a>(<var>nextItem</var>).
+            1.  Append to <var>processed frames</var> the result of
+                running the <a>procedure to process a keyframe-like object</a>
+                passing <var>object</var> as the <var>keyframe input</var>
+                and with the <var>allow lists</var> flag set to false.
+
+        1.  If <var>processed frames</var> is not <a>loosely sorted by
+            offset</a>, <a>throw</a> a <span
+            class=exceptionname>TypeError</span>.
+        1.  If there exist any <a>keyframe</a> in <var>processed frames</var>
+            whose <a>keyframe offset</a> is non-null and less
+            than zero or greater than one, <a>throw</a> a
+            <span class=exceptionname>TypeError</span>.
+
+    :   Otherwise,
+    ::  1.  Let <var>property-indexed keyframe</var> be the result of
+            running the <a>procedure to process a keyframe-like object</a>
+            passing <var>object</var> as the <var>keyframe input</var>
+            and with the <var>allow lists</var> flag set to true.
+
+        1.  Let <var>composite operation</var> be the value of the
+            &ldquo;composite&rdquo; member of <var>property-indexed
+            keyframe</var>, or null if there is no member of that name.
+
+        1.  Let <var>easing</var> be the value of the
+            &ldquo;easing&rdquo; member of <var>property-indexed keyframe</var>.
+
+        1.  For each member, <var>m</var>, in <var>property-indexed
+            keyframe</var>, perform the following steps:
+
+            1.  Let <var>property name</var> be the key for <var>m</var>.
+            1.  If <var>property name</var> is &ldquo;composite&rdquo; or
+                &ldquo;easing&rdquo; skip the remaining steps in this loop
+                and continue from the next member in <var>property-indexed
+                keyframe</var> after <var>m</var>.
+            1.  Let <var>property values</var> be the value for <var>m</var>.
+            1.  Let <var>property keyframes</var> be an empty sequence of
+                <a>keyframes</a>.
+            1.  For each value, <var>v</var>, in <var>property values</var>
+                perform the following steps:
+
+                1.  Let <var>k</var> be a new <a>keyframe</a> with a null
+                    <a>keyframe offset</a>.
+
+                1.  Let <var>k</var> have a property, &ldquo;easing&rdquo;
+                    with the value <var>easing</var>.
+
+                1.  If <var>compositor operation</var> is not null,
+                    set <a>keyframe-specific composite operation</a> of
+                    <var>k</var> to <var>composite operation</a>.
+
+                1.  Add the property-value pair, <var>property name</var>
+                    &rarr; <var>v</var>, to <var>k</var>.
+
+                1.  Append <var>k</var> to <var>processed keyframes</var>.
+
+    </div>
+
+1.  For each <var>frame</var> in <var>processed keyframes</var>, perform the
+    following steps:
+
+    1.  For each property-value pair in <var>frame</var>, parse the property
+        value using the syntax specified for that property and store the result.
+
+        If the property value is invalid according to the syntax for the
+        property, store the original DOMString used for the property value.
+
+        User agents that provide support for diagnosing errors in content
+        SHOULD produce an appropriate warning highlighting the unrecognized
+        property value.
+
+    1.  Let the <a>timing function</a> of <var>frame</var> be the result of
+        parsing the &ldquo;easing&rdquo; property on <var>frame</var> using the
+        CSS parser and the grammar defined for the
+        {{AnimationEffectTimingReadOnly/easing}} property of the
+        {{AnimationEffectTimingReadOnly}} interface.
+
+        Note: Using the CSS parser in both of these steps implies that CSS
+        comments and escaping are allowed (but are not retained when the value
+        is successfully parsed).
 
 <h4 id="computed-keyframes">Computed keyframes</h4>
+
+<div class="issue">
+
+Need to do the following steps here:
+
+1.  Sort <var>processed keyframes</var> by <a>keyframe offset</a>, in
+    increasing order.
+
+1.  Merge adjacent <a>keyframes</a> in <var>processed keyframes</var>
+    when they have equal offsets.
+
+</div>
 
 1.  If <var>frames</var> is a {{SharedKeyframeList}} object, then
     return the normalized sequence of Keyframe objects established
