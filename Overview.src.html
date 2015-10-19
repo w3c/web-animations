@@ -4453,11 +4453,17 @@ offsets</a> are <em>not</em> null, as follows:
      <a lt="offsetk">offset</a><sub><var>start</var></sub>)
     &times; <var>index</var> / <var>n</var>.
 
-The <a>computed keyframe offset</a> values of each <a>keyframe</a>
-are determined using the following procedure.
+The <dfn>procedure to apply spacing to a series of keyframes</dfn> takes the
+following parameters:
 
-1.  Let <var>keyframes</var> refer to the list of <a>keyframes</a>
-    associated with the <a>keyframe effect</a>.
+*   a sequence of <a>keyframes</a>: <var>keyframes</var>,
+*   a <a lt="keyframe spacing mode">spacing mode</a>, <var>spacing</var>, and
+*   a context element used for resolving relative units, <var>context
+    element</var>, (only required when <var>spacing</var> is
+    <a lt="paced keyframe spacing mode">paced</a>)
+
+and has the following steps:
+
 1.  For each <a>keyframe</a>, in <var>keyframes</var>,
     let the <a>computed keyframe offset</a> of the <a>keyframe</a>
     be equal to its <a>keyframe offset</a> value.
@@ -4481,12 +4487,12 @@ are determined using the following procedure.
 
     calculate the <a>computed keyframe offset</a> of
     each <a>keyframe</a> between <var>A</var> and <var>B</var>
-    depending on the <a>keyframe spacing mode</a> as follows:
+    depending on the value of <var>spacing</var> as follows:
 
     <div class="switch">
 
-    :   If the <a lt="keyframe spacing mode">spacing mode</a>
-        is <a lt="paced keyframe spacing mode">paced</a>,</dt>
+    :   If <var>spacing</var> is <a
+        lt="paced keyframe spacing mode">paced</a>,</dt>
     ::
 
         1.  Define a keyframe as <dfn>paceable</dfn> if it
@@ -4536,6 +4542,9 @@ are determined using the following procedure.
                 values of the <a>paced property</a> on each pair of
                 successive <a>paceable</a> keyframes in the range
                 [<var>paced A</var>, <var>k</var>].
+                Use <var>context element</var> as the basis for resolving
+                context-sensitive values such as percentages units and
+                font-size based units.
             1.  Set the <a>computed keyframe offset</a> of <var>k</var> to
                 <a lt="offsetk">offset</a><sub><var>paced
                   A</var></sub> +
@@ -4564,15 +4573,6 @@ are determined using the following procedure.
 
     </div>
 
-Issue: The above algorithm is quite complex.
-    It attempts to cover all possible combinations of input where
-    keyframe offsets and or paced property values may be missing.
-    Furthermore, it attempts to do this in a way that degenerates
-    consistently and also allows the author to combine fixed offsets
-    with either pacing or distribute spacing.
-    We await implementation experience to determine if the complexity
-    is justified.
-
 <h4 id="the-effect-value-of-a-keyframe-animation-effect">The effect value of a keyframe effect</h4>
 
 The <a>effect value</a> of a single property
@@ -4583,28 +4583,28 @@ referenced by a <a>keyframe effect</a> as one of its
 
 1.  Let <var>target property</var> be the property for which the
     <a>effect value</a> is to be calculated.
-2.  If <a>animation behavior</a> of the <var>target property</var> is
+1.  If <a>animation behavior</a> of the <var>target property</var> is
     <a>not animatable</a> abort this procedure
     since the effect cannot be applied.
-3.  Define the <dfn>neutral value for composition</dfn> as a value
+1.  Define the <dfn>neutral value for composition</dfn> as a value
     which, when combined with an <a>underlying value</a> using the <a
     lt="composite operation add">add</a> <a>composite
     operation</a>, produces the <a>underlying value</a>.
-4.  Let <var>property-specific keyframes</var> be a copy of the list
+1.  Let <var>property-specific keyframes</var> be a copy of the list
     of <a>keyframes</a> specified on the effect.
-5.  Remove any <a>keyframes</a> from <var>property-specific
+1.  Remove any <a>keyframes</a> from <var>property-specific
     keyframes</var> that do not have a property value for
     <var>target property</var>.
-6.  If <var>property-specific keyframes</var> is empty, return
+1.  If <var>property-specific keyframes</var> is empty, return
     <var>underlying value</var>.
-7.  If there is no <a>keyframe</a> in <var>property-specific
+1.  If there is no <a>keyframe</a> in <var>property-specific
     keyframes</var> with a <a>computed keyframe offset</a> of
     0, create a new <a>keyframe</a> with a <a>computed keyframe offset</a> of
     0, a property value set to the <a>neutral value for
     composition</a>, and a <a>composite operation</a> of <a
     lt="composite operation add">add</a>, and prepend it to the
     beginning of <var>property-specific keyframes</var>.
-8.  Similarly, if there is no <a>keyframe</a> in
+1.  Similarly, if there is no <a>keyframe</a> in
     <var>property-specific keyframes</var> with a <a>computed keyframe
     offset</a> of 1,
     create a new <a>keyframe</a> with a <a>computed keyframe offset</a> of 1,
@@ -4612,9 +4612,9 @@ referenced by a <a>keyframe effect</a> as one of its
     and a <a>composite operation</a> of <a
     lt="composite operation add">add</a>, and append it to the
     end of <var>property-specific keyframes</var>.
-9.  Let <var>interval endpoints</var> be an empty sequence of
+1.  Let <var>interval endpoints</var> be an empty sequence of
     keyframes.
-10. Populate <var>interval points</var> by following the steps from
+1.  Populate <var>interval points</var> by following the steps from
     the first matching condition from below:
 
     <div class="switch">
@@ -4641,13 +4641,13 @@ referenced by a <a>keyframe effect</a> as one of its
             there is no such <a>keyframe</a> (because, for example,
             the <a>iteration progress</a> is negative), add the last
             <a>keyframe</a> whose <a>computed keyframe offset</a> is 0.
-        2.  Append to <var>interval endpoints</var> the next
+        1.  Append to <var>interval endpoints</var> the next
             <a>keyframe</a> in <var>property-specific keyframes</var>
             after the one added in the previous step.
 
     </div>
 
-11. For each <var>keyframe</var> in <var>interval endpoints</var>:
+1.  For each <var>keyframe</var> in <var>interval endpoints</var>:
 
     1.  If <var>keyframe</var> has a <a>composite operation</a>
         that is <em>not</em> <a
@@ -4662,10 +4662,10 @@ referenced by a <a>keyframe effect</a> as one of its
             <a>composite operation</a> of <var>keyframe</var>, or if
             it has none, the <a>composite operation</a> of this
             <a>keyframe effect</a>.
-        2.  Let <var>value to combine</var> be the property value of
+        1.  Let <var>value to combine</var> be the property value of
             <var>target property</var> specified on
             <var>keyframe</var>.
-        3.  Replace the property value of <var>target property</var>
+        1.  Replace the property value of <var>target property</var>
             on <var>keyframe</var> with the result of combining
             <var>underlying value</var> (<var>V</var><sub>a</sub>) and
             <var>value to combine</var> (<var>V</var><sub>b</sub>)
@@ -4673,7 +4673,7 @@ referenced by a <a>keyframe effect</a> as one of its
             procedure defined by the <var>target property</var>'s
             <a>animation behavior</a>.
 
-    2.  If this <a>keyframe effect</a> has an <a>iteration
+    1.  If this <a>keyframe effect</a> has an <a>iteration
         composite operation</a> of <a
         lt="iteration composite operation accumulate">accumulate</a>,
         apply the following step <var>current iteration</var> times:
@@ -4690,17 +4690,17 @@ referenced by a <a>keyframe effect</a> as one of its
         Issue: It seems like this could be done as a separate step at the end
             and applied to all types of animation effects consistently.
 
-12. If there is only one keyframe in <var>interval endpoints</var>
+1.  If there is only one keyframe in <var>interval endpoints</var>
     return the property value of <var>target property</var> on that
     keyframe.
-13. Let <var>start offset</var> be the <a>computed keyframe offset</a> of the
+1.  Let <var>start offset</var> be the <a>computed keyframe offset</a> of the
     first keyframe in <var>interval endpoints</var>.
-14. Let <var>end offset</var> be the <a>computed keyframe offset</a> of
+1.  Let <var>end offset</var> be the <a>computed keyframe offset</a> of
     last keyframe in <var>interval endpoints</var>.
-15. Let <var>interval distance</var> be the result of evaluating
+1.  Let <var>interval distance</var> be the result of evaluating
     <code>(<var>iteration progress</var> - <var>start offset</var>) /
     (<var>end offset</var> - <var>start offset</var>)</code>
-16. Return the result of applying the <a
+1.  Return the result of applying the <a
     lt="animation interpolation">interpolation procedure</a> defined
     by the <a>animation behavior</a> of the <var>target property</var>,
     to the values of the <var>target property</var> specified on the
@@ -4718,7 +4718,6 @@ referenced by a <a>keyframe effect</a> as one of its
         the range [0, 1].
     *   The list of <a>keyframes</a> is sorted in ascending order by
         <a>computed keyframe offset</a>.
-    *   Each specified property value is a valid and supported value.
     *   For a given property, there is at most one specified property
         value on each keyframe.
 
@@ -4728,10 +4727,8 @@ referenced by a <a>keyframe effect</a> as one of its
 
     For example, for the <a href="#programming-interface">programming
     interface</a> defined by this specification, these conditions are
-    met by applying the normalization defined in <a
-    href="#processing-a-frames-argument" section></a>
-    and resolving null <a>keyframe offsets</a> by
-    applying <a href="#spacing-keyframes">spacing behavior</a>.
+    met by the procedure to produce the <a>computed keyframes</a> that
+    become the input to this procedure.
 
 </div>
 
@@ -6696,54 +6693,41 @@ KeyframeEffect implements AnimationEffectMutable;
          <var>source</var>.
     4.   Let <var>frames</var> be the result of calling the
          {{KeyframeEffectReadOnly/getFrames()}} method on <var>source</var>.
+
          Issue: If <var>source</var> is using a {{SharedKeyframeList}} should
          we continue to share it?
+
     5.   Call the {{KeyframeEffect/setFrames()}} method on <var>dest</var>
          passing <var>frames</var> as the {{KeyframeEffect/setFrames/frames}}
          argument.
 
 :   <dfn method for=KeyframeEffectReadOnly lt="getFrames()">
     sequence&lt;ComputedKeyframe&gt; getFrames()</dfn>
-::  Returns the <a>keyframes</a> that make up this effect as
-    a sequence of {{ComputedKeyframe}} objects.
+::  Returns the <a>computed keyframes</a> that make up this effect along with
+    their <a>computed keyframe offsets</a>.
 
-    The value returned differs from the {{KeyframeEffect/setFrames/frames}}
-    argument passed into {{KeyframeEffect/setFrames()}} or the
-    {{KeyframeEffectReadOnly()}} or {{KeyframeEffect()}} constructors in
-    the following ways:
+    <div class="issue">
 
-    *   The normalization defined in <a
-        href="#processing-a-frames-argument"
-        section></a> is applied to <var>frames</var> which
-        will result in:
+      Spec the exact steps here. Specifically describing how we set up these
+      objects (using \[[DefineOwnProperty]]) and the property names we use for
+      each part of the keyframes.
 
-        *   {{SharedKeyframeList}} objects being replaced
-            with the set of {{Keyframe}} objects referred to by the shared list,
-        *   {{PropertyIndexedKeyframes}} objects being expanded into a sequence
-            of {{Keyframe}} objects, and
-        *   Invalid or unsupported properties being removed.
-
-    *   The result of calculating the <a>computed keyframe offset</a>
-        of each <a>keyframe</a> as defined in <a
-        href="#spacing-keyframes" section></a> is stored in
-        the {{ComputedKeyframe/computedOffset}} member of each frame.
-
-    Issue: Replace this with a <code>frames</code> attribute.
+    </div>
 
 :   <dfn method for=KeyframeEffect lt='setFrames(frames)'>
-    void setFrames((PropertyIndexedKeyframes or sequence&lt;Keyframe&gt;) frames)</dfn>
+    void setFrames(object? frames)</dfn>
 ::  Replaces the set of <a>keyframes</a> that make up this effect.
 
     <div class="parameters">
 
     :   <dfn argument for="KeyframeEffect/setFrames" lt="frames">frames</dfn>
-    ::  A {{PropertyIndexedKeyframes}} object or sequence of {{Keyframe}} objects
-        used to replace the set of <a>keyframes</a> that make up this effect.
+    ::  A series of keyframes whose format and processing is defined by
+        <a href="#processing-a-frames-argument" section></a>.
 
-        On calling, the implementation must perform the validation defined
-        in <a href="#processing-a-frames-argument" section></a>.
-
-        Issue: Why doesn't this take a {{SharedKeyframeList}}?
+        This effect's set of <a>keyframes</a> is replaced with the result
+        of performing the <a>procedure to process a frames argument</a>.
+        If that procedure throws an exception, this effect's <a>keyframes</a>
+        are not modified.
 
     </div>
 
@@ -7075,7 +7059,7 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
                     <a>keyframe offset</a>.
 
                 1.  Let <var>k</var> have a property, &ldquo;easing&rdquo;
-                    with the value <var>easing</var>.
+                    with the value of <var>easing</var>.
 
                 1.  If <var>compositor operation</var> is not null,
                     set <a>keyframe-specific composite operation</a> of
@@ -7084,7 +7068,47 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
                 1.  Add the property-value pair, <var>property name</var>
                     &rarr; <var>v</var>, to <var>k</var>.
 
-                1.  Append <var>k</var> to <var>processed keyframes</var>.
+                1.  Append <var>k</var> to <var>property keyframes</var>.
+
+            1.  Apply the <a>procedure to apply spacing to a series of
+                keyframes</a> to <var>property keyframes</var> using a
+                <a lt="keyframe spacing mode">spacing mode</a> of <a
+                lt="distribute keyframe spacing mode">distribute</a>.
+
+                <div class="note">
+
+                We unconditionally apply distribute spacing simply for the
+                purposes of merging frames. This produces consistent and
+                intuitive results.
+
+                Paced spacing can produce different results depending on the
+                context in which relative values are resolved. Using paced
+                spacing to calculate offsets and then merging would mean that
+                the merge results could differ over time. It would also mean
+                that the frames returned from
+                {{KeyframeEffectReadOnly/getFrames()}} would
+                produce a different result if passed back to
+                {{KeyframeEffect/setFrames()}} since the merge result which,
+                until that point, was dynamic, would suddenly become fixed.
+
+                Due to these considerations we apply merging once when updating
+                the keyframes using distribute spacing which does not vary in
+                its results.
+
+                Before computing the effect result or returning keyframes from
+                {{KeyframeEffectReadOnly/getFrames()}} the specified <a
+                lt="keyframe spacing mode">spacing mode</a> is applied.
+
+                </div>
+
+            1.  Add <a>keyframes</a> in <var>property keyframes</var> to
+                <var>processed keyframes</var>.
+
+        1.  Sort <var>processed keyframes</var> by the <a>computed
+            keyframe offset</a> of each <a>keyframe</a> in increasing order.
+
+        1.  Merge adjacent <a>keyframes</a> in <var>processed keyframes</var>
+            when they have equal <a>computed keyframe offsets</a>.
 
     </div>
 
@@ -7111,139 +7135,37 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
         comments and escaping are allowed (but are not retained when the value
         is successfully parsed).
 
-<h4 id="computed-keyframes">Computed keyframes</h4>
+<h4 id="computed-keyframes-section">Computed keyframes</h4>
 
-<div class="issue">
+Before calculating the effect value
+(see <a href="#the-effect-value-of-a-keyframe-animation-effect" section></a>)
+of a <a>keyframe effect</a> represented by a {{KeyframeEffect}} object,
+<var>effect</var>, as well as each time the
+{{KeyframeEffectReadOnly/getFrames()}} method is called,
+the <dfn>computed keyframes</dfn> are produced as follows:
 
-Need to do the following steps here:
+1.  Let <var>computed keyframes</var> refer to the sequence of <a>keyframes</a>
+    returned by the <a>procedure to process a frames argument</a> when it was
+    last successfully called (i.e. did not throw an exception) for
+    <var>effect</var>.
+    If that procedure returned a {{SharedKeyframeList}} object, then let
+    <var>computed keyframes</var> refer to the result returned by that same
+    procedure but for the {{SharedKeyframeList}} object instead of
+    <var>effect</var>.
 
-1.  Sort <var>processed keyframes</var> by <a>keyframe offset</a>, in
-    increasing order.
+1.  Perform the <a>procedure to apply spacing to a series of keyframes</a>
+    on <var>computed keyframes</var> using the <a>keyframe spacing mode</a> for
+    this effect as the <var>spacing mode</var>, and the <a>target element</a>
+    for this effect as the <var>context element</var>.
 
-1.  Merge adjacent <a>keyframes</a> in <var>processed keyframes</var>
-    when they have equal offsets.
+    Issue: Define what to do if there is no <a>target element</a>.
 
-</div>
+1.  Return <var>computed keyframes</var>.
 
-1.  If <var>frames</var> is a {{SharedKeyframeList}} object, then
-    return the normalized sequence of Keyframe objects established
-    when the {{SharedKeyframeList}} object was constructed and abort
-    this procedure.
-
-1.  Normalization depends on the type of <var>frames</var> as follows:
-
-    <div class='switch'>
-    :   If <var>frames</var> is a {{PropertyIndexedKeyframes}} object,
-    ::
-
-        1.  Let <var>expanded keyframe list</var> initially be an empty list.
-
-        1.  Let <var>composite operation</var> be the value of the
-            &ldquo;composite&rdquo; member of <var>frames</var>, or null if
-            there is no member of that name.
-
-        1.  Let <var>easing</var> be the value of the
-            &ldquo;easing&rdquo; member of <var>frames</var>, or
-            &ldquo;linear&rdquo; otherwise.
-
-        1.  For each member, <var>m</var>, in <var>frames</var>, perform
-            the following steps:
-
-            1.  Let <var>property name</var> be the key for <var>m</var>.
-            1.  If <var>property name</var> is &ldquo;composite&rdquo; or
-                &ldquo;easing&rdquo; skip the remaining steps in this loop
-                and continue from the next member in <var>frames</var> after
-                <var>m</var>.
-            1.  Let <var>property values</var> be the value for <var>m</var>.
-                If the value for <var>m</var> is a DOMString (i.e. <em>not</em>
-                a sequence of DOMStrings), let <var>property values</var> be
-                a sequence with a single element corresponding to the value for
-                <var>m</var>.
-            1.  Let <var>property keyframes</var> be an empty list.
-            1.  For each value, <var>v</var>, in <var>property values</var>
-                perform the following steps:
-
-                1.  Let <var>k</var> be a new {{Keyframe}} object with the
-                    <code>offset</code>, <code>easing</code> and
-                    <code>composite</code> attributes set to the default
-                    dictionary values.
-
-                1.  Add the following member to <var>k</var>:
-
-                    *   <em>member key</em>: <var>property name</var>
-                    *   <em>member value</em>: <var>v</var>
-
-                1.  Set <code><var>k</var>.composite</code> to
-                    <var>composite operation</var>.
-                1.  Set <code><var>k</var>.easing</code> to
-                    <var>easing</var>.
-                1.  Append <var>k</var> to <var>property keyframes</var>.
-
-            1.  Apply the procedure for
-                <a href="#applying-spacing-to-keyframes" section></a> to the
-                <var>property keyframes</var> list.
-
-                <div class="issue">
-
-                Applying this procedure here means that offsets are fixed and
-                <a lt="paced keyframe spacing mode">paced spacing</a> will no
-                longer respond to changes in the environment (such as
-                percentage values where the frame of reference changes).
-
-                We could possibly:
-
-                *   Only allow <a
-                    lt="distribute keyframe spacing mode">distribute
-                    spacing</a> with property-indexed keyframes (i.e. ignore the
-                    spacing mode).
-
-                *   Only allow <a
-                    lt="distribute keyframe spacing mode">distribute
-                    spacing</a> and also drop offsets at the end of this
-                    procedure so at least the list of keyframes can be more
-                    easily updated.
-
-                *   Perform an additional step before calculating
-                    effect values and before returning from
-                    {{KeyframeEffectReadOnly/getFrames()}} that
-                    does spacing and merging.
-
-                </div>
-
-                Issue: The procedure for spacing probably needs to be refactored
-                to just take a sequence of keyframes and a spacing mode.
-
-            1.  Add the <a>keyframes</a> in <var>property keyframes</var> to
-                <var>all keyframes</var>.
-
-        1.  Sort <var>all keyframes</var> by <code>offset</code>, in increasing
-            order.
-
-        1.  Merge adjacent <a>keyframes</a> in <var>expanded keyframes</var>
-            when they have equal offsets.
-
-        1.  Let <var>frames</var> refer to <var>expanded keyframes</var>.
-
-    :   Otherwise,
-    ::
-
-        1.  If <var>frames</var> is not <a>loosely sorted by offset</a>,
-            <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
-            <span class=exceptionname>TypeError</span>.
-        1.  If there exist any {{Keyframe}} object in <var>frames</var> whose
-            {{Keyframe/offset}} member is non-null and less than zero or
-            greater than one,
-            <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
-            <span class=exceptionname>TypeError</span>.
-
-    </div>
-
-1.  Remove all property values in <var>frames</var> that are invalid
-    or not supported by the implementation.
-
-1.  Return <var>frames</var>.
-
-    Issue: Need to define what invalid means here.
+Note: This procedure is performed every time the keyframe effect value is
+computed as well as every time {{KeyframeEffectReadOnly/getFrames()}} is called
+such that changes to any referenced {{SharedKeyframeList}} object or to the
+context used to resolve relative units are reflected in the result.
 
 <h4 id="creating-a-new-keyframeeffect-object">Creating a new <code>KeyframeEffect</code> object</h4>
 
@@ -7261,7 +7183,8 @@ seconds can be constructed as follows:
 var effect = new KeyframeEffect(elem, { left: '100px' }, 3000);</pre>
 
 The second parameter, representing the list of keyframes, may
-specify multiple properties.
+specify multiple properties. (See <a href="#processing-a-frames-argument"
+section></a>.)
 
 <pre class='example lang-javascript'>
 // Specify multiple properties at once
