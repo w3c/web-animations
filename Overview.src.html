@@ -39,14 +39,11 @@ Abstract: This specification defines a model for synchronization and
 Ignored Terms: double, boolean, DOMString, unsigned long, unrestricted double, (animationeffectreadonly or effectcallback), (unrestricted double or DOMString)
 </pre>
 <pre class="anchors">
-urlPrefix: http://www.w3.org/TR/hr-time/; type: interface; text: DOMHighResTimeStamp
-url: https://dom.spec.whatwg.org/#interface-element; type: interface; text: Element; spec: dom-ls
-url: https://html.spec.whatwg.org/#document; type: interface; text: Document; spec: html
 urlPrefix: https://heycam.github.io/webidl/#dfn-; type: dfn; spec: webidl
     text: platform object
     text: throw
     text: convert ecmascript to idl value
-urlPrefix: https://heycam.github.io/webidl/#; type: dfn; spec: webidl
+urlPrefix: https://heycam.github.io/webidl/; type: dfn; spec: webidl
     text: es to dictionary
     text: es to DOMString; url: es-to-DOMString
 urlPrefix: http://www.ecma-international.org/ecma-262/6.0/#sec-; type: dfn; spec: ecma-262
@@ -60,6 +57,28 @@ urlPrefix: http://www.ecma-international.org/ecma-262/6.0/#sec-; type: dfn; spec
     text: Promise.resolve; url: promise.resolve
     text: ReturnIfAbrupt
     text: well known symbols
+urlPrefix: https://html.spec.whatwg.org/multipage/browsers.html; type: dfn; spec: html
+    text: active document
+    text: an entry with persisted user state
+    text: browsing context
+    text: session history entry
+urlPrefix: https://html.spec.whatwg.org/multipage/webappapis.html; type: dfn; spec: html
+    text: queue a task
+    text: queue a microtask
+    text: DOM manipulation task source
+    text: processing model
+urlPrefix: https://html.spec.whatwg.org/multipage/infrastructure.html; type: dfn; spec: html
+    text: fire; url: concept-event-fire
+urlPrefix: https://html.spec.whatwg.org/multipage/embedded-content.html; type: dfn; spec: html
+    text: media element
+urlPrefix: http://www.w3.org/TR/hr-time/; type: interface; text: DOMHighResTimeStamp
+urlPrefix: https://dom.spec.whatwg.org/; type: dfn; spec: dom
+    text: constructing events
+url: https://html.spec.whatwg.org/#document; type: interface; text: Document; spec: html
+url: https://svgwg.org/svg2-draft/pservers.html#StopElementOffsetAttribute; type: element-attr; for: stop; text: offset; spec: svg2
+url: https://svgwg.org/svg2-draft/mimereg.html#mime-registration; type: dfn; text: SVG MIME type; spec: svg2
+urlPrefix: http://dev.w3.org/csswg/cssom/; type: dfn; spec: cssom
+    text: IDL attribute to CSS property
 </pre>
 <pre class="link-defaults">
 spec:dom-ls; type:interface; text:EventTarget
@@ -540,8 +559,7 @@ Prior to establishing the <code>navigationStart</code> moment, the <a>document
 timeline</a> is <a lt="inactive timeline">inactive</a>.
 
 A <a>document timeline</a> that is associated with a document which is not
-an <a href="https://html.spec.whatwg.org/#active-document"
-class="externalDFN">active document</a> is also considered to be
+an <a>active document</a> is also considered to be
 <a lt="inactive timeline">inactive</a>.
 
 <h4 id="the-documents-default-timeline">The default document timeline</h4>
@@ -1379,26 +1397,19 @@ follows:
         1.  <a lt="resolve a promise">Resolve</a> <var>animation</var>'s
             <a>current finished promise</a> object with
             <var>animation</var>.
-        1.  <a
-            href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task"
-            class="externalDFN">Queue a task</a> to <a
-            href="https://html.spec.whatwg.org/multipage/infrastructure.html#concept-event-fire"
-            class="externalDFN">fire</a> a <a>finish event</a>
+        1.  <a>Queue a task</a> to <a>fire</a> a <a>finish event</a>
             at <var>animation</var>.
-            The task source for this task is the <a
-            href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-manipulation-task-source"
-            class="externalDFN">DOM manipulation task source</a>.
+            The task source for this task is the <a>DOM manipulation task
+            source</a>.
     1.  If <var>synchronously notify</var> is true, cancel any queued
         microtask to run the <a>finish notification steps</a> for this
         <var>animation</var>, and run the <a>finish notification
         steps</a> immediately.
 
-        Otherwise, if <var>synchronously notify</var> is false, <a
-        href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask"
-        class="externalDFN">queue a microtask</a> to run <a>finish
-        notification steps</a> for <var>animation</var> unless there is
-        already a microtask queued to run those steps for
-        <var>animation</var>.
+        Otherwise, if <var>synchronously notify</var> is false, <a>queue
+        a microtask</a> to run <a>finish notification steps</a> for
+        <var>animation</var> unless there is already a microtask queued to run
+        those steps for <var>animation</var>.
 1.  If <var>current finished state</var> is false and
     <var>animation</var>'s <a>current finished promise</a> is already
     resolved, set <var>animation</var>'s <a>current finished promise</a> to
@@ -1525,19 +1536,15 @@ as follows:
     1.  Let <a>current finished promise</a> be a new (pending) <a>Promise</a>
         object.
     1.  If <var>animation</var> is <em>not</em>
-        <a lt="idle play state">idle</a>, <a
-        href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task"
-        class="externalDFN">queue a task</a> to <a
-        href="https://html.spec.whatwg.org/multipage/infrastructure.html#concept-event-fire"
-        class="externalDFN">fire</a> a <a>cancel event</a> at <var>animation</var>.
-        The task source for this task is the <a
-        href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-manipulation-task-source"
-        class="externalDFN">DOM manipulation task source</a>.
+        <a lt="idle play state">idle</a>, <a>queue a task</a> to <a>fire</a>
+        a <a>cancel event</a> at <var>animation</var>.
+        The task source for this task is the <a>DOM manipulation task
+        source</a>.
 
         The <a>event current time</a> for the dispatched <a>cancel event</a> is
         <a>unresolved</a> and the <a>event timeline time</a> is the current
-        <a>time value</a> of the <a>timeline</a> associated with <a>animation</a>
-        at the moment the task is queued.
+        <a>time value</a> of the <a>timeline</a> associated with
+        <a>animation</a> at the moment the task is queued.
 
 1.  Make <var>animation</var>'s <a>hold time</a> <a>unresolved</a>.
 1.  Make <var>animation</var>'s <a lt="animation start time">start time</a>
@@ -5324,12 +5331,9 @@ interface DocumentTimeline : AnimationTimeline {
 <div class='constructors'>
 
 :   <dfn constructor for=DocumentTimeline
-      lt="DocumentTimeline(originTime)">DocumentTimeline (originTime)</dfn>
-::  Creates a new {{DocumentTimeline}} object associated with the <a
-      href="https://html.spec.whatwg.org/#active-document"
-      class="externalDFN">active document</a> of the current
-    <a href="https://html.spec.whatwg.org/#browsing-context"
-      class="externalDFN">browsing context</a>.
+    lt="DocumentTimeline(originTime)">DocumentTimeline (originTime)</dfn>
+::  Creates a new {{DocumentTimeline}} object associated with the <a>active
+    document</a> of the current <a>browsing context</a>.
 
     <div class='parameters'>
 
@@ -5340,10 +5344,7 @@ interface DocumentTimeline : AnimationTimeline {
         milliseconds relative to <a
         href="http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart">
         <code>navigationStart</code></a> moment [[!NAVIGATION-TIMING]] of
-        the <a class="externalDFN"
-        href="https://html.spec.whatwg.org/#active-document">active
-        document</a> for the current <a class="externalDFN"
-        href="https://html.spec.whatwg.org/#browsing-context">browsing context</a>.
+        the <a>active document</a> for the current <a>browsing context</a>.
 
     </div>
 
@@ -5408,10 +5409,8 @@ interface Animation : EventTarget {
 
     <div class="issue">
 
-      Should we use the <a>default document timeline</a> of the <a
-      href="https://html.spec.whatwg.org/#active-document"
-      class="externalDFN">active document</a> as the
-      default timeline?
+      Should we use the <a>default document timeline</a> of the <a>active
+      document</a> as the default timeline?
 
       For example, something like the following:
 
@@ -7021,12 +7020,9 @@ otherwise, using the following procedure:
     1.  If the user agent supports animation of the 'float'
         CSS property, replace "float" in
         <var>animatable properties</var> with "cssFloat".
-    1.  If the user agent supports animation of the <a
-        href="http://www.w3.org/TR/SVG2/pservers.html#StopElementOffsetAttribute"
-        class="externalDFN">offset</a> attribute
-        of <a href="http://www.w3.org/TR/SVG2/pservers.html#StopElement"
-          class="externalDFN">SVG stop elements</a> [[!SVG2]], replace "offset" in
-        <var>animatable properties</var> with "svgOffset".
+    1.  If the user agent supports animation of the
+        <{stop/offset}> attribute of <{stop}> elements [[!SVG2]],
+        replace "offset" in <var>animatable properties</var> with "svgOffset".
 
 
 1.  Let <var>input properties</var> be the result of calling the <a
@@ -7082,10 +7078,8 @@ otherwise, using the following procedure:
         ::  "offset"
 
         :   Otherwise,
-        ::  the result of applying the <a
-            href="http://dev.w3.org/csswg/cssom/#idl-attribute-to-css-property"
-            class="externalDFN">IDL attribute to CSS property</a> algorithm
-            [[!CSSOM]] to <var>property name</var>.
+        ::  the result of applying the <a>IDL attribute to CSS property</a>
+            algorithm [[!CSSOM]] to <var>property name</var>.
 
         </div>
 
@@ -7624,9 +7618,7 @@ partial interface Document {
 <h3 id="extensions-to-the-element-interface">Extensions to the <code>Element</code> interface</h3>
 
 Since DOM Elements may be the target of an animation,
-the <a class="externalDFN"
-href="http://www.w3.org/TR/dom/#interface-element">Element</a>
-interface [[!DOM]] is extended as follows:
+the {{Element}} interface [[!DOM]] is extended as follows:
 
 <pre class="idl">
 Element implements Animatable;
@@ -7640,20 +7632,17 @@ elem.animate({ color: 'red' }, 2000);</pre></div>
 
 <h3 id="extensions-to-the-pseudoelement-interface">Extensions to the <code>PseudoElement</code> interface</h3>
 
-Since <a>keyframe effects</a> may also target
-pseudo-elements, the <a class="externalDFN"
-href="http://www.w3.org/TR/cssom/#the-pseudoelement-interface"><code>PseudoElement</code></a>
-interface [[!CSSOM]] is also defined to be animatable.
+Since <a>keyframe effects</a> may also target pseudo-elements, the
+{{PseudoElement}} interface [[!CSSOM]] is also defined to be animatable.
 
 <pre class="idl">
 PseudoElement implements Animatable;
 </pre>
 
-Issue: This interface is marked at-risk in the <a class="externalDFN"
-    href="http://www.w3.org/TR/2013/WD-cssom-20131205/">5 December 2013 WD
-    of CSSOM</a>.
-    If it is removed, we will need to provide an equivalent definition
-    here.
+Issue: This interface is marked at-risk in the <a
+href="http://www.w3.org/TR/2013/WD-cssom-20131205/">5 December 2013 WD
+of CSSOM</a>.
+If it is removed, we will need to provide an equivalent definition here.
 
 <h3 id="the-animationplaybackevent-interface">The <code>AnimationPlaybackEvent</code> interface</h3>
 
@@ -7678,9 +7667,7 @@ dictionary AnimationPlaybackEventInit : EventInit {
     lt="AnimationPlaybackEvent(type, eventInitDict)">
     AnimationPlaybackEvent(type, eventInitDict)</dfn>
 ::  Constructs a new {{AnimationPlaybackEvent}} object using the procedure
-    defined for <a
-    href="https://dom.spec.whatwg.org/#constructing-events"
-    class="externalDFN">constructing events</a> [[!DOM]].
+    defined for <a>constructing events</a> [[!DOM]].
 
 </div>
 
@@ -7813,11 +7800,8 @@ alert(b - a); // Displays 0</pre></div>
 
 ::  For user agent that support Timing control for script-based
     animations [[ANIMATION-TIMING]],
-    HTML's <a
-      href="https://html.spec.whatwg.org/multipage/webappapis.html#processing-model-9"
-      class="externalDFN">processing
-    model</a> defines that animations are updated prior to running animation
-    frame callbacks.
+    HTML's <a>processing model</a> definesthat animations are updated prior to
+    running animation frame callbacks.
 
     Furthermore, the time passed to such callbacks is the stored value of
     the <code>Performance</code> object's <code>now()</code> method
@@ -7844,8 +7828,7 @@ The Media Fragments specification [[!MEDIA-FRAGS]] defines a means
 for addressing a temporal range of a media resource.
 The application of media fragments depends on the MIME type of the
 resource on which they are specified.
-For resources with the <a class="externalDFN"
-href="http://www.w3.org/TR/SVG/intro.html#MIMEType">SVG MIME type</a>
+For resources with the <a>SVG MIME type</a>
 [[!SVG11]], the application of temporal parameters is defined in the <a
 href="http://dev.w3.org/fxtf/web-animations/animation-elements.html">
 Animation elements</a> specification.
@@ -7857,20 +7840,15 @@ Note: media fragments are defined to operate on resources based on
 
 <h2 id="interaction-with-page-display">Interaction with page display</h2>
 
-HTML permits user agents to store <a class="externalDFN"
-  href="http://www.w3.org/TR/html51/browsers.html#an-entry-with-persisted-user-state">user-agent
-  defined state</a> along with a
-<a class="externalDFN"
-  href="http://www.w3.org/TR/html51/browsers.html#session-history-entry">session
-history entry</a> so that as a user navigates between pages, the
+HTML permits user agents to store <a
+lt="an entry with persisted user state">user-agent defined state</a> along with
+a <a>session history entry</a> so that as a user navigates between pages, the
 previous state of the page can be restored including state such as
 scroll position [[HTML5]].
 
 
-User agents that pause and resume <a class="externalDFN"
-  href="http://www.w3.org/TR/html5/embedded-content-0.html#media-element">media
-elements</a> when the referencing document is
-unloaded and traversed,
+User agents that pause and resume <a>media elements</a>
+when the referencing document is unloaded and traversed,
 are encouraged to apply consistent handling to documents containing Web
 Animations content.
 If provided, this behavior SHOULD be achieved by adjusting the <a>time
