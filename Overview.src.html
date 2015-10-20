@@ -6777,7 +6777,6 @@ dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
 
 </div>
 
-
 <h4 id="processing-a-frames-argument">Processing a <code>frames</code>
 argument</h4>
 
@@ -6818,28 +6817,111 @@ elem.animate({ color: 'red' }, 1000);
 </pre>
 </div>
 
+<a>Keyframe offsets</a> and <a>keyframe-specific composite operations</a> can
+only be specified using the array form as demonstrated below:
+
+<div class='example'>
+<pre class='lang-javascript'>
+// The keyframes without offsets will automatically have offsets computed
+// as 0 for the first keyframe, 0.65 for the middle keyframe, and 1 for the
+// final keyframe
+elem.animate([ { color: 'blue' },
+               { color: 'green', offset: 0.5 },
+               { color: 'red' },
+               { color: 'yellow', offset: 0.8 },
+               { color: 'pink' } ], 2000);
+
+// An SVG-style to-animation
+elem.animate([ { left: '0px', composite: 'add' },
+               { left: '200px' }, 2000);
+</pre>
+</div>
+
+<a>Timing functions</a> may be specified in either form. The array form allows
+specifying different <a>timing functions</a> for each <a>keyframe</a> whilst
+the object form allows specifying a <a>timing function</a> that will be applied
+to all keyframes.
+
+<div class='example'>
+<pre class='lang-javascript'>
+// Each keyframe can have a different timing function.
+// The timing function specified for the last keyframe is not used.
+elem.animate([ { color: 'blue', easing: 'ease-in' },
+               { color: 'green', easing: 'ease-out' },
+               { color: 'yellow' } ], 2000);
+
+// Each keyframe will have a timing function of 'ease-in-out'
+elem.animate({ color: [ 'blue', 'green', 'yellow' ],
+               easing: 'ease-in-out' }, 2000);
+</pre>
+</div>
+
+Note that the <code>easing</code> property in either form sets the
+<em>keyframe-specific </a>timing function</a></em>.
+This is independent from the <a>timing function</a> that applies to the
+entire <a>iteration duration</a> of the <a>keyframe effect</a> as specified
+using a {{KeyframeEffectOptions}} object (or {{KeyframeAnimationOptions}}
+object when using the {{Animatable/animate()}} method of the {{Animatable}}
+interface).
+
 The type of this argument cannot be expressed in WebIDL since it relies on
 a partially-open dictionary type.
 
-Conceptually, the type of this argument is equivalent to the following:
+Conceptually, the type of this argument is equivalent to the following
+WebIDL-like definition:
 
-<pre class='lang-javascript'>
-dictionary PropertyIndexedKeyframes {
-    // ... property-value and property-valuelist pairs ...
-    DOMString           easing = "linear";
-};
-
+<pre class='lang-idl'>
 dictionary Keyframe {
     // ... property-value pairs ...
+    // i.e. DOMString propertyName
     double?             offset = null;
     DOMString           easing = "linear";
     CompositeOperation? composite;
 };
 
-typedef KeyframeArgument (PropertyIndexedKeyframes or
-                          sequence&lt;Keyframe&gt; or
+dictionary PropertyIndexedKeyframes {
+    // ... property-value and property-valuelist pairs ...
+    // i.e. (DOMString or sequence<DOMString>) propertyName
+    DOMString           easing = "linear";
+};
+
+typedef KeyframeArgument (sequence&lt;Keyframe&gt; or
+                          PropertyIndexedKeyframes or
                           SharedKeyframeList);
 </pre>
+
+The meaning and allowed values of each argument is as follows:
+
+:   <dfn id="dom-keyframe-offset">offset</dfn> (<code>Keyframe</code> only)
+::  The <a>keyframe offset</a> of the <a>keyframe</a> specified as
+    a number between 0.0 and 1.0 inclusive or <code>null</code>.
+
+    A <code>null</code> value indicates that the <a>keyframe</a>
+    should be positioned using the <a>keyframe effect</a>'s
+    <a>keyframe spacing mode</a>.
+
+    Specifying an offset outside the range [0.0, 1.0] will cause
+    a <span class=exceptionname>TypeError</span> to be thrown.
+
+    Keyframes that specify an offset must be provided in increasing
+    order of offset. Overlapping offsets, however, are permitted.
+
+:   <dfn id="dom-keyframe-easing">easing</dfn>
+::  The <a>timing function</a> used to transform the progress of time
+    from this keyframe until the next keyframe in the series.
+
+    The syntax and error-handling associated with parsing this string
+    is identical to that defined for the <code>easing</code> attribute
+    of the {{AnimationEffectTiming}} interface.
+
+:   <dfn id="dom-keyframe-composite">composite</dfn>
+    (<code>Keyframe</code> only)
+::  The <a>keyframe-specific composite operation</a> used to combine the values
+    specified in this keyframe with the <a>underlying value</a>.
+
+    If absent, the <a>composite operation</a> specified on the
+    {{AnimationEffectReadOnly}} will be used.
+
 
 Since this type cannot be expressed in WebIDL, its processing is defined in
 prose following.
@@ -7302,138 +7384,6 @@ enum CompositeOperation {"replace", "add", "accumulate"};
     lt="animation accumulation">accumulated</a> on to the
     <a>underlying value</a>.
 
-<h3 id="the-keyframe-dictionary">The <code>Keyframe</code> dictionary</h3>
-
-Individual <a>keyframes</a> are represented by a special kind of
-{{Keyframe}} dictionary type whose
-members map to the properties to be animated.
-At the time of writing, this kind of open-ended dictionary cannot
-be represented using WebIDL and hence special
-ECMAScript-specific handling for this type is defined in
-<a href="#processing-a-frames-argument" section></a>.
-No handling is defined for other languages.
-
-<pre class='idl'>
-dictionary Keyframe {
-    // ... property-value pairs ...
-    double?             offset = null;
-    DOMString           easing = "linear";
-    CompositeOperation? composite = null;
-};
-</pre>
-
-<div class='members'>
-
-:   <dfn dict-member for=Keyframe>offset</dfn>
-::  The <a>keyframe offset</a> of the <a>keyframe</a> specified as
-    a number between 0.0 and 1.0 inclusive or <code>null</code>.
-
-    <a>Keyframes</a> with offsets outside the range [0.0, 1.0] are
-    ignored when calculating animation values as defined in
-    <a href="#processing-a-frames-argument" section></a>.
-
-    A <code>null</code> value indicates that the <a>keyframe</a>
-    should be positioned using the <a>keyframe effect</a>'s
-    <a>keyframe spacing mode</a>.
-
-:   <dfn dict-member for=Keyframe>easing</dfn>
-::  The <a>timing function</a> used to transform the progress of time
-    from this keyframe until the next keyframe in the series.
-
-    The syntax and error-handling associated with parsing this string
-    is identical to that defined for the <code>easing</code> attribute
-    of the {{AnimationEffectTiming}} interface.
-
-:   <dfn dict-member for=Keyframe>composite</dfn>
-::  The <a>keyframe-specific composite operation</a> used to combine the values
-    specified in this keyframe with the <a>underlying value</a>.
-
-    If <code>null</code>, the <a>composite operation</a>
-    specified on the {{AnimationEffectReadOnly}} will be used.
-
-</div>
-
-<h3 id="the-propertyindexedkeyframe-dictionary">The
-  <code>PropertyIndexedKeyframes</code> dictionary</h3>
-
-Keyframe lists can also be specified using a {{PropertyIndexedKeyframes}}
-dictionary type which provides a convenient syntax for specifying a sequence
-of values for each property.
-
-{{PropertyIndexedKeyframes}} objects are expanded into a sequence of
-{{Keyframe}} objects using the procedure defined in <a
-href="#processing-a-frames-argument" section></a>.
-
-Unlike {{Keyframe}} objects, {{PropertyIndexedKeyframes}} objects do not permit
-<a>keyframe offsets</a> to be specified.
-
-Issue: This feature is gated on implementation experience&mdash;it is currently
-unknown whether the additional complexity introduced by the feature is
-warranted by the improvement in usability.
-
-<div class='informative-bg'><em>This section is non-normative.</em>
-
-Property-indexed keyframes make it easy to create regularly spaced
-animations. For example:
-
-<div class='example'><pre class='lang-javascript'>
-// The following two expressions produce the same result:
-elem.animate([ { color: 'blue' },
-               { color: 'green' },
-               { color: 'red' },
-               { color: 'yellow' } ], 2000);
-elem.animate({ color: [ 'blue', 'green', 'red', 'yellow' ] }, 2000);
-
-// Likewise, for a multi-property animation, the following two
-// expressions are equivalent:
-elem.animate([ { color: 'blue', left: '0px' },
-               { color: 'green', left: '-20px' },
-               { color: 'red', left: '100px' },
-               { color: 'yellow', left: '50px'} ], 2000);
-elem.animate({ color: [ 'blue', 'green', 'red', 'yellow' ],
-               left: [ '0px', '-20px', '100px', '50px' ] }, 2000);
-
-// Incidentally, the following three expressions are all equivalent:
-elem.animate([ { color: 'red' } ], 1000);
-elem.animate({ color: [ 'red' ] }, 1000);
-elem.animate({ color: 'red' }, 1000);
-</pre></div>
-
-</div>
-
-As with {{Keyframe}} dictionaries, special ECMAScript-specific handling for
-this type is defined in
-<a href="#processing-a-frames-argument" section></a>.
-No handling is defined for other languages.
-
-<pre class='idl'>
-dictionary PropertyIndexedKeyframes {
-    // ... property-value and property-valuelist pairs ...
-    DOMString           easing = "linear";
-    CompositeOperation? composite = null;
-};
-</pre>
-
-<div class='members'>
-
-:   <dfn dict-member for=PropertyIndexedKeyframes>easing</dfn>
-::  The <a>timing function</a> used to transform the progress of time
-    between any two adjacent keyframes defined by this dictionary.
-
-    The syntax and error-handling associated with parsing this string
-    is identical to that defined for the <code>easing</code> attribute
-    of the {{AnimationEffectTiming}} interface.
-
-:   <dfn dict-member for=PropertyIndexedKeyframes>composite</dfn>
-::  The <a>keyframe-specific composite operation</a> used to combine the
-    values specified by any keyframe defined by this dictionary with the
-    appropriate <a>underlying value</a>.
-
-    If <code>null</code>, the <a>composite operation</a>
-    specified on the {{AnimationEffectReadOnly}} will be used.
-
-</div>
-
 <h3 id="the-computedkeyframe-dictionary">The <code>ComputedKeyframe</code> dictionary</h3>
 
 <a>Keyframes</a> returned by the {{KeyframeEffectReadOnly/getFrames()}} method
@@ -7441,8 +7391,11 @@ of the {{KeyframeEffectReadOnly}} interface are represented using
 {{ComputedKeyframe}} dictionary objects.
 
 <pre class='idl'>
-dictionary ComputedKeyframe : Keyframe {
-    double computedOffset;
+dictionary ComputedKeyframe {
+    double?             offset = null;
+    DOMString           easing = "linear";
+    CompositeOperation  composite;
+    double              computedOffset;
 };
 </pre>
 
@@ -7457,14 +7410,13 @@ dictionary ComputedKeyframe : Keyframe {
 
 <h3 id="the-sharedkeyframelist-interface">The <code>SharedKeyframeList</code> interface</h3>
 
-The {{SharedKeyframeList}} interface represents a sequence of {{Keyframe}}
-dictionary objects such that it can be shared between {{KeyframeEffect}}
-objects.
+The {{SharedKeyframeList}} interface represents a sequence of <a>keyframes</a>
+that can be shared between {{KeyframeEffect}} objects.
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
 By using {{SharedKeyframeList}} objects, multiple {{KeyframeEffect}} objects
-can re-use the same {{Keyframe}}s without paying the cost of parsing them
+can re-use the same <a>keyframes</a> without paying the cost of parsing them
 multiple times.
 
 For example:
@@ -7480,7 +7432,7 @@ var player2 = element2.animate(keyframes, { duration: 1000, delay: 1000 });
 </div>
 
 <pre class='idl'>
-[Constructor ((PropertyIndexedKeyframes or sequence&lt;Keyframe&gt; or SharedKeyframeList) frames)]
+[Constructor (object? frames)]
 interface SharedKeyframeList {
 };
 </pre>
@@ -7498,17 +7450,6 @@ interface SharedKeyframeList {
     ::  The keyframes to be shared. This argument is processed using the
         procedure defined in <a href="#processing-a-frames-argument"
         section></a>.
-
-        <div class="annotation">
-        We used to have wording here that indicated that if
-        <code>frames</code> is a {{SharedKeyframeList}}, the newly-created
-        object should refer to the same set of keyframes, rather than
-        copying them, but that is an (untestable) implementation detail
-        so it has been removed.
-        </div>
-
-        Issue: Do we really need to support <code>new SharedKeyframeList(new
-        SharedKeyframeList())</code> anyway?
 
     </div>
 
