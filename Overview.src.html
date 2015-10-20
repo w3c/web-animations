@@ -6737,45 +6737,80 @@ KeyframeEffect implements AnimationEffectMutable;
 
 </div>
 
+<h4 id="creating-a-new-keyframeeffect-object">Creating a new <code>KeyframeEffect</code> object</h4>
 
-<h4 id="the-keyframeeffectoptions-dictionary">The <code>KeyframeEffectOptions</code> dictionary</h4>
+<div class='informative-bg'><em>This section is non-normative</em>
 
-Additional parameters may be passed to the {{KeyframeEffectReadOnly()}} and
-{{KeyframeEffect()}} constructors by providing a {{KeyframeEffectOptions}}
-object.
+The {{KeyframeEffectReadOnly()}} and {{KeyframeEffect()}} constructors offer
+a number of approaches to creating a new {{KeyframeEffectReadOnly}} and
+{{KeyframeEffect}} objects.
 
-<pre class='idl'>
-dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
-    IterationCompositeOperation iterationComposite = "replace";
-    CompositeOperation          composite = "replace";
-    DOMString                   spacing = "distribute";
-};
-</pre>
+At its simplest, an {{KeyframeEffect}} object that changes the
+&lsquo;left&rsquo; property of <var>elem</var> to 100px over three
+seconds can be constructed as follows:
 
-<div class="members">
+<div class='example'><pre class='lang-javascript'>
+var effect = new KeyframeEffect(elem, { left: '100px' }, 3000);</pre></div>
 
-:   <dfn dict-member for=KeyframeEffectOptions>iterationComposite</dfn>
-::  The <a>iteration composite operation</a> used to define the way
-    animation values build from iteration to iteration.
+The second parameter, representing the list of keyframes, may
+specify multiple properties. (See <a href="#processing-a-frames-argument"
+section></a>.)
 
-:   <dfn dict-member for=KeyframeEffectOptions>composite</dfn>
-::  The <a>composite operation</a> used to composite this
-    animation with the <a>effect stack</a>, as specified by one
-    of the <a>CompositeOperation</a> enumeration values.
-    This is used for all <a>keyframes</a> that do not specify
-    a <a>keyframe-specific composite operation</a>.
+<div class='example'><pre class='lang-javascript'>
+// Specify multiple properties at once
+var effectA = new KeyframeEffect(elem, { left: '100px', top: '300px' }, 3000);
 
-:   <dfn dict-member for=KeyframeEffectOptions>spacing</dfn>
-::  The <a lt="keyframe spacing mode">spacing mode</a> to apply
-    to this <a>animation effect</a>'s <a>keyframes</a>.
+// Specify multiple frames
+var effectB = new KeyframeEffect(elem, [ { left: '100px' }, { left: '300px' } ], 3000);</pre></div>
 
-    See the {{KeyframeEffect/spacing}} attribute of the
-    {{KeyframeEffect}} interface for the recognized values and
-    their meanings.
+The third parameter, representing the animation's timing, may
+simply be a number representing the <a>iteration duration</a> in
+milliseconds as above, or, to specify further timing properties such
+as the <a>start delay</a>, an {{AnimationEffectTimingProperties}} object can
+be used, as follows:
 
-    Unrecognized values are set on the created {{KeyframeEffectReadOnly}} or
-    {{KeyframeEffect}} object, but are treated as "distribute" for the purpose
-    of animation model calculations.
+<div class='example'><pre class='lang-javascript'>
+var effect =
+  new KeyframeEffect(elem, { left: '100px' }, { duration: 3000, delay: 2000 });</pre></div>
+
+<!-- @ifdef INCLUDE_GROUPS -->
+If the duration is not specified, the <a>intrinsic iteration
+duration</a> is used which, for a <a>keyframe effect</a>, is zero.
+<!-- @endif -->
+<!-- @ifndef INCLUDE_GROUPS -->
+If the duration is not specified, a value of zero is used.
+<!-- @endif -->
+It is possible to create an animation that simply sets a property
+without any interpolation as follows:
+
+<div class='example'><pre class='lang-javascript'>
+var effect = new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' });</pre></div>
+
+
+<!-- @ifdef INCLUDE_GROUPS -->
+This is particularly useful in combination with other <a>animation effects</a>.
+For example, fading an element before switching
+&lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
+follows,
+
+<div class='example'><pre class='lang-javascript'>
+new SequenceEffect(
+  [
+    new KeyframeEffect(elem, { opacity: 0 }, 1000),
+    new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' })
+  ]
+);</pre></div>
+<!-- @endif -->
+
+Having created a {{KeyframeEffect}}, it can be played by adding it to
+an {{Animation}} and then playing that animation.
+For simple effects, however, the <a
+href="#extensions-to-the-element-interface"><code>Element.animate</code></a>
+shortcut is more convenient since it performs these steps
+automatically. For example,
+
+<div class='example'><pre class='lang-javascript'>
+elem.animate({ left: '100px' }, 3000);</pre></div>
 
 </div>
 
@@ -7221,6 +7256,47 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
         comments and escaping are allowed (but are not retained when the value
         is successfully parsed).
 
+<h4 id="the-keyframeeffectoptions-dictionary">The <code>KeyframeEffectOptions</code> dictionary</h4>
+
+Additional parameters may be passed to the {{KeyframeEffectReadOnly()}} and
+{{KeyframeEffect()}} constructors by providing a {{KeyframeEffectOptions}}
+object.
+
+<pre class='idl'>
+dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
+    IterationCompositeOperation iterationComposite = "replace";
+    CompositeOperation          composite = "replace";
+    DOMString                   spacing = "distribute";
+};
+</pre>
+
+<div class="members">
+
+:   <dfn dict-member for=KeyframeEffectOptions>iterationComposite</dfn>
+::  The <a>iteration composite operation</a> used to define the way
+    animation values build from iteration to iteration.
+
+:   <dfn dict-member for=KeyframeEffectOptions>composite</dfn>
+::  The <a>composite operation</a> used to composite this
+    animation with the <a>effect stack</a>, as specified by one
+    of the <a>CompositeOperation</a> enumeration values.
+    This is used for all <a>keyframes</a> that do not specify
+    a <a>keyframe-specific composite operation</a>.
+
+:   <dfn dict-member for=KeyframeEffectOptions>spacing</dfn>
+::  The <a lt="keyframe spacing mode">spacing mode</a> to apply
+    to this <a>animation effect</a>'s <a>keyframes</a>.
+
+    See the {{KeyframeEffect/spacing}} attribute of the
+    {{KeyframeEffect}} interface for the recognized values and
+    their meanings.
+
+    Unrecognized values are set on the created {{KeyframeEffectReadOnly}} or
+    {{KeyframeEffect}} object, but are treated as "distribute" for the purpose
+    of animation model calculations.
+
+</div>
+
 <h4 id="computed-keyframes-section">Computed keyframes</h4>
 
 Before calculating the effect value
@@ -7252,83 +7328,6 @@ Note: This procedure is performed every time the keyframe effect value is
 computed as well as every time {{KeyframeEffectReadOnly/getFrames()}} is called
 such that changes to any referenced {{SharedKeyframeList}} object or to the
 context used to resolve relative units are reflected in the result.
-
-<h4 id="creating-a-new-keyframeeffect-object">Creating a new <code>KeyframeEffect</code> object</h4>
-
-<div class='informative-bg'><em>This section is non-normative</em>
-
-The {{KeyframeEffectReadOnly()}} and {{KeyframeEffect()}} constructors offer
-a number of approaches to creating a new {{KeyframeEffectReadOnly}} and
-{{KeyframeEffect}} objects.
-
-At its simplest, an {{KeyframeEffect}} object that changes the
-&lsquo;left&rsquo; property of <var>elem</var> to 100px over three
-seconds can be constructed as follows:
-
-<div class='example'><pre class='lang-javascript'>
-var effect = new KeyframeEffect(elem, { left: '100px' }, 3000);</pre></div>
-
-The second parameter, representing the list of keyframes, may
-specify multiple properties. (See <a href="#processing-a-frames-argument"
-section></a>.)
-
-<div class='example'><pre class='lang-javascript'>
-// Specify multiple properties at once
-var effectA = new KeyframeEffect(elem, { left: '100px', top: '300px' }, 3000);
-
-// Specify multiple frames
-var effectB = new KeyframeEffect(elem, [ { left: '100px' }, { left: '300px' } ], 3000);</pre></div>
-
-The third parameter, representing the animation's timing, may
-simply be a number representing the <a>iteration duration</a> in
-milliseconds as above, or, to specify further timing properties such
-as the <a>start delay</a>, an {{AnimationEffectTimingProperties}} object can
-be used, as follows:
-
-<div class='example'><pre class='lang-javascript'>
-var effect =
-  new KeyframeEffect(elem, { left: '100px' }, { duration: 3000, delay: 2000 });</pre></div>
-
-<!-- @ifdef INCLUDE_GROUPS -->
-If the duration is not specified, the <a>intrinsic iteration
-duration</a> is used which, for a <a>keyframe effect</a>, is zero.
-<!-- @endif -->
-<!-- @ifndef INCLUDE_GROUPS -->
-If the duration is not specified, a value of zero is used.
-<!-- @endif -->
-It is possible to create an animation that simply sets a property
-without any interpolation as follows:
-
-<div class='example'><pre class='lang-javascript'>
-var effect = new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' });</pre></div>
-
-
-<!-- @ifdef INCLUDE_GROUPS -->
-This is particularly useful in combination with other <a>animation effects</a>.
-For example, fading an element before switching
-&lsquo;display&rsquo; to &lsquo;none&rsquo; can be achieved as
-follows,
-
-<div class='example'><pre class='lang-javascript'>
-new SequenceEffect(
-  [
-    new KeyframeEffect(elem, { opacity: 0 }, 1000),
-    new KeyframeEffect(elem, { display: 'none' }, { fill: 'forwards' })
-  ]
-);</pre></div>
-<!-- @endif -->
-
-Having created a {{KeyframeEffect}}, it can be played by adding it to
-an {{Animation}} and then playing that animation.
-For simple effects, however, the <a
-href="#extensions-to-the-element-interface"><code>Element.animate</code></a>
-shortcut is more convenient since it performs these steps
-automatically. For example,
-
-<div class='example'><pre class='lang-javascript'>
-elem.animate({ left: '100px' }, 3000);</pre></div>
-
-</div>
 
 <h3 id="the-iterationcompositeoperation-enumeration">The <code>IterationCompositeOperation</code> enumeration</h3>
 
