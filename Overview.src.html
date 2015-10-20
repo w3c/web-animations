@@ -45,7 +45,10 @@ url: https://html.spec.whatwg.org/#document; type: interface; text: Document; sp
 urlPrefix: https://heycam.github.io/webidl/#dfn-; type: dfn; spec: webidl
     text: platform object
     text: throw
-url: https://heycam.github.io/webidl/#dfn-platform-object; type: dfn; text: platform object; spec: webidl
+    text: convert ecmascript to idl value
+urlPrefix: https://heycam.github.io/webidl/#; type: dfn; spec: webidl
+    text: es to dictionary
+url: https://heycam.github.io/webidl/#es-to-DOMString; type: dfn; text: es to DOMString; spec: webidl
 urlPrefix: http://www.ecma-international.org/ecma-262/6.0/#sec-; type: dfn; spec: ecma-262
     text: GetIterator
     text: GetMethod
@@ -778,8 +781,7 @@ an animation, <var>animation</var>, to <var>seek time</var> is as follows:
     then perform the following steps.
 
     1.   If the <a>current time</a> is <a lt=unresolved>resolved</a>, then
-         <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
-         <span class=exceptionname>TypeError</span>.
+         <a>throw</a> a <span class=exceptionname>TypeError</span>.
 
     1.   Abort these steps.
 
@@ -1041,9 +1043,8 @@ as CSS Animations [[CSS3-ANIMATIONS]].
         *   <a>current time</a> &gt; <a>target effect end</a>,
 
     ::  If <a>target effect end</a> is positive infinity,
-        <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> an
-        <span class=exceptionname>InvalidStateError</span> and abort these
-        steps.
+        <a>throw</a> an <span class=exceptionname>InvalidStateError</span> and
+        abort these steps.
         Otherwise, set <var>animation</var>'s <a>hold time</a> to <a>target
         effect end</a>.
     :   If <a>animation playback rate</a> = 0 and <var>animation</var>'s
@@ -1151,9 +1152,8 @@ follows:
     :    Otherwise,
     ::   If <a>target effect end</a> for <var>animation</var> is positive
          infinity,
-         <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> an
-         <span class=exceptionname>InvalidStateError</span> and abort these
-         steps.
+         <a>throw</a> an <span class=exceptionname>InvalidStateError</span>
+         and abort these steps.
          Otherwise, let <var>animation</var>'s <a>hold time</a> be
          <a>target effect end</a>.
 
@@ -1457,8 +1457,8 @@ for <var>animation</var> defined below:
 1.  If <a>animation playback rate</a> is zero,
     or if <a>animation playback rate</a> &gt; 0 and <a>target effect end</a> is
     infinity,
-    <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> an
-    <span class=exceptionname>InvalidStateError</span> and abort these steps.
+    <a>throw</a> an <span class=exceptionname>InvalidStateError</span> and
+    abort these steps.
 
 1.  Set <var>limit</var> as follows:
 
@@ -1617,8 +1617,8 @@ The procedure to <dfn>reverse an animation</dfn> of <a>animation</a>
 
 1.  If there is no <a>timeline</a> associated with <var>animation</var>, or the
     associated <a>timeline</a> is <a lt="inactive timeline">inactive</a>
-    <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> an
-    <span class=exceptionname>InvalidStateError</span> and abort these steps.
+    <a>throw</a> an <span class=exceptionname>InvalidStateError</span> and
+    abort these steps.
 2.  <a>Silently set the animation playback rate</a> of
     <var>animation</var> to <code>&minus;<a>animation playback rate</a></code>.
 
@@ -5636,13 +5636,11 @@ apart from the timing model.
     void before (AnimationEffectReadOnly... effects)</dfn>
 ::  Inserts <var>effects</var> before this <a>animation effect</a>.
 
-    1.  If there is no <a>parent group</a>, terminate these
-        steps.
+    1.  If there is no <a>parent group</a>, abort these steps.
     2.  If any of the <a>animation effects</a> in <var>effects</var> is an
         <a>inclusive ancestor</a> of this <a>animation effect</a>,
-        <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
-        <span class=exceptionname>HierarchyRequestError</span> exception and
-        terminate these steps.
+        <a>throw</a> a <span class=exceptionname>HierarchyRequestError</span>
+        exception and abort these steps.
     3.  <a lt="insert children">Insert</a> <var>effects</var> before
         this <a>animation effect</a>.
 
@@ -5658,13 +5656,11 @@ effect.before(effect); // throws HierarchyRequestError</pre>
     void after(AnimationEffectReadOnly... effects)</dfn>
 ::  Inserts <var>effects</var> after this <a>animation effect</a>.
 
-    1.  If there is no <a>parent group</a>, terminate these
-        steps.
+    1.  If there is no <a>parent group</a>, abort these steps.
     2.  If any of the <a>animation effects</a> in <var>effects</var> is an
         <a>inclusive ancestor</a> of this <a>animation effect</a>,
-        <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
-        <span class=exceptionname>HierarchyRequestError</span> exception and
-        terminate these steps.
+        <a>throw</a> a <span class=exceptionname>HierarchyRequestError</span>
+        exception and abort these steps.
     3.  Let <var>reference child</var> be the <a
         lt="next sibling not included">next sibling of
         this animation effect not in <var>effects</var></a>.
@@ -5676,13 +5672,11 @@ effect.before(effect); // throws HierarchyRequestError</pre>
 ::  Replaces this {{AnimationEffectReadOnly}} with the passed in
     <var>effects</var>.
 
-    1.  If there is no <a>parent group</a>, terminate these
-        steps.
+    1.  If there is no <a>parent group</a>, abort these steps.
     2.  If any of the <a>animation effects</a> in <var>effects</var> is an
         <a>inclusive ancestor</a> of the <a>parent group</a>
-        <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
-        <span class=exceptionname>HierarchyRequestError</span> exception and
-        terminate these steps.
+        <a>throw</a> a <span class=exceptionname>HierarchyRequestError</span>
+        exception and abort these steps.
     3.  Let <var>reference child</var> be the <a
         lt="next sibling not included">next sibling of
         this animation effect not in <var>effects</var></a>.
@@ -6262,9 +6256,8 @@ GroupEffect implements GroupEffectMutable;
 
     1.  If any of the <a>animation effects</a> in <var>effects</var> is an
         <a>inclusive ancestor</a> of this <a>animation effect</a>,
-        <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
-        <span class=exceptionname>HierarchyRequestError</span> exception and
-        terminate these steps.
+        <a>throw</a> a <span class=exceptionname>HierarchyRequestError</span>
+        exception and abort these steps.
     2.  <a lt="insert children">Insert</a> <var>effects</var> before
         the <a>first child</a>.
 
@@ -6274,9 +6267,8 @@ GroupEffect implements GroupEffectMutable;
 
     1.  If any of the <a>animation effects</a> in <var>effects</var> is an
         <a>inclusive ancestor</a> of this <a>animation effect</a>,
-        <a href="http://heycam.github.io/webidl/#dfn-throw">throw</a> a
-        <span class=exceptionname>HierarchyRequestError</span> exception and
-        terminate these steps.
+        <a>throw</a> a <span class=exceptionname>HierarchyRequestError</span>
+        exception and abort these steps.
     2.  <a lt="insert children">Insert</a> <var>effects</var> before
         <code>null</code>.
 
@@ -6371,7 +6363,7 @@ teps:</p>
     1.  Let <var>context effect</var> be the <a>next sibling</a> of
         <var>context effect</var>.
     2.  If <var>context effect</var> is not in <var>effects</var> return
-        <var>context effect</var> and terminate these steps.
+        <var>context effect</var> and abort these steps.
 
 3.  Return <code>null</code>.
 
@@ -6984,12 +6976,10 @@ and returns a map from either property names to DOMString values if <var>allow
 lists</var> is false, or a from property names to sequences of DOMString values
 otherwise, using the following procedure:
 
-1.  Run the procedure using <a
-    href="http://heycam.github.io/webidl/#es-to-dictionary"
-    class="externalDFN">convert an ECMAScript value to a dictionary type</a>
-    [[!WEBIDL]] with <var>keyframe input</var> as the ECMAScript value,
-    and the dictionary type depending on the value of the <var>allow lists</var>
-    flag as follows:
+1.  Run the procedure using <a lt="es to dictionary">convert an ECMAScript
+    value to a dictionary type</a> [[!WEBIDL]] with <var>keyframe input</var>
+    as the ECMAScript value, and the dictionary type depending on the value of
+    the <var>allow lists</var> flag as follows:
 
     <div class='switch'>
     :   If <var>allow lists</var> is true,
@@ -7065,8 +7055,7 @@ otherwise, using the following procedure:
         ::  Let <var>property values</var> be the result of converting <var>raw
             value</var> to IDL type <code>(DOMString or
             sequence&lt;DOMString&gt;)</code> using the <a
-            href="http://heycam.github.io/webidl/#dfn-convert-ecmascript-to-idl-value"
-            class="externalDFN">procedures
+            lt="convert ECMAScript to IDL value">procedures
             defined for converting an ECMAScript value to an IDL value</a>
             [[!WEBIDL]].
 
@@ -7077,8 +7066,7 @@ otherwise, using the following procedure:
         :   Otherwise,
         ::  Let <var>property values</var> be the result of converting <var>raw
             value</var> to a DOMString using the <a
-            href="http://heycam.github.io/webidl/#es-DOMString"
-            class="externalDFN">procedure for converting an ECMAScript value to
+            lt="es to DOMString">procedure for converting an ECMAScript value to
             a DOMString</a> [[!WEBIDL]].
 
         </div>
@@ -7149,11 +7137,11 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
 
         1.  If <var>processed frames</var> is not <a>loosely sorted by
             offset</a>, <a>throw</a> a <span
-            class=exceptionname>TypeError</span>.
+            class=exceptionname>TypeError</span> and abort these steps.
         1.  If there exist any <a>keyframe</a> in <var>processed frames</var>
             whose <a>keyframe offset</a> is non-null and less
             than zero or greater than one, <a>throw</a> a
-            <span class=exceptionname>TypeError</span>.
+            <span class=exceptionname>TypeError</span> and abort these steps.
 
     :   Otherwise,
     ::  1.  Let <var>property-indexed keyframe</var> be the result of
