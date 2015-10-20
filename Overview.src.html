@@ -37,6 +37,7 @@ Abstract: This specification defines a model for synchronization and
     specifications will define declarative means for exposing these
     features.
 Ignored Terms: double, boolean, DOMString, unsigned long, unrestricted double, (animationeffectreadonly or effectcallback), (unrestricted double or DOMString)
+Ignored Vars: RGB|A, G, t
 </pre>
 <pre class="anchors">
 urlPrefix: https://heycam.github.io/webidl/#dfn-; type: dfn; spec: webidl
@@ -482,9 +483,10 @@ Note: HTML currently refers to a &ldquo;<a
   CSS animations and send events</a>&rdquo; operation but this should be
 understood to include sampling <em>all</em> animations covered by this
 specification, not only CSS animations.
-Furthermore, the <var>now</var> parameter passed to this operation is ignored
-in this specification since we define a more general model that supports
-timelines whose time origin is not relative to <code>navigationStart</code>.
+Furthermore, the <span class=param>now</span> parameter passed to this
+operation is ignored in this specification since we define a more general
+model that supports timelines whose time origin is not relative to
+<code>navigationStart</code>.
 
 <h3 id="the-global-clock">The global clock</h3>
 
@@ -6192,14 +6194,16 @@ GroupEffect implements GroupEffectMutable;
     1.  Create a new {{GroupEffectReadOnly}} object, <var>group</var>.
 
     2.  Let <var>timing input</var> be the result of applying the
-        <a>procedure for processing a timing argument</a> to <var>timing</var>.
+        <a>procedure for processing a timing argument</a> to
+        {{GroupEffectReadOnly/GroupEffectReadOnly()/timing}}.
 
     3.  Set <code><var>group</var>.timing</code> to a new
         {{AnimationEffectTimingReadOnly}} object whose attributes are assigned
         the value of the member of the same name on <var>timing input</var>.
 
-    4.  <a lt="insert children">Insert</a> <var>children</var>
-        before <code>null</code>.
+    4.  <a lt="insert children">Insert</a>
+        {{GroupEffectReadOnly/GroupEffectReadOnly()/children}} before
+        <code>null</code>.
 
     <div class="parameters">
 
@@ -6743,7 +6747,7 @@ a number of approaches to creating a new {{KeyframeEffectReadOnly}} and
 {{KeyframeEffect}} objects.
 
 At its simplest, an {{KeyframeEffect}} object that changes the
-&lsquo;left&rsquo; property of <var>elem</var> to 100px over three
+&lsquo;left&rsquo; property of <code>elem</code> to 100px over three
 seconds can be constructed as follows:
 
 <div class='example'><pre class='lang-javascript'>
@@ -7114,8 +7118,6 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
             <var>method</var>).
 
         1.  <a>ReturnIfAbrupt</a>(<var>iter</var>).
-
-        1.  Initialize <var>i</var> to be 0.
 
         1.  Repeat:
 
