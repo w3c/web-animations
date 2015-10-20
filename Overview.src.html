@@ -48,12 +48,16 @@ urlPrefix: https://heycam.github.io/webidl/#dfn-; type: dfn; spec: webidl
     text: convert ecmascript to idl value
 urlPrefix: https://heycam.github.io/webidl/#; type: dfn; spec: webidl
     text: es to dictionary
-url: https://heycam.github.io/webidl/#es-to-DOMString; type: dfn; text: es to DOMString; spec: webidl
+    text: es to DOMString; url: es-to-DOMString
 urlPrefix: http://www.ecma-international.org/ecma-262/6.0/#sec-; type: dfn; spec: ecma-262
     text: GetIterator
     text: GetMethod
     text: IteratorStep
     text: IteratorValue
+    text: Promise object; url: promise-objects
+    text: Promise; url: promise-objects
+    text: PromiseCapability record; url: promisecapability-records
+    text: Promise.resolve; url: promise.resolve
     text: ReturnIfAbrupt
     text: well known symbols
 </pre>
@@ -953,25 +957,21 @@ following conditions are true:
 
 <h4 id='promise-objects'>Promise objects</h4>
 
-<dfn>Promise</dfn> objects are defined by [[!ECMA-262]], <a
-  href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">section
-  25.4</a>.
+<a>Promise objects</a> are defined by [[!ECMA-262]].
 
-To <dfn>resolve a Promise</dfn> with <var>value</var>, 
-call the \[[Call]] internal method of \[[Resolve]] on the <a
-  href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promisecapability-records">Promise
-capability</a> record for the promise, passing <code>undefined</code> as
+To <dfn>resolve a Promise</dfn> with <var>value</var>,
+call the \[[Call]] internal \[[Resolve]] method on the <a>PromiseCapability
+record</a> for the promise, passing <code>undefined</code> as
 <var>thisArgument</var> and (<var>value</var>) as <var>argumentsList</var>.
 
-To <dfn>reject a Promise</dfn> with <var>reason</var>, 
-call the \[[Call]] internal method of \[[Reject]] on the <a
-  href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promisecapability-records">Promise
-capability</a> record for the promise, passing <code>undefined</code> as
-<var>thisArgument</var> and (<var>reason</var>) as <var>argumentsList</var>.
+To <dfn>reject a Promise</dfn> with <var>reason</var>,
+call the \[[Call]] internal \[[Reject]] method on the <a>PromiseCapability
+record</a> for the promise, passing <code>undefined</code> as
+<var>thisArgument</var> and
+(<var>reason</var>) as <var>argumentsList</var>.
 
-To <dfn>create a new resolved Promise</dfn> with <var>value</var>, call <a
-  href="http://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise.resolve">Promise.resolve</a>,
-passing <var>value</var> as <var>x</var>.
+To <dfn>create a new resolved Promise</dfn> with <var>value</var>, call
+<a>Promise.resolve</a>, passing <var>value</var> as <var>x</var>.
 
 <h4 id='the-current-ready-promise'>The current ready promise</h4>
 
@@ -979,7 +979,7 @@ Each <a>animation</a> has a <dfn>current ready promise</dfn>.
 The <a>current ready promise</a> is initially a resolved <a>Promise</a> created
 using the procedure to <a>create a new resolved Promise</a>.
 
-The object is replaced with a new <a>Promise</a> object every time the animation
+The object is replaced with a new <a>Promise object</a> every time the animation
 enters the <a>pending play state</a> as well as when the animation is
 canceled (see <a href="#canceling-an-animation-section" section></a>).
 
@@ -987,7 +987,7 @@ canceled (see <a href="#canceling-an-animation-section" section></a>).
 
     Note that since the same object is used for both pending play and
     pending pause requests, authors are advised to check the state of the
-    animation when the <a>Promise</a> is resolved.
+    animation when the <a>Promise object</a> is resolved.
 
     For example, in the following code fragment, the state of the animation
     will be <a lt="running play state">running</a> when the
