@@ -47,6 +47,7 @@ urlPrefix: https://heycam.github.io/webidl/#dfn-; type: dfn; spec: webidl
 urlPrefix: https://heycam.github.io/webidl/; type: dfn; spec: webidl
     text: es to dictionary
     text: es to DOMString; url: es-to-DOMString
+    text: DOMString to es; url: DOMString-to-es
 urlPrefix: http://www.ecma-international.org/ecma-262/6.0/#sec-; type: dfn; spec: ecma-262
     text: GetIterator
     text: GetMethod
@@ -58,6 +59,7 @@ urlPrefix: http://www.ecma-international.org/ecma-262/6.0/#sec-; type: dfn; spec
     text: Promise.resolve; url: promise.resolve
     text: ReturnIfAbrupt
     text: well known symbols
+    text: [[DefineOwnProperty]]; url: ordinary-object-internal-methods-and-internal-slots-defineownproperty-p-desc
 urlPrefix: https://html.spec.whatwg.org/multipage/browsers.html; type: dfn; spec: html
     text: active document
     text: an entry with persisted user state
@@ -80,7 +82,9 @@ url: https://html.spec.whatwg.org/#document; type: interface; text: Document; sp
 url: https://svgwg.org/svg2-draft/pservers.html#StopElementOffsetAttribute; type: element-attr; for: stop; text: offset; spec: svg2
 url: https://svgwg.org/svg2-draft/mimereg.html#mime-registration; type: dfn; text: SVG MIME type; spec: svg2
 urlPrefix: http://dev.w3.org/csswg/cssom/; type: dfn; spec: cssom
+    text: CSS property to IDL attribute
     text: IDL attribute to CSS property
+    text: serialize a CSS value
 </pre>
 <pre class="link-defaults">
 spec:dom-ls; type:interface; text:EventTarget
@@ -6482,8 +6486,8 @@ interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
     readonly attribute IterationCompositeOperation iterationComposite;
     readonly attribute CompositeOperation          composite;
     readonly attribute DOMString                   spacing;
-    KeyframeEffect             clone();
-    sequence&lt;ComputedKeyframe&gt; getFrames ();
+    KeyframeEffect   clone ();
+    sequence&lt;object&gt; getFrames ();
 };
 
 [Constructor (Animatable? target,
@@ -6687,17 +6691,121 @@ KeyframeEffect implements AnimationEffectMutable;
          argument.
 
 :   <dfn method for=KeyframeEffectReadOnly lt="getFrames()">
-    sequence&lt;ComputedKeyframe&gt; getFrames()</dfn>
+    sequence&lt;object&gt; getFrames()</dfn>
 ::  Returns the <a>computed keyframes</a> that make up this effect along with
     their <a>computed keyframe offsets</a>.
 
-    <div class="issue">
+    <div class='informative-bg'><em>This section is non-normative</em>
 
-      Spec the exact steps here. Specifically describing how we set up these
-      objects (using \[[DefineOwnProperty]]) and the property names we use for
-      each part of the keyframes.
+      The result of this method is a sequence of objects of the following
+      format:
+
+      <pre class='lang-idl'>
+      dictionary ComputedKeyframe {
+          // ... property-value pairs ...
+          // i.e. DOMString propertyName
+          double?             offset = null;
+          double              computedOffset;
+          DOMString           easing = "linear";
+          CompositeOperation? composite;
+      };
+      </pre>
+
+      The meaning and values of each member is as follows:
+
+      :   <code>offset</code>
+      ::  The <a>keyframe offset</a> of the <a>keyframe</a> specified as
+          a number between 0.0 and 1.0 inclusive or <code>null</code>.
+
+          This will be <code>null</code> if the <a>keyframe</a> is
+          automatically spaced using the <a>keyframe effect</a>'s
+          <a>keyframe spacing mode</a>.
+
+      :   <code>computedOffset</code>
+      ::  The <a>computed keyframe offset</a> for this <a>keyframe</a>
+          calculated by applying the <a>keyframe effect</a>'s <a>keyframe
+          spacing mode</a> when the list of <a>computed keyframes</a> was
+          produced.
+
+          Unlike the <code>offset</code> member, the <code>computedOffset</code>
+          is never null.
+
+      :   <code>easing</code>
+      ::  The <a>timing function</a> used to transform the progress of time
+          from this keyframe until the next keyframe in the series.
+
+      :   <code>composite</code>
+      ::  The <a>keyframe-specific composite operation</a> used to combine the
+          values specified in this keyframe with the <a>underlying value</a>.
+
+          This member will be absent if the <a>composite operation</a>
+          specified on the <a>keyframe effect</a> is being used.
 
     </div>
+
+    Since <a>keyframes</a> are represented by a partially open-ended dictionary
+    type that is not currently able to be expressed with WebIDL, the procedure
+    used to prepare the result of this method is defined in prose below:
+
+    1.  Let <var>result</var> be an empty sequence of objects.
+    1.  Let <var>computed keyframes</var> be the result of calculating the
+        <a>computed keyframes</a> for this <a>keyframe effect</a>
+        (see [[#computed-keyframes-section]]).
+    1.  For each <var>computed keyframe</var> in <var>computed keyframes</var>
+        perform the following steps:
+
+        1.  Initialize a dictionary object, <var>output keyframe</var>, using
+            the following definition:
+
+            <pre class='idl'>
+             dictionary BaseComputedKeyframe {
+                 double?            offset = null;
+                 double             computedOffset;
+                 DOMString          easing = "linear";
+                 CompositeOperation composite;
+            };
+            </pre>
+
+        1.  Set {{BaseComputedKeyframe/offset}},
+            {{BaseComputedKeyframe/computedOffset}},
+            {{BaseComputedKeyframe/easing}} members of
+            <var>output keyframe</var> to the respective values
+            <a>keyframe offset</a>,
+            <a>computed keyframe offset</a>, and
+            keyframe-specific <a>timing function</a>
+            of <var>computed keyframe</var>.
+        1.  If <var>computed keyframe</var> has a <a>keyframe-specific composite
+            operation</a>, set {{BaseComputedKeyframe/composite}} to that value.
+        1.  For each animation property-value pair specified on <var>computed
+            keyframe</var>, <var>declaration</var>, perform the following steps:
+
+            1.  Let <var>property name</var> be the result of applying the
+                <a>animation property name to IDL attribute name</a> algorithm
+                to the property name of <var>declaration</var>.
+            1.  Let <var>IDL value</var> be result of serializing the
+                the property value of <var>declaration</var>.
+                For CSS properties, this is the result of passing
+                <var>declaration</var> to the algorithm to <a>serialize a CSS
+                value</a> [[!CSSOM]].
+
+                Issue: Define serialization for SVG attributes.
+
+            1.  Let <var>value</var> be the result of <a
+                lt="DOMString to es">converting</a> <var>IDL value</var> to an
+                ECMAScript String value.
+            1.  Call the <a>\[[DefineOwnProperty]]</a> internal method on
+                <var>output keyframe</var> with property name <var>property
+                name</var>,
+                Property Descriptor {
+                \[[Writable]]: <span class=esvalue>true</span>,
+                \[[Enumerable]]: <span class=esvalue>true</span>,
+                \[[Configurable]]: <span class=esvalue>true</span>,
+                \[[Value]]: <var>value</var> }
+                and Boolean flag <span class=esvalue>false</a>.
+
+        1.  Append <var>output keyframe</var> to <var>result</var>.
+
+    1. Return <var>result</var>.
 
 :   <dfn method for=KeyframeEffect lt='setFrames(frames)'>
     void setFrames(object? frames)</dfn>
@@ -6794,6 +6902,33 @@ automatically. For example,
 elem.animate({ left: '100px' }, 3000);</pre></div>
 
 </div>
+
+<h4 id="property-name-conversion">Property names and IDL names</h4>
+
+The <dfn>animation property name to IDL attribute name</dfn> algorithm for
+<var>property</var> is as follows:
+
+1.  If <var>property</var> refers to the <{stop/offset}> attribute of
+    the SVG <{stop}> element, return the the string "svgOffset".
+
+1.  If <var>property</var> refers to the CSS 'float' property,
+    return the string "cssFloat".
+
+1.  Otherwise, return the result of applying the <a>CSS property to IDL
+    attribute</a> algorithm [[!CSSOM]] to <var>property</var>.
+
+The <dfn>IDL attribute name to animation property name</dfn> algorithm for
+<var>attribute</var> is as follows:
+
+1.  If <var>attribute</var> is the string "svgOffset", then return
+    an animation property representing the <{stop/offset}> attribute
+    of the SVG <{stop}> element.
+
+1.  If <var>attribute</var> is the string "cssFloat", then return
+    an animation property representing the CSS 'float' property.
+
+1.  Otherwise, return the result of applying the <a>IDL attribute to CSS
+    property</a> algorithm [[!CSSOM]] to <var>attribute</var>.
 
 <h4 id="processing-a-frames-argument">Processing a <code>frames</code>
 argument</h4>
@@ -6998,16 +7133,8 @@ otherwise, using the following procedure:
         names and attribute names that can be animated by the
         implementation.
     1.  Convert each property name in <var>animatable properties</var>
-        to the equivalent IDL attribute by applying the <a
-        href="http://dev.w3.org/csswg/cssom/#css-property-to-idl-attribute">CSS
-        property to IDL attribute</a> algorithm [[!CSSOM]].
-    1.  If the user agent supports animation of the 'float'
-        CSS property, replace "float" in
-        <var>animatable properties</var> with "cssFloat".
-    1.  If the user agent supports animation of the
-        <{stop/offset}> attribute of <{stop}> elements [[!SVG2]],
-        replace "offset" in <var>animatable properties</var> with "svgOffset".
-
+        to the equivalent IDL attribute by applying the
+        <a>animation property name to IDL attribute name</a> algorithm.
 
 1.  Let <var>input properties</var> be the result of calling the <a
     href="http://www.ecma-international.org/ecma-262/6.0/#sec-enumerableownnames">EnumerableOwnNames</a> operation with <var>keyframe input</var> as the object.
@@ -7051,21 +7178,9 @@ otherwise, using the following procedure:
 
         </div>
 
-    1.  Calculate the <var>normalized property name</var> as the result of the
-        first matching condition from the following:
-
-        <div class="switch">
-        :   If <var>property name</var> is the string "cssFloat",
-        ::  "float".
-
-        :   If <var>property name</var> is the string "svgOffset",
-        ::  "offset"
-
-        :   Otherwise,
-        ::  the result of applying the <a>IDL attribute to CSS property</a>
-            algorithm [[!CSSOM]] to <var>property name</var>.
-
-        </div>
+    1.  Calculate the <var>normalized property name</var> as the result of
+        applying the <a>IDL attribute name to animation property name</a>
+        algorithm to <var>property name</var>.
 
     1.  Add a property to to <var>keyframe output</var> with <var>normalized
         property name</var> as the property name, and <var>property values</var>
@@ -7354,30 +7469,6 @@ enum CompositeOperation {"replace", "add", "accumulate"};
     the <a>animation effect</a> is <a
     lt="animation accumulation">accumulated</a> on to the
     <a>underlying value</a>.
-
-<h3 id="the-computedkeyframe-dictionary">The <code>ComputedKeyframe</code> dictionary</h3>
-
-<a>Keyframes</a> returned by the {{KeyframeEffectReadOnly/getFrames()}} method
-of the {{KeyframeEffectReadOnly}} interface are represented using
-{{ComputedKeyframe}} dictionary objects.
-
-<pre class='idl'>
-dictionary ComputedKeyframe {
-    double?             offset = null;
-    DOMString           easing = "linear";
-    CompositeOperation  composite;
-    double              computedOffset;
-};
-</pre>
-
-<div class='members'>
-
-:   <dfn dict-member for=ComputedKeyframe>computedOffset</dfn>
-::  The <a>computed keyframe offset</a> calculated for this <a>keyframe</a> as
-    a result of applying the spacing procedure defined in
-    [[#spacing-keyframes]].
-
-</div>
 
 <h3 id="the-sharedkeyframelist-interface">The <code>SharedKeyframeList</code> interface</h3>
 
