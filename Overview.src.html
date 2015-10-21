@@ -7327,17 +7327,26 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
         If the property value is invalid according to the syntax for the
         property, store the original DOMString used for the property value.
 
+        Issue: Should we really retain this? It might aid feature-detection
+        if we could replace it with some value indicating an error?
+
         User agents that provide support for diagnosing errors in content
         SHOULD produce an appropriate warning highlighting the unrecognized
         property value.
 
     1.  Let the <a>timing function</a> of <var>frame</var> be the result of
         parsing the &ldquo;easing&rdquo; property on <var>frame</var> using the
-        CSS parser and the grammar defined for the
+        CSS syntax defined for the
         {{AnimationEffectTimingReadOnly/easing}} property of the
         {{AnimationEffectTimingReadOnly}} interface.
 
-        Note: Using the CSS parser in both of these steps implies that CSS
+        If parsing the &ldquo;easing&rdquo; property failed, let the <a>timing
+        function</a> of <var>frame</var> be &ldquo;linear&rdquo;.
+        User agents that provide support for diagnosing errors in content
+        SHOULD produce an appropriate warning highlighting the unrecognized
+        <a>timing function</a> in this case.
+
+        Note: Using the CSS parser in both of the above steps implies that CSS
         comments and escaping are allowed (but are not retained when the value
         is successfully parsed).
 
