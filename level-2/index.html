@@ -5730,8 +5730,13 @@ property</a> algorithm <a data-link-type="biblio" href="#biblio-cssom">[CSSOM]</
 <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">color</span><span class="o">:</span> <span class="p">[</span> <span class="s1">'red'</span> <span class="p">]</span> <span class="p">},</span> <span class="mi">1000</span><span class="p">);</span>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'red'</span> <span class="p">},</span> <span class="mi">1000</span><span class="p">);</span></pre>
      </div>
+     <p>The first form (the array-form) consists of an array of keyframes where each
+keyframe may specify at most one value per animation property.
+The second form (the object-form) consists of an object where each animation
+property may specify a single animation value or an array of animation values.</p>
+     <p>The first array-form is the canonical form and is the form returned by the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getframes">getFrames()</a></code> method.</p>
      <p><a data-link-type="dfn" href="#keyframe-offset">Keyframe offsets</a> and <a data-link-type="dfn" href="#keyframe-specific-composite-operation">keyframe-specific composite operations</a> can
-only be specified using the array form as demonstrated below:</p>
+only be specified using the array-form as illustrated below:</p>
      <div class="example" id="example-232560e3">
       <a class="self-link" href="#example-232560e3"></a> 
 <pre class="lang-javascript highlight"><span class="c1">// The keyframes without offsets will automatically have offsets computed</span>
@@ -5747,9 +5752,9 @@ only be specified using the array form as demonstrated below:</p>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'0px'</span><span class="p">,</span> <span class="nx">composite</span><span class="o">:</span> <span class="s1">'add'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'200px'</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span></pre>
      </div>
-     <p><a data-link-type="dfn" href="#timing-function">Timing functions</a> may be specified in either form. The array form allows
+     <p><a data-link-type="dfn" href="#timing-function">Timing functions</a> may be specified in either form. The array-form allows
 specifying different <a data-link-type="dfn" href="#timing-function">timing functions</a> for each <a data-link-type="dfn" href="#keyframe">keyframe</a> whilst
-the object form allows specifying a <a data-link-type="dfn" href="#timing-function">timing function</a> that will be applied
+the object-form allows specifying a <a data-link-type="dfn" href="#timing-function">timing function</a> that will be applied
 to all keyframes.</p>
      <div class="example" id="example-547663b6">
       <a class="self-link" href="#example-547663b6"></a> 
@@ -5771,24 +5776,23 @@ using a <code class="idl"><a data-link-type="idl" href="#dictdef-keyframeeffecto
 a partially-open dictionary type.</p>
      <p>Conceptually, the type of this argument is equivalent to the following
 WebIDL-like definition:</p>
-<pre class="lang-idl">dictionary Keyframe {
-    // ... property-value pairs ...
-    // i.e. DOMString propertyName
-    double?             offset = null;
-    DOMString           easing = "linear";
+<pre class="lang-idl highlight">dictionary Keyframe {
+    <span class="o">//</span> ... property<span class="o">-</span>value pairs ...
+    <span class="o">//</span> i.e. DOMString propertyName
+    <span class="nb">double</span>?             offset <span class="o">=</span> null;
+    DOMString           easing <span class="o">=</span> "linear";
     CompositeOperation? composite;
 };
 
 dictionary PropertyIndexedKeyframes {
-    // ... property-value and property-valuelist pairs ...
-    // i.e. (DOMString or sequence<domstring>) propertyName
-    DOMString           easing = "linear";
+    <span class="o">//</span> ... property<span class="o">-</span>value <span class="k">and</span> property<span class="o">-</span>valuelist pairs ...
+    <span class="o">//</span> i.e. (DOMString <span class="k">or</span> sequence<span class="o">&lt;</span>DOMString<span class="o">></span>) propertyName
+    DOMString           easing <span class="o">=</span> "linear";
 };
 
-typedef KeyframeArgument (sequence&lt;Keyframe> or
-                          PropertyIndexedKeyframes or
-                          SharedKeyframeList);
-</domstring></pre>
+typedef KeyframeArgument (sequence<span class="o">&lt;</span>Keyframe<span class="o">></span> <span class="k">or</span>
+                          PropertyIndexedKeyframes <span class="k">or</span>
+                          SharedKeyframeList);</pre>
      <p>The meaning and allowed values of each argument is as follows:</p>
      <dl>
       <dt data-md="">
@@ -6055,14 +6059,20 @@ following steps:</p>
 value using the syntax specified for that property and store the result.</p>
         <p>If the property value is invalid according to the syntax for the
 property, store the original DOMString used for the property value.</p>
+        <p class="issue" id="issue-17b76bb8"><a class="self-link" href="#issue-17b76bb8"></a> Should we really retain this? It might aid feature-detection
+if we could replace it with some value indicating an error?</p>
         <p>User agents that provide support for diagnosing errors in content
 SHOULD produce an appropriate warning highlighting the unrecognized
 property value.</p>
        <li data-md="">
         <p>Let the <a data-link-type="dfn" href="#timing-function">timing function</a> of <var>frame</var> be the result of
 parsing the “easing” property on <var>frame</var> using the
-CSS parser and the grammar defined for the <code class="idl"><a data-link-type="idl" href="#dom-animationeffecttimingreadonly-easing">easing</a></code> property of the <code class="idl"><a data-link-type="idl" href="#animationeffecttimingreadonly">AnimationEffectTimingReadOnly</a></code> interface.</p>
-        <p class="note" role="note">Note: Using the CSS parser in both of these steps implies that CSS
+CSS syntax defined for the <code class="idl"><a data-link-type="idl" href="#dom-animationeffecttimingreadonly-easing">easing</a></code> property of the <code class="idl"><a data-link-type="idl" href="#animationeffecttimingreadonly">AnimationEffectTimingReadOnly</a></code> interface.</p>
+        <p>If parsing the “easing” property failed, let the <a data-link-type="dfn" href="#timing-function">timing
+function</a> of <var>frame</var> be “linear”.
+User agents that provide support for diagnosing errors in content
+SHOULD produce an appropriate warning highlighting the unrecognized <a data-link-type="dfn" href="#timing-function">timing function</a> in this case.</p>
+        <p class="note" role="note">Note: Using the CSS parser in both of the above steps implies that CSS
 comments and escaping are allowed (but are not retained when the value
 is successfully parsed).</p>
       </ol>
@@ -7686,6 +7696,8 @@ that here.<a href="#issue-c84185b9"> ↵ </a></div>
    <div class="issue"> Define serialization for SVG attributes.<a href="#issue-9ae4a496"> ↵ </a></div>
    <div class="issue"> Do we need null offsets or is it enough to just test for the
 absence of the property?<a href="#issue-361f2071"> ↵ </a></div>
+   <div class="issue"> Should we really retain this? It might aid feature-detection
+if we could replace it with some value indicating an error?<a href="#issue-17b76bb8"> ↵ </a></div>
    <div class="issue"> Define what to do if there is no <a data-link-type="dfn" href="#target-element">target element</a>.<a href="#issue-bff293c9"> ↵ </a></div>
    <div class="issue"> This interface is marked at-risk in the <a href="http://www.w3.org/TR/2013/WD-cssom-20131205/">5 December 2013 WD
 of CSSOM</a>.
