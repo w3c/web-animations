@@ -71,7 +71,7 @@
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/Icons/w3c_home" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Web Animations</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2015-10-21">21 October 2015</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2015-10-22">22 October 2015</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -4767,7 +4767,7 @@ WebIDL-like definition:</p>
     <span class="o">//</span> i.e. DOMString propertyName
     <span class="nb">double</span>?             offset <span class="o">=</span> null;
     DOMString           easing <span class="o">=</span> "linear";
-    CompositeOperation? composite;
+    CompositeOperation  composite;
 };
 
 dictionary PropertyIndexedKeyframes {
@@ -4813,6 +4813,18 @@ prose following.</p>
     <p>For each method that takes a <code>frames</code> argument, the
 procedure to <a data-link-type="dfn" href="#process-a-frames-argument">process a frames argument</a> is run on the input and
 the result of that procedure is retained.</p>
+    <p>First we define two supporting definitions.</p>
+    <p>The instruction, <dfn data-dfn-type="dfn" data-noexport="" id="check-the-completion-record">check the completion record<a class="self-link" href="#check-the-completion-record"></a></dfn> of <var>result</var>,
+where <var>result</var> is a <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-completion-record-specification-type">completion record</a> from calling
+an ECMAScript operation, is equivalent to the following steps:</p>
+    <ol>
+     <li data-md="">
+      <p>If <var>result</var> is an <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-completion-record-specification-type">abrupt completion</a>, <a data-link-type="dfn" href="https://heycam.github.io/webidl/#dfn-throw">throw</a> the exception contained in the [[value]] field of <var>result</var> and abort the procedure.</p>
+      <p class="issue" id="issue-60682dbc"><a class="self-link" href="#issue-60682dbc"></a> What should we do if the [[type]] is <span class="esvalue">break</span>, <span class="esvalue">continue</span>, or <span class="esvalue">return</span>? Can it be?</p>
+     <li data-md="">
+      <p>Replace <var>result</var> with the value contained in the [[value]] field
+of <var>result</var>.</p>
+    </ol>
     <p>The procedure to <dfn data-dfn-type="dfn" data-noexport="" id="process-a-keyframe-like-object">process a keyframe-like object<a class="self-link" href="#process-a-keyframe-like-object"></a></dfn>, takes two
 arguments:</p>
     <ul>
@@ -4822,11 +4834,11 @@ arguments:</p>
       <p>an <var>allow lists</var> boolean flag</p>
     </ul>
     <p>and returns a map from either property names to DOMString values if <var>allow
-lists</var> is false, or a from property names to sequences of DOMString values
+lists</var> is false, or from property names to sequences of DOMString values
 otherwise, using the following procedure:</p>
     <ol>
      <li data-md="">
-      <p>Run the procedure using <a data-link-type="dfn" href="https://heycam.github.io/webidl/#es-to-dictionary">convert an ECMAScript
+      <p>Run the procedure to <a data-link-type="dfn" href="https://heycam.github.io/webidl/#es-to-dictionary">convert an ECMAScript
 value to a dictionary type</a> <a data-link-type="biblio" href="#biblio-webidl">[WEBIDL]</a> with <var>keyframe input</var> as the ECMAScript value, and the dictionary type depending on the value of
 the <var>allow lists</var> flag as follows:</p>
       <div class="switch">
@@ -4865,7 +4877,8 @@ implementation.</p>
         <p>Convert each property name in <var>animatable properties</var> to the equivalent IDL attribute by applying the <a data-link-type="dfn" href="#animation-property-name-to-idl-attribute-name">animation property name to IDL attribute name</a> algorithm.</p>
       </ol>
      <li data-md="">
-      <p>Let <var>input properties</var> be the result of calling the <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-enumerableownnames">EnumerableOwnNames</a> operation with <var>keyframe input</var> as the object.</p>
+      <p>Let <var>input properties</var> be the result of calling the <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-enumerableownnames">EnumerableOwnNames</a> operation with <var>keyframe input</var> as
+the object.</p>
      <li data-md="">
       <p>Make up a new list <var>animation properties</var> that consists of
 all of the properties that are in <em>both</em> <var>input
@@ -4875,11 +4888,13 @@ properties</var> and <var>animatable properties</var>.</p>
 codepoints that define each property name.</p>
      <li data-md="">
       <p>For each <var>property name</var> in <var>animation properties</var>,</p>
-     <li data-md="">
-      <p>Let <var>raw value</var> be the result of calling the <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-ordinary-object-internal-methods-and-internal-slots-get-p-receiver">[[Get]]</a> internal method on <var>keyframe input</var>, with <var>property
+      <ol>
+       <li data-md="">
+        <p>Let <var>raw value</var> be the result of calling the <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-ordinary-object-internal-methods-and-internal-slots-get-p-receiver">[[Get]]</a> internal method on <var>keyframe input</var>, with <var>property
 name</var> as the property key and <var>keyframe input</var> as the
 receiver.</p>
-      <ol>
+       <li data-md="">
+        <p><a data-link-type="dfn" href="#check-the-completion-record">Check the completion record</a> of <var>raw value</var>.</p>
        <li data-md="">
         <p>Convert <var>raw value</var> to a DOMString or sequence of DOMStrings <var>property values</var> as follows:</p>
         <div class="switch">
@@ -4916,8 +4931,7 @@ ECMAScript object, <var>object</var>, as input and returns either a sequence of
 keyframes or a <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code> object using the following procedure:</p>
     <ol>
      <li data-md="">
-      <p>If <var>object</var> is null or undefined, return an empty sequence of
-keyframes.</p>
+      <p>If <var>object</var> is null, return an empty sequence of keyframes.</p>
      <li data-md="">
       <p>If <var>object</var> is a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#dfn-platform-object">platform object</a> that implements <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code>, return <var>object</var>.</p>
      <li data-md="">
@@ -4925,7 +4939,7 @@ keyframes.</p>
      <li data-md="">
       <p>Let <var>method</var> be the result of <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-getmethod">GetMethod</a>(<var>object</var>, <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-well-known-symbols">@@iterator</a>).</p>
      <li data-md="">
-      <p><a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-returnifabrupt">ReturnIfAbrupt</a>(<var>method</var>).</p>
+      <p><a data-link-type="dfn" href="#check-the-completion-record">Check the completion record</a> of <var>method</var>.</p>
      <li data-md="">
       <p>Perform the steps corresponding to the first matching condition from below,</p>
       <div class="switch">
@@ -4937,23 +4951,26 @@ keyframes.</p>
           <li data-md="">
            <p>Let <var>iter</var> be <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-getiterator">GetIterator</a>(<var>object</var>, <var>method</var>).</p>
           <li data-md="">
-           <p><a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-returnifabrupt">ReturnIfAbrupt</a>(<var>iter</var>).</p>
+           <p><a data-link-type="dfn" href="#check-the-completion-record">Check the completion record</a> of <var>iter</var>.</p>
           <li data-md="">
            <p>Repeat:</p>
            <ol>
             <li data-md="">
              <p>Let <var>next</var> be <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-iteratorstep">IteratorStep</a>(<var>iter</var>).</p>
             <li data-md="">
-             <p><a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-returnifabrupt">ReturnIfAbrupt</a>(<var>next</var>).</p>
+             <p><a data-link-type="dfn" href="#check-the-completion-record">Check the completion record</a> of <var>next</var>.</p>
             <li data-md="">
              <p>If <var>next</var> is false abort this loop.</p>
             <li data-md="">
              <p>Let <var>nextItem</var> be <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-iteratorvalue">IteratorValue</a>(next).</p>
             <li data-md="">
-             <p><a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-returnifabrupt">ReturnIfAbrupt</a>(<var>nextItem</var>).</p>
+             <p><a data-link-type="dfn" href="#check-the-completion-record">Check the completion record</a> of <var>nextItem</var>.</p>
+            <li data-md="">
+             <p>If <var>nextItem</var> is not an object, throw a <span class="exceptionname">TypeError</span> and abort these
+steps.</p>
             <li data-md="">
              <p>Append to <var>processed frames</var> the result of
-running the procedure to <a data-link-type="dfn" href="#process-a-keyframe-like-object">process a keyframe-like object</a> passing <var>object</var> as the <var>keyframe input</var> and with the <var>allow lists</var> flag set to false.</p>
+running the procedure to <a data-link-type="dfn" href="#process-a-keyframe-like-object">process a keyframe-like object</a> passing <var>nextItem</var> as the <var>keyframe input</var> and with the <var>allow lists</var> flag set to false.</p>
            </ol>
           <li data-md="">
            <p>If <var>processed frames</var> is not <a data-link-type="dfn" href="#loosely-sorted-by-offset">loosely sorted by
@@ -5637,6 +5654,7 @@ a timeline</a><span>, in §3.6.1</span>
    <li><a href="#dom-animation-cancel">cancel()</a><span>, in §5.4</span>
    <li><a href="#cancel-an-animation">cancel an animation</a><span>, in §3.5.16</span>
    <li><a href="#cancel-event">cancel event</a><span>, in §3.5.20.1</span>
+   <li><a href="#check-the-completion-record">check the completion record</a><span>, in §5.10.3</span>
    <li><a href="#dom-keyframeeffectreadonly-clone">clone()</a><span>, in §5.10</span>
    <li>
     composite
@@ -6007,6 +6025,8 @@ time</a><span>, in §3.5.14</span>
     <ul>
      <li><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-ordinary-object-internal-methods-and-internal-slots-defineownproperty-p-desc">[[defineownproperty]]</a>
      <li><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-ordinary-object-internal-methods-and-internal-slots-get-p-receiver">[[get]]</a>
+     <li><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-completion-record-specification-type">completion record specification type</a>
+     <li><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-enumerableownnames">enumerableownnames</a>
      <li><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-getiterator">getiterator</a>
      <li><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-getmethod">getmethod</a>
      <li><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-iteratorstep">iteratorstep</a>
@@ -6015,7 +6035,6 @@ time</a><span>, in §3.5.14</span>
      <li><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects">promise object</a>
      <li><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-promise.resolve">promise.resolve</a>
      <li><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-promisecapability-records">promisecapability record</a>
-     <li><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-returnifabrupt">returnifabrupt</a>
      <li><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-well-known-symbols">well known symbols</a>
     </ul>
    <li>
@@ -6437,6 +6456,7 @@ that here.<a href="#issue-c84185b9"> ↵ </a></div>
    <div class="issue"> If <var>source</var> is using a <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code> should
  we continue to share it?<a href="#issue-95ade2bb"> ↵ </a></div>
    <div class="issue"> Define serialization for SVG attributes.<a href="#issue-9ae4a496"> ↵ </a></div>
+   <div class="issue"> What should we do if the [[type]] is <span class="esvalue">break</span>, <span class="esvalue">continue</span>, or <span class="esvalue">return</span>? Can it be?<a href="#issue-60682dbc"> ↵ </a></div>
    <div class="issue"> Do we need null offsets or is it enough to just test for the
 absence of the property?<a href="#issue-361f2071"> ↵ </a></div>
    <div class="issue"> Should we really retain this? It might aid feature-detection
