@@ -71,7 +71,7 @@
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/Icons/w3c_home" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Web Animations</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2015-10-22">22 October 2015</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2015-11-01">1 November 2015</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -85,7 +85,7 @@
      <dt>Version History:
      <dd><a href="https://github.com/w3c/web-animations/commits/master">https://github.com/w3c/web-animations/commits/master</a>
      <dt>Feedback:
-     <dd><span><a href="mailto:public-fx@w3.org?subject=%5Bweb-animations%5D%20YOUR%20TOPIC%20HERE">public-fx@w3.org</a> with subject line “<kbd>[web-animations] <i>… message topic …</i></kbd>” (<a href="http://lists.w3.org/Archives/Public/public-fx/" rel="discussion">archives</a>)</span>
+     <dd><span><a href="mailto:public-fx@w3.org?subject=%5Bweb-animations%5D%20YOUR%20TOPIC%20HERE">public-fx@w3.org</a> with subject line “<kbd>[web-animations] <i data-lt="">… message topic …</i></kbd>” (<a href="http://lists.w3.org/Archives/Public/public-fx/" rel="discussion">archives</a>)</span>
      <dt>Issue Tracking:
      <dd><a href="https://github.com/w3c/web-animations/issues/">GitHub</a>
      <dd><a href="#issues-index">Inline In Spec</a>
@@ -1234,14 +1234,13 @@ the playback of <var>animation</var>’s <a data-link-type="dfn" href="#target-e
 The task shall perform the following steps:</p>
      <ol>
       <li data-md="">
-       <p>If <var>animation</var>’s <a data-link-type="dfn" href="#animation-start-time">start time</a> is <a data-link-type="dfn" href="#unresolved">resolved</a>, let <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold
-time</a> be the result of evaluating <code><var>ready time</var> - (<a data-link-type="dfn" href="#animation-start-time">start
+       <p>If <var>animation</var>’s <a data-link-type="dfn" href="#animation-start-time">start time</a> is <a data-link-type="dfn" href="#unresolved">resolved</a> and its <a data-link-type="dfn" href="#hold-time">hold time</a> is <em>not</em> resolved,
+let <var>animation</var>’s <a data-link-type="dfn" href="#hold-time">hold time</a> be the result of evaluating <code><var>ready time</var> - (<a data-link-type="dfn" href="#animation-start-time">start
 time</a> / <a data-link-type="dfn" href="#animation-playback-rate">playback rate</a>)</code>.</p>
-       <p class="note" role="note">Note: If we start playing an animation from the <a data-link-type="dfn" href="#idle-play-state">idle</a> state, we will set the <a data-link-type="dfn" href="#hold-time">hold time</a> to
-a suitable value while the animation is <a data-link-type="dfn" href="#pending-play-state">pending</a> but leave the <a data-link-type="dfn" href="#animation-start-time">start
-time</a> <a data-link-type="dfn" href="#unresolved">unresolved</a>.
-The check here for an unresolved start time here ensures we preserve
-the <a data-link-type="dfn" href="#hold-time">hold time</a> when aborting a pending play.</p>
+       <p class="note" role="note">Note: The <a data-link-type="dfn" href="#hold-time">hold time</a> might be already set if the animation
+is <a data-link-type="dfn" href="#finished-play-state">finished</a>, or if the animation is <a data-link-type="dfn" href="#pending-play-state">pending</a>, waiting to begin playback.
+In either case we want to preserve the <a data-link-type="dfn" href="#hold-time">hold time</a> as we
+enter the <a data-link-type="dfn" href="#paused-play-state">paused</a> state.</p>
       <li data-md="">
        <p>Make <var>animation</var>’s <a data-link-type="dfn" href="#animation-start-time">start time</a> unresolved.</p>
       <li data-md="">
@@ -5515,6 +5514,9 @@ animations.</p>
      <li data-md="">
       <p>Made the procedure to <a data-link-type="dfn" href="#play-an-animation">play an animation</a> take an <var>auto-rewind</var> flag so that CSS Animations can re-use this
 procedure without invoking the rewinding behavior.</p>
+     <li data-md="">
+      <p>Made the procedure to <a data-link-type="dfn" href="#pause-an-animation">pause an animation</a> preserve the <a data-link-type="dfn" href="#hold-time">hold time</a> when completing the pause operation if it is already
+set. This fixes a bug where pausing a <a data-link-type="dfn" href="#finished-play-state">finished</a> animation would case the <a data-link-type="dfn" href="#current-time">current time</a> to change.</p>
      <li data-md="">
       <p>Made the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state">update an animation’s finished state</a> conditionally check the <a data-link-type="dfn" href="#finished-play-state">finished state</a> in an asynchronous manner based on the <var>synchronously notify</var> flag.</p>
       <ul>
