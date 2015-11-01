@@ -1200,18 +1200,17 @@ follows:
     The task shall perform the following steps:
 
     1.  If <var>animation</var>'s <a lt="animation start time">start time</a>
-        is <a lt=unresolved>resolved</a>, let <var>animation</var>'s <a>hold
-        time</a> be the result of evaluating
+        is <a lt=unresolved>resolved</a> and its <a>hold time</a> is
+        <em>not</em> resolved,
+        let <var>animation</var>'s <a>hold time</a> be the result of evaluating
         <code><var>ready time</var> - (<a lt="animation start time">start
         time</a> / <a lt="animation playback rate">playback rate</a>)</code>.
 
-        Note: If we start playing an animation from the <a
-        lt="idle play state">idle</a> state, we will set the <a>hold time</a> to
-        a suitable value while the animation is <a lt="pending play
-        state">pending</a> but leave the <a lt="animation start time">start
-        time</a> <a>unresolved</a>.
-        The check here for an unresolved start time here ensures we preserve
-        the <a>hold time</a> when aborting a pending play.
+        Note: The <a>hold time</a> might be already set if the animation
+        is <a lt="finished play state">finished</a>, or if the animation is
+        <a lt="pending play state">pending</a>, waiting to begin playback.
+        In either case we want to preserve the <a>hold time</a> as we
+        enter the <a lt="paused play state">paused</a> state.
 
     1.  Make <var>animation</var>'s <a lt="animation start time">start time</a>
         unresolved.
@@ -8019,6 +8018,10 @@ The following changes have been made since the <a
 *   Made the procedure to <a>play an animation</a> take an
     <var>auto-rewind</var> flag so that CSS Animations can re-use this
     procedure without invoking the rewinding behavior.
+*   Made the procedure to <a>pause an animation</a> preserve the
+    <a>hold time</a> when completing the pause operation if it is already
+    set. This fixes a bug where pausing a <a lt="finished play
+    state">finished</a> animation would case the <a>current time</a> to change.
 *   Made the procedure to <a>update an animation's finished state</a>
     conditionally check the <a lt="finished play state">finished state</a>
     in an asynchronous manner based on the <var>synchronously notify</var>
