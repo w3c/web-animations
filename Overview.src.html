@@ -154,7 +154,7 @@ var isAnimating = elem.getAnimations().some(
 
     <div class='example'><pre class='lang-javascript'>
 // Pause all existing animations in the document
-document.timeline.getAnimations().forEach(
+document.getAnimations().forEach(
   animation =&gt; animation.pause()
 );
     </pre></div>
@@ -5230,7 +5230,6 @@ interface AnimationTimeline {
 <!-- @if LEVEL=2 -->
     Animation           play (optional AnimationEffectReadOnly? effect = null);
 <!-- @endif -->
-    sequence&lt;Animation&gt; getAnimations();
 };
 </pre>
 
@@ -5242,9 +5241,10 @@ interface AnimationTimeline {
 
 </div>
 
+<!-- @if LEVEL=2 -->
+
 <div class='methods'>
 
-<!-- @if LEVEL=2 -->
 :   <dfn method for=AnimationTimeline lt='play()'>
     Animation play(optional AnimationEffectReadOnly? effect = null)</dfn>
 ::  Creates a new {{Animation}} object associated with
@@ -5278,31 +5278,10 @@ interface AnimationTimeline {
         {{Animation}} object.
 
     </div>
+
+</div>
+
 <!-- @endif -->
-
-:   <dfn method for=AnimationTimeline lt='getAnimations()'>
-    sequence&lt;Animation&gt; getAnimations()</dfn>
-::  Returns the set of {{Animation}} objects
-    associated with this <a>timeline</a> that have associated
-    <a>target effect</a> which is <a>current</a> or <a>in effect</a>.
-
-    The returned list is sorted using the composite order described
-    for the associated <a>animations</a> of effects in [[#the-effect-stack]].
-
-    The returned list reflects the state <em>after</em> applying any pending
-    changes to animation such as changes to animation-related style properties
-    that have yet to be processed.
-
-    Issue: Both this method and {{Animatable/getAnimations()}} on the
-           {{Animatable}} interface require retaining forwards-filling
-           <a>animation effects</a> and their <a>animations</a>
-           such that a document that
-           repeatedly produces forwards-filling animations will consume memory
-           in an unbounded fashion.
-           We may need to revise this definition (previously these methods
-           only returned animations whose <a>target effect</a> was
-           <a>current</a>) or provide a loophole for implementations to discard
-           old animations in such conditions.
 
 <h3 id="the-documenttimeline-interface">The <code>DocumentTimeline</code> interface</h3>
 
@@ -7158,7 +7137,8 @@ otherwise, using the following procedure:
 1.  Build up a list of <var>animatable properties</var> as follows:
 
     1.  Let <var>animatable properties</var> be a list of property
-        names and attribute names that can be animated by the
+        names (including shorthand properties that have longhand sub-properties
+        that are animatable) and attribute names that can be animated by the
         implementation.
     1.  Convert each property name in <var>animatable properties</var>
         to the equivalent IDL attribute by applying the
@@ -7717,6 +7697,7 @@ interface</a> defined in [[!DOM]].
 <pre class="idl">
 partial interface Document {
     readonly attribute DocumentTimeline timeline;
+    sequence&lt;Animation&gt; getAnimations();
 };
 </pre>
 
@@ -7725,6 +7706,35 @@ partial interface Document {
 :   <dfn attribute for=Document>timeline</dfn>
 ::  The {{DocumentTimeline}} object representing
     the <a>default document timeline</a>.
+
+</div>
+
+<div class="methods">
+
+:   <dfn method for=Document lt='getAnimations()'>
+    sequence&lt;Animation&gt; getAnimations()</dfn>
+::  Returns the set of {{Animation}} objects
+    that have an associated <a>target effect</a> which is <a>current</a> or
+    <a>in effect</a> and whose <a>target element</a> is a <a>descendant</a>
+    of the document.
+
+    The returned list is sorted using the composite order described
+    for the associated <a>animations</a> of effects in [[#the-effect-stack]].
+
+    The returned list reflects the state <em>after</em> applying any pending
+    changes to animation such as changes to animation-related style properties
+    that have yet to be processed.
+
+    Issue: Both this method and {{Animatable/getAnimations()}} on the
+           {{Animatable}} interface require retaining forwards-filling
+           <a>animation effects</a> and their <a>animations</a>
+           such that a document that
+           repeatedly produces forwards-filling animations will consume memory
+           in an unbounded fashion.
+           We may need to revise this definition (previously these methods
+           only returned animations whose <a>target effect</a> was
+           <a>current</a>) or provide a loophole for implementations to discard
+           old animations in such conditions.
 
 </div>
 
@@ -8062,6 +8072,8 @@ The following changes have been made since the <a
 *   Corrected the type of {{Animatable/animate()/options}} parameter to the
     {{Animatable/animate()}} method to use an <code>unrestricted double</code>
     rather than a <code>double</code>.
+*   Moved {{Document/getAnimations()}} from the {{AnimationTimeline}} interface
+    to the {{Document}} interface.
 
 <!-- @endif -->
 
