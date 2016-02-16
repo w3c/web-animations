@@ -2936,18 +2936,27 @@ following steps:
 1.  If the <a>scaled active time</a> is <a>unresolved</a>,
     return <a>unresolved</a>.
 
-2.  If the <a>iteration duration</a> is zero, return zero.
+1.  If the <a>iteration duration</a> is zero, return zero.
 
-3.  If <code><a>scaled active time</a> - <a>start
-    offset</a></code> is equal to the<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-    <a>repeated duration</a>,<!-- @endif --><!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-    <a>active duration</a>,<!-- @endif -->
-    and <a>iteration count</a> is not zero,
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+1.  If <code><a>scaled active time</a> - <a>start
+    offset</a></code> is equal to the <a>repeated duration</a>,
+    and the <a>iteration count</a> is not zero,
     and <code>(<a>iteration count</a> + <a>iteration start</a>)
     % 1</code> is zero,
     return the <a>iteration duration</a>.
 
-4.  Otherwise, return <code><a>scaled active time</a>
+<!-- @endif -->
+<!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+1.  If the <a>active time</a> is equal to the <a>active duration</a>,
+    and the <a>iteration count</a> is not zero,
+    and <code>(<a>iteration count</a> + <a>iteration start</a>)
+    % 1</code> is zero,
+    return the <a>iteration duration</a>.
+
+<!-- @endif -->
+
+1.  Otherwise, return <code><a>scaled active time</a>
     % <a>iteration duration</a></code>.
 
 <h4 id="calculating-the-current-iteration">Calculating the current iteration</h4>
