@@ -1,6 +1,7 @@
 <!doctype html><html lang="en">
  <head>
   <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+  <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <title>Web Animations</title>
   <link href="../default.css" rel="stylesheet" type="text/css">
   <link href="../csslogo.ico" rel="shortcut icon" type="image/x-icon">
@@ -68,12 +69,11 @@
         code.highlight { padding: .1em; border-radius: .3em; }
         pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em 0; overflow: auto; border-radius: 0; }
         </style>
- </head>
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/Icons/w3c_home" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Web Animations</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-02-02">2 February 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-02-16">16 February 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -335,7 +335,7 @@ calculations</span></a>
       <li><a href="#the-animatable-interface"><span class="secno">5.14</span> <span class="content">The <code>Animatable</code> interface</span></a>
       <li><a href="#extensions-to-the-document-interface"><span class="secno">5.15</span> <span class="content">Extensions to the <code>Document</code> interface</span></a>
       <li><a href="#extensions-to-the-element-interface"><span class="secno">5.16</span> <span class="content">Extensions to the <code>Element</code> interface</span></a>
-      <li><a href="#extensions-to-the-pseudoelement-interface"><span class="secno">5.17</span> <span class="content">Extensions to the <code>PseudoElement</code> interface</span></a>
+      <li><a href="#extensions-to-the-pseudoelement-interface"><span class="secno">5.17</span> <span class="content">Extensions to the <code>CSSPseudoElement</code> interface</span></a>
       <li><a href="#the-animationplaybackevent-interface"><span class="secno">5.18</span> <span class="content">The <code>AnimationPlaybackEvent</code> interface</span></a>
       <li><a href="#model-liveness"><span class="secno">5.19</span> <span class="content">Model liveness</span></a>
      </ol>
@@ -402,7 +402,7 @@ regardless of whether they are defined by CSS Transitions, CSS Animations,
 SVG animations, or created directly using the programming interface.</p>
       <div class="example" id="example-24046606">
        <a class="self-link" href="#example-24046606"></a> 
-<pre class="lang-javascript highlight"><span class="c1">// Wait until all animations have finished before removing the element</span>
+<pre class="lang-javascript highlight"><span></span><span class="c1">// Wait until all animations have finished before removing the element</span>
 <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span>
   <span class="nx">elem</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">map</span><span class="p">(</span><span class="nx">animation</span> <span class="o">=></span> <span class="nx">animation</span><span class="p">.</span><span class="nx">finished</span><span class="p">)</span>
 <span class="p">).</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=></span> <span class="nx">elem</span><span class="p">.</span><span class="nx">remove</span><span class="p">());</span></pre>
@@ -411,7 +411,7 @@ SVG animations, or created directly using the programming interface.</p>
 animations without waiting.</p>
       <div class="example" id="example-eeaff76c">
        <a class="self-link" href="#example-eeaff76c"></a>
-<pre class="lang-javascript highlight"><span class="kd">var</span> <span class="nx">isAnimating</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">some</span><span class="p">(</span>
+<pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">isAnimating</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">some</span><span class="p">(</span>
   <span class="nx">animation</span> <span class="o">=></span> <span class="nx">animation</span><span class="p">.</span><span class="nx">playState</span> <span class="o">==</span> <span class="s1">'running'</span>
 <span class="p">);</span></pre>
       </div>
@@ -425,7 +425,7 @@ displaying a modal dialog so that they do not distract the user’s
 attention.</p>
       <div class="example" id="example-09faf03b">
        <a class="self-link" href="#example-09faf03b"></a>
-<pre class="lang-javascript highlight"><span class="c1">// Pause all existing animations in the document</span>
+<pre class="lang-javascript highlight"><span></span><span class="c1">// Pause all existing animations in the document</span>
 <span class="nb">document</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">forEach</span><span class="p">(</span>
   <span class="nx">animation</span> <span class="o">=></span> <span class="nx">animation</span><span class="p">.</span><span class="nx">pause</span><span class="p">()</span>
 <span class="p">);</span></pre>
@@ -443,7 +443,7 @@ create animations from script that have the same behavior and performance
 characteristics as declarative animations.</p>
       <div class="example" id="example-84a39fae">
        <a class="self-link" href="#example-84a39fae"></a>
-<pre class="lang-javascript highlight"><span class="c1">// Fade out quickly</span>
+<pre class="lang-javascript highlight"><span></span><span class="c1">// Fade out quickly</span>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">transform</span><span class="o">:</span> <span class="s1">'scale(0)'</span><span class="p">,</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span> <span class="mi">300</span><span class="p">);</span></pre>
       </div>
      <dt data-md="">
@@ -456,7 +456,7 @@ running animations to answer questions such as,
 “Why is the opacity of this element changing?”</p>
       <div class="example" id="example-da351d88">
        <a class="self-link" href="#example-da351d88"></a>
-<pre class="lang-javascript highlight"><span class="c1">// Print the id of any opacity animations on elem</span>
+<pre class="lang-javascript highlight"><span></span><span class="c1">// Print the id of any opacity animations on elem</span>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">filter</span><span class="p">(</span>
   <span class="nx">animation</span> <span class="o">=></span>
     <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span> <span class="k">instanceof</span> <span class="nx">KeyframeEffectReadOnly</span> <span class="o">&amp;&amp;</span>
@@ -469,7 +469,7 @@ running animations to answer questions such as,
 reduce their playback rate and replay them.</p>
       <div class="example" id="example-dfbe614e">
        <a class="self-link" href="#example-dfbe614e"></a>
-<pre class="lang-javascript highlight"><span class="c1">// Slow down and replay any transform animations</span>
+<pre class="lang-javascript highlight"><span></span><span class="c1">// Slow down and replay any transform animations</span>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">filter</span><span class="p">(</span>
   <span class="nx">animation</span> <span class="o">=></span>
     <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span> <span class="k">instanceof</span> <span class="nx">KeyframeEffectReadOnly</span> <span class="o">&amp;&amp;</span>
@@ -489,7 +489,7 @@ impractical to wait for such animations to run to completion.
 Rather, it is desirable to seek the animations to specific times.</p>
       <div class="example" id="example-e205dc31">
        <a class="self-link" href="#example-e205dc31"></a>
-<pre class="lang-javascript highlight"><span class="c1">// Seek to the half-way point of an animation and check that the opacity is 50%</span>
+<pre class="lang-javascript highlight"><span></span><span class="c1">// Seek to the half-way point of an animation and check that the opacity is 50%</span>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">forEach</span><span class="p">(</span>
   <span class="nx">animation</span> <span class="o">=></span>
     <span class="nx">animation</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">=</span>
@@ -1069,7 +1069,7 @@ canceled (see <a href="#canceling-an-animation-section">§3.5.16 Canceling an an
     not change.</p>
     <div class="example" id="example-20e821a6">
      <a class="self-link" href="#example-20e821a6"></a>
-<pre class="lang-javascript highlight"><span class="nx">animation</span><span class="p">.</span><span class="nx">pause</span><span class="p">();</span>
+<pre class="lang-javascript highlight"><span></span><span class="nx">animation</span><span class="p">.</span><span class="nx">pause</span><span class="p">();</span>
 <span class="nx">animation</span><span class="p">.</span><span class="nx">ready</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
   <span class="c1">// Displays 'running'</span>
   <span class="nx">alert</span><span class="p">(</span><span class="nx">animation</span><span class="p">.</span><span class="nx">playState</span><span class="p">);</span>
@@ -1413,7 +1413,7 @@ To avoid this surprising behavior, notification about the finished state of
 an animation is typically performed asynchronously.</p>
     <div class="example" id="example-13b1063b">
      <a class="self-link" href="#example-13b1063b"></a>
-<pre class="lang-javascript highlight"><span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
+<pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
 <span class="nx">animation</span><span class="p">.</span><span class="nx">playbackRate</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
 <span class="nx">animation</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">;</span> <span class="c1">// animation is now finished</span>
 <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">timing</span><span class="p">.</span><span class="nx">iterationCount</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// animation is no longer finished</span></pre>
@@ -1424,7 +1424,7 @@ the animation is clear so the notification about the finished state of the
 animation occurs synchronously as demonstrated below.</p>
     <div class="example" id="example-385ed826">
      <a class="self-link" href="#example-385ed826"></a>
-<pre class="lang-javascript highlight"><span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="mi">1000</span><span class="p">);</span>
+<pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="mi">1000</span><span class="p">);</span>
 <span class="nx">animation</span><span class="p">.</span><span class="nx">finish</span><span class="p">();</span> <span class="c1">// finish event is queued immediately and finished promise</span>
                     <span class="c1">// is resolved despite the fact that the following statement</span>
                     <span class="c1">// causes the animation to leave the finished state</span>
@@ -1619,7 +1619,7 @@ be converted from a <a data-link-type="dfn" href="#paused-play-state">paused</a>
 without restarting by setting the <a data-link-type="dfn" href="#animation-start-time">animation start time</a> such as below:</p>
     <div class="example" id="example-f55ea7cc">
      <a class="self-link" href="#example-f55ea7cc"></a>
-<pre class="lang-javascript highlight"><span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">timing</span><span class="p">.</span><span class="nx">duration</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">;</span>
+<pre class="lang-javascript highlight"><span></span><span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">timing</span><span class="p">.</span><span class="nx">duration</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">;</span>
 <span class="nx">animation</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">=</span> <span class="mi">4000</span><span class="p">;</span>
 <span class="nx">animation</span><span class="p">.</span><span class="nx">pause</span><span class="p">();</span>
 <span class="nx">animation</span><span class="p">.</span><span class="nx">ready</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
@@ -2163,8 +2163,8 @@ return <a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
     <li data-md="">
      <p>If the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is zero, return zero.</p>
     <li data-md="">
-     <p>If <code><a data-link-type="dfn" href="#scaled-active-time">scaled active time</a> - <a data-link-type="dfn" href="#start-offset">start
-offset</a></code> is equal to the <a data-link-type="dfn" href="#active-duration">active duration</a>,    and <a data-link-type="dfn" href="#iteration-count">iteration count</a> is not zero,
+     <p>If the <a data-link-type="dfn" href="#active-time">active time</a> is equal to the <a data-link-type="dfn" href="#active-duration">active duration</a>,
+and the <a data-link-type="dfn" href="#iteration-count">iteration count</a> is not zero,
 and <code>(<a data-link-type="dfn" href="#iteration-count">iteration count</a> + <a data-link-type="dfn" href="#iteration-start">iteration start</a>)
 % 1</code> is zero,
 return the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a>.</p>
@@ -2771,7 +2771,7 @@ possible values of <var>V</var><sub>start</sub> and <var>V</var><sub>end</sub>, 
   an <a data-link-type="dfn" href="#target-element">target element</a>, there is no containing block for resolving
   percentage values against.
   As a result, the following code snippet falls back to <a data-link-type="dfn" href="#not-paceable">not paceable</a> <a data-link-type="dfn" href="#animation-behavior">animation behavior</a>. 
-<pre class="lang-javascript highlight"><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span>
+<pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span>
   <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">([</span> <span class="p">{</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'10%'</span> <span class="p">},</span>
                        <span class="p">{</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'20%'</span> <span class="p">},</span>
                        <span class="p">{</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'50%'</span> <span class="p">}</span> <span class="p">],</span>
@@ -2781,7 +2781,7 @@ possible values of <var>V</var><sub>start</sub> and <var>V</var><sub>end</sub>, 
       <p>For consistency, this definition applies even when a used value
   could be calculated for each of the animation values in question.
   As such, the following code fragment produces the same result.</p>
-<pre class="lang-javascript highlight"><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span>
+<pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span>
   <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">([</span> <span class="p">{</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'10px'</span> <span class="p">},</span>
                        <span class="p">{</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'20px'</span> <span class="p">},</span>
                        <span class="p">{</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'50px'</span> <span class="p">}</span> <span class="p">],</span>
@@ -3036,7 +3036,7 @@ time but instead to rely on some automatic spacing.</p>
     <p>For example, rather than typing:</p>
     <div class="example" id="example-bae33431">
      <a class="self-link" href="#example-bae33431"></a>
-<pre class="lang-javascript highlight"><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'blue'</span><span class="p">,</span> <span class="nx">offset</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span>
+<pre class="lang-javascript highlight"><span></span><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'blue'</span><span class="p">,</span> <span class="nx">offset</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'green'</span><span class="p">,</span> <span class="nx">offset</span><span class="o">:</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'red'</span><span class="p">,</span> <span class="nx">offset</span><span class="o">:</span> <span class="mi">2</span><span class="o">/</span><span class="mi">3</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'yellow'</span><span class="p">,</span> <span class="nx">offset</span><span class="o">:</span> <span class="mi">1</span> <span class="p">}</span> <span class="p">],</span> <span class="mi">2000</span><span class="p">);</span></pre>
@@ -3046,7 +3046,7 @@ to calculate the <a data-link-type="dfn" href="#keyframe-offset">offset</a> of e
 keyframe:</p>
     <div class="example" id="example-fb345fb6">
      <a class="self-link" href="#example-fb345fb6"></a>
-<pre class="lang-javascript highlight"><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'blue'</span> <span class="p">},</span>
+<pre class="lang-javascript highlight"><span></span><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'blue'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'green'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'red'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'yellow'</span> <span class="p">}</span> <span class="p">],</span> <span class="mi">2000</span><span class="p">);</span></pre>
@@ -3061,7 +3061,7 @@ animation.</p>
     <p>For example, consider the following animation:</p>
     <div class="example" id="example-d40861b4">
      <a class="self-link" href="#example-d40861b4"></a>
-<pre class="lang-javascript highlight"><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'0px'</span> <span class="p">},</span>
+<pre class="lang-javascript highlight"><span></span><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'0px'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'-20px'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'50px'</span> <span class="p">}</span> <span class="p">],</span> <span class="mi">1000</span><span class="p">);</span></pre>
@@ -3076,7 +3076,7 @@ for each segment as indicated the varying slope of the graph. </p>
     <p>We can use the <a data-link-type="dfn" href="#paced-keyframe-spacing-mode">paced</a> spacing mode as follows:</p>
     <div class="example" id="example-a7c9a5e2">
      <a class="self-link" href="#example-a7c9a5e2"></a>
-<pre class="lang-javascript highlight"><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'0px'</span> <span class="p">},</span>
+<pre class="lang-javascript highlight"><span></span><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'0px'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'-20px'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'50px'</span> <span class="p">}</span> <span class="p">],</span>
@@ -3092,7 +3092,7 @@ of the animation indicating a constant rate of change. </p>
 spacing modes as follows:</p>
     <div class="example" id="example-90ddb4c4">
      <a class="self-link" href="#example-90ddb4c4"></a>
-<pre class="lang-javascript highlight"><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'0px'</span> <span class="p">},</span>
+<pre class="lang-javascript highlight"><span></span><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'0px'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'-20px'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span><span class="p">,</span> <span class="nx">offset</span><span class="o">:</span> <span class="mf">0.5</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'50px'</span> <span class="p">}</span> <span class="p">],</span>
@@ -4468,7 +4468,7 @@ their <a data-link-type="dfn" href="#computed-keyframe-offset">computed keyframe
        <em>This section is non-normative</em> 
        <p>The result of this method is a sequence of objects of the following
   format:</p>
-<pre class="lang-idl highlight">dictionary ComputedKeyframe {
+<pre class="lang-idl highlight"><span></span>dictionary ComputedKeyframe {
     <span class="o">//</span> ... property<span class="o">-</span>value pairs ...
     <span class="o">//</span> i.e. DOMString propertyName
     <span class="nb">double</span>?             offset <span class="o">=</span> null;
@@ -4592,14 +4592,14 @@ a number of approaches to creating a new <code class="idl"><a data-link-type="id
 seconds can be constructed as follows:</p>
     <div class="example" id="example-666265a4">
      <a class="self-link" href="#example-666265a4"></a>
-<pre class="lang-javascript highlight"><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="mi">3000</span><span class="p">);</span></pre>
+<pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="mi">3000</span><span class="p">);</span></pre>
     </div>
     <p>The second parameter, representing the list of keyframes, may
 specify multiple properties. (See <a href="#processing-a-frames-argument">§5.10.3 Processing a frames
 argument</a>.)</p>
     <div class="example" id="example-4bc519cf">
      <a class="self-link" href="#example-4bc519cf"></a>
-<pre class="lang-javascript highlight"><span class="c1">// Specify multiple properties at once</span>
+<pre class="lang-javascript highlight"><span></span><span class="c1">// Specify multiple properties at once</span>
 <span class="kd">var</span> <span class="nx">effectA</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span><span class="p">,</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'300px'</span> <span class="p">},</span> <span class="mi">3000</span><span class="p">);</span>
 
 <span class="c1">// Specify multiple frames</span>
@@ -4612,7 +4612,7 @@ as the <a data-link-type="dfn" href="#start-delay">start delay</a>, an <code cla
 be used, as follows:</p>
     <div class="example" id="example-b231783a">
      <a class="self-link" href="#example-b231783a"></a>
-<pre class="lang-javascript highlight"><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span>
+<pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span>
   <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">duration</span><span class="o">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="nx">delay</span><span class="o">:</span> <span class="mi">2000</span> <span class="p">});</span></pre>
     </div>
     <p>If the duration is not specified, a value of zero is used.
@@ -4620,7 +4620,7 @@ It is possible to create an animation that simply sets a property
 without any interpolation as follows:</p>
     <div class="example" id="example-f4a85907">
      <a class="self-link" href="#example-f4a85907"></a>
-<pre class="lang-javascript highlight"><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">display</span><span class="o">:</span> <span class="s1">'none'</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">fill</span><span class="o">:</span> <span class="s1">'forwards'</span> <span class="p">});</span></pre>
+<pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">display</span><span class="o">:</span> <span class="s1">'none'</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">fill</span><span class="o">:</span> <span class="s1">'forwards'</span> <span class="p">});</span></pre>
     </div>
     <p>Having created a <code class="idl"><a data-link-type="idl" href="#keyframeeffect">KeyframeEffect</a></code>, it can be played by adding it to
 an <code class="idl"><a data-link-type="idl" href="#animation">Animation</a></code> and then playing that animation.
@@ -4628,7 +4628,7 @@ For simple effects, however, the <a href="#extensions-to-the-element-interface">
 automatically. For example,</p>
     <div class="example" id="example-f0e5c14c">
      <a class="self-link" href="#example-f0e5c14c"></a>
-<pre class="lang-javascript highlight"><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="mi">3000</span><span class="p">);</span></pre>
+<pre class="lang-javascript highlight"><span></span><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="mi">3000</span><span class="p">);</span></pre>
     </div>
    </div>
    <h4 class="heading settled" data-level="5.10.2" id="property-name-conversion"><span class="secno">5.10.2. </span><span class="content">Property names and IDL names</span><a class="self-link" href="#property-name-conversion"></a></h4>
@@ -4676,7 +4676,7 @@ property</a> algorithm <a data-link-type="biblio" href="#biblio-cssom">[CSSOM]</
     <p>This argument may be specified in the one of two forms as illustrated below.</p>
     <div class="example" id="example-e821216b">
      <a class="self-link" href="#example-e821216b"></a> 
-<pre class="lang-javascript highlight"><span class="c1">// The following two expressions produce the same result:</span>
+<pre class="lang-javascript highlight"><span></span><span class="c1">// The following two expressions produce the same result:</span>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'blue'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'green'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'red'</span> <span class="p">},</span>
@@ -4706,7 +4706,7 @@ property may specify a single animation value or an array of animation values.</
 only be specified using the array-form as illustrated below:</p>
     <div class="example" id="example-232560e3">
      <a class="self-link" href="#example-232560e3"></a> 
-<pre class="lang-javascript highlight"><span class="c1">// The keyframes without offsets will automatically have offsets computed</span>
+<pre class="lang-javascript highlight"><span></span><span class="c1">// The keyframes without offsets will automatically have offsets computed</span>
 <span class="c1">// as 0 for the first keyframe, 0.65 for the middle keyframe, and 1 for the</span>
 <span class="c1">// final keyframe</span>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'blue'</span> <span class="p">},</span>
@@ -4725,7 +4725,7 @@ the object-form allows specifying a <a data-link-type="dfn" href="#timing-functi
 to all keyframes.</p>
     <div class="example" id="example-547663b6">
      <a class="self-link" href="#example-547663b6"></a> 
-<pre class="lang-javascript highlight"><span class="c1">// Each keyframe can have a different timing function.</span>
+<pre class="lang-javascript highlight"><span></span><span class="c1">// Each keyframe can have a different timing function.</span>
 <span class="c1">// The timing function specified for the last keyframe is not used.</span>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'blue'</span><span class="p">,</span> <span class="nx">easing</span><span class="o">:</span> <span class="s1">'ease-in'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'green'</span><span class="p">,</span> <span class="nx">easing</span><span class="o">:</span> <span class="s1">'ease-out'</span> <span class="p">},</span>
@@ -4743,7 +4743,7 @@ using a <code class="idl"><a data-link-type="idl" href="#dictdef-keyframeeffecto
 a partially-open dictionary type.</p>
     <p>Conceptually, the type of this argument is equivalent to the following
 WebIDL-like definition:</p>
-<pre class="lang-idl highlight">dictionary Keyframe {
+<pre class="lang-idl highlight"><span></span>dictionary Keyframe {
     <span class="o">//</span> ... property<span class="o">-</span>value pairs ...
     <span class="o">//</span> i.e. DOMString propertyName
     <span class="nb">double</span>?             offset <span class="o">=</span> null;
@@ -5168,7 +5168,7 @@ multiple times.</p>
     <p>For example:</p>
     <div class="example" id="example-d0cc8d72">
      <a class="self-link" href="#example-d0cc8d72"></a>
-<pre class="lang-javascript highlight"><span class="kd">var</span> <span class="nx">keyframes</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SharedKeyframeList</span><span class="p">([</span>
+<pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">keyframes</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SharedKeyframeList</span><span class="p">([</span>
  <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span><span class="p">,</span> <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">'red'</span> <span class="p">},</span>
  <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'200px'</span><span class="p">,</span> <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">'green'</span><span class="p">,</span> <span class="nx">offset</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">},</span>
  <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'400px'</span><span class="p">,</span> <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">'blue'</span> <span class="p">}</span> <span class="p">]);</span>
@@ -5235,9 +5235,9 @@ as the <var>timeline</var> argument.</p>
         <p>Return <var>animation</var>.</p>
       </ol>
       <p>The following code fragment:</p>
-<pre class="lang-javascript highlight"><span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span></pre>
+<pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span></pre>
       <p>is equivalent to:</p>
-<pre class="lang-javascript highlight"><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
+<pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
 <span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">effect</span><span class="p">,</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">ownerDocument</span><span class="p">.</span><span class="nx">timeline</span><span class="p">);</span>
 <span class="nx">animation</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span></pre>
       <div class="parameters">
@@ -5322,15 +5322,13 @@ the <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/
    <p>This allows the following kind of usage.</p>
    <div class="example" id="example-77d1235d">
     <a class="self-link" href="#example-77d1235d"></a>
-<pre class="lang-javascript highlight"><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'red'</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span></pre>
+<pre class="lang-javascript highlight"><span></span><span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'red'</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span></pre>
    </div>
-   <h3 class="heading settled" data-level="5.17" id="extensions-to-the-pseudoelement-interface"><span class="secno">5.17. </span><span class="content">Extensions to the <code>PseudoElement</code> interface</span><a class="self-link" href="#extensions-to-the-pseudoelement-interface"></a></h3>
-   <p>Since <a data-link-type="dfn" href="#keyframe-effect">keyframe effects</a> may also target pseudo-elements, the <code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/cssom-1/#pseudoelement">PseudoElement</a></code> interface <a data-link-type="biblio" href="#biblio-cssom">[CSSOM]</a> is also defined to be animatable.</p>
-<pre class="idl"><a data-link-type="idl-name" href="https://drafts.csswg.org/cssom-1/#pseudoelement">PseudoElement</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
+   <h3 class="heading settled" data-level="5.17" id="extensions-to-the-pseudoelement-interface"><span class="secno">5.17. </span><span class="content">Extensions to the <code>CSSPseudoElement</code> interface</span><a class="self-link" href="#extensions-to-the-pseudoelement-interface"></a></h3>
+   <p>Since <a data-link-type="dfn" href="#keyframe-effect">keyframe effects</a> may also target pseudo-elements, the <code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/css-pseudo-4/#csspseudoelement">CSSPseudoElement</a></code> interface <a data-link-type="biblio" href="#biblio-css-pseudo-4">[css-pseudo-4]</a> is also defined to be
+animatable.</p>
+<pre class="idl"><a data-link-type="idl-name" href="https://drafts.csswg.org/css-pseudo-4/#csspseudoelement">CSSPseudoElement</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
 </pre>
-   <p class="issue" id="issue-4a2b43ac"><a class="self-link" href="#issue-4a2b43ac"></a> This interface is marked at-risk in the <a href="http://www.w3.org/TR/2013/WD-cssom-20131205/">5 December 2013 WD
-of CSSOM</a>.
-If it is removed, we will need to provide an equivalent definition here.</p>
    <h3 class="heading settled" data-level="5.18" id="the-animationplaybackevent-interface"><span class="secno">5.18. </span><span class="content">The <code>AnimationPlaybackEvent</code> interface</span><a class="self-link" href="#the-animationplaybackevent-interface"></a></h3>
    <p><a data-link-type="dfn" href="#animation-events">Animation events</a> are represented using the <code class="idl"><a data-link-type="idl" href="#animationplaybackevent">AnimationPlaybackEvent</a></code> interface.</p>
 <pre class="idl">[<a class="idl-code" data-link-type="constructor" href="#dom-animationplaybackevent-animationplaybackevent">Constructor</a> (DOMString <dfn class="idl-code" data-dfn-for="AnimationPlaybackEvent/AnimationPlaybackEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-type">type<a class="self-link" href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-type"></a></dfn>, optional <a data-link-type="idl-name" href="#dictdef-animationplaybackeventinit">AnimationPlaybackEventInit</a> <dfn class="idl-code" data-dfn-for="AnimationPlaybackEvent/AnimationPlaybackEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-eventinitdict">eventInitDict<a class="self-link" href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-eventinitdict"></a></dfn>)]
@@ -5381,7 +5379,7 @@ animation’s <code>startTime</code> will reflect updated state of
 the model immediately.</p>
       <div class="example" id="example-47276eec">
        <a class="self-link" href="#example-47276eec"></a>
-<pre class="lang-javascript highlight"><span class="c1">// Initially animation.effect.getComputedTiming().localTime is 3000</span>
+<pre class="lang-javascript highlight"><span></span><span class="c1">// Initially animation.effect.getComputedTiming().localTime is 3000</span>
 <span class="nx">animation</span><span class="p">.</span><span class="nx">currentTime</span> <span class="o">+=</span> <span class="mi">2000</span><span class="p">;</span>
 <span class="nx">alert</span><span class="p">(</span><span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">getComputedTiming</span><span class="p">().</span><span class="nx">localTime</span><span class="p">);</span> <span class="c1">// Displays ‘5000’</span></pre>
       </div>
@@ -5395,7 +5393,7 @@ element, the result of the new animation will be
 incorporated in the value returned.</p>
       <div class="example" id="example-b8c53d50">
        <a class="self-link" href="#example-b8c53d50"></a>
-<pre class="lang-javascript highlight"><span class="c1">// Set opacity to 0 immediately</span>
+<pre class="lang-javascript highlight"><span></span><span class="c1">// Set opacity to 0 immediately</span>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">fill</span><span class="o">:</span> <span class="s1">'forwards'</span> <span class="p">});</span>
 <span class="nx">alert</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">getComputedStyle</span><span class="p">(</span><span class="nx">elem</span><span class="p">).</span><span class="nx">opacity</span><span class="p">);</span> <span class="c1">// Displays ‘0’</span></pre>
       </div>
@@ -5406,7 +5404,7 @@ SVG 1.1 <a data-link-type="biblio" href="#biblio-svg11">[SVG11]</a> defines an a
 animated values as shown below.</p>
       <div class="example" id="example-c018b62f">
        <a class="self-link" href="#example-c018b62f"></a>
-<pre class="lang-javascript highlight"><span class="c1">// Set width to 0 immediately</span>
+<pre class="lang-javascript highlight"><span></span><span class="c1">// Set width to 0 immediately</span>
 <span class="nx">rect</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">width</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">fill</span><span class="o">:</span> <span class="s1">'forwards'</span> <span class="p">});</span>
 <span class="nx">alert</span><span class="p">(</span><span class="nx">rect</span><span class="p">.</span><span class="nx">width</span><span class="p">.</span><span class="nx">animVal</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// Displays ‘100’</span></pre>
       </div>
@@ -5420,7 +5418,7 @@ there should never be a situation where, for example, <em>only</em> the changes 
 applying animation.</p>
       <div class="example" id="example-1c78ebac">
        <a class="self-link" href="#example-1c78ebac"></a>
-<pre class="lang-javascript highlight"><span class="c1">// Fade the opacity with fallback for browsers that don’t</span>
+<pre class="lang-javascript highlight"><span></span><span class="c1">// Fade the opacity with fallback for browsers that don’t</span>
 <span class="c1">// support Element.animate</span>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">opacity</span> <span class="o">=</span> <span class="s1">'0'</span><span class="p">;</span>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">1</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">}</span> <span class="p">],</span> <span class="mi">500</span><span class="p">);</span></pre>
@@ -5440,7 +5438,7 @@ a long block of code that is executed in the same script block
 will return the same value as shown in the following example.</p>
       <div class="example" id="example-4cf704b9">
        <a class="self-link" href="#example-4cf704b9"></a>
-<pre class="lang-javascript highlight"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">timeline</span><span class="p">.</span><span class="nx">currentTime</span><span class="p">;</span>
+<pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">timeline</span><span class="p">.</span><span class="nx">currentTime</span><span class="p">;</span>
 <span class="c1">// ... many lines of code ...</span>
 <span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">timeline</span><span class="p">.</span><span class="nx">currentTime</span><span class="p">;</span>
 <span class="nx">alert</span><span class="p">(</span><span class="nx">b</span> <span class="o">-</span> <span class="nx">a</span><span class="p">);</span> <span class="c1">// Displays 0</span></pre>
@@ -5459,7 +5457,7 @@ as recorded at the beginning of the <a data-link-type="dfn" href="#sampling">sam
       <p>Since both <code>performance.now()</code> and <a data-link-type="dfn" href="#time-value">time values</a> from the <a data-link-type="dfn" href="#default-document-timeline">default document timeline</a> are measured from the <code>navigationStart</code> moment, and since both <a data-link-type="dfn" href="#timeline">timelines</a> and animation frame callbacks use the time recorded at the start of the <a data-link-type="dfn" href="#sampling">sample</a>, they should be equivalent.</p>
       <div class="example" id="example-ba1467fe">
        <a class="self-link" href="#example-ba1467fe"></a>
-<pre class="lang-javascript highlight"><span class="nb">window</span><span class="p">.</span><span class="nx">requestAnimationFrame</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">sampleTime</span><span class="p">)</span> <span class="p">{</span>
+<pre class="lang-javascript highlight"><span></span><span class="nb">window</span><span class="p">.</span><span class="nx">requestAnimationFrame</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">sampleTime</span><span class="p">)</span> <span class="p">{</span>
   <span class="c1">// Displays ‘0’</span>
   <span class="nx">alert</span><span class="p">(</span><span class="nx">sampleTime</span> <span class="o">-</span> <span class="nb">document</span><span class="p">.</span><span class="nx">timeline</span><span class="p">.</span><span class="nx">currentTime</span><span class="p">);</span>
 <span class="p">});</span></pre>
@@ -5974,6 +5972,11 @@ time</a><span>, in §3.5.14</span>
      <li><a href="https://drafts.csswg.org/css-overflow-4/#propdef-overflow">overflow</a>
     </ul>
    <li>
+    <a data-link-type="biblio" href="#biblio-css-pseudo-4">[css-pseudo-4]</a> defines the following terms:
+    <ul>
+     <li><a href="https://drafts.csswg.org/css-pseudo-4/#csspseudoelement">CSSPseudoElement</a>
+    </ul>
+   <li>
     <a data-link-type="biblio" href="#biblio-css21">[CSS21]</a> defines the following terms:
     <ul>
      <li><a href="https://drafts.csswg.org/css2/visuren.html#propdef-float">float</a>
@@ -5984,11 +5987,6 @@ time</a><span>, in §3.5.14</span>
      <li><a href="http://dev.w3.org/csswg/cssom/#css-property-to-idl-attribute">css property to idl attribute</a>
      <li><a href="http://dev.w3.org/csswg/cssom/#idl-attribute-to-css-property">idl attribute to css property</a>
      <li><a href="http://dev.w3.org/csswg/cssom/#serialize-a-css-value">serialize a css value</a>
-    </ul>
-   <li>
-    <a data-link-type="biblio" href="#biblio-cssom-1">[cssom]</a> defines the following terms:
-    <ul>
-     <li><a href="https://drafts.csswg.org/cssom-1/#pseudoelement">PseudoElement</a>
     </ul>
    <li>
     <a data-link-type="biblio" href="#biblio-dom-ls">[dom-ls]</a> defines the following terms:
@@ -6077,6 +6075,8 @@ time</a><span>, in §3.5.14</span>
    <dd>Elika Etemad; Tab Atkins Jr.. <a href="http://www.w3.org/TR/css-cascade-3/">CSS Cascading and Inheritance Level 3</a>. 16 April 2015. CR. URL: <a href="http://www.w3.org/TR/css-cascade-3/">http://www.w3.org/TR/css-cascade-3/</a>
    <dt id="biblio-css-overflow-4"><a class="self-link" href="#biblio-css-overflow-4"></a>[CSS-OVERFLOW-4]
    <dd>CSS Overflow Module Level 4 URL: <a href="https://drafts.csswg.org/css-overflow-4/">https://drafts.csswg.org/css-overflow-4/</a>
+   <dt id="biblio-css-pseudo-4"><a class="self-link" href="#biblio-css-pseudo-4"></a>[CSS-PSEUDO-4]
+   <dd>Daniel Glazman; Elika Etemad; Alan Stearns. <a href="http://www.w3.org/TR/css-pseudo-4/">CSS Pseudo-Elements Module Level 4</a>. 15 January 2015. WD. URL: <a href="http://www.w3.org/TR/css-pseudo-4/">http://www.w3.org/TR/css-pseudo-4/</a>
    <dt id="biblio-cssom"><a class="self-link" href="#biblio-cssom"></a>[CSSOM]
    <dd>Simon Pieters; Glenn Adams. <a href="http://www.w3.org/TR/cssom/">CSS Object Model (CSSOM)</a>. 5 December 2013. WD. URL: <a href="http://www.w3.org/TR/cssom/">http://www.w3.org/TR/cssom/</a>
    <dt id="biblio-dom"><a class="self-link" href="#biblio-dom"></a>[DOM]
@@ -6262,7 +6262,7 @@ partial interface <a class="idl-code" data-link-type="interface" href="https://h
 
 <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#element">Element</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
 
-<a data-link-type="idl-name" href="https://drafts.csswg.org/cssom-1/#pseudoelement">PseudoElement</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
+<a data-link-type="idl-name" href="https://drafts.csswg.org/css-pseudo-4/#csspseudoelement">CSSPseudoElement</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
 
 [<a class="idl-code" data-link-type="constructor" href="#dom-animationplaybackevent-animationplaybackevent">Constructor</a> (DOMString <a href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-type">type</a>, optional <a data-link-type="idl-name" href="#dictdef-animationplaybackeventinit">AnimationPlaybackEventInit</a> <a href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-eventinitdict">eventInitDict</a>)]
 interface <a href="#animationplaybackevent">AnimationPlaybackEvent</a> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event">Event</a> {
@@ -6443,10 +6443,5 @@ if we could replace it with some value indicating an error?<a href="#issue-17b76
        We may need to revise this definition (previously these methods
        only returned animations whose <a data-link-type="dfn" href="#target-effect">target effect</a> was <a data-link-type="dfn" href="#current">current</a>) or provide a loophole for implementations to discard
        old animations in such conditions.<a href="#issue-8748c168"> ↵ </a></div>
-   <div class="issue"> This interface is marked at-risk in the <a href="http://www.w3.org/TR/2013/WD-cssom-20131205/">5 December 2013 WD
-of CSSOM</a>.
-If it is removed, we will need to provide an equivalent definition here.<a href="#issue-4a2b43ac"> ↵ </a></div>
    <div class="issue"> Is this at odds with those <a data-link-type="dfn" href="#time-value">time values</a> being relative to <code>navigationStart</code> and with <code>requestAnimationFrame</code> using the same time as <code>document.timeline.currentTime</code>?<a href="#issue-d06e8e73"> ↵ </a></div>
   </div>
- </body>
-</html>
