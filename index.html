@@ -73,7 +73,7 @@
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/Icons/w3c_home" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Web Animations</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-02-17">17 February 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-02-18">18 February 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -3789,13 +3789,8 @@ to the new value.</p>
      <dt data-md="">
       <p><dfn class="idl-code" data-dfn-for="Animation" data-dfn-type="attribute" data-export="" id="dom-animation-currenttime">currentTime<a class="self-link" href="#dom-animation-currenttime"></a></dfn>, <span> of type <a data-link-type="idl-name">double</a>, nullable</span></p>
      <dd data-md="">
-      <p>The <a data-link-type="dfn" href="#current-time">current time</a> of this animation unless
-this animation has a <a data-link-type="dfn" href="#pending-pause-task">pending pause task</a>, in which case
-this attribute returns <code>null</code>.</p>
-      <p class="issue" id="issue-b9772448"><a class="self-link" href="#issue-b9772448"></a> This behavior is intended to prevent authors for relying
-on the <code>currentTime</code> while an animation is waiting to pause
-but is also somewhat confusing.</p>
-      <p>Setting this attribute follows the procedure to <a data-link-type="dfn" href="#set-the-current-time">set the current time</a> of this object to the new value.</p>
+      <p>The <a data-link-type="dfn" href="#current-time">current time</a> of this animation.
+Setting this attribute follows the procedure to <a data-link-type="dfn" href="#set-the-current-time">set the current time</a> of this object to the new value.</p>
      <dt data-md="">
       <p><dfn class="idl-code" data-dfn-for="Animation" data-dfn-type="attribute" data-export="" id="dom-animation-playbackrate">playbackRate<a class="self-link" href="#dom-animation-playbackrate"></a></dfn>, <span> of type <a data-link-type="idl-name">double</a></span></p>
      <dd data-md="">
@@ -4634,7 +4629,7 @@ automatically. For example,</p>
    <p>The <dfn data-dfn-type="dfn" data-noexport="" id="animation-property-name-to-idl-attribute-name">animation property name to IDL attribute name<a class="self-link" href="#animation-property-name-to-idl-attribute-name"></a></dfn> algorithm for <var>property</var> is as follows:</p>
    <ol>
     <li data-md="">
-     <p>If <var>property</var> refers to the <code><a data-link-type="element-attr" href="https://svgwg.org/svg2-draft/pservers.html#StopElementOffsetAttribute">offset</a></code> attribute of
+     <p>If <var>property</var> refers to the <code><a data-link-type="element-sub" href="https://svgwg.org/svg2-draft/pservers.html#StopElementOffsetAttribute">offset</a></code> attribute of
 the SVG <code><a data-link-type="element" href="https://svgwg.org/svg2-draft/pservers.html#elementdef-stop">stop</a></code> element, return the the string "svgOffset".</p>
     <li data-md="">
      <p>If <var>property</var> refers to the CSS <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visuren.html#propdef-float">float</a> property,
@@ -4647,7 +4642,7 @@ attribute</a> algorithm <a data-link-type="biblio" href="#biblio-cssom">[CSSOM]<
    <ol>
     <li data-md="">
      <p>If <var>attribute</var> is the string "svgOffset", then return
-an animation property representing the <code><a data-link-type="element-attr" href="https://svgwg.org/svg2-draft/pservers.html#StopElementOffsetAttribute">offset</a></code> attribute
+an animation property representing the <code><a data-link-type="element-sub" href="https://svgwg.org/svg2-draft/pservers.html#StopElementOffsetAttribute">offset</a></code> attribute
 of the SVG <code><a data-link-type="element" href="https://svgwg.org/svg2-draft/pservers.html#elementdef-stop">stop</a></code> element.</p>
     <li data-md="">
      <p>If <var>attribute</var> is the string "cssFloat", then return
@@ -5541,6 +5536,9 @@ the end of the procedure.</p>
       <li data-md="">
        <p>Added the <code class="idl"><a data-link-type="idl" href="#dom-animation-onfinish">onfinish</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-animation-oncancel">oncancel</a></code> attributes
 for registering <a data-link-type="dfn" href="#animation-events">animation event</a> handlers.</p>
+      <li data-md="">
+       <p>Removed the behavior that required <code class="idl"><a data-link-type="idl" href="#dom-animation-currenttime">currentTime</a></code> to be null
+when the animation has a <a data-link-type="dfn" href="#pending-pause-task">pending pause task</a>.</p>
      </ul>
     <li data-md="">
      <p>Replaced the <code>computedTiming</code> parameter on the <code class="idl"><a data-link-type="idl" href="#animationeffectreadonly">AnimationEffectReadOnly</a></code> interface with
@@ -6067,21 +6065,17 @@ time</a><span>, in §3.5.14</span>
    <dt id="biblio-svg11"><a class="self-link" href="#biblio-svg11"></a>[SVG11]
    <dd>Erik Dahlström; et al. <a href="http://www.w3.org/TR/SVG11/">Scalable Vector Graphics (SVG) 1.1 (Second Edition)</a>. 16 August 2011. REC. URL: <a href="http://www.w3.org/TR/SVG11/">http://www.w3.org/TR/SVG11/</a>
    <dt id="biblio-svg2"><a class="self-link" href="#biblio-svg2"></a>[SVG2]
-   <dd>Nikos Andronikos; et al. <a href="http://www.w3.org/TR/SVG2/">Scalable Vector Graphics (SVG) 2</a>. 15 September 2015. WD. URL: <a href="http://www.w3.org/TR/SVG2/">http://www.w3.org/TR/SVG2/</a>
+   <dd>Nikos Andronikos; et al. <a href="https://svgwg.org/svg2-draft/">Scalable Vector Graphics (SVG) 2</a>. 15 September 2015. WD. URL: <a href="https://svgwg.org/svg2-draft/">https://svgwg.org/svg2-draft/</a>
    <dt id="biblio-webidl"><a class="self-link" href="#biblio-webidl"></a>[WebIDL]
    <dd>Cameron McCormack; Boris Zbarsky. <a href="http://www.w3.org/TR/WebIDL-1/">WebIDL Level 1</a>. 4 August 2015. WD. URL: <a href="http://www.w3.org/TR/WebIDL-1/">http://www.w3.org/TR/WebIDL-1/</a>
    <dt id="biblio-css-cascade-3"><a class="self-link" href="#biblio-css-cascade-3"></a>[CSS-CASCADE-3]
    <dd>Elika Etemad; Tab Atkins Jr.. <a href="http://www.w3.org/TR/css-cascade-3/">CSS Cascading and Inheritance Level 3</a>. 16 April 2015. CR. URL: <a href="http://www.w3.org/TR/css-cascade-3/">http://www.w3.org/TR/css-cascade-3/</a>
-   <dt id="biblio-css-overflow-4"><a class="self-link" href="#biblio-css-overflow-4"></a>[CSS-OVERFLOW-4]
-   <dd>CSS Overflow Module Level 4 URL: <a href="https://drafts.csswg.org/css-overflow-4/">https://drafts.csswg.org/css-overflow-4/</a>
    <dt id="biblio-css-pseudo-4"><a class="self-link" href="#biblio-css-pseudo-4"></a>[CSS-PSEUDO-4]
    <dd>Daniel Glazman; Elika Etemad; Alan Stearns. <a href="http://www.w3.org/TR/css-pseudo-4/">CSS Pseudo-Elements Module Level 4</a>. 15 January 2015. WD. URL: <a href="http://www.w3.org/TR/css-pseudo-4/">http://www.w3.org/TR/css-pseudo-4/</a>
    <dt id="biblio-cssom"><a class="self-link" href="#biblio-cssom"></a>[CSSOM]
    <dd>Simon Pieters; Glenn Adams. <a href="http://www.w3.org/TR/cssom/">CSS Object Model (CSSOM)</a>. 5 December 2013. WD. URL: <a href="http://www.w3.org/TR/cssom/">http://www.w3.org/TR/cssom/</a>
    <dt id="biblio-dom"><a class="self-link" href="#biblio-dom"></a>[DOM]
    <dd>Anne van Kesteren; et al. <a href="http://www.w3.org/TR/dom/">W3C DOM4</a>. 19 November 2015. REC. URL: <a href="http://www.w3.org/TR/dom/">http://www.w3.org/TR/dom/</a>
-   <dt id="biblio-dom-ls"><a class="self-link" href="#biblio-dom-ls"></a>[DOM-LS]
-   <dd>Document Object Model URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
    <dt id="biblio-media-frags"><a class="self-link" href="#biblio-media-frags"></a>[MEDIA-FRAGS]
    <dd>Raphaël Troncy; et al. <a href="http://www.w3.org/TR/media-frags/">Media Fragments URI 1.0 (basic)</a>. 25 September 2012. REC. URL: <a href="http://www.w3.org/TR/media-frags/">http://www.w3.org/TR/media-frags/</a>
    <dt id="biblio-navigation-timing"><a class="self-link" href="#biblio-navigation-timing"></a>[NAVIGATION-TIMING]
@@ -6095,6 +6089,8 @@ time</a><span>, in §3.5.14</span>
    <dd>Peter Shirley; Michael Ashikhmin; Steve Marschner. Fundamentals of Computer Graphics. 2009. 
    <dt id="biblio-animation-timing"><a class="self-link" href="#biblio-animation-timing"></a>[ANIMATION-TIMING]
    <dd>James Robinson; Cameron McCormack. <a href="http://www.w3.org/TR/animation-timing/">Timing control for script-based animations</a>. 22 September 2015. NOTE. URL: <a href="http://www.w3.org/TR/animation-timing/">http://www.w3.org/TR/animation-timing/</a>
+   <dt id="biblio-css-overflow-4"><a class="self-link" href="#biblio-css-overflow-4"></a>[CSS-OVERFLOW-4]
+   <dd>CSS Overflow Module Level 4 URL: <a href="https://drafts.csswg.org/css-overflow-4/">https://drafts.csswg.org/css-overflow-4/</a>
    <dt id="biblio-css3-animations"><a class="self-link" href="#biblio-css3-animations"></a>[CSS3-ANIMATIONS]
    <dd>Dean Jackson; et al. <a href="http://www.w3.org/TR/css3-animations/">CSS Animations</a>. 19 February 2013. WD. URL: <a href="http://www.w3.org/TR/css3-animations/">http://www.w3.org/TR/css3-animations/</a>
    <dt id="biblio-css3-transforms"><a class="self-link" href="#biblio-css3-transforms"></a>[CSS3-TRANSFORMS]
@@ -6103,6 +6099,8 @@ time</a><span>, in §3.5.14</span>
    <dd>Dean Jackson; et al. <a href="http://www.w3.org/TR/css3-transitions/">CSS Transitions</a>. 19 November 2013. WD. URL: <a href="http://www.w3.org/TR/css3-transitions/">http://www.w3.org/TR/css3-transitions/</a>
    <dt id="biblio-css4-images"><a class="self-link" href="#biblio-css4-images"></a>[CSS4-IMAGES]
    <dd>Elika Etemad; Tab Atkins Jr.. <a href="http://www.w3.org/TR/css4-images/">CSS Image Values and Replaced Content Module Level 4</a>. 11 September 2012. WD. URL: <a href="http://www.w3.org/TR/css4-images/">http://www.w3.org/TR/css4-images/</a>
+   <dt id="biblio-dom-ls"><a class="self-link" href="#biblio-dom-ls"></a>[DOM-LS]
+   <dd>Document Object Model URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
    <dt id="biblio-hr-time"><a class="self-link" href="#biblio-hr-time"></a>[HR-TIME]
    <dd>Jatinder Mann. <a href="http://www.w3.org/TR/hr-time/">High Resolution Time</a>. 17 December 2012. REC. URL: <a href="http://www.w3.org/TR/hr-time/">http://www.w3.org/TR/hr-time/</a>
    <dt id="biblio-smil-animation"><a class="self-link" href="#biblio-smil-animation"></a>[SMIL-ANIMATION]
@@ -6417,9 +6415,6 @@ partial interface Animation { };
   set a null timeline.</p>
      <a href="#issue-0d7a37da"> ↵ </a>
    </div>
-   <div class="issue"> This behavior is intended to prevent authors for relying
-on the <code>currentTime</code> while an animation is waiting to pause
-but is also somewhat confusing.<a href="#issue-b9772448"> ↵ </a></div>
    <div class="issue"> The <code>remove()</code> method can be used to remove an effect from
 either its parent group or animation. Should we keep it in level 1 and define it
 simply as removing the animation from its animation?<a href="#issue-f768d04e"> ↵ </a></div>
