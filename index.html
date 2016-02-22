@@ -73,7 +73,7 @@
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/Icons/w3c_home" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Web Animations</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-02-19">19 February 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-02-22">22 February 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2175,22 +2175,34 @@ following steps:</p>
     <li data-md="">
      <p>If the <a data-link-type="dfn" href="#active-time">active time</a> is <a data-link-type="dfn" href="#unresolved">unresolved</a>, return <a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
     <li data-md="">
-     <p>If the <a data-link-type="dfn" href="#active-time">active time</a> is zero, return <code>floor(<a data-link-type="dfn" href="#iteration-start">iteration
-start</a>)</code>.</p>
-     <div class="annotation"> This is needed so that we report the correct <a data-link-type="dfn" href="#current-iteration">current iteration</a> when
-  doing a backwards fill for an animation with a zero-length <a data-link-type="dfn" href="#iteration-duration">iteration
-  duration</a>. </div>
-    <li data-md="">
-     <p>If the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is zero,</p>
+     <p>If the animation effect is in the <a data-link-type="dfn" href="#after-phase">after phase</a>,</p>
      <ol>
       <li data-md="">
        <p>If the <a data-link-type="dfn" href="#iteration-count">iteration count</a> is infinity, return infinity.</p>
       <li data-md="">
        <p>Otherwise, return <code>ceil(<a data-link-type="dfn" href="#iteration-start">iteration start</a> + <a data-link-type="dfn" href="#iteration-count">iteration count</a>) - 1</code>.</p>
      </ol>
+     <div class="annotation">
+       The above is intended to handle the following cases: 
+      <ul>
+       <li data-md="">
+        <p>the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is zero,</p>
+       <li data-md="">
+        <p>the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is zero <em>and</em> the <a data-link-type="dfn" href="#iteration-count">iteration
+  count</a> is infinity,</p>
+       <li data-md="">
+        <p>the <a data-link-type="dfn" href="#active-interval">active interval</a> ends exactly at the end of an iteration
+  (i.e. <a data-link-type="dfn" href="#iteration-start">iteration start</a> + <a data-link-type="dfn" href="#iteration-count">iteration count</a> is an integer),
+  or</p>
+       <li data-md="">
+        <p>the <a data-link-type="dfn" href="#active-interval">active interval</a> ends mid-way through an iteration.</p>
+      </ul>
+     </div>
     <li data-md="">
-     <p>If the <a data-link-type="dfn" href="#iteration-time">iteration time</a> equals the <a data-link-type="dfn" href="#iteration-duration">iteration
-duration</a>, return <code><a data-link-type="dfn" href="#iteration-start">iteration start</a> + <a data-link-type="dfn" href="#iteration-count">iteration count</a> - 1</code>.</p>
+     <p>If the animation effect is in the <a data-link-type="dfn" href="#before-phase">before phase</a>, return <code>floor(<a data-link-type="dfn" href="#iteration-start">iteration start</a>)</code>.</p>
+     <div class="annotation"> This is needed so that we report the correct <a data-link-type="dfn" href="#current-iteration">current iteration</a> when
+  doing a backwards fill for an animation with a zero-length <a data-link-type="dfn" href="#iteration-duration">iteration
+  duration</a>. </div>
     <li data-md="">
      <p>Return <code>floor(<a data-link-type="dfn" href="#scaled-active-time">scaled active time</a> / <a data-link-type="dfn" href="#iteration-duration">iteration duration</a>)</code>.</p>
      <p class="note" role="note"> If the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is infinity, the
@@ -5524,6 +5536,9 @@ the end of the procedure.</p>
     <li data-md="">
      <p>Reverted the change to the definition of an <a data-link-type="dfn" href="#animation-effect">animation effect</a>’s <a data-link-type="dfn" href="#end-time">end time</a> to no longer clamp the time to zero.</p>
     <li data-md="">
+     <p>Updated the procedure to calculate the <a data-link-type="dfn" href="#current-iteration">current iteration</a> to
+correctly handle zero-duration animation effects that are in the <a data-link-type="dfn" href="#after-phase">after phase</a>.</p>
+    <li data-md="">
      <p>Added <a href="#animation-events-section">§3.5.20 Animation events</a>.</p>
     <li data-md="">
      <p>Updated the <code class="idl"><a data-link-type="idl" href="#animation">Animation</a></code> interface:</p>
@@ -5597,8 +5612,8 @@ to the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.
     Such assertions are intended to clarify the expected behavior and do not
     constitute implementation requirements. </p>
   </main>
-  <h2 class="no-num heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
-  <h3 class="no-num heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
+  <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
    <li><a href="#active-duration">active duration</a><span>, in §3.9.2</span>
    <li><a href="#dom-computedtimingproperties-activeduration">activeDuration</a><span>, in §5.9</span>
@@ -5960,7 +5975,7 @@ time</a><span>, in §3.5.14</span>
    <li><a href="#update-an-animations-finished-state">update an animation’s finished state</a><span>, in §3.5.14</span>
    <li><a href="#zero-time">zero time</a><span>, in §3.4</span>
   </ul>
-  <h3 class="no-num heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
+  <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
     <a data-link-type="biblio" href="#biblio-css-overflow-4">[css-overflow-4]</a> defines the following terms:
@@ -6048,8 +6063,8 @@ time</a><span>, in §3.5.14</span>
      <li><a href="https://heycam.github.io/webidl/#dfn-throw">throw</a>
     </ul>
   </ul>
-  <h2 class="no-num heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
-  <h3 class="no-num heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
+  <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
   <dl>
    <dt id="biblio-css21"><a class="self-link" href="#biblio-css21"></a>[CSS21]
    <dd>Bert Bos; et al. <a href="http://www.w3.org/TR/CSS2">Cascading Style Sheets Level 2 Revision 1 (CSS 2.1) Specification</a>. 7 June 2011. REC. URL: <a href="http://www.w3.org/TR/CSS2">http://www.w3.org/TR/CSS2</a>
@@ -6082,7 +6097,7 @@ time</a><span>, in §3.5.14</span>
    <dt id="biblio-rfc2119"><a class="self-link" href="#biblio-rfc2119"></a>[RFC2119]
    <dd>S. Bradner. <a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>. March 1997. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc2119">https://tools.ietf.org/html/rfc2119</a>
   </dl>
-  <h3 class="no-num heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
+  <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
    <dt id="biblio-fund-comp-graphics"><a class="self-link" href="#biblio-fund-comp-graphics"></a>[FUND-COMP-GRAPHICS]
    <dd>Peter Shirley; Michael Ashikhmin; Steve Marschner. Fundamentals of Computer Graphics. 2009. 
@@ -6105,7 +6120,7 @@ time</a><span>, in §3.5.14</span>
    <dt id="biblio-smil-animation"><a class="self-link" href="#biblio-smil-animation"></a>[SMIL-ANIMATION]
    <dd>Patrick Schmitz; Aaron Cohen. <a href="http://www.w3.org/TR/smil-animation/">SMIL Animation</a>. 4 September 2001. REC. URL: <a href="http://www.w3.org/TR/smil-animation/">http://www.w3.org/TR/smil-animation/</a>
   </dl>
-  <h2 class="no-num heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
+  <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
 <pre class="idl">interface <a href="#animationtimeline">AnimationTimeline</a> {
     readonly attribute double? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="double? " href="#dom-animationtimeline-currenttime">currentTime</a>;
 };
@@ -6271,7 +6286,7 @@ dictionary <a href="#dictdef-animationplaybackeventinit">AnimationPlaybackEventI
 };
 
 </pre>
-  <h2 class="no-num heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
+  <h2 class="no-num no-ref heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
    <div class="issue"> Is this right? If you shift an animation backwards in time so that it is
 now finished, should the current time jump to the end of the target effect, or
