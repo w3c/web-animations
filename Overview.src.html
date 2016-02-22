@@ -2958,6 +2958,18 @@ following steps:
 1.  If the <a>active time</a> is <a>unresolved</a>, return
     <a>unresolved</a>.
 
+1.  If the animation effect is in the <a>before phase</a> <em>or</em> the
+    <a>iteration count</a> is zero, return
+    <code>floor(<a>iteration start</a>)</code>.
+
+    <div class="annotation">
+      This step is required to handle the following special cases:
+
+      *   the <a>iteration duration</a> is zero (and we are filling backwards)
+      *   the <a>iteration count</a> is zero
+
+    </div>
+
 1.  If the animation effect is in the <a>after phase</a>,
 
     1.  If the <a>iteration count</a> is infinity, return infinity.
@@ -2966,25 +2978,14 @@ following steps:
         <code>ceil(<a>iteration start</a> + <a>iteration count</a>) - 1</code>.
 
     <div class="annotation">
-      The above is intended to handle the following cases:
+      The above is required to handle the following special cases:
 
-      *   the <a>iteration duration</a> is zero,
+      *   the <a>iteration duration</a> is zero (and we are filling forwards)
       *   the <a>iteration duration</a> is zero <em>and</em> the <a>iteration
-          count</a> is infinity,
+          count</a> is infinity
       *   the <a>active interval</a> ends exactly at the end of an iteration
-          (i.e. <a>iteration start</a> + <a>iteration count</a> is an integer),
-          or
-      *   the <a>active interval</a> ends mid-way through an iteration.
+          (i.e. <a>iteration start</a> + <a>iteration count</a> is an integer)
 
-    </div>
-
-1.  If the animation effect is in the <a>before phase</a>, return
-    <code>floor(<a>iteration start</a>)</code>.
-
-    <div class="annotation">
-      This is needed so that we report the correct <a>current iteration</a> when
-      doing a backwards fill for an animation with a zero-length <a>iteration
-      duration</a>.
     </div>
 
 1.  Return <code>floor(<a>scaled active time</a> /
