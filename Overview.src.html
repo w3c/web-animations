@@ -2958,25 +2958,34 @@ following steps:
 1.  If the <a>active time</a> is <a>unresolved</a>, return
     <a>unresolved</a>.
 
-1.  If the <a>active time</a> is zero, return <code>floor(<a>iteration
-    start</a>)</code>.
-
-    <div class="annotation">
-      This is needed so that we report the correct <a>current iteration</a> when
-      doing a backwards fill for an animation with a zero-length <a>iteration
-      duration</a>.
-    </div>
-
-1.  If the <a>iteration duration</a> is zero,
+1.  If the animation effect is in the <a>after phase</a>,
 
     1.  If the <a>iteration count</a> is infinity, return infinity.
 
     1.  Otherwise, return
         <code>ceil(<a>iteration start</a> + <a>iteration count</a>) - 1</code>.
 
-1.  If the <a>iteration time</a> equals the <a>iteration
-    duration</a>, return <code><a>iteration start</a> +
-    <a>iteration count</a> - 1</code>.
+    <div class="annotation">
+      The above is intended to handle the following cases:
+
+      *   the <a>iteration duration</a> is zero,
+      *   the <a>iteration duration</a> is zero <em>and</em> the <a>iteration
+          count</a> is infinity,
+      *   the <a>active interval</a> ends exactly at the end of an iteration
+          (i.e. <a>iteration start</a> + <a>iteration count</a> is an integer),
+          or
+      *   the <a>active interval</a> ends mid-way through an iteration.
+
+    </div>
+
+1.  If the animation effect is in the <a>before phase</a>, return
+    <code>floor(<a>iteration start</a>)</code>.
+
+    <div class="annotation">
+      This is needed so that we report the correct <a>current iteration</a> when
+      doing a backwards fill for an animation with a zero-length <a>iteration
+      duration</a>.
+    </div>
 
 1.  Return <code>floor(<a>scaled active time</a> /
     <a>iteration duration</a>)</code>.
@@ -2985,6 +2994,7 @@ following steps:
       result of <code>floor(<a>scaled active time</a> /
       <a>iteration duration</a>)</code> will be zero as defined by
       IEEE 754-2008.
+    </p>
 
 <h3 id="direction-control">Direction control</h3>
 
@@ -8032,6 +8042,9 @@ The following changes have been made since the <a
     the end of the procedure.
 *   Reverted the change to the definition of an <a>animation effect</a>'s
     <a>end time</a> to no longer clamp the time to zero.
+*   Updated the procedure to calculate the <a>current iteration</a> to
+    correctly handle zero-duration animation effects that are in the
+    <a>after phase</a>.
 *   Added [[#animation-events-section]].
 *   Updated the {{Animation}} interface:
 
