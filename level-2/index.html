@@ -73,7 +73,7 @@
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/Icons/w3c_home" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Web Animations Level 2</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft, <time class="dt-updated" datetime="2016-02-22">22 February 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft, <time class="dt-updated" datetime="2016-02-23">23 February 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2417,6 +2417,17 @@ following steps:</p>
     <li data-md="">
      <p>If the <a data-link-type="dfn" href="#active-time">active time</a> is <a data-link-type="dfn" href="#unresolved">unresolved</a>, return <a data-link-type="dfn" href="#unresolved">unresolved</a>.</p>
     <li data-md="">
+     <p>If the animation effect is in the <a data-link-type="dfn" href="#before-phase">before phase</a> <em>or</em> the <a data-link-type="dfn" href="#iteration-count">iteration count</a> is zero, return <code>floor(<a data-link-type="dfn" href="#iteration-start">iteration start</a>)</code>.</p>
+     <div class="annotation">
+       This step is required to handle the following special cases: 
+      <ul>
+       <li data-md="">
+        <p>the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is zero (and we are filling backwards)</p>
+       <li data-md="">
+        <p>the <a data-link-type="dfn" href="#iteration-count">iteration count</a> is zero</p>
+      </ul>
+     </div>
+    <li data-md="">
      <p>If the animation effect is in the <a data-link-type="dfn" href="#after-phase">after phase</a>,</p>
      <ol>
       <li data-md="">
@@ -2425,26 +2436,18 @@ following steps:</p>
        <p>Otherwise, return <code>ceil(<a data-link-type="dfn" href="#iteration-start">iteration start</a> + <a data-link-type="dfn" href="#iteration-count">iteration count</a>) - 1</code>.</p>
      </ol>
      <div class="annotation">
-       The above is intended to handle the following cases: 
+       The above is required to handle the following special cases: 
       <ul>
        <li data-md="">
-        <p>the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is zero,</p>
+        <p>the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is zero (and we are filling forwards)</p>
        <li data-md="">
         <p>the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is zero <em>and</em> the <a data-link-type="dfn" href="#iteration-count">iteration
-  count</a> is infinity,</p>
+  count</a> is infinity</p>
        <li data-md="">
         <p>the <a data-link-type="dfn" href="#active-interval">active interval</a> ends exactly at the end of an iteration
-  (i.e. <a data-link-type="dfn" href="#iteration-start">iteration start</a> + <a data-link-type="dfn" href="#iteration-count">iteration count</a> is an integer),
-  or</p>
-       <li data-md="">
-        <p>the <a data-link-type="dfn" href="#active-interval">active interval</a> ends mid-way through an iteration.</p>
+  (i.e. <a data-link-type="dfn" href="#iteration-start">iteration start</a> + <a data-link-type="dfn" href="#iteration-count">iteration count</a> is an integer)</p>
       </ul>
      </div>
-    <li data-md="">
-     <p>If the animation effect is in the <a data-link-type="dfn" href="#before-phase">before phase</a>, return <code>floor(<a data-link-type="dfn" href="#iteration-start">iteration start</a>)</code>.</p>
-     <div class="annotation"> This is needed so that we report the correct <a data-link-type="dfn" href="#current-iteration">current iteration</a> when
-  doing a backwards fill for an animation with a zero-length <a data-link-type="dfn" href="#iteration-duration">iteration
-  duration</a>. </div>
     <li data-md="">
      <p>Return <code>floor(<a data-link-type="dfn" href="#scaled-active-time">scaled active time</a> / <a data-link-type="dfn" href="#iteration-duration">iteration duration</a>)</code>.</p>
      <p class="note" role="note"> If the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is infinity, the
