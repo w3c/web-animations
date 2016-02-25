@@ -73,7 +73,7 @@
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/Icons/w3c_home" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Web Animations</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-02-23">23 February 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-02-25">25 February 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1402,7 +1402,7 @@ a new (pending) Promise object.</p>
    <div class="informative-bg">
     <p>Typically, notification about the finished state of an animation is
 performed asynchronously. This allows for the animation to temporarily
-enter the <a href="finished playback state">finished state</a> without
+enter the <a data-link-type="dfn" href="#finished-play-state">finished state</a> without
 triggering events to be fired or promises to be resolved.</p>
     <p>For example, in the following code fragment, <code>animation</code> temporarily
 enters the finished state. If notification of the finished state occurred
@@ -2165,6 +2165,7 @@ and the <a data-link-type="dfn" href="#iteration-count">iteration count</a> is n
 and <code>(<a data-link-type="dfn" href="#iteration-count">iteration count</a> + <a data-link-type="dfn" href="#iteration-start">iteration start</a>)
 % 1</code> is zero,
 return the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a>.</p>
+     <p>If <a data-link-type="dfn" href="#iteration-count">iteration count</a> is infinity, then for the purpose of evaluating <code>(<a data-link-type="dfn" href="#iteration-count">iteration count</a> + <a data-link-type="dfn" href="#iteration-start">iteration start</a>) % 1</code> in the above condition, treat <a data-link-type="dfn" href="#iteration-count">iteration count</a> as zero.</p>
     <li data-md="">
      <p>Otherwise, return <code><a data-link-type="dfn" href="#scaled-active-time">scaled active time</a> % <a data-link-type="dfn" href="#iteration-duration">iteration duration</a></code>.</p>
    </ol>
@@ -2207,10 +2208,9 @@ following steps:</p>
       </ul>
      </div>
     <li data-md="">
-     <p>Return <code>floor(<a data-link-type="dfn" href="#scaled-active-time">scaled active time</a> / <a data-link-type="dfn" href="#iteration-duration">iteration duration</a>)</code>.</p>
-     <p class="note" role="note"> If the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is infinity, the
-  result of <code>floor(<a data-link-type="dfn" href="#scaled-active-time">scaled active time</a> / <a data-link-type="dfn" href="#iteration-duration">iteration duration</a>)</code> will be zero as defined by
-  IEEE 754-2008. </p>
+     <p>If the <a data-link-type="dfn" href="#iteration-duration">iteration duration</a> is infinity, return <code>floor(<a data-link-type="dfn" href="#iteration-start">iteration start</a>)</code>.</p>
+    <li data-md="">
+     <p>Otherwise, return <code>floor(<a data-link-type="dfn" href="#scaled-active-time">scaled active time</a> / <a data-link-type="dfn" href="#iteration-duration">iteration duration</a>)</code>.</p>
    </ol>
    <h3 class="heading settled" data-level="3.10" id="direction-control"><span class="secno">3.10. </span><span class="content">Direction control</span><a class="self-link" href="#direction-control"></a></h3>
    <p><a data-link-type="dfn" href="#animation-effect">Animation effects</a> may also be configured to run iterations in
@@ -3666,7 +3666,7 @@ the type <code>double</code>. <a data-link-type="dfn" href="#unresolved">Unresol
 represented by the value <code>null</code>.</p>
    <h3 class="heading settled" data-level="5.2" id="the-animationtimeline-interface"><span class="secno">5.2. </span><span class="content">The <code>AnimationTimeline</code> interface</span><a class="self-link" href="#the-animationtimeline-interface"></a></h3>
    <p><a data-link-type="dfn" href="#timeline">Timelines</a> are represented in the Web Animations API by the <code class="idl"><a data-link-type="idl" href="#animationtimeline">AnimationTimeline</a></code> interface.</p>
-<pre class="idl">interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animationtimeline">AnimationTimeline<a class="self-link" href="#animationtimeline"></a></dfn> {
+<pre class="idl def">interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animationtimeline">AnimationTimeline<a class="self-link" href="#animationtimeline"></a></dfn> {
     readonly attribute double? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="double? " href="#dom-animationtimeline-currenttime">currentTime</a>;
 };
 </pre>
@@ -3681,7 +3681,7 @@ represented by the value <code>null</code>.</p>
    <h3 class="heading settled" data-level="5.3" id="the-documenttimeline-interface"><span class="secno">5.3. </span><span class="content">The <code>DocumentTimeline</code> interface</span><a class="self-link" href="#the-documenttimeline-interface"></a></h3>
    <p><a data-link-type="dfn" href="#document-timeline">Document timelines</a>, including the <a data-link-type="dfn" href="#default-document-timeline">default document
 timeline</a> are represented in the Web Animations API by the <code class="idl"><a data-link-type="idl" href="#documenttimeline">DocumentTimeline</a></code> interface.</p>
-<pre class="idl">[<a class="idl-code" data-link-type="constructor" href="#dom-documenttimeline-documenttimeline">Constructor</a> (<a data-link-type="idl-name" href="http://www.w3.org/TR/hr-time/#domhighrestimestamp">DOMHighResTimeStamp</a> <a class="idl-code" data-link-type="argument" href="#dom-documenttimeline-documenttimeline-origintime-origintime">originTime</a>)]
+<pre class="idl def">[<a class="idl-code" data-link-type="constructor" href="#dom-documenttimeline-documenttimeline">Constructor</a> (<a data-link-type="idl-name" href="http://www.w3.org/TR/hr-time/#domhighrestimestamp">DOMHighResTimeStamp</a> <a class="idl-code" data-link-type="argument" href="#dom-documenttimeline-documenttimeline-origintime-origintime">originTime</a>)]
 interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="documenttimeline">DocumentTimeline<a class="self-link" href="#documenttimeline"></a></dfn> : <a data-link-type="idl-name" href="#animationtimeline">AnimationTimeline</a> {
 };
 </pre>
@@ -3707,7 +3707,7 @@ the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browser
    <h3 class="heading settled" data-level="5.4" id="the-animation-interface"><span class="secno">5.4. </span><span class="content">The <code>Animation</code> interface</span><a class="self-link" href="#the-animation-interface"></a></h3>
    <p><a data-link-type="dfn" href="#concept-animation">Animations</a> are represented in the Web Animations
 API by the <code class="idl"><a data-link-type="idl" href="#animation">Animation</a></code> interface.</p>
-<pre class="idl">[<a class="idl-code" data-link-type="constructor" href="#dom-animation-animation">Constructor</a> (optional <a data-link-type="idl-name" href="#animationeffectreadonly">AnimationEffectReadOnly</a>? <a class="idl-code" data-link-type="argument" href="#dom-animation-animation-effect-timeline-effect">effect</a> = null,
+<pre class="idl def">[<a class="idl-code" data-link-type="constructor" href="#dom-animation-animation">Constructor</a> (optional <a data-link-type="idl-name" href="#animationeffectreadonly">AnimationEffectReadOnly</a>? <a class="idl-code" data-link-type="argument" href="#dom-animation-animation-effect-timeline-effect">effect</a> = null,
               optional <a data-link-type="idl-name" href="#animationtimeline">AnimationTimeline</a>? <a class="idl-code" data-link-type="argument" href="#dom-animation-animation-effect-timeline-timeline">timeline</a> = null)]
 interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animation">Animation<a class="self-link" href="#animation"></a></dfn> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget">EventTarget</a> {
              attribute DOMString                <a class="idl-code" data-link-type="attribute" data-type="DOMString                " href="#dom-animation-id">id</a>;
@@ -3877,7 +3877,7 @@ effect</a>.</p>
     </dl>
    </div>
    <h4 class="heading settled" data-level="5.4.1" id="the-animationplaystate-enumeration"><span class="secno">5.4.1. </span><span class="content">The <code>AnimationPlayState</code> enumeration</span><a class="self-link" href="#the-animationplaystate-enumeration"></a></h4>
-<pre class="idl">enum <dfn class="idl-code" data-dfn-type="enum" data-export="" id="enumdef-animationplaystate">AnimationPlayState<a class="self-link" href="#enumdef-animationplaystate"></a></dfn> { "idle", "pending", "running", "paused", "finished" };
+<pre class="idl def">enum <dfn class="idl-code" data-dfn-type="enum" data-export="" id="enumdef-animationplaystate">AnimationPlayState<a class="self-link" href="#enumdef-animationplaystate"></a></dfn> { "idle", "pending", "running", "paused", "finished" };
 </pre>
    <dl>
     <dt data-md="">
@@ -3904,7 +3904,7 @@ effect</a>.</p>
    <h3 class="heading settled" data-level="5.5" id="the-animationeffectreadonly-interface"><span class="secno">5.5. </span><span class="content">The <code>AnimationEffectReadOnly</code> interface</span><a class="self-link" href="#the-animationeffectreadonly-interface"></a></h3>
    <p><a data-link-type="dfn" href="#animation-effect">Animation effects</a> are represented in the Web
 Animations API by the <code class="idl"><a data-link-type="idl" href="#animationeffectreadonly">AnimationEffectReadOnly</a></code> interface.</p>
-<pre class="idl">interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animationeffectreadonly">AnimationEffectReadOnly<a class="self-link" href="#animationeffectreadonly"></a></dfn> {
+<pre class="idl def">interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animationeffectreadonly">AnimationEffectReadOnly<a class="self-link" href="#animationeffectreadonly"></a></dfn> {
     readonly attribute <a data-link-type="idl-name" href="#animationeffecttimingreadonly">AnimationEffectTimingReadOnly</a> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="AnimationEffectTimingReadOnly " href="#dom-animationeffectreadonly-timing">timing</a>;
     <a data-link-type="idl-name" href="#dictdef-computedtimingproperties">ComputedTimingProperties</a> <a class="idl-code" data-link-type="method" href="#dom-animationeffectreadonly-getcomputedtiming">getComputedTiming</a>();
 };
@@ -3948,7 +3948,7 @@ either its parent group or animation. Should we keep it in level 1 and define it
 simply as removing the animation from its animation?</p>
    <h3 class="heading settled" data-level="5.6" id="the-animationeffecttimingreadonly-interface"><span class="secno">5.6. </span><span class="content">The <code>AnimationEffectTimingReadOnly</code> interface</span><a class="self-link" href="#the-animationeffecttimingreadonly-interface"></a></h3>
    <p class="issue" id="issue-f6fa9df9"><a class="self-link" href="#issue-f6fa9df9"></a> This interface needs a constructor.</p>
-<pre class="idl">interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animationeffecttimingreadonly">AnimationEffectTimingReadOnly<a class="self-link" href="#animationeffecttimingreadonly"></a></dfn> {
+<pre class="idl def">interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animationeffecttimingreadonly">AnimationEffectTimingReadOnly<a class="self-link" href="#animationeffecttimingreadonly"></a></dfn> {
     readonly attribute double                             <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="double                             " href="#dom-animationeffecttimingreadonly-delay">delay</a>;
     readonly attribute double                             <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="double                             " href="#dom-animationeffecttimingreadonly-enddelay">endDelay</a>;
     readonly attribute <a data-link-type="idl-name" href="#enumdef-fillmode">FillMode</a>                           <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="FillMode                           " href="#dom-animationeffecttimingreadonly-fill">fill</a>;
@@ -4062,7 +4062,7 @@ produce easing effects.</p>
    <p>The <code class="idl"><a data-link-type="idl" href="#animationeffecttiming">AnimationEffectTiming</a></code> interface is a mutable subclass of <code class="idl"><a data-link-type="idl" href="#animationeffecttimingreadonly">AnimationEffectTimingReadOnly</a></code> returned for the <code>timing</code> attribute
 of a mutable <a data-link-type="dfn" href="#animation-effect">animation effect</a> such as <code class="idl"><a data-link-type="idl" href="#keyframeeffect">KeyframeEffect</a></code>.</p>
    <p class="issue" id="issue-f6fa9df90"><a class="self-link" href="#issue-f6fa9df90"></a> This interface needs a constructor.</p>
-<pre class="idl">interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animationeffecttiming">AnimationEffectTiming<a class="self-link" href="#animationeffecttiming"></a></dfn> : <a data-link-type="idl-name" href="#animationeffecttimingreadonly">AnimationEffectTimingReadOnly</a> {
+<pre class="idl def">interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animationeffecttiming">AnimationEffectTiming<a class="self-link" href="#animationeffecttiming"></a></dfn> : <a data-link-type="idl-name" href="#animationeffecttimingreadonly">AnimationEffectTimingReadOnly</a> {
     inherit attribute double                             <a class="idl-code" data-link-type="attribute" data-type="double                             " href="#dom-animationeffecttiming-delay">delay</a>;
     inherit attribute double                             <a class="idl-code" data-link-type="attribute" data-type="double                             " href="#dom-animationeffecttiming-enddelay">endDelay</a>;
     inherit attribute <a data-link-type="idl-name" href="#enumdef-fillmode">FillMode</a>                           <a class="idl-code" data-link-type="attribute" data-type="FillMode                           " href="#dom-animationeffecttiming-fill">fill</a>;
@@ -4130,7 +4130,7 @@ with the <code class="idl"><a data-link-type="idl" href="#dom-animation-animatio
 with the <code class="idl"><a data-link-type="idl" href="#dom-animationeffectreadonly-getcomputedtiming">getComputedTiming()</a></code> method of the <code class="idl"><a data-link-type="idl" href="#animationeffectreadonly">AnimationEffectReadOnly</a></code> interface).</p>
    <p><code class="idl"><a data-link-type="idl" href="#dictdef-animationeffecttimingproperties">AnimationEffectTimingProperties</a></code> is simply a dictionary-equivalent of the <code class="idl"><a data-link-type="idl" href="#animationeffecttiming">AnimationEffectTiming</a></code> interface.
 The meaning and acceptable values for each of its members are identical.</p>
-<pre class="idl">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-animationeffecttimingproperties">AnimationEffectTimingProperties<a class="self-link" href="#dictdef-animationeffecttimingproperties"></a></dfn> {
+<pre class="idl def">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-animationeffecttimingproperties">AnimationEffectTimingProperties<a class="self-link" href="#dictdef-animationeffecttimingproperties"></a></dfn> {
     double                             <a class="idl-code" data-default="0" data-link-type="dict-member" data-type="double                             " href="#dom-animationeffecttimingproperties-delay">delay</a> = 0;
     double                             <a class="idl-code" data-default="0" data-link-type="dict-member" data-type="double                             " href="#dom-animationeffecttimingproperties-enddelay">endDelay</a> = 0;
     <a data-link-type="idl-name" href="#enumdef-fillmode">FillMode</a>                           <a class="idl-code" data-default="&quot;auto&quot;" data-link-type="dict-member" data-type="FillMode                           " href="#dom-animationeffecttimingproperties-fill">fill</a> = "auto";
@@ -4186,7 +4186,7 @@ of the <code class="idl"><a data-link-type="idl" href="#animationeffecttiming">A
    </div>
    <h3 class="heading settled" data-level="5.9" id="the-computedtimingproperties-dictionary"><span class="secno">5.9. </span><span class="content">The <code>ComputedTimingProperties</code> dictionary</span><a class="self-link" href="#the-computedtimingproperties-dictionary"></a></h3>
    <p>Timing parameters calculated by the timing model are exposed using <code class="idl"><a data-link-type="idl" href="#dictdef-computedtimingproperties">ComputedTimingProperties</a></code> dictionary objects.</p>
-<pre class="idl">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-computedtimingproperties">ComputedTimingProperties<a class="self-link" href="#dictdef-computedtimingproperties"></a></dfn> : <a data-link-type="idl-name" href="#dictdef-animationeffecttimingproperties">AnimationEffectTimingProperties</a> {
+<pre class="idl def">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-computedtimingproperties">ComputedTimingProperties<a class="self-link" href="#dictdef-computedtimingproperties"></a></dfn> : <a data-link-type="idl-name" href="#dictdef-animationeffecttimingproperties">AnimationEffectTimingProperties</a> {
     unrestricted double  <a class="idl-code" data-link-type="dict-member" data-type="unrestricted double  " href="#dom-computedtimingproperties-endtime">endTime</a>;
     unrestricted double  <a class="idl-code" data-link-type="dict-member" data-type="unrestricted double  " href="#dom-computedtimingproperties-activeduration">activeDuration</a>;
     double?              <a class="idl-code" data-link-type="dict-member" data-type="double?              " href="#dom-computedtimingproperties-localtime">localTime</a>;
@@ -4233,7 +4233,7 @@ represented by a <span class="esvalue">null</span> value.</p>
     </dl>
    </div>
    <h4 class="heading settled" data-level="5.9.1" id="the-fillmode-enumeration"><span class="secno">5.9.1. </span><span class="content">The <code>FillMode</code> enumeration</span><a class="self-link" href="#the-fillmode-enumeration"></a></h4>
-<pre class="idl">enum <dfn class="idl-code" data-dfn-type="enum" data-export="" id="enumdef-fillmode">FillMode<a class="self-link" href="#enumdef-fillmode"></a></dfn> { "none", "forwards", "backwards", "both", "auto" };
+<pre class="idl def">enum <dfn class="idl-code" data-dfn-type="enum" data-export="" id="enumdef-fillmode">FillMode<a class="self-link" href="#enumdef-fillmode"></a></dfn> { "none", "forwards", "backwards", "both", "auto" };
 </pre>
    <dl>
     <dt data-md="">
@@ -4260,7 +4260,7 @@ In a subsequent level of this specification, this will produce different
 behavior for other types of <a data-link-type="dfn" href="#animation-effect">animation effects</a>.</p>
    </dl>
    <h4 class="heading settled" data-level="5.9.2" id="the-playbackdirection-enumeration"><span class="secno">5.9.2. </span><span class="content">The <code>PlaybackDirection</code> enumeration</span><a class="self-link" href="#the-playbackdirection-enumeration"></a></h4>
-<pre class="idl">enum <dfn class="idl-code" data-dfn-type="enum" data-export="" id="enumdef-playbackdirection">PlaybackDirection<a class="self-link" href="#enumdef-playbackdirection"></a></dfn> { "normal", "reverse", "alternate", "alternate-reverse" };
+<pre class="idl def">enum <dfn class="idl-code" data-dfn-type="enum" data-export="" id="enumdef-playbackdirection">PlaybackDirection<a class="self-link" href="#enumdef-playbackdirection"></a></dfn> { "normal", "reverse", "alternate", "alternate-reverse" };
 </pre>
    <dl>
     <dt data-md="">
@@ -4286,7 +4286,7 @@ they are specified, odd iterations are played as specified.</p>
    <h3 class="heading settled" data-level="5.10" id="the-keyframeeffect-interfaces"><span class="secno">5.10. </span><span class="content">The <code>KeyframeEffectReadOnly</code> and <code>KeyframeEffect</code> interfaces</span><a class="self-link" href="#the-keyframeeffect-interfaces"></a></h3>
    <p><a data-link-type="dfn" href="#keyframe-effect">Keyframe effects</a> are represented by the <code class="idl"><a data-link-type="idl" href="#keyframeeffectreadonly">KeyframeEffectReadOnly</a></code> interface.
 Mutable <a data-link-type="dfn" href="#keyframe-effect">keyframe effects</a> are represented by the <code class="idl"><a data-link-type="idl" href="#keyframeeffect">KeyframeEffect</a></code> interface.</p>
-<pre class="idl">[<a class="idl-code" data-link-type="constructor" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly">Constructor</a> (<a data-link-type="idl-name" href="#animatable">Animatable</a>? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-target">target</a>,
+<pre class="idl def">[<a class="idl-code" data-link-type="constructor" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly">Constructor</a> (<a data-link-type="idl-name" href="#animatable">Animatable</a>? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-target">target</a>,
               object? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-frames">frames</a>,
               optional (unrestricted double or <a data-link-type="idl-name" href="#dictdef-keyframeeffectoptions">KeyframeEffectOptions</a>) <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-options">options</a>)]
 interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="keyframeeffectreadonly">KeyframeEffectReadOnly<a class="self-link" href="#keyframeeffectreadonly"></a></dfn> : <a data-link-type="idl-name" href="#animationeffectreadonly">AnimationEffectReadOnly</a> {
@@ -4525,7 +4525,7 @@ used to prepare the result of this method is defined in prose below:</p>
          <li data-md="">
           <p>Initialize a dictionary object, <var>output keyframe</var>, using
 the following definition:</p>
-<pre class="idl">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-basecomputedkeyframe">BaseComputedKeyframe<a class="self-link" href="#dictdef-basecomputedkeyframe"></a></dfn> {
+<pre class="idl def">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-basecomputedkeyframe">BaseComputedKeyframe<a class="self-link" href="#dictdef-basecomputedkeyframe"></a></dfn> {
      double?            <dfn class="idl-code" data-default="null" data-dfn-for="BaseComputedKeyframe" data-dfn-type="dict-member" data-export="" data-type="double?            " id="dom-basecomputedkeyframe-offset">offset<a class="self-link" href="#dom-basecomputedkeyframe-offset"></a></dfn> = null;
      double             <dfn class="idl-code" data-dfn-for="BaseComputedKeyframe" data-dfn-type="dict-member" data-export="" data-type="double             " id="dom-basecomputedkeyframe-computedoffset">computedOffset<a class="self-link" href="#dom-basecomputedkeyframe-computedoffset"></a></dfn>;
      DOMString          <dfn class="idl-code" data-default="&quot;linear&quot;" data-dfn-for="BaseComputedKeyframe" data-dfn-type="dict-member" data-export="" data-type="DOMString          " id="dom-basecomputedkeyframe-easing">easing<a class="self-link" href="#dom-basecomputedkeyframe-easing"></a></dfn> = "linear";
@@ -4834,7 +4834,7 @@ the <var>allow lists</var> flag as follows:</p>
         <p>If <var>allow lists</var> is true,</p>
        <dd data-md="">
         <p>Use the following dictionary type:</p>
-<pre class="idl">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-basepropertyindexedkeyframe">BasePropertyIndexedKeyframe<a class="self-link" href="#dictdef-basepropertyindexedkeyframe"></a></dfn> {
+<pre class="idl def">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-basepropertyindexedkeyframe">BasePropertyIndexedKeyframe<a class="self-link" href="#dictdef-basepropertyindexedkeyframe"></a></dfn> {
     DOMString          <dfn class="idl-code" data-default="&quot;linear&quot;" data-dfn-for="BasePropertyIndexedKeyframe" data-dfn-type="dict-member" data-export="" data-type="DOMString          " id="dom-basepropertyindexedkeyframe-easing">easing<a class="self-link" href="#dom-basepropertyindexedkeyframe-easing"></a></dfn> = "linear";
 };
 </pre>
@@ -4842,7 +4842,7 @@ the <var>allow lists</var> flag as follows:</p>
         <p>Otherwise,</p>
        <dd data-md="">
         <p>Use the following dictionary type,</p>
-<pre class="idl">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-basekeyframe">BaseKeyframe<a class="self-link" href="#dictdef-basekeyframe"></a></dfn> {
+<pre class="idl def">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-basekeyframe">BaseKeyframe<a class="self-link" href="#dictdef-basekeyframe"></a></dfn> {
     double?            <dfn class="idl-code" data-default="null" data-dfn-for="BaseKeyframe" data-dfn-type="dict-member" data-export="" data-type="double?            " id="dom-basekeyframe-offset">offset<a class="self-link" href="#dom-basekeyframe-offset"></a></dfn> = null;
     DOMString          <dfn class="idl-code" data-default="&quot;linear&quot;" data-dfn-for="BaseKeyframe" data-dfn-type="dict-member" data-export="" data-type="DOMString          " id="dom-basekeyframe-easing">easing<a class="self-link" href="#dom-basekeyframe-easing"></a></dfn> = "linear";
     <a data-link-type="idl-name" href="#enumdef-compositeoperation">CompositeOperation</a> <dfn class="idl-code" data-dfn-for="BaseKeyframe" data-dfn-type="dict-member" data-export="" data-type="CompositeOperation " id="dom-basekeyframe-composite">composite<a class="self-link" href="#dom-basekeyframe-composite"></a></dfn>;
@@ -5071,7 +5071,7 @@ is successfully parsed).</p>
    </ol>
    <h4 class="heading settled" data-level="5.10.4" id="the-keyframeeffectoptions-dictionary"><span class="secno">5.10.4. </span><span class="content">The <code>KeyframeEffectOptions</code> dictionary</span><a class="self-link" href="#the-keyframeeffectoptions-dictionary"></a></h4>
    <p>Additional parameters may be passed to the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly">KeyframeEffectReadOnly()</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-keyframeeffect">KeyframeEffect()</a></code> constructors by providing a <code class="idl"><a data-link-type="idl" href="#dictdef-keyframeeffectoptions">KeyframeEffectOptions</a></code> object.</p>
-<pre class="idl">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-keyframeeffectoptions">KeyframeEffectOptions<a class="self-link" href="#dictdef-keyframeeffectoptions"></a></dfn> : <a data-link-type="idl-name" href="#dictdef-animationeffecttimingproperties">AnimationEffectTimingProperties</a> {
+<pre class="idl def">dictionary <dfn class="idl-code" data-dfn-type="dictionary" data-export="" id="dictdef-keyframeeffectoptions">KeyframeEffectOptions<a class="self-link" href="#dictdef-keyframeeffectoptions"></a></dfn> : <a data-link-type="idl-name" href="#dictdef-animationeffecttimingproperties">AnimationEffectTimingProperties</a> {
     <a data-link-type="idl-name" href="#enumdef-iterationcompositeoperation">IterationCompositeOperation</a> <a class="idl-code" data-default="&quot;replace&quot;" data-link-type="dict-member" data-type="IterationCompositeOperation " href="#dom-keyframeeffectoptions-iterationcomposite">iterationComposite</a> = "replace";
     <a data-link-type="idl-name" href="#enumdef-compositeoperation">CompositeOperation</a>          <a class="idl-code" data-default="&quot;replace&quot;" data-link-type="dict-member" data-type="CompositeOperation          " href="#dom-keyframeeffectoptions-composite">composite</a> = "replace";
     DOMString                   <a class="idl-code" data-default="&quot;distribute&quot;" data-link-type="dict-member" data-type="DOMString                   " href="#dom-keyframeeffectoptions-spacing">spacing</a> = "distribute";
@@ -5127,7 +5127,7 @@ such that changes to any referenced <code class="idl"><a data-link-type="idl" hr
 context used to resolve relative units are reflected in the result.</p>
    <h3 class="heading settled" data-level="5.11" id="the-iterationcompositeoperation-enumeration"><span class="secno">5.11. </span><span class="content">The <code>IterationCompositeOperation</code> enumeration</span><a class="self-link" href="#the-iterationcompositeoperation-enumeration"></a></h3>
    <p>The possible values of an <a data-link-type="dfn" href="#animation-effect">animation effect</a>’s <a data-link-type="dfn" href="#iteration-composite-operation">iteration composite operation</a> are represented by the <dfn data-dfn-type="dfn" data-noexport="" id="iterationcompositeoperation">IterationCompositeOperation<a class="self-link" href="#iterationcompositeoperation"></a></dfn> enumeration.</p>
-<pre class="idl">enum <dfn class="idl-code" data-dfn-type="enum" data-export="" id="enumdef-iterationcompositeoperation">IterationCompositeOperation<a class="self-link" href="#enumdef-iterationcompositeoperation"></a></dfn> {"replace", "accumulate"};
+<pre class="idl def">enum <dfn class="idl-code" data-dfn-type="enum" data-export="" id="enumdef-iterationcompositeoperation">IterationCompositeOperation<a class="self-link" href="#enumdef-iterationcompositeoperation"></a></dfn> {"replace", "accumulate"};
 </pre>
    <dl>
     <dt data-md="">
@@ -5144,7 +5144,7 @@ on the final value of the previous iteration.</p>
    <h3 class="heading settled" data-level="5.12" id="the-compositeoperation-enumeration"><span class="secno">5.12. </span><span class="content">The <code>CompositeOperation</code> enumeration</span><a class="self-link" href="#the-compositeoperation-enumeration"></a></h3>
    <p>The possible values of an <a data-link-type="dfn" href="#animation-effect">animation effect</a>’s
 composition behavior are represented by the <dfn data-dfn-type="dfn" data-noexport="" id="compositeoperation">CompositeOperation<a class="self-link" href="#compositeoperation"></a></dfn> enumeration.</p>
-<pre class="idl">enum <dfn class="idl-code" data-dfn-type="enum" data-export="" id="enumdef-compositeoperation">CompositeOperation<a class="self-link" href="#enumdef-compositeoperation"></a></dfn> {"replace", "add", "accumulate"};
+<pre class="idl def">enum <dfn class="idl-code" data-dfn-type="enum" data-export="" id="enumdef-compositeoperation">CompositeOperation<a class="self-link" href="#enumdef-compositeoperation"></a></dfn> {"replace", "add", "accumulate"};
 </pre>
    <dl>
     <dt data-md="">
@@ -5182,7 +5182,7 @@ multiple times.</p>
 <span class="kd">var</span> <span class="nx">player2</span> <span class="o">=</span> <span class="nx">element2</span><span class="p">.</span><span class="nx">animate</span><span class="p">(</span><span class="nx">keyframes</span><span class="p">,</span> <span class="p">{</span> <span class="nx">duration</span><span class="o">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="nx">delay</span><span class="o">:</span> <span class="mi">1000</span> <span class="p">});</span></pre>
     </div>
    </div>
-<pre class="idl">[<a class="idl-code" data-link-type="constructor" href="#dom-sharedkeyframelist-sharedkeyframelist">Constructor</a> (object? <a class="idl-code" data-link-type="argument" href="#dom-sharedkeyframelist-sharedkeyframelist-frames-frames">frames</a>)]
+<pre class="idl def">[<a class="idl-code" data-link-type="constructor" href="#dom-sharedkeyframelist-sharedkeyframelist">Constructor</a> (object? <a class="idl-code" data-link-type="argument" href="#dom-sharedkeyframelist-sharedkeyframelist-frames-frames">frames</a>)]
 interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="sharedkeyframelist">SharedKeyframeList<a class="self-link" href="#sharedkeyframelist"></a></dfn> {
 };
 </pre>
@@ -5207,7 +5207,7 @@ argument</a>.</p>
    <h3 class="heading settled" data-level="5.14" id="the-animatable-interface"><span class="secno">5.14. </span><span class="content">The <code>Animatable</code> interface</span><a class="self-link" href="#the-animatable-interface"></a></h3>
    <p>Objects that may be the target of an <code class="idl"><a data-link-type="idl" href="#keyframeeffectreadonly">KeyframeEffectReadOnly</a></code> object implement
 the <code class="idl"><a data-link-type="idl" href="#animatable">Animatable</a></code> interface.</p>
-<pre class="idl">[NoInterfaceObject]
+<pre class="idl def">[NoInterfaceObject]
 interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animatable">Animatable<a class="self-link" href="#animatable"></a></dfn> {
     <a data-link-type="idl-name" href="#animation">Animation</a>           <a class="idl-code" data-link-type="method" href="#dom-animatable-animate">animate</a> (object? <a class="idl-code" data-link-type="argument" href="#dom-animatable-animate-frames-options-frames">frames</a>,
                                  optional (unrestricted double or <a data-link-type="idl-name" href="#dictdef-keyframeanimationoptions">KeyframeAnimationOptions</a>) <a class="idl-code" data-link-type="argument" href="#dom-animatable-animate-frames-options-options">options</a>);
@@ -5286,7 +5286,7 @@ that have yet to be processed.</p>
    <h3 class="heading settled" data-level="5.15" id="extensions-to-the-document-interface"><span class="secno">5.15. </span><span class="content">Extensions to the <code>Document</code> interface</span><a class="self-link" href="#extensions-to-the-document-interface"></a></h3>
    <p>The following extensions are made to the <a class="idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/#document">Document
 interface</a> defined in <a data-link-type="biblio" href="#biblio-dom">[DOM]</a>.</p>
-<pre class="idl">partial interface <a class="idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/#document">Document</a> {
+<pre class="idl def">partial interface <a class="idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/#document">Document</a> {
     readonly attribute <a data-link-type="idl-name" href="#documenttimeline">DocumentTimeline</a> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="DocumentTimeline " href="#dom-document-timeline">timeline</a>;
     sequence&lt;<a data-link-type="idl-name" href="#animation">Animation</a>> <a class="idl-code" data-link-type="method" href="#dom-document-getanimations">getAnimations</a>();
 };
@@ -5323,7 +5323,7 @@ that have yet to be processed.</p>
    <h3 class="heading settled" data-level="5.16" id="extensions-to-the-element-interface"><span class="secno">5.16. </span><span class="content">Extensions to the <code>Element</code> interface</span><a class="self-link" href="#extensions-to-the-element-interface"></a></h3>
    <p>Since DOM Elements may be the target of an animation,
 the <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#element">Element</a></code> interface <a data-link-type="biblio" href="#biblio-dom">[DOM]</a> is extended as follows:</p>
-<pre class="idl"><a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#element">Element</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
+<pre class="idl def"><a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#element">Element</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
 </pre>
    <p>This allows the following kind of usage.</p>
    <div class="example" id="example-77d1235d">
@@ -5333,11 +5333,11 @@ the <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/
    <h3 class="heading settled" data-level="5.17" id="extensions-to-the-pseudoelement-interface"><span class="secno">5.17. </span><span class="content">Extensions to the <code>CSSPseudoElement</code> interface</span><a class="self-link" href="#extensions-to-the-pseudoelement-interface"></a></h3>
    <p>Since <a data-link-type="dfn" href="#keyframe-effect">keyframe effects</a> may also target pseudo-elements, the <code class="idl"><a data-link-type="idl" href="https://drafts.csswg.org/css-pseudo-4/#csspseudoelement">CSSPseudoElement</a></code> interface <a data-link-type="biblio" href="#biblio-css-pseudo-4">[css-pseudo-4]</a> is also defined to be
 animatable.</p>
-<pre class="idl"><a data-link-type="idl-name" href="https://drafts.csswg.org/css-pseudo-4/#csspseudoelement">CSSPseudoElement</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
+<pre class="idl def"><a data-link-type="idl-name" href="https://drafts.csswg.org/css-pseudo-4/#csspseudoelement">CSSPseudoElement</a> implements <a data-link-type="idl-name" href="#animatable">Animatable</a>;
 </pre>
    <h3 class="heading settled" data-level="5.18" id="the-animationplaybackevent-interface"><span class="secno">5.18. </span><span class="content">The <code>AnimationPlaybackEvent</code> interface</span><a class="self-link" href="#the-animationplaybackevent-interface"></a></h3>
    <p><a data-link-type="dfn" href="#animation-events">Animation events</a> are represented using the <code class="idl"><a data-link-type="idl" href="#animationplaybackevent">AnimationPlaybackEvent</a></code> interface.</p>
-<pre class="idl">[<a class="idl-code" data-link-type="constructor" href="#dom-animationplaybackevent-animationplaybackevent">Constructor</a> (DOMString <dfn class="idl-code" data-dfn-for="AnimationPlaybackEvent/AnimationPlaybackEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-type">type<a class="self-link" href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-type"></a></dfn>, optional <a data-link-type="idl-name" href="#dictdef-animationplaybackeventinit">AnimationPlaybackEventInit</a> <dfn class="idl-code" data-dfn-for="AnimationPlaybackEvent/AnimationPlaybackEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-eventinitdict">eventInitDict<a class="self-link" href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-eventinitdict"></a></dfn>)]
+<pre class="idl def">[<a class="idl-code" data-link-type="constructor" href="#dom-animationplaybackevent-animationplaybackevent">Constructor</a> (DOMString <dfn class="idl-code" data-dfn-for="AnimationPlaybackEvent/AnimationPlaybackEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-type">type<a class="self-link" href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-type"></a></dfn>, optional <a data-link-type="idl-name" href="#dictdef-animationplaybackeventinit">AnimationPlaybackEventInit</a> <dfn class="idl-code" data-dfn-for="AnimationPlaybackEvent/AnimationPlaybackEvent(type, eventInitDict)" data-dfn-type="argument" data-export="" id="dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-eventinitdict">eventInitDict<a class="self-link" href="#dom-animationplaybackevent-animationplaybackevent-type-eventinitdict-eventinitdict"></a></dfn>)]
 interface <dfn class="idl-code" data-dfn-type="interface" data-export="" id="animationplaybackevent">AnimationPlaybackEvent<a class="self-link" href="#animationplaybackevent"></a></dfn> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event">Event</a> {
     readonly attribute double? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="double? " href="#dom-animationplaybackevent-currenttime">currentTime</a>;
     readonly attribute double? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="double? " href="#dom-animationplaybackevent-timelinetime">timelineTime</a>;
@@ -6087,12 +6087,16 @@ time</a><span>, in §3.5.14</span>
    <dd>Cameron McCormack; Boris Zbarsky. <a href="http://www.w3.org/TR/WebIDL-1/">WebIDL Level 1</a>. 4 August 2015. WD. URL: <a href="http://www.w3.org/TR/WebIDL-1/">http://www.w3.org/TR/WebIDL-1/</a>
    <dt id="biblio-css-cascade-3"><a class="self-link" href="#biblio-css-cascade-3"></a>[CSS-CASCADE-3]
    <dd>Elika Etemad; Tab Atkins Jr.. <a href="http://www.w3.org/TR/css-cascade-3/">CSS Cascading and Inheritance Level 3</a>. 16 April 2015. CR. URL: <a href="http://www.w3.org/TR/css-cascade-3/">http://www.w3.org/TR/css-cascade-3/</a>
+   <dt id="biblio-css-overflow-4"><a class="self-link" href="#biblio-css-overflow-4"></a>[CSS-OVERFLOW-4]
+   <dd>CSS Overflow Module Level 4 URL: <a href="https://drafts.csswg.org/css-overflow-4/">https://drafts.csswg.org/css-overflow-4/</a>
    <dt id="biblio-css-pseudo-4"><a class="self-link" href="#biblio-css-pseudo-4"></a>[CSS-PSEUDO-4]
    <dd>Daniel Glazman; Elika Etemad; Alan Stearns. <a href="http://www.w3.org/TR/css-pseudo-4/">CSS Pseudo-Elements Module Level 4</a>. 15 January 2015. WD. URL: <a href="http://www.w3.org/TR/css-pseudo-4/">http://www.w3.org/TR/css-pseudo-4/</a>
    <dt id="biblio-cssom"><a class="self-link" href="#biblio-cssom"></a>[CSSOM]
    <dd>Simon Pieters; Glenn Adams. <a href="http://www.w3.org/TR/cssom/">CSS Object Model (CSSOM)</a>. 5 December 2013. WD. URL: <a href="http://www.w3.org/TR/cssom/">http://www.w3.org/TR/cssom/</a>
    <dt id="biblio-dom"><a class="self-link" href="#biblio-dom"></a>[DOM]
    <dd>Anne van Kesteren; et al. <a href="http://www.w3.org/TR/dom/">W3C DOM4</a>. 19 November 2015. REC. URL: <a href="http://www.w3.org/TR/dom/">http://www.w3.org/TR/dom/</a>
+   <dt id="biblio-dom-ls"><a class="self-link" href="#biblio-dom-ls"></a>[DOM-LS]
+   <dd>Document Object Model URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
    <dt id="biblio-media-frags"><a class="self-link" href="#biblio-media-frags"></a>[MEDIA-FRAGS]
    <dd>Raphaël Troncy; et al. <a href="http://www.w3.org/TR/media-frags/">Media Fragments URI 1.0 (basic)</a>. 25 September 2012. REC. URL: <a href="http://www.w3.org/TR/media-frags/">http://www.w3.org/TR/media-frags/</a>
    <dt id="biblio-navigation-timing"><a class="self-link" href="#biblio-navigation-timing"></a>[NAVIGATION-TIMING]
@@ -6106,8 +6110,6 @@ time</a><span>, in §3.5.14</span>
    <dd>Peter Shirley; Michael Ashikhmin; Steve Marschner. Fundamentals of Computer Graphics. 2009. 
    <dt id="biblio-animation-timing"><a class="self-link" href="#biblio-animation-timing"></a>[ANIMATION-TIMING]
    <dd>James Robinson; Cameron McCormack. <a href="http://www.w3.org/TR/animation-timing/">Timing control for script-based animations</a>. 22 September 2015. NOTE. URL: <a href="http://www.w3.org/TR/animation-timing/">http://www.w3.org/TR/animation-timing/</a>
-   <dt id="biblio-css-overflow-4"><a class="self-link" href="#biblio-css-overflow-4"></a>[CSS-OVERFLOW-4]
-   <dd>CSS Overflow Module Level 4 URL: <a href="https://drafts.csswg.org/css-overflow-4/">https://drafts.csswg.org/css-overflow-4/</a>
    <dt id="biblio-css3-animations"><a class="self-link" href="#biblio-css3-animations"></a>[CSS3-ANIMATIONS]
    <dd>Dean Jackson; et al. <a href="http://www.w3.org/TR/css3-animations/">CSS Animations</a>. 19 February 2013. WD. URL: <a href="http://www.w3.org/TR/css3-animations/">http://www.w3.org/TR/css3-animations/</a>
    <dt id="biblio-css3-transforms"><a class="self-link" href="#biblio-css3-transforms"></a>[CSS3-TRANSFORMS]
@@ -6116,15 +6118,13 @@ time</a><span>, in §3.5.14</span>
    <dd>Dean Jackson; et al. <a href="http://www.w3.org/TR/css3-transitions/">CSS Transitions</a>. 19 November 2013. WD. URL: <a href="http://www.w3.org/TR/css3-transitions/">http://www.w3.org/TR/css3-transitions/</a>
    <dt id="biblio-css4-images"><a class="self-link" href="#biblio-css4-images"></a>[CSS4-IMAGES]
    <dd>Elika Etemad; Tab Atkins Jr.. <a href="http://www.w3.org/TR/css4-images/">CSS Image Values and Replaced Content Module Level 4</a>. 11 September 2012. WD. URL: <a href="http://www.w3.org/TR/css4-images/">http://www.w3.org/TR/css4-images/</a>
-   <dt id="biblio-dom-ls"><a class="self-link" href="#biblio-dom-ls"></a>[DOM-LS]
-   <dd>Document Object Model URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
    <dt id="biblio-hr-time"><a class="self-link" href="#biblio-hr-time"></a>[HR-TIME]
    <dd>Jatinder Mann. <a href="http://www.w3.org/TR/hr-time/">High Resolution Time</a>. 17 December 2012. REC. URL: <a href="http://www.w3.org/TR/hr-time/">http://www.w3.org/TR/hr-time/</a>
    <dt id="biblio-smil-animation"><a class="self-link" href="#biblio-smil-animation"></a>[SMIL-ANIMATION]
    <dd>Patrick Schmitz; Aaron Cohen. <a href="http://www.w3.org/TR/smil-animation/">SMIL Animation</a>. 4 September 2001. REC. URL: <a href="http://www.w3.org/TR/smil-animation/">http://www.w3.org/TR/smil-animation/</a>
   </dl>
   <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
-<pre class="idl">interface <a href="#animationtimeline">AnimationTimeline</a> {
+<pre class="idl def">interface <a href="#animationtimeline">AnimationTimeline</a> {
     readonly attribute double? <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="double? " href="#dom-animationtimeline-currenttime">currentTime</a>;
 };
 
