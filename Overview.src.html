@@ -43,8 +43,10 @@ Ignored Vars: RGB|A, G, t
 urlPrefix: https://heycam.github.io/webidl/#dfn-; type: dfn; spec: webidl
     text: platform object
     text: throw
+    text: thrown; url: throw
     text: convert ecmascript to idl value
 urlPrefix: https://heycam.github.io/webidl/; type: dfn; spec: webidl
+    text: [EnforceRange]; url: EnforceRange
     text: es to dictionary
     text: es to DOMString; url: es-to-DOMString
     text: DOMString to es; url: DOMString-to-es
@@ -5558,20 +5560,14 @@ apart from the timing model.
     This is comparable to the computed style of an Element,
     <code>window.getComputedStyle(elem)</code>.
 
-    Although several of the attributes of the returned object are common
+    Although many of the attributes of the returned object are common
     to the {{AnimationEffectTimingReadOnly}} object returned by the
-    {{AnimationEffectReadOnly/timing}}
-    attribute, the values of return returning object represent the values
-    <em>after</em> applying the adjustments described by the
-    {{AnimationEffectTiming}} interface as being <cite>&ldquo;for the purpose
-    of timing model calculations&rdquo;</cite>.
-
-    <code>auto</code> values are also expanded as follows:
+    {{AnimationEffectReadOnly/timing}} attribute,
+    the values returned by this object differ in the following ways:
 
     *   <code>duration</code> &ndash; returns the calculated value of
         the <a>iteration duration</a>. If <code>timing.duration</code>
-        is the string <code>auto</code> or any unsupported value, this
-        attribute will return
+        is the string <code>auto</code>, this attribute will return
 <!-- @ifdef INCLUDE_GROUPS -->        the current calculated value of the
         <a>intrinsic iteration duration</a>.
 
@@ -5751,7 +5747,7 @@ interface AnimationEffectTimingReadOnly {
     an animation effect with an {{AnimationEffectTimingReadOnly/iterationStart}} of
     &lsquo;0.5&rsquo; and {{AnimationEffectTimingReadOnly/iterations}} of
     &lsquo;2&rsquo; will still repeat twice however it will begin
-    and end half-way through the its <a>iteration interval</a>.
+    and end half-way through its <a>iteration interval</a>.
 
     {{AnimationEffectTiming/iterationStart}} values greater than
     or equal to one are typically only useful in combination with an
@@ -5861,6 +5857,16 @@ interface AnimationEffectTiming : AnimationEffectTimingReadOnly {
 :   <dfn attribute for=AnimationEffectTiming>delay</dfn>
 ::  See the {{AnimationEffectTimingReadOnly/delay}} attribute of the
     {{AnimationEffectTimingReadOnly}} interface.
+
+    If an attempt is made to set this attribute to a value less than zero,
+    a <span class=exceptionname>TypeError</span> must be <a>thrown</a> and the
+    value of the delay attribute left unchanged.
+
+    Note: The reasoning for using a <span class=exceptionname>TypeError</span>
+    rather than a <span class=exceptionname>RangeError</span> is to mirror
+    the behavior of WebIDL's <a>[EnforceRange]</a> annotation should that
+    annotation be able to be used with floating-point values in the future.
+
 :   <dfn attribute for=AnimationEffectTiming>endDelay</dfn>
 ::  See the {{AnimationEffectTimingReadOnly/endDelay}} attribute of the
     {{AnimationEffectTimingReadOnly}} interface.
@@ -5871,8 +5877,9 @@ interface AnimationEffectTiming : AnimationEffectTimingReadOnly {
 ::  See the {{AnimationEffectTimingReadOnly/iterationStart}} attribute of the
     {{AnimationEffectTimingReadOnly}} interface.
 
-    Values less than zero are clamped to zero for the purpose of timing model
-    calculations.
+    If an attempt is made to set this attribute to a value less than zero,
+    a <span class=exceptionname>TypeError</span> must be <a>thrown</a> and the
+    value of the iterationStart attribute left unchanged.
 
 :   <dfn attribute for=AnimationEffectTiming>iterations</dfn>
 ::  See the {{AnimationEffectTimingReadOnly/iterations}} attribute of the
@@ -5881,17 +5888,21 @@ interface AnimationEffectTiming : AnimationEffectTimingReadOnly {
     This may be set to <code class="esvalue">+Infinity</code> to cause
     the <a>animation effect</a> to repeat indefinitely.
 
-    Values less than zero and <code class="esvalue">NaN</code> values are
-    treated as the value 1.0 for the purpose of timing model calculations.
+    If an attempt is made to set this attribute to a value less than zero or a
+    <code class=esvalue>NaN</code> value, a <span
+    class=exceptionname>TypeError</span> must be <a>thrown</a> and the value of
+    the iterations attribute left unchanged.
 
 :   <dfn attribute for=AnimationEffectTiming>duration</dfn>
 ::  See the {{AnimationEffectTimingReadOnly/duration}} attribute of the
     {{AnimationEffectTimingReadOnly}} interface.
 
-    Real numbers less than zero, <code>NaN</code> values, and strings
-    other than the lowercase value <code>auto</code> are treated
-    the same as <code>auto</code> for the purpose of timing model
-    calculations.
+    If an attempt is made to set this attribute to a value less than zero, a
+    <code class=esvalue>NaN</code> value, or a string other than the lowercase
+    value <code>auto</code>, a <span class=exceptionname>TypeError</span>
+    must be <a>thrown</a> and the value of the duration attribute left
+    unchanged.
+
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 :   <dfn attribute for=AnimationEffectTiming>playbackRate</dfn>
 ::  See the {{AnimationEffectTimingReadOnly/playbackRate}} attribute of the
@@ -5904,11 +5915,9 @@ interface AnimationEffectTiming : AnimationEffectTimingReadOnly {
 ::  See the {{AnimationEffectTimingReadOnly/easing}} attribute of the
     {{AnimationEffectTimingReadOnly}} interface.
 
-    Invalid values, unrecognized values, or values that correspond to
-    a <a>timing function</a> that is not supported for the type of
-    <a>animation effect</a> to which this property is applied,
-    are treated as if the <code>linear</code> keyword was specified
-    for the purpose of timing model calculations.
+    If an attempt is made to set this attribute to an invalid value, a
+    <span class=exceptionname>TypeError</span> must be <a>thrown</a> and the
+    value of the easing attribute left unchanged.
 
 </div>
 
@@ -6525,14 +6534,38 @@ KeyframeEffect implements AnimationEffectMutable;
         {{AnimationEffectTimingReadOnly}} object whose attributes are assigned
         the value of the member of the same name on <var>timing input</var>.
 
+        When assigning the attributes, apply the same error-handling as defined
+        for setters on the {{AnimationEffectTiming}} interface.
+        If any of those setters require an exception to be thrown, the same
+        exception must be <a>thrown</a> by this procedure, aborting
+        all further steps.
+
+        For example, the setter for the {{AnimationEffectTiming/duration}}
+        attribute on the {{AnimationEffectTiming}} interface requires that a
+        <span class=exceptionname>TypeError</span> be thrown if an attempt
+        is made to set the duration to a value less than zero.
+        Likewise, if the duration specified on <var>timing input</var> is
+        less that zero, this procedure too must <a>throw</a> a
+        <span class=exceptionname>TypeError</span> and abort all further steps.
+
+        Attributes must be assigned in the order in which they appear in the
+        {{AnimationEffectTimingReadOnly}} interface.
+
         Issue: Make a constructor for {{AnimationEffectTimingReadOnly}} and call
         that here.
 
     1.  If <var>options</var> is a {{KeyframeEffectOptions}} object,
-        set the {{KeyframeEffectReadOnly/iterationComposite}},
+        assign the {{KeyframeEffectReadOnly/iterationComposite}},
         {{KeyframeEffectReadOnly/composite}}, and
         {{KeyframeEffectReadOnly/spacing}} properties of <var>effect</var> to
         the corresponding value from <var>options</var>.
+
+        As with <var>timing input</var>, when assigning these properties the
+        error-handling defined for the corresponding setters on the
+        {{KeyframeEffect}} interface is applied.
+        As such, if any of those setters require an exception to be thrown
+        for the values specified by <var>options</var>, this procedure must
+        <a>throw</a> the same exception and abort all further steps.
 
     1.  Initialize the set of <a>keyframes</a> by performing the procedure
         defined for {{KeyframeEffect/setFrames()}} passing
@@ -6644,8 +6677,14 @@ KeyframeEffect implements AnimationEffectMutable;
         class="prop-name">transform</span> property occur at
         a constant rate.
 
-    All other values are treated as "distribute" for the purpose of
-    animation model calculations.
+    If an attempt is made to set the spacing mode to a value that does not
+    conform to the above grammar, a <span class=exceptionname>TypeError</span>
+    must be <a>thrown</a> and the value of the <a
+    lt="keyframe spacing mode">spacing mode</a> left unaffected.
+
+    Issue: Need to define what happens above when <code>{ident}</code> is not
+    recognized, and when it *is* recognized but does not appear in any of
+    the keyframes.
 
 </div>
 
@@ -7393,10 +7432,6 @@ dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
     {{KeyframeEffect}} interface for the recognized values and
     their meanings.
 
-    Unrecognized values are set on the created {{KeyframeEffectReadOnly}} or
-    {{KeyframeEffect}} object, but are treated as "distribute" for the purpose
-    of animation model calculations.
-
 </div>
 
 <h4 id="computed-keyframes-section">Computed keyframes</h4>
@@ -7609,6 +7644,9 @@ dictionary KeyframeAnimationOptions : KeyframeEffectOptions {
         the object on which this method was called as the
         <var>target</var> argument,
         and the <var>frames</var> and <var>options</var> arguments as supplied.
+
+        If the {{KeyframeEffect()}} constructor caused an exception to be
+        thrown, propagate the exception and abort this procedure.
 
     1.  Construct a new {{Animation}} object, <var>animation</var>, passing
         <var>effect</var> as the argument of the same name, and the
@@ -8051,6 +8089,9 @@ The following changes have been made since the <a
 *   Replaced the <code>computedTiming</code> parameter on the
     {{AnimationEffectReadOnly}} interface with
     a {{AnimationEffectReadOnly/getComputedTiming()}} method.
+*   Changed the handling of timing and options parameters such that invalid
+    values are no longer stored but, instead, cause a <span
+    class=exceptionname>TypeError</span> exception to be thrown.
 *   Rewrote the handling of keyframes arguments (see
     [[#processing-a-frames-argument]] and the definition of
     {{KeyframeEffectReadOnly/getFrames()}}) to be valid WebIDL.
