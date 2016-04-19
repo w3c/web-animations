@@ -2160,7 +2160,7 @@ An <a>animation effect</a> is in the <dfn>active phase</dfn> if
 
 An <a>animation effect</a> is in the <dfn>after phase</dfn> if the
 animation effect's <a>local time</a> is not <a>unresolved</a> and is
-<em>greater than or equal</em> to <code>min(<a>start delay</a>+ <a>active
+<em>greater than or equal</em> to <code>min(<a>start delay</a> + <a>active
 duration</a>, <a>end time</a>)</code>.
 
 An <a>animation effect</a> is <dfn>in play</dfn> if <em>all</em>
@@ -2230,9 +2230,8 @@ The effect of each <a>fill mode</a> is as follows:
     or when the animation effect is in the <a>active phase</a> but an
     <a>ancestor</a> is in its <a>after phase</a>,
 <!-- @endif -->
-    the animation effect will produce the same <a
-    lt="transformed time">transformed time value</a> as the last
-    moment it is scheduled to be <a>in play</a>.
+    the animation effect will produce the same <a>iteration progress</a>
+    value as the last moment it is scheduled to be <a>in play</a>.
 
     For all other times that the animation effect is not <a>in play</a>,
     it will have no effect.
@@ -2242,9 +2241,8 @@ The effect of each <a>fill mode</a> is as follows:
     or when the animation effect is in the <a>active phase</a> but an
     <a>ancestor</a> is in its <a>before phase</a>,
 <!-- @endif -->
-    the animation effect will produce the same <a
-    lt="transformed time">transformed time value</a> as the earliest
-    moment that it is scheduled to be <a>in play</a>.
+    the animation effect will produce the same <a>iteration progress</a>
+    value as the earliest moment that it is scheduled to be <a>in play</a>.
 
     For all other times that the animation effect is not <a>in play</a>,
     it will have no effect.
@@ -2475,8 +2473,8 @@ animation with a iteration duration of 1s and an iteration count of
 </p>
 
 Note: While the time spaces themselves are not bounded, Web
-    Animations defines <a>active time</a> and <a>iteration
-    time</a> such that they are clamped to a set range as shown in the
+    Animations defines <a>active time</a> and iteration
+    time such that they are clamped to a set range as shown in the
     diagram.
     For example, whilst a time of -1 second is a valid time in
     <em>active time space</em>, the procedure for calculating the
@@ -2538,7 +2536,7 @@ An exception to this behavior is that when performing a <a
 href="#fill-behavior">fill</a>, if the fill begins at an
 interval endpoint, the endpoint is used.
 This behavior falls out of the algorithm given in <a
-href="#calculating-the-iteration-time"
+href="#calculating-the-simple-iteration-progress"
 section></a> and is illustrated below.
 
 <div class="figure">
@@ -2633,9 +2631,7 @@ a <a>local time</a> value
 <!-- @ifdef INCLUDE_GROUPS -->
  an <a>inherited time</a> value
 <!--@endif -->
-and converts it to an <a>iteration time</a>.
-Following this, further transformations are applied before resulting at
-a final <a>transformed time</a>.
+and converts it to an <a>iteration progress</a>.
 
 The first step in this process is to calculate the bounds of the
 <a>active interval</a> which is determined by the <a>active
@@ -2672,7 +2668,7 @@ then dividing by the <a lt="animation effect playback rate">playback rate</a>.<!
   <a>inherited time</a>
   <!-- @endif -->
   into its
-  <a>transformed time</a> is illustrated below.
+  <a>iteration progress</a> is illustrated below.
 </p>
 <div class="figure">
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
@@ -2698,14 +2694,14 @@ then dividing by the <a lt="animation effect playback rate">playback rate</a>.<!
   and <a>iteration start</a> properties are
 <!-- @endif --><!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
   (3) The <a>iteration start</a> property is<!-- @endif -->
-  applied to the <a>active time</a> to produce the <a>scaled active
-  time</a>.<br>
-  (4) The <a>scaled active time</a> is then converted to an offset
-  within a single iteration: the <a>iteration time</a>.<br>
-  (5) The <a>iteration time</a> is converted into a <a>directed time</a>
+  applied to the <a>active time</a> to produce the scaled active
+  time.<br>
+  (4) The scaled active time is then converted to an offset
+  within a single iteration: the iteration time.<br>
+  (5) The iteration time is converted into a <a>directed progress</a>
   by incorporating the <a>playback direction</a>.<br>
   (6) Finally, a timing function is applied to the <a>directed
-  time</a> to produce the <a>transformed time</a>.
+  progress</a> to produce the <a>transformed progress</a>.
 </p>
 
 <!-- @ifndef INCLUDE_GROUPS -->
@@ -2717,8 +2713,8 @@ The first step, calculating the <a>local time</a> is described in
 [[#local-time-and-inherited-time]].
 <!-- @endif -->
 Steps 2 to 4 in the diagram are described in the following sections.
-Steps 5 and 6 are described in [[#calculating-the-directed-time]] and
-[[#calculating-the-transformed-time]] respectively.
+Steps 5 and 6 are described in [[#calculating-the-directed-progress]] and
+[[#calculating-the-transformed-progress]] respectively.
 
 </div>
 
@@ -2856,103 +2852,86 @@ as follows,
 
 </div>
 
-<h5 id="calculating-the-scaled-active-time">Calculating the scaled active time</h5>
+<h5 id="total-progress-section">Calculating the total progress</h5>
 
-Before the <a>active time</a> can be converted to an <a>iteration
-time</a> we must factor in the <a>animation effect</a>'s
-<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-<a lt="animation effect playback rate">playback rate</a> and
-<!-- @endif -->
-<a>iteration start</a>.
-The result is called the <a>scaled active time</a>.
+The <dfn>total progress</dfn> describes the number of iterations that
+have completed (including partial iterations) and is defined as follows:
 
-In order to calculate the <a>scaled active time</a> we first
-define the <a>start offset</a> as follows:
-
-<blockquote>
-  <dfn>start offset</dfn> =
-    <code><a>iteration start</a> &times;
-          <a>iteration duration</a></code>
-
-  If the <a>iteration start</a> is zero, the <a>start offset</a>
-  is zero.
-
-  Note: This clarification is needed since the <a>iteration duration</a>
-      may be infinity and the result of infinity multiplied by zero is
-      undefined according to IEEE 754-2008.
-
-</blockquote>
-
-The <dfn>scaled active time</dfn> is calculated according to
-the following steps:
-
-1.  If the <a>active time</a> is <a>unresolved</a>, return
-    an <a>unresolved</a> <a>time value</a>.
-
-<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-2.  Return the scaled active time based on the
-    <a lt="animation effect playback rate">playback rate</a> as
-    follows,
+1.  Calculate an initial value for <var>total progress</var> based on the
+    first matching condition from below,
 
     <div class="switch">
 
-    :   If the <a lt="animation effect playback rate">playback
-        rate</a> is less than zero,
-    ::  Return <code>(<a>active time</a> -
-                    <a>active duration</a>)
-        &times; <a lt="animation effect playback rate">playback
-        rate</a> + <a>start offset</a></code>.
+    :   If the <a>iteration duration</a> is zero,
+    ::  If the animation effect is in the <a>before phase</a>, let
+        <var>total progress</var> be zero, otherwise, let it be equal
+        to the <a>iteration count</a>.
 
-    :   If the <a lt="animation effect playback rate">playback
-        rate</a> is zero,
-    ::  Return <a>start offset</a>.
+<!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 
     :   Otherwise,
-    ::  Return <code><a>active time</a>
-        &times; <a lt="animation effect playback rate">playback
-        rate</a> + <a>start offset</a></code>.
+    ::  Let <var>total progress</var> be the result of calculating
+        <code><a>active time</a> / <a>iteration duration</a></code>.
+
+<!-- @endif -->
+
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+
+    :   Otherwise,
+    ::  Calculate the <a>total progress</a> following the first
+        matching condition from below:
+
+        <div class="switch">
+
+        :   If the <a>animation effect playback rate</a> is less than zero,
+        ::  Let <var>total progress</var> be
+            <code>(<a>active time</a> - <a>active duration</a>)
+            &times; <a lt="animation effect playback rate">playback
+            rate</a> / <a>iteration duration</a></code>.
+
+        :   If the <a>animation effect playback rate</a> is zero,
+        ::  Let <var>total progress</var> be zero.
+
+        :   Otherwise,
+        ::  Let <var>total progress</var> be
+            <code>(<a>active time</a> &times;
+            <a lt="animation effect playback rate">playback rate</a>) /
+            <a>iteration duration</a></code>.
+
+        </div>
+
+<!-- @endif -->
 
     </div>
 
-<!-- @endif -->
-<!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-2.  Return <code><a>active time</a> + <a>start offset</a></code>.
+1.  Let <var>total progress</var> be the result of calculating
+    <code><var>total progress</var> + <a>iteration start</a></code>.
 
-<!-- @endif -->
 
-<h5 id="calculating-the-iteration-time">Calculating the iteration time</h5>
+<h5 id="calculating-the-simple-iteration-progress">Calculating the simple iteration progress</h5>
 
-The <dfn>iteration time</dfn> is calculated according to the
-following steps:
+The <dfn>simple iteration progress</dfn> is a fraction of the progress
+through the current iteration that ignores transformations to the time
+introduced by the <a>playback direction</a> or <a>timing functions</a>
+applied to the effect and is calculated as follows:
 
-1.  If the <a>scaled active time</a> is <a>unresolved</a>,
+1.  If the <a>total progress</a> is <a>unresolved</a>,
     return <a>unresolved</a>.
 
-1.  If the <a>iteration duration</a> is zero, return zero.
+1.  If <a>total progress</a> is infinity, let the <var>simple iteration
+    progress</var> be
+    <code><a>iteration start</a> % 1.0</code>,
+    otherwise, let the <var>simple iteration progress</var> be
+    <code><a>total progress</a> % 1.0</code>.
 
-<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-1.  If <code><a>scaled active time</a> - <a>start
-    offset</a></code> is equal to the <a>repeated duration</a>,
-    and the <a>iteration count</a> is not zero,
-    and <code>(<a>iteration count</a> + <a>iteration start</a>)
-    % 1</code> is zero,
-    return the <a>iteration duration</a>.
+1.  If <em>all</em> of the following conditions are true,
 
-<!-- @endif -->
-<!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-1.  If the <a>active time</a> is equal to the <a>active duration</a>,
-    and the <a>iteration count</a> is not zero,
-    and <code>(<a>iteration count</a> + <a>iteration start</a>)
-    % 1</code> is zero,
-    return the <a>iteration duration</a>.
+    * the <var>simple iteration progress</var> calculated above is zero,
+    * the animation effect is in the <a>after phase</a>, <em>and</em>
+    * <a>iteration count</a> is <em>not</em> equal to zero
 
-<!-- @endif -->
-    If <a>iteration count</a> is infinity, then for the purpose of evaluating
-    <code>(<a>iteration count</a> + <a>iteration start</a>) % 1</code>
-    in the above condition, treat <a>iteration count</a> as zero.
+    let the <var>simple iteration progress</var> be 1.0.
 
-1.  Otherwise, return <code><a>scaled active time</a>
-    % <a>iteration duration</a></code>.
 
 <h4 id="calculating-the-current-iteration">Calculating the current iteration</h4>
 
@@ -2962,41 +2941,14 @@ following steps:
 1.  If the <a>active time</a> is <a>unresolved</a>, return
     <a>unresolved</a>.
 
-1.  If the animation effect is in the <a>before phase</a> <em>or</em> the
-    <a>iteration count</a> is zero, return
-    <code>floor(<a>iteration start</a>)</code>.
+1.  If the animation effect is in the <a>after phase</a> <em>and</em>
+    the <a>iteration count</a> is infinity, return infinity.
 
-    <div class="annotation">
-      This step is required to handle the following special cases:
+1.  If the <a>simple iteration progress</a> is 1.0,
+    return <code>floor(<a>iteration start</a>) - 1</code>.
 
-      *   the <a>iteration duration</a> is zero (and we are filling backwards)
-      *   the <a>iteration count</a> is zero
+1.  Otherwise, return <code>floor(<a>iteration start</a>)</code>.
 
-    </div>
-
-1.  If the animation effect is in the <a>after phase</a>,
-
-    1.  If the <a>iteration count</a> is infinity, return infinity.
-
-    1.  Otherwise, return
-        <code>ceil(<a>iteration start</a> + <a>iteration count</a>) - 1</code>.
-
-    <div class="annotation">
-      The above is required to handle the following special cases:
-
-      *   the <a>iteration duration</a> is zero (and we are filling forwards)
-      *   the <a>iteration duration</a> is zero <em>and</em> the <a>iteration
-          count</a> is infinity
-      *   the <a>active interval</a> ends exactly at the end of an iteration
-          (i.e. <a>iteration start</a> + <a>iteration count</a> is an integer)
-
-    </div>
-
-1.  If the <a>iteration duration</a> is infinity, return
-    <code>floor(<a>iteration start</a>)</code>.
-
-1.  Otherwise, return <code>floor(<a>scaled active time</a> /
-    <a>iteration duration</a>)</code>.
 
 <h3 id="direction-control">Direction control</h3>
 
@@ -3011,7 +2963,7 @@ direction</dfn> parameter which takes one of the following values:
 *   alternate-reverse.
 
 The semantics of these values are incorporated into the calculation of
-the <a>directed time</a> which follows.
+the <a>directed progress</a> which follows.
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
@@ -3034,15 +2986,15 @@ A non-normative definition of these values is as follows:
 
 </div>
 
-<h4 id="calculating-the-directed-time">Calculating the directed time</h4>
+<h4 id="calculating-the-directed-progress">Calculating the directed progress</h4>
 
-  The <dfn>directed time</dfn> is calculated from the <a>iteration
-  time</a> using the following steps:
+The <dfn>directed progress</dfn> is calculated from the
+<a>simple iteration progress</a> using the following steps:
 
-1.  If the <a>iteration time</a> is <a>unresolved</a>, return
+1.  If the <a>simple iteration progress</a> is <a>unresolved</a>, return
     <a>unresolved</a>.
 
-2.  Calculate the <var>current direction</var> using the first
+1.  Calculate the <var>current direction</var> using the first
     matching condition from the following list:
     <div class="switch">
 
@@ -3052,23 +3004,16 @@ A non-normative definition of these values is as follows:
       :   If <a>playback direction</a> is <code>reverse</code>,
       ::  Let the <var>current direction</var> be reverse.
 
-      : Otherwise,
+      :   Otherwise,
       ::
 
           1.  Let <var>d</var> be the <a>current iteration</a>.
 
-          2.  If <a>playback direction</a> is
+          1.  If <a>playback direction</a> is
               <code>alternate-reverse</code> increment
               <var>d</var> by 1.
 
-          3.  Issue: There used to be a step here which seemed to be adding
-              special handling for filling when the effect ends on
-              a repeat boundary but it seems like that is taken care
-              of by the calcuation of <a>iteration time</a> and
-              <a>current iteration</a>.
-              Is anything actually needed here?
-
-          4.  If <code><var>d</var> % 2 == 0</code>, let the
+          1.  If <code><var>d</var> % 2 == 0</code>, let the
               <var>current direction</var> be forwards, otherwise let
               the <var>current direction</var> be reverse.
               If <var>d</var> is infinity, let the <var>current direction</var>
@@ -3076,10 +3021,10 @@ A non-normative definition of these values is as follows:
 
     </div>
 
-3.  If the <var>current direction</var> is forwards then return
-    the <a>iteration time</a>.
+1.  If the <var>current direction</var> is forwards then return
+    the <a>simple iteration progress</a>.
 
-    Otherwise, return the <a>iteration duration</a> - <a>iteration time</a>.
+    Otherwise, return <code>1.0 - <a>simple iteration progress</a></code>.
 
 <h3 id="time-transformations">Time transformations</h3>
 
@@ -3303,7 +3248,7 @@ The value of the <a>before flag</a> is determined as follows:
     <a>unresolved</a>, the <a>before flag</a> is not set and these
     steps should be aborted.
 2.  Determine the <var>current direction</var> using the procedure
-    defined in <a href="#calculating-the-directed-time"
+    defined in <a href="#calculating-the-directed-progress"
     section></a>.
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 3.  If <em>either</em> the <var>current direction</var> is <span
@@ -3353,31 +3298,17 @@ The meaning of each value is as follows:
     If the second parameter is omitted, it is given the value <span
     class="prop-value">end</span>.
 
-<h4 id="calculating-the-transformed-time">Calculating the transformed time</h4>
+<h4 id="calculating-the-transformed-progress">Calculating the transformed progress</h4>
 
-The <dfn>transformed time</dfn> is calculated from the
-<a>directed time</a> using the following steps:
+The <dfn>transformed progress</dfn> is calculated from the
+<a>directed progress</a> using the following steps:
 
-1.  If the <a>directed time</a> is <a>unresolved</a>,
-    return an <a>unresolved</a> <a>time value</a>.
-2.  If the <a>iteration duration</a> is infinity,
-    return the <a>directed time</a>.
-3.  Let <var>unscaled progress</var> be the result of
-    evaluating <code><a>directed time</a> / <a>iteration
-    duration</a></code> unless <a>iteration duration</a> is
-    zero, in which case let <var>unscaled progress</var> be
-    zero.
-4.  Let <var>scaled progress</var> be the result of
-    evaluating the <a>animation effect</a>'s <a>timing function</a>
-    with <var>unscaled progress</var> as the input progress.
-5.  Return the result of evaluating <code><var>scaled
-    progress</var> &times; <a>iteration duration</a></code>.
-    If the <var>scaled progress</var> is zero, let the result be
-    zero.
+1.  If the <a>directed progress</a> is <a>unresolved</a>,
+    return <a>unresolved</a>.
 
-    Note: This clarification is needed since the <a>iteration duration</a>
-        may be infinity and the result of infinity multiplied by zero is
-        undefined according to IEEE 754-2008.
+1.  Return the result of evaluating the <a>animation effect</a>'s <a>timing
+    function</a> passing <a>directed progress</a> as the input progress.
+
 
 <!-- @ifdef INCLUDE_GROUPS -->
 <h3 id="grouping-and-synchronization">Grouping and synchronization</h3>
@@ -3394,7 +3325,7 @@ A simple example is illustrated below.
 
 <div class="figure">
   <img src="img/grouping-delay.svg" width="800"
-        alt="Using groups to share common timing properties.">
+       alt="Using groups to share common timing properties.">
 </div>
 <p class="caption">
   Using groups to share common timing properties.<br>
@@ -3702,76 +3633,9 @@ zero.
 <h4 id="calculating-the-iteration-progress">Calculating the iteration
   progress</h4>
 
-Before the <a>transformed time</a> is passed to the animation model, it is
-normalized to represent a fraction of the <a>iteration duration</a>, known as a
-<em>iteration progress</em>.
+The <dfn>iteration progress</dfn> of an <a>animation effect</a> is simply
+its <a>transformed progress</a>.
 
-The <dfn>iteration progress</dfn> of an <a>animation effect</a> is calculated
-by running the steps corresponding to the first matching condition from
-the following:
-
-<div class="switch">
-
-:   If the <a>transformed time</a> is <a>unresolved</a>, return
-    an <a>unresolved</a> <a>time value</a>.
-:   If the <a>iteration duration</a> is zero,
-::  the <a>iteration progress</a> is as follows,
-
-    <div class="switch">
-
-    :   If <a>local time</a> &lt; <a>start delay</a>,
-    ::  Return the result of recalculating the <a>transformed time</a>
-        using an <a>iteration duration</a> of 1.
-
-    :   Otherwise,
-    ::
-
-        1.  Let <var>normalized active duration</var> be the result of
-            recalculating the <a>active duration</a> using an
-            <a>iteration duration</a> of 1.
-        2.  Return the result of recalculating the <a>transformed
-            time</a> using a <a>local time</a> of <code><a>start
-            delay</a> + <var>normalized active duration</var></code>
-            and an <a>iteration duration</a> of 1.
-
-    </div>
-
-:   Otherwise,
-::  Return <a>transformed time</a> / <a>iteration duration</a>.
-
-</div>
-
-Note: Since <a>timing functions</a> are allowed to produce output progress
-    values outside the range [0, 1] it is possible that the value calculated
-    for the <a>iteration progress</a> also lies outside this range.
-
-<div class='informative-bg'><em>This section is non-normative</em>
-
-Intuitively, it may seem that the <a>iteration progress</a> for an <a>animation
-effect</a> with an <a>iteration duration</a> of zero should be 0 or 1 and that
-the above algorithm is unnecessarily complex.
-However, the influence of a non-zero <a>iteration start</a>, a non-integral
-<a>iteration count</a>, or a <a>playback direction</a> other than forwards can
-all cause the <a>animation effect</a> to start and stop mid-way through its
-iteration interval.
-
-As a result, it is necessary to perform all the same timing calculations as we
-do in the general case including determining the <a>current iteration</a> so
-that we arrive at the appropriate <a>directed time</a> when the <a>playback
-direction</a> alternates, and applying the <a>timing function</a> to the result
-as well.
-
-However, simply substituting the zero <a>iteration duration</a> in to the
-procedures defined in [[#core-animation-effect-calculations]]
-will not produce the desired result since no meaningful value of progress can be
-calculated for a zero-duration interval (specifically, the <a>iteration time</a>
-will always be zero).
-
-In order to provide the result intuitively expected in this case, the algorithm
-above temporarily inflates the <a>iteration duration</a> to 1 and calculates the
-<a>iteration progress</a> at the appropriate end of the <a>active interval</a>.
-
-</div>
 
 <!-- End of timing model -->
 
