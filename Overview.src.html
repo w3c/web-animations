@@ -2699,8 +2699,8 @@ then dividing by the <a lt="animation effect playback rate">playback rate</a>.<!
   property<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE --> and the
   <a lt="animation effect playback rate">playback rate</a> property
 <!-- @endif -->
-  to produce the <a>total progress</a>.<br>
-  (4) The <a>total progress</a> time is then converted to an offset
+  to produce the <a>overall progress</a>.<br>
+  (4) The <a>overall progress</a> time is then converted to an offset
   within a single iteration: the <a>simple iteration progress</a>.<br>
   (5) The <a>simple iteration progress</a> is converted into a <a>directed
   progress</a> by incorporating the <a>playback direction</a>.<br>
@@ -2856,25 +2856,25 @@ as follows,
 
 </div>
 
-<h5 id="total-progress-section">Calculating the total progress</h5>
+<h5 id="calculating-the-overall-progress">Calculating the overall progress</h5>
 
-The <dfn>total progress</dfn> describes the number of iterations that
+The <dfn>overall progress</dfn> describes the number of iterations that
 have completed (including partial iterations) and is defined as follows:
 
-1.  Calculate an initial value for <var>total progress</var> based on the
+1.  Calculate an initial value for <var>overall progress</var> based on the
     first matching condition from below,
 
     <div class="switch">
 
     :   If the <a>iteration duration</a> is zero,
     ::  If the animation effect is in the <a>before phase</a>, let
-        <var>total progress</var> be zero, otherwise, let it be equal
+        <var>overall progress</var> be zero, otherwise, let it be equal
         to the <a>iteration count</a>.
 
 <!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 
     :   Otherwise,
-    ::  Let <var>total progress</var> be the result of calculating
+    ::  Let <var>overall progress</var> be the result of calculating
         <code><a>active time</a> / <a>iteration duration</a></code>.
 
 <!-- @endif -->
@@ -2882,22 +2882,22 @@ have completed (including partial iterations) and is defined as follows:
 <!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
 
     :   Otherwise,
-    ::  Calculate the <a>total progress</a> following the first
+    ::  Calculate the <a>overall progress</a> following the first
         matching condition from below:
 
         <div class="switch">
 
         :   If the <a>animation effect playback rate</a> is less than zero,
-        ::  Let <var>total progress</var> be
+        ::  Let <var>overall progress</var> be
             <code>(<a>active time</a> - <a>active duration</a>)
             &times; <a lt="animation effect playback rate">playback
             rate</a> / <a>iteration duration</a></code>.
 
         :   If the <a>animation effect playback rate</a> is zero,
-        ::  Let <var>total progress</var> be zero.
+        ::  Let <var>overall progress</var> be zero.
 
         :   Otherwise,
-        ::  Let <var>total progress</var> be
+        ::  Let <var>overall progress</var> be
             <code>(<a>active time</a> &times;
             <a lt="animation effect playback rate">playback rate</a>) /
             <a>iteration duration</a></code>.
@@ -2908,8 +2908,8 @@ have completed (including partial iterations) and is defined as follows:
 
     </div>
 
-1.  Let <var>total progress</var> be the result of calculating
-    <code><var>total progress</var> + <a>iteration start</a></code>.
+1.  Let <var>overall progress</var> be the result of calculating
+    <code><var>overall progress</var> + <a>iteration start</a></code>.
 
 
 <h5 id="calculating-the-simple-iteration-progress">Calculating the simple iteration progress</h5>
@@ -2919,14 +2919,14 @@ through the current iteration that ignores transformations to the time
 introduced by the <a>playback direction</a> or <a>timing functions</a>
 applied to the effect and is calculated as follows:
 
-1.  If the <a>total progress</a> is <a>unresolved</a>,
+1.  If the <a>overall progress</a> is <a>unresolved</a>,
     return <a>unresolved</a>.
 
-1.  If <a>total progress</a> is infinity, let the <var>simple iteration
+1.  If <a>overall progress</a> is infinity, let the <var>simple iteration
     progress</var> be
     <code><a>iteration start</a> % 1.0</code>,
     otherwise, let the <var>simple iteration progress</var> be
-    <code><a>total progress</a> % 1.0</code>.
+    <code><a>overall progress</a> % 1.0</code>.
 
 1.  If <em>all</em> of the following conditions are true,
 
