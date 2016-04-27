@@ -315,7 +315,7 @@ model</em>.  The role of these pieces is as follows:
 :   Animation model
 ::  Takes the <em>iteration progress</em> values and <em>iteration indices</em>
     produced by the timing model and converts them into a series of values
-    to apply to the target properties and attributes.
+    to apply to the target properties.
 
 Graphically, this flow can be represented as follows:
 <figure>
@@ -3675,8 +3675,8 @@ section></a>).
 <h3 id="keyframe-effects">Keyframe effects</h3>
 
 <dfn lt="keyframe effect">Keyframe effects</dfn> are a kind of <a>animation
-effect</a> that use the output of the timing model to update CSS properties and
-DOM attributes of an element or pseudo-element such as <code>::before</code> or
+effect</a> that use the output of the timing model to update CSS properties for
+an element or pseudo-element such as <code>::before</code> or
 <code>::after</code> [[!SELECT]] referred to as the <dfn>target element</dfn>.
 
 Since the result of a <a>keyframe effect</a> is based on the
@@ -3688,19 +3688,6 @@ whenever the timing model is updated including whenever it is
 
 Each <a>keyframe effect</a> can have zero or more associated
 <dfn lt="target property">target properties</dfn>.
-
-<a lt="target property">Target properties</a> may be CSS properties
-or DOM attributes.
-If a given <a>target element</a> has an attribute with the same name
-as a CSS property, any <a>target property</a> of that name is taken to
-refer to to the CSS property.
-
-Note: If there ever exists a situation where we need to animate an attribute
-      with the same name as a property (other than a <a
-      href="http://www.w3.org/TR/SVG2/intro.html#TermPresentationAttribute">presentation
-      attribute</a> [[SVG2]]) then we will need to introduce
-      a disambiguation strategy. Generally, however, such naming should be
-      avoided.
 
 <h4 id="procedures-for-animating-properties">Procedures for animating properties</h4>
 
@@ -3784,17 +3771,12 @@ The specific procedures used for animating a given <a>target
 property</a> are referred to as the property's <dfn>animation
 behavior</dfn>.
 
-The <a>animation behavior</a> of CSS properties is defined by the
+The <a>animation behavior</a> of each CSS properties is defined by the
 "Animatable:" line in the summary of the property's definition or in
 [[CSS3-TRANSITIONS]] for properties that lack a such a line.
 
 Issue: The default <a>animation behavior</a> for CSS properties is "as
        string".  Should this be defined here or in CSS Animations Level 2?
-
-For DOM attributes, the <a>animation behavior</a> is defined alongside
-the attribute definition.
-Unlike CSS properties, if such a definition is not provided the
-default <a>animation behavior</a> is &ldquo;<a>not animatable</a>&rdquo;.
 
 Following is a series of pre-defined <a>animation behaviors</a>.
 [[CSS3-TRANSITIONS]] provides further CSS-specific <a>animation
@@ -3933,7 +3915,7 @@ var effect =
   new KeyframeEffect([ { top: '10%' },
                        { top: '20%' },
                        { top: '50%' } ],
-                     { spacing: 'paced(top)'});
+                     { spacing: 'paced(top)' });
 // Prints '0, 0.5, 1'
 effect.getFrames().map(frame =&gt; frame.computedOffset).join(', ');
       </pre>
@@ -3947,7 +3929,7 @@ var effect =
   new KeyframeEffect([ { top: '10px' },
                        { top: '20px' },
                        { top: '50px' } ],
-                     { spacing: 'paced(top)'});
+                     { spacing: 'paced(top)' });
 // Prints '0, 0.5, 1'
 effect.getFrames().map(frame =&gt; frame.computedOffset).join(', ');
       </pre>
@@ -4689,7 +4671,7 @@ After compositing the results of <a>keyframe
 effects</a> together, the composited result is combined with other
 values specified for the <a>target property</a>.
 
-For a CSS <a>target property</a> the arrangement is illustrated below:
+The arrangement is illustrated below:
 
 <figure>
   <img src="img/animation-cascade.svg" width="500"
@@ -4703,11 +4685,6 @@ For a CSS <a>target property</a> the arrangement is illustrated below:
     at an appropriate point.
   </figcaption>
 </figure>
-
-For a <a>target property</a> that specifies a DOM attribute, the
-composited result is combined with the value of the attribute
-specified in the DOM or the lacuna value for that attribute if it is
-not specified.
 
 For the first part of this operation&mdash;combining <a>effect values</a> that
 target the same <a lt="target property">property</a>&mdash; it is necessary to
@@ -4843,12 +4820,7 @@ follows:
 
 <h4 id="applying-the-composited-result">Applying the composited result</h4>
 
-The process for applying a <a>composited value</a> depends on if the
-<a>target property</a> refers to a CSS property or a DOM attribute.
-
-<h5 id="applying-the-result-to-a-css-property">Applying the composited result to a CSS property</h5>
-
-Applying a <a>composited value</a> to a CSS <a>target property</a>
+Applying a <a>composited value</a> to a <a>target property</a>
 is achieved by adding a specified value to the CSS cascade.
 
 The level of the cascade to which this specified value is added
@@ -4886,41 +4858,6 @@ property</a> is applied using the following process.
     lt="associated animation of an animation effect">associated with</a> the
     effect at the top of the <a>effect stack</a> established for the target
     property.
-
-<h5 id="applying-the-composited-result-to-a-dom-attribute">Applying the composited result to a DOM attribute</h5>
-
-DOM attributes are, unless otherwise specified, <a>not animatable</a>.
-For each attribute that has a specific <a>animation behavior</a>
-associated with it, an attribute value to use when the attribute is
-not specified or in error must be defined, referred to as the
-<dfn>lacuna value</dfn>.
-For example, SVG2 ([[SVG2]]) defines <a
-href="http://www.w3.org/TR/SVG2/intro.html#TermLacunaValue">lacunae
-values</a> for its attributes.
-
-The <a>composited value</a> calculated for a DOM attribute <a>target
-property</a> is applied using the following process.
-
-1.  Let the <var>base value</var> of the property be the value
-    specified for attribute in the DOM or,
-    if the attribute value is not specified in the DOM, the
-    <a>lacuna value</a> for that attribute.
-2.  Establish the <a>effect stack</a> for the property (see
-    [[#the-effect-stack]]).
-3.  Calculate the <a>composited value</a> of the <a>effect
-    stack</a> passing in the <var>base value</var> of the attribute
-    as the initial <a>underlying value</a> (see <a
-    href="#calculating-the-result-of-an-effect-stack"
-    section></a>).
-4.  Record the <a>composited value</a> as the <dfn>animated
-    attribute value</dfn> of the attribute.
-
-The <a>animated attribute value</a> does not replace the value of
-the attribute in the DOM although it may be accessible via some
-other interface.
-For all intents and purposes other than querying attributes values
-using DOM interfaces, user agents must treat the <a>animated attribute
-value</a> as the attribute value.
 
 <h4 id="effect-accumulation-section">Effect accumulation</h4>
 
@@ -6681,13 +6618,9 @@ KeyframeEffect implements AnimationEffectMutable;
                 <a>animation property name to IDL attribute name</a> algorithm
                 to the property name of <var>declaration</var>.
             1.  Let <var>IDL value</var> be result of serializing the
-                the property value of <var>declaration</var>.
-                For CSS properties, this is the result of passing
+                the property value of <var>declaration</var> by passing
                 <var>declaration</var> to the algorithm to <a>serialize a CSS
                 value</a> [[!CSSOM]].
-
-                Issue: Define serialization for SVG attributes.
-
             1.  Let <var>value</var> be the result of <a
                 lt="DOMString to es">converting</a> <var>IDL value</var> to an
                 ECMAScript String value.
@@ -6806,9 +6739,6 @@ elem.animate({ left: '100px' }, 3000);</pre></div>
 The <dfn>animation property name to IDL attribute name</dfn> algorithm for
 <var>property</var> is as follows:
 
-1.  If <var>property</var> refers to the <{stop/offset}> attribute of
-    the SVG <{stop}> element, return the the string "svgOffset".
-
 1.  If <var>property</var> refers to the CSS 'float' property,
     return the string "cssFloat".
 
@@ -6817,10 +6747,6 @@ The <dfn>animation property name to IDL attribute name</dfn> algorithm for
 
 The <dfn>IDL attribute name to animation property name</dfn> algorithm for
 <var>attribute</var> is as follows:
-
-1.  If <var>attribute</var> is the string "svgOffset", then return
-    an animation property representing the <{stop/offset}> attribute
-    of the SVG <{stop}> element.
 
 1.  If <var>attribute</var> is the string "cssFloat", then return
     an animation property representing the CSS 'float' property.
@@ -7057,8 +6983,7 @@ otherwise, using the following procedure:
 
     1.  Let <var>animatable properties</var> be a list of property
         names (including shorthand properties that have longhand sub-properties
-        that are animatable) and attribute names that can be animated by the
-        implementation.
+        that are animatable) that can be animated by the implementation.
     1.  Convert each property name in <var>animatable properties</var>
         to the equivalent IDL attribute by applying the
         <a>animation property name to IDL attribute name</a> algorithm.
@@ -7755,17 +7680,6 @@ alert(animation.effect.getComputedTiming().localTime); // Displays &lsquo;5000&r
 elem.animate({ opacity: 0 }, { fill: 'forwards' });
 alert(window.getComputedStyle(elem).opacity); // Displays &lsquo;0&rsquo;</pre></div>
 
-    The same principle applies to attributes although the means of querying
-    the animated value of an attribute depends on the interface defined for the
-    attribute.
-    SVG 1.1 [[!SVG11]] defines an additional interface for querying
-    animated values as shown below.
-
-    <div class="example"><pre class="lang-javascript">
-// Set width to 0 immediately
-rect.animate({ width: '100px' }, { fill: 'forwards' });
-alert(rect.width.animVal.value); // Displays &lsquo;100&rsquo;</pre></div>
-
 <!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
 :   Changes made to the model using the programming interface do
     <em>not</em> cause any {{EffectCallback}} functions to be
@@ -7953,6 +7867,11 @@ The following changes have been made since the <a
     correctly handle zero-duration animation effects that are in the
     <a>after phase</a>.
 *   Added [[#animation-events-section]].
+*   Removed ability to animate DOM attributes since the number of SVG
+    attributes that are commonly animated that have <em>not</em> been promoted
+    to CSS properties is steadily shrinking and the remaining attributes
+    are not well supported and introduce significant complexity (e.g.
+    the <code>class</code> attribute).
 *   Updated the {{Animation}} interface:
 
     *   Made the {{Animation}} interface inherit from {{EventTarget}}.
