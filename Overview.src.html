@@ -7845,6 +7845,8 @@ The following changes have been made since the <a
   href="https://www.w3.org/TR/2015/WD-web-animations-1-20150707/">7 July
 2015 Working Draft</a>:
 
+*   Made the procedure to <a>set the animation start time</a> set the
+    <var>did seek</var> flag to true.
 *   Made the procedure to <a>play an animation</a> take an
     <var>auto-rewind</var> flag so that CSS Animations can re-use this
     procedure without invoking the rewinding behavior.
@@ -7863,6 +7865,10 @@ The following changes have been made since the <a
     the end of the procedure.
 *   Reverted the change to the definition of an <a>animation effect</a>'s
     <a>end time</a> to no longer clamp the time to zero.
+*   Significantly reworked the core animation effect timing calculations
+    to operate on a fraction value instead of a time-based value.
+    This makes a number of edge cases well-defined and simplifies a lot
+    of the extra handling previously required for zero-duration animations.
 *   Updated the procedure to calculate the <a>current iteration</a> to
     correctly handle zero-duration animation effects that are in the
     <a>after phase</a>.
@@ -7872,6 +7878,9 @@ The following changes have been made since the <a
     to CSS properties is steadily shrinking and the remaining attributes
     are not well supported and introduce significant complexity (e.g.
     the <code>class</code> attribute).
+*   Specified the <a>effect value</a> of a <a>keyframe effect</a> when the
+    <a>iteration progress</a> is <a>unresolved</a> (see
+    [[#the-effect-value-of-a-keyframe-animation-effect]]).
 *   Updated the {{Animation}} interface:
 
     *   Made the {{Animation}} interface inherit from {{EventTarget}}.
@@ -7887,6 +7896,9 @@ The following changes have been made since the <a
 *   Changed the handling of timing and options parameters such that invalid
     values are no longer stored but, instead, cause a <span
     class=exceptionname>TypeError</span> exception to be thrown.
+*   Changed the type of the {{ComputedTimingProperties/progress}} member of the
+    {{ComputedTimingProperties}} dictionary from <code>unrestricted
+    double?</code> to <code>double?</code>.
 *   Rewrote the handling of keyframes arguments (see
     [[#processing-a-frames-argument]] and the definition of
     {{KeyframeEffectReadOnly/getFrames()}}) to be valid WebIDL.
