@@ -4463,6 +4463,32 @@ referenced by a <a>keyframe effect</a> as one of its
     operation</a>, produces the <a>underlying value</a>.
 1.  Let <var>property-specific keyframes</var> be a copy of the list
     of <a>keyframes</a> specified on the effect.
+1.  For each <var>keyframe</var> in <var>property-specific keyframes</var>
+    replace any shorthand properties in <var>keyframe</var> with the
+    equivalent expanded longhand properties.
+
+    For example, if <var>keyframe</var> has a value &lsquo;4px&rsquo;
+    for the 'border-width' property, this property should be removed from
+    <var>keyframe</var> and 'border-bottom-width', 'border-left-width',
+    'border-right-width', and 'border-top-width' properties added, each with
+    the value &lsquo;4px&rsquo;.
+
+    If conflicts arise when expanding shorthand properties due to
+    shorthand properties overlapping with existing longhand properties or
+    other with other shorthand properties, apply the following rules in order
+    until the conflict is resolved:
+
+    1.  Longhand properties override shorthand properties (e.g.
+        'border-top-color' overrides 'border-top').
+    1.  Shorthand properties with fewer longhand components override those
+        with more longhand components (e.g. 'border-top' overrides
+        'border-color') 
+    1.  For shorthand properties with an equal number of longhand
+        components, properties whose IDL name (see the <a>CSS property to
+        IDL attribute</a> algorithm [[!CSSOM]]) appears earlier when
+        sorted in ascending order by the Unicode codepoints that make up
+        each IDL name, override those who appear later.
+
 1.  Remove any <a>keyframes</a> from <var>property-specific
     keyframes</var> that do not have a property value for
     <var>target property</var> or for which the property value is
