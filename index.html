@@ -996,6 +996,8 @@ the <var>synchronously notify</var> flag set to false.</p>
     <li data-md="">
      <p><a data-link-type="dfn" href="#reject-a-promise" id="ref-for-reject-a-promise-1">Reject</a> <var>animation</var>’s <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise-1">current ready
 promise</a> with a DOMException named "AbortError".</p>
+     <p class="issue" id="issue-9d75c2e3"><a class="self-link" href="#issue-9d75c2e3"></a> If cancelable promises materialize, we should probably cancel here
+instead of rejecting.</p>
     <li data-md="">
      <p>Let <var>animation</var>’s <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise-2">current ready promise</a> be the result of <a data-link-type="dfn" href="#create-a-new-resolved-promise" id="ref-for-create-a-new-resolved-promise-1">creating a new resolved Promise
 object</a>.</p>
@@ -1686,6 +1688,8 @@ as follows:</p>
        <p>Run the procedure to <a data-link-type="dfn" href="#reset-an-animations-pending-tasks" id="ref-for-reset-an-animations-pending-tasks-3">reset an animation’s pending tasks</a> on <var>animation</var>.</p>
       <li data-md="">
        <p><a data-link-type="dfn" href="#reject-a-promise" id="ref-for-reject-a-promise-2">Reject</a> the <a data-link-type="dfn" href="#current-finished-promise" id="ref-for-current-finished-promise-9">current finished promise</a> with a DOMException named "AbortError".</p>
+       <p class="issue" id="issue-a2bb3b58"><a class="self-link" href="#issue-a2bb3b58"></a> If cancelable promises materialize, we should cancel here instead
+of rejecting.</p>
       <li data-md="">
        <p>Let <a data-link-type="dfn" href="#current-finished-promise" id="ref-for-current-finished-promise-10">current finished promise</a> be a new (pending) <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects">Promise</a> object.</p>
       <li data-md="">
@@ -3987,10 +3991,12 @@ playback rate</a> of this object to the new value.</p>
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animation" data-dfn-type="attribute" data-export="" data-lt="ready" id="dom-animation-ready">ready<span class="dfn-panel" data-deco=""><b><a href="#dom-animation-ready">#dom-animation-ready</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-animation-ready-1">5.4. The Animation interface</a></span></span></dfn>, <span> of type Promise&lt;<a data-link-type="idl-name" href="#animation" id="ref-for-animation-6">Animation</a>>, readonly</span></p>
      <dd data-md="">
       <p>Returns the <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise-17">current ready promise</a> for this object.</p>
+      <p class="issue" id="issue-d29947cf"><a class="self-link" href="#issue-d29947cf"></a> This should become a cancelable promise when (if) such things exist.</p>
      <dt data-md="">
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animation" data-dfn-type="attribute" data-export="" data-lt="finished" id="dom-animation-finished">finished<span class="dfn-panel" data-deco=""><b><a href="#dom-animation-finished">#dom-animation-finished</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-animation-finished-1">5.4. The Animation interface</a></span></span></dfn>, <span> of type Promise&lt;<a data-link-type="idl-name" href="#animation" id="ref-for-animation-7">Animation</a>>, readonly</span></p>
      <dd data-md="">
       <p>Returns the <a data-link-type="dfn" href="#current-finished-promise" id="ref-for-current-finished-promise-12">current finished promise</a> for this object.</p>
+      <p class="issue" id="issue-d29947cf0"><a class="self-link" href="#issue-d29947cf0"></a> This should become a cancelable promise when (if) such things exist.</p>
      <dt data-md="">
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animation" data-dfn-type="attribute" data-export="" data-lt="onfinish" id="dom-animation-onfinish">onfinish<span class="dfn-panel" data-deco=""><b><a href="#dom-animation-onfinish">#dom-animation-onfinish</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-animation-onfinish-1">5.4. The Animation interface</a></span><span><a href="#ref-for-dom-animation-onfinish-2">10. Changes since last publication</a></span></span></dfn>, <span> of type <a data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler">EventHandler</a></span></p>
      <dd data-md="">
@@ -6623,6 +6629,10 @@ dictionary <a href="#dictdef-animationplaybackeventinit">AnimationPlaybackEventI
 </pre>
   <h2 class="no-num no-ref heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
+   <div class="issue"> If cancelable promises materialize, we should probably cancel here
+instead of rejecting.<a href="#issue-9d75c2e3"> ↵ </a></div>
+   <div class="issue"> If cancelable promises materialize, we should cancel here instead
+of rejecting.<a href="#issue-a2bb3b58"> ↵ </a></div>
    <div class="issue">
      It has been proposed to extend <code>cubic-bezier</code> to allow
 multiple segments, using syntax such as the following: 
@@ -6741,6 +6751,8 @@ partial interface Animation { };
   set a null timeline.</p>
      <a href="#issue-0d7a37da"> ↵ </a>
    </div>
+   <div class="issue"> This should become a cancelable promise when (if) such things exist.<a href="#issue-d29947cf"> ↵ </a></div>
+   <div class="issue"> This should become a cancelable promise when (if) such things exist.<a href="#issue-d29947cf0"> ↵ </a></div>
    <div class="issue"> The <code>remove()</code> method can be used to remove an effect from
 either its parent group or animation. Should we keep it in level 1 and define it
 simply as removing the animation from its animation?<a href="#issue-f768d04e"> ↵ </a></div>
