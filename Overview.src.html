@@ -3656,7 +3656,7 @@ its <a>transformed progress</a>.
 
 
 
-<h2 id="animation-model">Animation Model</h2>
+<h2 id="animation-model">Animation model</h2>
 
 <div class='informative-bg'><em>This section is non-normative</em>
 
@@ -3672,32 +3672,27 @@ section></a>).
 
 </div>
 
-<h3 id="keyframe-effects">Keyframe effects</h3>
+<h3 id="introduction-to-the-animation-model">Introduction</h3>
 
-<dfn lt="keyframe effect">Keyframe effects</dfn> are a kind of <a>animation
-effect</a> that use the output of the timing model to update CSS properties for
-an element or pseudo-element such as <code>::before</code> or
-<code>::after</code> [[!SELECT]] referred to as the <dfn>target element</dfn>.
+An <a>animation effect</a> may have zero or more associated properties that
+it affects in response to changes to its timing output. These properties
+are referred to as the effect's <dfn lt="target property">target
+properties</dfn>.
 
-Since the result of a <a>keyframe effect</a> is based on the
-<a>iteration progress</a> and <a>current iteration</a> value, it is updated
-whenever the timing model is updated including whenever it is
-<a lt="sampling">sampled</a>.
+Given an <a>iteration progress</a>, a <a>current iteration</a>, and an
+<a>underlying value</a>, an <a>animation effect</a> produces
+an <dfn>effect value</dfn> for each <a>animatable</a> <a>target property</a>
+by applying the procedures from the <a>animation type</a> appropriate to the
+property.
 
-<h4 id="target-properties">Target properties</h4>
+<h3 id="procedures-for-animating-properties">Procedures for animating properties</h3>
 
-Each <a>keyframe effect</a> can have zero or more associated
-<dfn lt="target property">target properties</dfn>.
-
-<h4 id="procedures-for-animating-properties">Procedures for animating properties</h4>
-
-Unless specifically defined otherwise, all properties are considered
+Unless specifically defined otherwise, all CSS properties are considered
 <dfn id="concept-animatable">animatable</dfn>.
-In order to animate a <a>target property</a>, the following procedures
-must be defined.
+In order to animate a property, the following procedures must be defined.
 
 *   <dfn lt="animation interpolation">interpolation</dfn> &mdash;
-    given two target property values <var>V</var><sub>start</sub> and
+    given two property values <var>V</var><sub>start</sub> and
     <var>V</var><sub>end</sub>, produces an intermediate value
     <var>V</var><sub>res</sub> at a distance of <var>p</var> along the
     interval between <var>V</var><sub>start</sub> and
@@ -3710,7 +3705,7 @@ must be defined.
     behavior for <var>p</var> outside [0, 1].
 
 *   <dfn lt="animation addition">addition</dfn> &mdash; given two
-    target property values
+    property values
     <var>V</var><sub>a</sub> and <var>V</var><sub>b</sub>, returns the
     sum of the two properties, <var>V</var><sub>result</sub>.
     For addition that is not commutative (for example, matrix
@@ -3731,7 +3726,7 @@ must be defined.
     </div>
 
 *   <dfn lt="animation accumulation">accumulation</dfn> &mdash;
-    given two target property values
+    given two property values
     <var>V</var><sub>a</sub> and <var>V</var><sub>b</sub>, returns the
     result, <var>V</var><sub>result</sub>, of combining
     the two operands such that <var>V</var><sub>b</sub> is treated as
@@ -3760,17 +3755,17 @@ must be defined.
 
     </div>
 
-*   <dfn>distance computation</dfn> &mdash; given two target property
+*   <dfn>distance computation</dfn> &mdash; given two property
     values <var>V</var><sub>start</sub> and
     <var>V</var><sub>end</sub>, calculates some notion of scalar
     distance between the values, <var>distance</var>.
 
-<h4 id="animation-types">Animation types</h4>
+<h3 id="animation-types">Animation types</h3>
 
-The specific procedures used for animating a given <a>target
-property</a> are referred to as the property's <dfn>animation type</dfn>.
+The specific procedures used for animating a given property
+are referred to as the property's <dfn>animation type</dfn>.
 
-The <a>animation type</a> of each CSS properties is defined by the
+The <a>animation type</a> of each CSS property is defined by the
 "Animatable:" line in the summary of the property's definition or in
 [[CSS3-TRANSITIONS]] for properties that lack a such a line.
 
@@ -3795,7 +3790,7 @@ for <a>distance computation</a> or which are defined as <dfn>not
 paceable</dfn>, the <a>distance computation</a> procedure is simply
 <var>distance</var> = 1.
 
-<h5 id="not-animatable-section">Not animatable</h5>
+<h4 id="not-animatable-section">Not animatable</h4>
 
 Some properties are specifically defined as <dfn
 id="concept-not-animatable">not animatable</dfn>.
@@ -3818,9 +3813,9 @@ occupying time in a <a>sequence effect</a> and
 delaying the fulfilment of an <a>animation</a>'s <a>current finished
 promise</a>.
 
-<h5 id="discrete-animation-type-section">Discrete</h5>
+<h4 id="discrete-animation-type-section">Discrete</h4>
 
-A <a>target property</a> whose <a>animation type</a> is <dfn
+A property whose <a>animation type</a> is <dfn
 lt="discrete animation type">discrete</dfn> has the following behavior:
 
 *   <a lt="animation interpolation">interpolation</a>:
@@ -3860,9 +3855,9 @@ lt="discrete animation type">discrete</dfn> has the following behavior:
     </div>
     </div>
 
-<h5 id="real-number-animation-type-section">Real number</h5>
+<h4 id="real-number-animation-type-section">Real number</h4>
 
-A <a>target property</a> whose <a>animation type</a> is <dfn
+A property whose <a>animation type</a> is <dfn
 lt="real number animation type">real number</dfn> has the following behavior:
 
 *   <a lt="animation interpolation">interpolation</a>:
@@ -3875,10 +3870,10 @@ lt="real number animation type">real number</dfn> has the following behavior:
     <var>distance</var> =
       |<var>V</var><sub>end</sub> - <var>V</var><sub>start</sub>|
 
-<h5 id="length-percentage-or-calc-animation-type-section">Length, percentage, or
-calc</h5>
+<h4 id="length-percentage-or-calc-animation-type-section">Length, percentage, or
+calc</h4>
 
-A <a>target property</a> whose <a>animation type</a> is <dfn
+A property whose <a>animation type</a> is <dfn
 lt="length, percentage, or calc animation type">length, percentage, or
 calc</dfn> has the following behavior:
 
@@ -3933,9 +3928,9 @@ effect.getFrames().map(frame =&gt; frame.computedOffset).join(', ');
       </pre>
     </div>
 
-<h5 id="color-animation-type-section">Color</h5>
+<h4 id="color-animation-type-section">Color</h4>
 
-A <a>target property</a> whose <a>animation type</a> is <dfn
+A property whose <a>animation type</a> is <dfn
 lt="color animation type">color</dfn> has the following behavior:
 
 *   <a lt="animation interpolation">interpolation</a>:
@@ -4010,9 +4005,9 @@ lt="color animation type">color</dfn> has the following behavior:
     Each value is normalized to the [0.0, 1.0] range and expressed
     in premultiplied color space.
 
-<h5 id="transform-list-animation-type-section">Transform list</h5>
+<h4 id="transform-list-animation-type-section">Transform list</h4>
 
-A <a>target property</a> whose <a>animation type</a> is <dfn
+A property whose <a>animation type</a> is <dfn
 lt="transform list animation type">transform list</dfn> has the following
 behavior:
 
@@ -4084,7 +4079,7 @@ behavior:
 
 </div>
 
-<h5 id="other-animation-types">Other animation types</h5>
+<h4 id="other-animation-types">Other animation types</h4>
 
 The set of <a>animation types</a> defined here may be extended
 by other specifications.
@@ -4119,14 +4114,15 @@ Values and Replaced Content</a>
 
 </div>
 
-<h4 id="effect-values">Effect values</h4>
 
-Given an <a>iteration progress</a>, a <a>current iteration</a>, and an
-<a>underlying value</a>, a <a>keyframe effect</a> produces
-an <dfn>effect value</dfn> for each <a>animatable</a> <a>target property</a>
-by applying the <a>animation type</a> appropriate to the property.
+<h3 id="keyframe-effects">Keyframe effects</h3>
 
-<h3 id="keyframes-section">Keyframes</h3>
+<dfn lt="keyframe effect">Keyframe effects</dfn> are a kind of <a>animation
+effect</a> that use the output of the timing model to update CSS properties for
+an element or pseudo-element such as <code>::before</code> or
+<code>::after</code> [[!SELECT]] referred to as the <dfn>target element</dfn>.
+
+<h4 id="keyframes-section">Keyframes</h4>
 
 The <a>effect values</a> for a <a>keyframe effect</a>
 are calculated by interpolating between a series of property values
@@ -4136,7 +4132,7 @@ a <dfn>keyframe</dfn>.
 
 The <dfn lt="keyframe offset">offset of a keyframe</dfn> is a value
 in the range [0, 1] or the special value null.
-The list of <a>keyframes</a> for a <a>keyframe effect</a> is
+The list of <a>keyframes</a> for a <a>keyframe effect</a> must be
 <dfn>loosely sorted by offset</dfn> which means that for each
 <a>keyframe</a> in the list that has a <a>keyframe offset</a> that is
 not null, the offset is greater than or equal to the offset of the
@@ -4445,7 +4441,8 @@ and has the following steps:
 
     </div>
 
-<h4 id="the-effect-value-of-a-keyframe-animation-effect">The effect value of a keyframe effect</h4>
+<h4 id="the-effect-value-of-a-keyframe-animation-effect">The effect value of
+  a keyframe effect</h4>
 
 The <a>effect value</a> of a single property
 referenced by a <a>keyframe effect</a> as one of its
