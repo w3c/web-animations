@@ -2516,9 +2516,10 @@ a scaled output progress value.</p>
 effect</a>.</p>
    </div>
    <h4 class="heading settled" data-level="3.11.2" id="timing-functions"><span class="secno">3.11.2. </span><span class="content">Timing functions</span><a class="self-link" href="#timing-functions"></a></h4>
-   <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="timing function" data-noexport="" id="timing-function">timing function<span class="dfn-panel" data-deco=""><b><a href="#timing-function">#timing-function</a></b><b>Referenced in:</b><span><a href="#ref-for-timing-function-1">3.9.3.3. Calculating the simple iteration progress</a></span><span><a href="#ref-for-timing-function-2">3.11.1. Scaling the time</a> <a href="#ref-for-timing-function-3">(2)</a> <a href="#ref-for-timing-function-4">(3)</a></span><span><a href="#ref-for-timing-function-5">3.11.2. Timing functions</a> <a href="#ref-for-timing-function-6">(2)</a></span><span><a href="#ref-for-timing-function-7">3.11.3. Scaling using a cubic Bézier curve</a></span><span><a href="#ref-for-timing-function-8">3.11.4. Timing in discrete steps</a></span><span><a href="#ref-for-timing-function-9">3.11.5. Calculating the transformed progress</a></span><span><a href="#ref-for-timing-function-10">4.2. Procedures for animating properties</a></span><span><a href="#ref-for-timing-function-11">4.4.1. Keyframes</a> <a href="#ref-for-timing-function-12">(2)</a></span><span><a href="#ref-for-timing-function-13">5.6. The AnimationEffectTimingReadOnly interface</a></span><span><a href="#ref-for-timing-function-14">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-timing-function-15">(2)</a></span><span><a href="#ref-for-timing-function-16">5.10.3. Processing a frames
-argument</a> <a href="#ref-for-timing-function-17">(2)</a> <a href="#ref-for-timing-function-18">(3)</a> <a href="#ref-for-timing-function-19">(4)</a> <a href="#ref-for-timing-function-20">(5)</a> <a href="#ref-for-timing-function-21">(6)</a> <a href="#ref-for-timing-function-22">(7)</a> <a href="#ref-for-timing-function-23">(8)</a></span></span></dfn> takes an input progress value in the range
+   <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="timing function" data-noexport="" id="timing-function">timing function<span class="dfn-panel" data-deco=""><b><a href="#timing-function">#timing-function</a></b><b>Referenced in:</b><span><a href="#ref-for-timing-function-1">3.9.3.3. Calculating the simple iteration progress</a></span><span><a href="#ref-for-timing-function-2">3.11.1. Scaling the time</a> <a href="#ref-for-timing-function-3">(2)</a> <a href="#ref-for-timing-function-4">(3)</a></span><span><a href="#ref-for-timing-function-5">3.11.2. Timing functions</a> <a href="#ref-for-timing-function-6">(2)</a></span><span><a href="#ref-for-timing-function-7">3.11.3. Scaling using a cubic Bézier curve</a></span><span><a href="#ref-for-timing-function-8">3.11.4. Timing in discrete steps</a></span><span><a href="#ref-for-timing-function-9">3.11.5. Calculating the transformed progress</a></span><span><a href="#ref-for-timing-function-10">4.2. Procedures for animating properties</a></span><span><a href="#ref-for-timing-function-11">4.4.1. Keyframes</a> <a href="#ref-for-timing-function-12">(2)</a></span><span><a href="#ref-for-timing-function-13">4.4.3. The effect value of
+  a keyframe effect</a></span><span><a href="#ref-for-timing-function-14">5.6. The AnimationEffectTimingReadOnly interface</a></span><span><a href="#ref-for-timing-function-15">5.10. The KeyframeEffectReadOnly
+  and KeyframeEffect interfaces</a> <a href="#ref-for-timing-function-16">(2)</a></span><span><a href="#ref-for-timing-function-17">5.10.3. Processing a frames
+argument</a> <a href="#ref-for-timing-function-18">(2)</a> <a href="#ref-for-timing-function-19">(3)</a> <a href="#ref-for-timing-function-20">(4)</a> <a href="#ref-for-timing-function-21">(5)</a> <a href="#ref-for-timing-function-22">(6)</a> <a href="#ref-for-timing-function-23">(7)</a> <a href="#ref-for-timing-function-24">(8)</a></span></span></dfn> takes an input progress value in the range
 [0, 1] and produces an output progress value whose range is unbounded
 (i.e. positive and negative infinity are permitted).</p>
    <p><a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-63">Animation effects</a> have one <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-5">timing function</a> associated with
@@ -3553,13 +3554,16 @@ first keyframe in <var>interval endpoints</var>.</p>
 last keyframe in <var>interval endpoints</var>.</p>
     <li data-md="">
      <p>Let <var>interval distance</var> be the result of evaluating <code>(<var>iteration progress</var> - <var>start offset</var>) /
-(<var>end offset</var> - <var>start offset</var>)</code></p>
+(<var>end offset</var> - <var>start offset</var>)</code>.</p>
+    <li data-md="">
+     <p>Let <var>transformed distance</var> be the result of evaluating
+the <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-13">timing function</a> associated with the first keyframe in <var>interval endpoints</var> passing <var>interval distance</var> as the input progress.</p>
     <li data-md="">
      <p>Return the result of applying the <a data-link-type="dfn" href="#animation-interpolation" id="ref-for-animation-interpolation-8">interpolation procedure</a> defined
 by the <a data-link-type="dfn" href="#animation-type" id="ref-for-animation-type-21">animation type</a> of the <var>target property</var>,
 to the values of the <var>target property</var> specified on the
 two keyframes in <var>interval endpoints</var> taking the first such
-value as <var>V</var><sub>start</sub> and the second as <var>V</var><sub>end</sub> and using <var>interval
+value as <var>V</var><sub>start</sub> and the second as <var>V</var><sub>end</sub> and using <var>transformed
 distance</var> as the interpolation parameter <var>p</var>.</p>
    </ol>
    <div class="note" role="note">
@@ -4187,7 +4191,7 @@ on each iteration.</p>
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="AnimationEffectTimingReadOnly" data-dfn-type="attribute" data-export="" data-lt="easing" id="dom-animationeffecttimingreadonly-easing">easing<span class="dfn-panel" data-deco=""><b><a href="#dom-animationeffecttimingreadonly-easing">#dom-animationeffecttimingreadonly-easing</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-animationeffecttimingreadonly-easing-1">5.6. The AnimationEffectTimingReadOnly interface</a></span><span><a href="#ref-for-dom-animationeffecttimingreadonly-easing-2">5.7. The AnimationEffectTiming interface</a></span><span><a href="#ref-for-dom-animationeffecttimingreadonly-easing-3">5.10.3. Processing a frames
 argument</a></span></span></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMString">DOMString</a>, readonly</span></p>
      <dd data-md="">
-      <p>The <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-13">timing function</a> used to scale the time to
+      <p>The <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-14">timing function</a> used to scale the time to
 produce easing effects.</p>
       <p>The syntax of the string is defined by the following production:</p>
       <blockquote>
@@ -4697,7 +4701,7 @@ their <a data-link-type="dfn" href="#computed-keyframe-offset" id="ref-for-compu
         <dt data-md="">
          <p><code>easing</code></p>
         <dd data-md="">
-         <p>The <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-14">timing function</a> used to transform the progress of time
+         <p>The <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-15">timing function</a> used to transform the progress of time
   from this keyframe until the next keyframe in the series.</p>
         <dt data-md="">
          <p><code>composite</code></p>
@@ -4734,7 +4738,7 @@ the following definition:</p>
 </pre>
          <li data-md="">
           <p>Set <code class="idl"><a data-link-type="idl" href="#dom-basecomputedkeyframe-offset" id="ref-for-dom-basecomputedkeyframe-offset-1">offset</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-basecomputedkeyframe-computedoffset" id="ref-for-dom-basecomputedkeyframe-computedoffset-1">computedOffset</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-basecomputedkeyframe-easing" id="ref-for-dom-basecomputedkeyframe-easing-1">easing</a></code> members of <var>output keyframe</var> to the respective values <a data-link-type="dfn" href="#keyframe-offset" id="ref-for-keyframe-offset-14">keyframe offset</a>, <a data-link-type="dfn" href="#computed-keyframe-offset" id="ref-for-computed-keyframe-offset-29">computed keyframe offset</a>, and
-keyframe-specific <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-15">timing function</a> of <var>computed keyframe</var>.</p>
+keyframe-specific <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-16">timing function</a> of <var>computed keyframe</var>.</p>
          <li data-md="">
           <p>If <var>computed keyframe</var> has a <a data-link-type="dfn" href="#keyframe-specific-composite-operation" id="ref-for-keyframe-specific-composite-operation-3">keyframe-specific composite
 operation</a>, set <code class="idl"><a data-link-type="idl" href="#dom-basecomputedkeyframe-composite" id="ref-for-dom-basecomputedkeyframe-composite-1">composite</a></code> to that value.</p>
@@ -4922,9 +4926,9 @@ only be specified using the array-form as illustrated below:</p>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">([</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'0px'</span><span class="p">,</span> <span class="nx">composite</span><span class="o">:</span> <span class="s1">'add'</span> <span class="p">},</span>
                <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'200px'</span> <span class="p">}</span> <span class="p">],</span> <span class="mi">2000</span><span class="p">);</span></pre>
     </div>
-    <p><a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-16">Timing functions</a> may be specified in either form. The array-form allows
-specifying different <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-17">timing functions</a> for each <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-54">keyframe</a> whilst
-the object-form allows specifying a <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-18">timing function</a> that will be applied
+    <p><a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-17">Timing functions</a> may be specified in either form. The array-form allows
+specifying different <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-18">timing functions</a> for each <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-54">keyframe</a> whilst
+the object-form allows specifying a <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-19">timing function</a> that will be applied
 to all keyframes.</p>
     <div class="example" id="example-547663b6">
      <a class="self-link" href="#example-547663b6"></a> 
@@ -4939,7 +4943,7 @@ to all keyframes.</p>
                <span class="nx">easing</span><span class="o">:</span> <span class="s1">'ease-in-out'</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span></pre>
     </div>
     <p>Note that the <code>easing</code> property in either form sets the <em>keyframe-specific timing function</em>.
-This is independent from the <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-19">timing function</a> that applies to the
+This is independent from the <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-20">timing function</a> that applies to the
 entire <a data-link-type="dfn" href="#iteration-duration" id="ref-for-iteration-duration-17">iteration duration</a> of the <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-43">keyframe effect</a> as specified
 using a <code class="idl"><a data-link-type="idl" href="#dictdef-keyframeeffectoptions" id="ref-for-dictdef-keyframeeffectoptions-5">KeyframeEffectOptions</a></code> object (or <code class="idl"><a data-link-type="idl" href="#dictdef-keyframeanimationoptions" id="ref-for-dictdef-keyframeanimationoptions-1">KeyframeAnimationOptions</a></code> object when using the <code class="idl"><a data-link-type="idl" href="#dom-animatable-animate" id="ref-for-dom-animatable-animate-2">animate()</a></code> method of the <code class="idl"><a data-link-type="idl" href="#animatable" id="ref-for-animatable-7">Animatable</a></code> interface).</p>
     <p>The type of this argument cannot be expressed in WebIDL since it relies on
@@ -4978,7 +4982,7 @@ order of offset. Overlapping offsets, however, are permitted.</p>
      <dt data-md="">
       <p><dfn data-dfn-type="dfn" data-noexport="" id="dom-keyframe-easing">easing<a class="self-link" href="#dom-keyframe-easing"></a></dfn></p>
      <dd data-md="">
-      <p>The <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-20">timing function</a> used to transform the progress of time
+      <p>The <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-21">timing function</a> used to transform the progress of time
 from this keyframe until the next keyframe in the series.</p>
       <p>The syntax and error-handling associated with parsing this string
 is identical to that defined for the <code>easing</code> attribute
@@ -5251,13 +5255,13 @@ if we could replace it with some value indicating an error?</p>
 SHOULD produce an appropriate warning highlighting the unrecognized
 property value.</p>
       <li data-md="">
-       <p>Let the <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-21">timing function</a> of <var>frame</var> be the result of
+       <p>Let the <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-22">timing function</a> of <var>frame</var> be the result of
 parsing the “easing” property on <var>frame</var> using the
 CSS syntax defined for the <code class="idl"><a data-link-type="idl" href="#dom-animationeffecttimingreadonly-easing" id="ref-for-dom-animationeffecttimingreadonly-easing-3">easing</a></code> property of the <code class="idl"><a data-link-type="idl" href="#animationeffecttimingreadonly" id="ref-for-animationeffecttimingreadonly-18">AnimationEffectTimingReadOnly</a></code> interface.</p>
-       <p>If parsing the “easing” property failed, let the <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-22">timing
+       <p>If parsing the “easing” property failed, let the <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-23">timing
 function</a> of <var>frame</var> be “linear”.
 User agents that provide support for diagnosing errors in content
-SHOULD produce an appropriate warning highlighting the unrecognized <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-23">timing function</a> in this case.</p>
+SHOULD produce an appropriate warning highlighting the unrecognized <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-24">timing function</a> in this case.</p>
        <p class="note" role="note">Note: Using the CSS parser in both of the above steps implies that CSS
 comments and escaping are allowed (but are not retained when the value
 is successfully parsed).</p>
