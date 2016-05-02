@@ -38,6 +38,7 @@ Abstract: This specification defines a model for synchronization and
     features.
 Ignored Terms: double, boolean, DOMString, unsigned long, unrestricted double, (animationeffectreadonly or effectcallback), (unrestricted double or DOMString)
 Ignored Vars: RGB|A, G, t
+Link Defaults: css-transforms (property) transform
 </pre>
 <pre class="anchors">
 urlPrefix: https://heycam.github.io/webidl/#dfn-; type: dfn; spec: webidl
@@ -4919,6 +4920,24 @@ as follows:
     incorporated in the calculation of the <a>effect value</a> in <a
     href="#the-effect-value-of-a-keyframe-animation-effect"
     section></a>.
+
+<h3 id="side-effects-section">Side effects of animation</h3>
+
+For every property targeted by at least one <a>animation effect</a> that is
+<a>current</a> or <a>in effect</a>, the user agent must act as if the
+'will-change' property ([[!css-will-change-1]]) on the <a>target element</a>
+includes the property.
+
+<div class='informative-bg'><em>This section is non-normative</em>
+
+As a result of the above requirement, if an animation targets, for example,
+the 'transform' property of an element, a <a>stacking context</a> will be
+created for the <a>target element</a> so long as the <a>animation</a> is in
+the <a>before phase</a>, the <a>active phase</a> or, if it has a <a>fill
+mode</a> of &lsquo;forwards&rsquo; or &lsquo;both&rsquo;, the <a>after
+phase</a>.
+
+</div>
 
 <!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
 <h3 id="custom-effects">Custom effects</h3>
