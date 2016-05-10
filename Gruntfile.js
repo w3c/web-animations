@@ -84,16 +84,16 @@ module.exports = function(grunt) {
       nonull: true, /* error if we haven't build the spec yet */
       files: [
         { src: 'Overview.level-1.html', dest: 'publish/index.html' },
-        { src: [ '*.css', 'img/*', 'MathJax/*' ] , dest: 'publish/' },
+        { src: [ '*.css', 'img/*' ] , dest: 'publish/' },
         { src: 'Overview.level-2.html', dest: 'publish/level-2/index.html' },
-        { src: [ '*.css', 'img/*', 'MathJax/*' ] , dest: 'publish/level-2/' }
+        { src: [ '*.css', 'img/*' ] , dest: 'publish/level-2/' }
       ]
     },
     wd: {
       nonull: true,
       files: [
         { src: 'Overview.level-1.html', dest: 'wd/Overview.html' },
-        { src: [ '*.css', 'img/*', 'MathJax/**' ] , dest: 'wd/' }
+        { src: [ '*.css', 'img/*' ] , dest: 'wd/' }
       ]
     }
   });
