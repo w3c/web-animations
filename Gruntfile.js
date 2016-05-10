@@ -88,6 +88,13 @@ module.exports = function(grunt) {
         { src: 'Overview.level-2.html', dest: 'publish/level-2/index.html' },
         { src: [ '*.css', 'img/*', 'MathJax/*' ] , dest: 'publish/level-2/' }
       ]
+    },
+    wd: {
+      nonull: true,
+      files: [
+        { src: 'Overview.level-1.html', dest: 'wd/Overview.html' },
+        { src: [ '*.css', 'img/*', 'MathJax/**' ] , dest: 'wd/' }
+      ]
     }
   });
 
@@ -130,4 +137,6 @@ module.exports = function(grunt) {
                                     'express',
                                     'open',
                                     'watch']);
+  grunt.registerTask('wd', ['build:level-1',
+                            'copy:wd']);
 };
