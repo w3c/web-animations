@@ -28,6 +28,18 @@ module.exports = function(grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-text-replace');
+  grunt.config('replace', {
+    wd: {
+      src: ['Overview.level-1.src.html'],
+      dest: 'Overview.wd.src.html',
+      replacements: [{
+        from: 'Status: ED',
+        to: 'Status: WD'
+      }]
+    }
+  });
+
   grunt.loadNpmTasks('grunt-shell');
   grunt.config('shell', {
     'build-level-1': {
@@ -41,6 +53,12 @@ module.exports = function(grunt) {
         stdout: true
       },
       command: 'bikeshed spec Overview.level-2.src.html'
+    },
+    'build-wd': {
+      options: {
+        stdout: true
+      },
+      command: 'bikeshed spec Overview.wd.src.html'
     },
     update: {
       options: {
@@ -86,14 +104,9 @@ module.exports = function(grunt) {
         { src: 'Overview.level-1.html', dest: 'publish/index.html' },
         { src: [ '*.css', 'img/*' ] , dest: 'publish/' },
         { src: 'Overview.level-2.html', dest: 'publish/level-2/index.html' },
-        { src: [ '*.css', 'img/*' ] , dest: 'publish/level-2/' }
-      ]
-    },
-    wd: {
-      nonull: true,
-      files: [
-        { src: 'Overview.level-1.html', dest: 'wd/Overview.html' },
-        { src: [ '*.css', 'img/*' ] , dest: 'wd/' }
+        { src: [ '*.css', 'img/*' ] , dest: 'publish/level-2/' },
+        { src: 'Overview.wd.html', dest: 'publish/wd/Overview.html' },
+        { src: [ '*.css', 'img/*', 'manifest.txt' ], dest: 'publish/wd/' }
       ]
     }
   });
@@ -128,7 +141,10 @@ module.exports = function(grunt) {
                                        'shell:build-level-1']);
   grunt.registerTask('build:level-2', ['preprocess:level-2',
                                        'shell:build-level-2']);
-  grunt.registerTask('build', ['build:level-1', 'build:level-2']);
+  grunt.registerTask('build:wd', ['preprocess:level-1',
+                                  'replace:wd',
+                                  'shell:build-wd']);
+  grunt.registerTask('build', ['build:level-1', 'build:level-2', 'build:wd']);
   grunt.registerTask('default', ['build']);
 
   grunt.registerTask('publish', ['copy:spec']);
@@ -137,6 +153,4 @@ module.exports = function(grunt) {
                                     'express',
                                     'open',
                                     'watch']);
-  grunt.registerTask('wd', ['build:level-1',
-                            'copy:wd']);
 };
