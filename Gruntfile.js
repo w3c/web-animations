@@ -6,8 +6,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-preprocess');
   grunt.config('preprocess', {
     'level-1': {
-      src: 'Overview.src.html',
-      dest: 'Overview.level-1.src.html',
+      src: 'Overview.bs',
+      dest: 'Overview-level-1.bs',
       options: {
         context: {
           LEVEL: 1
@@ -15,8 +15,8 @@ module.exports = function(grunt) {
       }
     },
     'level-2': {
-      src: 'Overview.src.html',
-      dest: 'Overview.level-2.src.html',
+      src: 'Overview.bs',
+      dest: 'Overview-level-2.bs',
       options: {
         context: {
           LEVEL: 2,
@@ -31,8 +31,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-text-replace');
   grunt.config('replace', {
     wd: {
-      src: ['Overview.level-1.src.html'],
-      dest: 'Overview.wd.src.html',
+      src: ['Overview-level-1.bs'],
+      dest: 'Overview-wd.bs',
       replacements: [{
         from: 'Status: ED',
         to: 'Status: WD'
@@ -46,19 +46,19 @@ module.exports = function(grunt) {
       options: {
         stdout: true
       },
-      command: 'bikeshed spec Overview.level-1.src.html'
+      command: 'bikeshed spec Overview-level-1.bs'
     },
     'build-level-2': {
       options: {
         stdout: true
       },
-      command: 'bikeshed spec Overview.level-2.src.html'
+      command: 'bikeshed spec Overview-level-2.bs'
     },
     'build-wd': {
       options: {
         stdout: true
       },
-      command: 'bikeshed spec Overview.wd.src.html'
+      command: 'bikeshed spec Overview-wd.bs'
     },
     update: {
       options: {
@@ -73,7 +73,7 @@ module.exports = function(grunt) {
     options: {
       livereload: true,
     },
-    files: [ 'Overview.src.html', 'footer.include', 'biblio.json' ],
+    files: [ 'Overview.bs', 'footer.include', 'biblio.json' ],
     tasks: 'default'
   });
 
@@ -101,11 +101,11 @@ module.exports = function(grunt) {
     spec: {
       nonull: true, /* error if we haven't build the spec yet */
       files: [
-        { src: 'Overview.level-1.html', dest: 'publish/index.html' },
+        { src: 'Overview-level-1.html', dest: 'publish/index.html' },
         { src: [ '*.css', 'img/*' ] , dest: 'publish/' },
-        { src: 'Overview.level-2.html', dest: 'publish/level-2/index.html' },
+        { src: 'Overview-level-2.html', dest: 'publish/level-2/index.html' },
         { src: [ '*.css', 'img/*' ] , dest: 'publish/level-2/' },
-        { src: 'Overview.wd.html', dest: 'publish/wd/Overview.html' },
+        { src: 'Overview-wd.html', dest: 'publish/wd/Overview.html' },
         { src: [ '*.css', 'img/*', 'manifest.txt' ], dest: 'publish/wd/' }
       ]
     }
