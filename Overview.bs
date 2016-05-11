@@ -191,7 +191,7 @@ elem.animate({ transform: 'scale(0)', opacity: 0 }, 300);
 elem.getAnimations().filter(
   animation =&gt;
     animation.effect instanceof KeyframeEffectReadOnly &&
-    animation.effect.getFrames().some(
+    animation.effect.getKeyframes().some(
       frame =&gt; frame.hasOwnProperty('opacity')
     )
 ).forEach(animation =&gt; console.log(animation.id));
@@ -205,7 +205,7 @@ elem.getAnimations().filter(
 elem.getAnimations().filter(
   animation =&gt;
     animation.effect instanceof KeyframeEffectReadOnly &&
-    animation.effect.getFrames().some(
+    animation.effect.getKeyframes().some(
       frame =&gt; frame.hasOwnProperty('transform')
     )
 ).forEach(animation =&gt; {
@@ -3922,7 +3922,7 @@ var effect =
                        { top: '50%' } ],
                      { spacing: 'paced(top)' });
 // Prints '0, 0.5, 1'
-effect.getFrames().map(frame =&gt; frame.computedOffset).join(', ');
+effect.getKeyframes().map(frame =&gt; frame.computedOffset).join(', ');
       </pre>
 
       For consistency, this definition applies even when a used value
@@ -3936,7 +3936,7 @@ var effect =
                        { top: '50px' } ],
                      { spacing: 'paced(top)' });
 // Prints '0, 0.5, 1'
-effect.getFrames().map(frame =&gt; frame.computedOffset).join(', ');
+effect.getKeyframes().map(frame =&gt; frame.computedOffset).join(', ');
       </pre>
     </div>
 
@@ -4654,7 +4654,7 @@ referenced by a <a>keyframe effect</a> as one of its
 Note: this procedure permits overlapping <a>keyframes</a>.
     The behavior is that at the point of overlap the output value jumps to
     the value of the last defined <a>keyframe</a> at that offset.
-    For overlapping frames at 0 or 1, the output value for <a>iteration
+    For overlapping keyframes at 0 or 1, the output value for <a>iteration
     progress</a> values less than 0 or greater than
     or equal to 1 is the value of the first <a>keyframe</a> or the last
     <a>keyframe</a> in <var>keyframes</var> respectively.
@@ -6346,7 +6346,7 @@ Mutable <a>keyframe effects</a> are represented by the
 
 <pre class='idl'>
 [Constructor (Animatable? target,
-              object? frames,
+              object? keyframes,
               optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
     readonly attribute Animatable?                 target;
@@ -6354,18 +6354,18 @@ interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
     readonly attribute CompositeOperation          composite;
     readonly attribute DOMString                   spacing;
     KeyframeEffect   clone ();
-    sequence&lt;object&gt; getFrames ();
+    sequence&lt;object&gt; getKeyframes ();
 };
 
 [Constructor (Animatable? target,
-              object? frames,
+              object? keyframes,
               optional (unrestricted double or KeyframeEffectOptions) options)]
 interface KeyframeEffect : KeyframeEffectReadOnly {
     inherit attribute Animatable?                 target;
     inherit attribute IterationCompositeOperation iterationComposite;
     inherit attribute CompositeOperation          composite;
     inherit attribute DOMString                   spacing;
-    void setFrames (object? frames);
+    void setKeyframes (object? keyframes);
 };
 <!-- @ifdef INCLUDE_GROUPS -->
 KeyframeEffect implements AnimationEffectMutable;
@@ -6375,7 +6375,7 @@ KeyframeEffect implements AnimationEffectMutable;
 <div class="constructors">
 
 :   <dfn constructor for=KeyframeEffectReadOnly
-     lt="KeyframeEffectReadOnly(target, frames, options)">
+     lt="KeyframeEffectReadOnly(target, keyframes, options)">
     KeyframeEffectReadOnly ()</dfn>
 ::  Creates a new {{KeyframeEffectReadOnly}} object
     using the following procedure:
@@ -6442,40 +6442,40 @@ KeyframeEffect implements AnimationEffectMutable;
         <a>throw</a> the same exception and abort all further steps.
 
     1.  Initialize the set of <a>keyframes</a> by performing the procedure
-        defined for {{KeyframeEffect/setFrames()}} passing
-        <var>frames</var> as the input.
+        defined for {{KeyframeEffect/setKeyframes()}} passing
+        <var>keyframes</var> as the input.
 
     <div class="parameters">
 
     :   <dfn argument
-        for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)"
+        for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, keyframes, options)"
         lt="target"></dfn><dfn argument
-        for="KeyframeEffect/KeyframeEffect(target, frames, options)"
+        for="KeyframeEffect/KeyframeEffect(target, keyframes, options)"
         lt="target">Animatable? target</dfn>
     ::  The <a>target element</a> or target pseudo-element.
         This may be <code>null</code> for animations that do not target
         a specific element.
 
     :   <dfn argument
-        for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)"
-        lt="frames"></dfn><dfn argument
-        for="KeyframeEffect/KeyframeEffect(target, frames, options)"
-        lt="frames">object? frames</dfn>
+        for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, keyframes, options)"
+        lt="keyframes"></dfn><dfn argument
+        for="KeyframeEffect/KeyframeEffect(target, keyframes, options)"
+        lt="keyframes">object? keyframes</dfn>
     ::  The set of <a>keyframes</a> to use.
         The format and processing of this argument is defined in
-        [[#processing-a-frames-argument]].
+        [[#processing-a-keyframes-argument]].
 
     :   <dfn argument
-        for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)"
+        for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, keyframes, options)"
         lt="options"></dfn><dfn argument
-        for="KeyframeEffect/KeyframeEffect(target, frames, options)"
+        for="KeyframeEffect/KeyframeEffect(target, keyframes, options)"
         lt="options">optional KeyframeEffectOptions options</dfn>
     ::  Either a number specifying the <a>iteration duration</a> of the effect,
         or a collection of properties specifying the timing and behavior of
         the effect.
 
 :   <dfn constructor for=KeyframeEffect
-    lt="KeyframeEffect(target, frames, options)">
+    lt="KeyframeEffect(target, keyframes, options)">
     KeyframeEffect ()</dfn>
 ::  Creates a new {{KeyframeEffect}} object using the same procedure as with
     the {{KeyframeEffectReadOnly()}} constructor with the following differences:
@@ -6581,18 +6581,18 @@ KeyframeEffect implements AnimationEffectMutable;
          and {{KeyframeEffect/spacing}} attributes on <var>dest</var> using
          the value returned by the getter of the corresponding attribute on
          <var>source</var>.
-    4.   Let <var>frames</var> be the result of calling the
-         {{KeyframeEffectReadOnly/getFrames()}} method on <var>source</var>.
+    4.   Let <var>keyframes</var> be the result of calling the
+         {{KeyframeEffectReadOnly/getKeyframes()}} method on <var>source</var>.
 
          Issue: If <var>source</var> is using a {{SharedKeyframeList}} should
          we continue to share it?
 
-    5.   Call the {{KeyframeEffect/setFrames()}} method on <var>dest</var>
-         passing <var>frames</var> as the {{KeyframeEffect/setFrames/frames}}
-         argument.
+    5.   Call the {{KeyframeEffect/setKeyframes()}} method on <var>dest</var>
+         passing <var>keyframes</var> as the
+         {{KeyframeEffect/setKeyframes/keyframes}} argument.
 
-:   <dfn method for=KeyframeEffectReadOnly lt="getFrames()">
-    sequence&lt;object&gt; getFrames()</dfn>
+:   <dfn method for=KeyframeEffectReadOnly lt="getKeyframes()">
+    sequence&lt;object&gt; getKeyframes()</dfn>
 ::  Returns the <a>computed keyframes</a> that make up this effect along with
     their <a>computed keyframe offsets</a>.
 
@@ -6704,18 +6704,19 @@ KeyframeEffect implements AnimationEffectMutable;
 
     1. Return <var>result</var>.
 
-:   <dfn method for=KeyframeEffect lt='setFrames(frames)'>
-    void setFrames(object? frames)</dfn>
+:   <dfn method for=KeyframeEffect lt='setKeyframes(keyframes)'>
+    void setKeyframes(object? keyframes)</dfn>
 ::  Replaces the set of <a>keyframes</a> that make up this effect.
 
     <div class="parameters">
 
-    :   <dfn argument for="KeyframeEffect/setFrames" lt="frames">frames</dfn>
+    :   <dfn argument for="KeyframeEffect/setKeyframes"
+        lt="keyframes">keyframes</dfn>
     ::  A series of keyframes whose format and processing is defined by
-        [[#processing-a-frames-argument]].
+        [[#processing-a-keyframes-argument]].
 
         This effect's set of <a>keyframes</a> is replaced with the result
-        of performing the procedure to <a>process a frames argument</a>.
+        of performing the procedure to <a>process a keyframes argument</a>.
         If that procedure throws an exception, this effect's <a>keyframes</a>
         are not modified.
 
@@ -6739,14 +6740,14 @@ seconds can be constructed as follows:
 var effect = new KeyframeEffect(elem, { left: '100px' }, 3000);</pre></div>
 
 The second parameter, representing the list of keyframes, may
-specify multiple properties. (See <a href="#processing-a-frames-argument"
+specify multiple properties. (See <a href="#processing-a-keyframes-argument"
 section></a>.)
 
 <div class='example'><pre class='lang-javascript'>
 // Specify multiple properties at once
 var effectA = new KeyframeEffect(elem, { left: '100px', top: '300px' }, 3000);
 
-// Specify multiple frames
+// Specify multiple keyframes
 var effectB = new KeyframeEffect(elem, [ { left: '100px' }, { left: '300px' } ], 3000);</pre></div>
 
 The third parameter, representing the animation's timing, may
@@ -6820,18 +6821,19 @@ The <dfn>IDL attribute name to animation property name</dfn> algorithm for
 1.  Otherwise, return the result of applying the <a>IDL attribute to CSS
     property</a> algorithm [[!CSSOM]] to <var>attribute</var>.
 
-<h4 id="processing-a-frames-argument">Processing a <code>frames</code>
+<h4 id="processing-a-keyframes-argument">Processing a <code>keyframes</code>
 argument</h4>
 
 <div class='informative-bg'><em>This section is non-normative</em>
 
 The following methods all accept a set of keyframes as an argument:
 
-* the {{KeyframeEffectReadOnly()}} constructor,
-* the {{KeyframeEffect()}} constructor,
-* the {{KeyframeEffect/setFrames()}} method on the {{KeyframeEffect}} interface,
-* the {{SharedKeyframeList()}} constructor, and
-* the {{Animatable/animate()}} method of the {{Animatable}} interface.
+*   the {{KeyframeEffectReadOnly()}} constructor,
+*   the {{KeyframeEffect()}} constructor,
+*   the {{KeyframeEffect/setKeyframes()}} method on the {{KeyframeEffect}}
+    interface,
+*   the {{SharedKeyframeList()}} constructor, and
+*   the {{Animatable/animate()}} method of the {{Animatable}} interface.
 
 This argument may be specified in the one of two forms as illustrated below.
 
@@ -6866,7 +6868,7 @@ The second form (the object-form) consists of an object where each animation
 property may specify a single animation value or an array of animation values.
 
 The first array-form is the canonical form and is the form returned by the
-{{KeyframeEffectReadOnly/getFrames()}} method.
+{{KeyframeEffectReadOnly/getKeyframes()}} method.
 
 <a>Keyframe offsets</a> and <a>keyframe-specific composite operations</a> can
 only be specified using the array-form as illustrated below:
@@ -6978,8 +6980,8 @@ Since this type cannot be expressed in WebIDL, its processing is defined in
 prose following.
 </div>
 
-For each method that takes a <code>frames</code> argument, the
-procedure to <a>process a frames argument</a> is run on the input and
+For each method that takes a <code>keyframes</code> argument, the
+procedure to <a>process a keyframes argument</a> is run on the input and
 the result of that procedure is retained.
 
 First we define two supporting definitions.
@@ -7108,7 +7110,7 @@ otherwise, using the following procedure:
 
 1.  Return <var>keyframe output</var>.
 
-The procedure to <dfn>process a frames argument</dfn> takes a nullable
+The procedure to <dfn>process a keyframes argument</dfn> takes a nullable
 ECMAScript object, <var>object</var>, as input and returns either a sequence of
 keyframes or a {{SharedKeyframeList}} object using the following procedure:
 
@@ -7117,7 +7119,7 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
 1.  If <var>object</var> is a <a>platform object</a> that implements
     {{SharedKeyframeList}}, return <var>object</var>.
 
-1.  Let <var>processed frames</var> be an empty sequence of <a>keyframes</a>.
+1.  Let <var>processed keyframes</var> be an empty sequence of <a>keyframes</a>.
 
 1.  Let <var>method</var> be the result of <a>GetMethod</a>(<var>object</var>,
     <a lt="well known symbols">@@iterator</a>).
@@ -7143,15 +7145,15 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
             1.  If <var>nextItem</var> is not an object, throw a
                 <span class=exceptionname>TypeError</span> and abort these
                 steps.
-            1.  Append to <var>processed frames</var> the result of
+            1.  Append to <var>processed keyframes</var> the result of
                 running the procedure to <a>process a keyframe-like object</a>
                 passing <var>nextItem</var> as the <var>keyframe input</var>
                 and with the <var>allow lists</var> flag set to false.
 
-        1.  If <var>processed frames</var> is not <a>loosely sorted by
+        1.  If <var>processed keyframes</var> is not <a>loosely sorted by
             offset</a>, <a>throw</a> a <span
             class=exceptionname>TypeError</span> and abort these steps.
-        1.  If there exist any <a>keyframe</a> in <var>processed frames</var>
+        1.  If there exist any <a>keyframe</a> in <var>processed keyframes</var>
             whose <a>keyframe offset</a> is non-null and less
             than zero or greater than one, <a>throw</a> a
             <span class=exceptionname>TypeError</span> and abort these steps.
@@ -7198,17 +7200,17 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
                 <div class="note">
 
                 We unconditionally apply distribute spacing simply for the
-                purposes of merging frames. This produces consistent and
+                purposes of merging keyframes. This produces consistent and
                 intuitive results.
 
                 Paced spacing can produce different results depending on the
                 context in which relative values are resolved. Using paced
                 spacing to calculate offsets and then merging would mean that
                 the merge results could differ over time. It would also mean
-                that the frames returned from
-                {{KeyframeEffectReadOnly/getFrames()}} would
+                that the keyframes returned from
+                {{KeyframeEffectReadOnly/getKeyframes()}} would
                 produce a different result if passed back to
-                {{KeyframeEffect/setFrames()}} since the merge result which,
+                {{KeyframeEffect/setKeyframes()}} since the merge result which,
                 until that point, was dynamic, would suddenly become fixed.
 
                 Due to these considerations we apply merging once when updating
@@ -7216,7 +7218,7 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
                 its results.
 
                 Before computing the effect result or returning keyframes from
-                {{KeyframeEffectReadOnly/getFrames()}} the specified <a
+                {{KeyframeEffectReadOnly/getKeyframes()}} the specified <a
                 lt="keyframe spacing mode">spacing mode</a> is applied.
 
                 </div>
@@ -7307,11 +7309,11 @@ Before calculating the effect value
 (see [[#the-effect-value-of-a-keyframe-animation-effect]])
 of a <a>keyframe effect</a> represented by a {{KeyframeEffect}} object,
 <var>effect</var>, as well as each time the
-{{KeyframeEffectReadOnly/getFrames()}} method is called,
+{{KeyframeEffectReadOnly/getKeyframes()}} method is called,
 the <dfn>computed keyframes</dfn> are produced as follows:
 
 1.  Let <var>computed keyframes</var> refer to the sequence of <a>keyframes</a>
-    returned by the procedure to <a>process a frames argument</a> when it was
+    returned by the procedure to <a>process a keyframes argument</a> when it was
     last successfully called (i.e. did not throw an exception) for
     <var>effect</var>.
     If that procedure returned a {{SharedKeyframeList}} object, then let
@@ -7329,9 +7331,9 @@ the <dfn>computed keyframes</dfn> are produced as follows:
 1.  Return <var>computed keyframes</var>.
 
 Note: This procedure is performed every time the keyframe effect value is
-computed as well as every time {{KeyframeEffectReadOnly/getFrames()}} is called
-such that changes to any referenced {{SharedKeyframeList}} object or to the
-context used to resolve relative units are reflected in the result.
+computed as well as every time {{KeyframeEffectReadOnly/getKeyframes()}} is
+called such that changes to any referenced {{SharedKeyframeList}} object or to
+the context used to resolve relative units are reflected in the result.
 
 <h3 id="the-iterationcompositeoperation-enumeration">The <code>IterationCompositeOperation</code> enumeration</h3>
 
@@ -7413,23 +7415,23 @@ var player2 = element2.animate(keyframes, { duration: 1000, delay: 1000 });
 </div>
 
 <pre class='idl'>
-[Constructor (object? frames)]
+[Constructor (object? keyframes)]
 interface SharedKeyframeList {
 };
 </pre>
 
 <div class='constructors'>
 
-:   <dfn constructor for=SharedKeyframeList lt="SharedKeyframeList(frames)">
-    SharedKeyframeList(frames)</dfn>
+:   <dfn constructor for=SharedKeyframeList lt="SharedKeyframeList(keyframes)">
+    SharedKeyframeList(keyframes)</dfn>
 ::  Creates a new {{SharedKeyframeList}} object.
 
     <div class='parameters'>
 
-    :   <dfn argument for="SharedKeyframeList/SharedKeyframeList(frames)"
-        lt="frames">frames</dfn>
+    :   <dfn argument for="SharedKeyframeList/SharedKeyframeList(keyframes)"
+        lt="keyframes">keyframes</dfn>
     ::  The keyframes to be shared. This argument is processed using the
-        procedure defined in <a href="#processing-a-frames-argument"
+        procedure defined in <a href="#processing-a-keyframes-argument"
         section></a>.
 
     </div>
@@ -7493,7 +7495,7 @@ the {{Animatable}} interface.
 <pre class='idl'>
 [NoInterfaceObject]
 interface Animatable {
-    Animation           animate (object? frames,
+    Animation           animate (object? keyframes,
                                  optional (unrestricted double or KeyframeAnimationOptions) options);
     sequence&lt;Animation&gt; getAnimations ();
 };
@@ -7504,13 +7506,14 @@ dictionary KeyframeAnimationOptions : KeyframeEffectOptions {
 
 <div class="methods">
 
-:   <dfn method for=Animatable lt="animate(frames, options)">Animation animate(frames, options)</dfn>
+:   <dfn method for=Animatable lt="animate(keyframes, options)">Animation animate(keyframes, options)</dfn>
 ::  Performs the following steps:
 
     1.  Construct a new {{KeyframeEffect}} object, <var>effect</var>, passing
         the object on which this method was called as the
         <var>target</var> argument,
-        and the <var>frames</var> and <var>options</var> arguments as supplied.
+        and the <var>keyframes</var> and <var>options</var> arguments as
+        supplied.
 
         If the {{KeyframeEffect()}} constructor caused an exception to be
         thrown, propagate the exception and abort this procedure.
@@ -7544,13 +7547,13 @@ animation.play();</pre>
 
     <div class="parameters">
 
-    :   <dfn argument for="Animatable/animate(frames, options)"
-        lt="frames">frames</dfn>
+    :   <dfn argument for="Animatable/animate(keyframes, options)"
+        lt="keyframes">keyframes</dfn>
     ::  The <a>keyframes</a> to use.
         This value is passed to the {{KeyframeEffect()}}
-        constructor as the <var>frames</var> parameter and has the
+        constructor as the <var>keyframes</var> parameter and has the
         same interpretation as defined for that constructor.
-    :   <dfn argument for="Animatable/animate(frames, options)"
+    :   <dfn argument for="Animatable/animate(keyframes, options)"
         lt="options">options</dfn>
     ::  The timing and animation options for the created {{KeyframeEffect}}.
         This value is passed to the {{KeyframeEffect()}} constructor as the
@@ -7976,9 +7979,14 @@ The following changes have been made since the <a
 *   Changed the type of the {{ComputedTimingProperties/progress}} member of the
     {{ComputedTimingProperties}} dictionary from <code>unrestricted
     double?</code> to <code>double?</code>.
+*   Renamed <code>getFrames()</code> and <code>setKeyframes()</code>
+    on the {{KeyframeEffectReadOnly}} and {{KeyframeEffect}} interfaces
+    to {{KeyframeEffectReadOnly/getKeyframes()}} and
+    {{KeyframeEffect/setKeyframes()}} respectively, and renamed the
+    <code>frames</code> argument to <code>keyframes</code>.
 *   Rewrote the handling of keyframes arguments (see
-    [[#processing-a-frames-argument]] and the definition of
-    {{KeyframeEffectReadOnly/getFrames()}}) to be valid WebIDL.
+    [[#processing-a-keyframes-argument]] and the definition of
+    {{KeyframeEffectReadOnly/getKeyframes()}}) to be valid WebIDL.
     *   In doing this the <code>Keyframe</code>,
         <code>PropertyIndexedKeyframe</code> and <code>ComputedKeyframe</code>
         dictionaries have been replaced with {{BaseKeyframe}},
@@ -7993,7 +8001,7 @@ The following changes have been made since the <a
 *   Made the {{Animatable/animate()}} method of the {{Animatable}} interface
     take a {{KeyframeAnimationOptions}} parameter so that the {{Animation/id}}
     of an {{Animation}} can be specified.
-*   Corrected the type of {{Animatable/animate(frames, options)/options}}
+*   Corrected the type of {{Animatable/animate(keyframes, options)/options}}
     parameter to the {{Animatable/animate()}} method to use an
     <code>unrestricted double</code> rather than a <code>double</code>.
 *   Moved {{Document/getAnimations()}} from the {{AnimationTimeline}} interface
