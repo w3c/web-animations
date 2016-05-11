@@ -494,7 +494,7 @@ calc</span></a>
        <ol class="toc">
         <li><a href="#creating-a-new-keyframeeffect-object"><span class="secno">5.10.1</span> <span class="content">Creating a new <code>KeyframeEffect</code> object</span></a>
         <li><a href="#property-name-conversion"><span class="secno">5.10.2</span> <span class="content">Property names and IDL names</span></a>
-        <li><a href="#processing-a-frames-argument"><span class="secno">5.10.3</span> <span class="content">Processing a <code>frames</code> argument</span></a>
+        <li><a href="#processing-a-keyframes-argument"><span class="secno">5.10.3</span> <span class="content">Processing a <code>keyframes</code> argument</span></a>
         <li><a href="#the-keyframeeffectoptions-dictionary"><span class="secno">5.10.4</span> <span class="content">The <code>KeyframeEffectOptions</code> dictionary</span></a>
         <li><a href="#computed-keyframes-section"><span class="secno">5.10.5</span> <span class="content">Computed keyframes</span></a>
        </ol>
@@ -626,26 +626,26 @@ element arrived in its present state.
 The Web Animations programming interface may be used to inspect
 running animations to answer questions such as,
 “Why is the opacity of this element changing?”</p>
-      <div class="example" id="example-da351d88">
-       <a class="self-link" href="#example-da351d88"></a>
+      <div class="example" id="example-241c375b">
+       <a class="self-link" href="#example-241c375b"></a>
 <pre class="lang-javascript highlight"><span></span><span class="c1">// Print the id of any opacity animations on elem</span>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">filter</span><span class="p">(</span>
   <span class="nx">animation</span> <span class="o">=></span>
     <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span> <span class="k">instanceof</span> <span class="nx">KeyframeEffectReadOnly</span> <span class="o">&amp;&amp;</span>
-    <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">getFrames</span><span class="p">().</span><span class="nx">some</span><span class="p">(</span>
+    <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">getKeyframes</span><span class="p">().</span><span class="nx">some</span><span class="p">(</span>
       <span class="nx">frame</span> <span class="o">=></span> <span class="nx">frame</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="s1">'opacity'</span><span class="p">)</span>
     <span class="p">)</span>
 <span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">animation</span> <span class="o">=></span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">animation</span><span class="p">.</span><span class="nx">id</span><span class="p">));</span></pre>
       </div>
       <p>Likewise, in order to fine tune animations, it is often necessary to
 reduce their playback rate and replay them.</p>
-      <div class="example" id="example-dfbe614e">
-       <a class="self-link" href="#example-dfbe614e"></a>
+      <div class="example" id="example-6d1fcc4e">
+       <a class="self-link" href="#example-6d1fcc4e"></a>
 <pre class="lang-javascript highlight"><span></span><span class="c1">// Slow down and replay any transform animations</span>
 <span class="nx">elem</span><span class="p">.</span><span class="nx">getAnimations</span><span class="p">().</span><span class="nx">filter</span><span class="p">(</span>
   <span class="nx">animation</span> <span class="o">=></span>
     <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span> <span class="k">instanceof</span> <span class="nx">KeyframeEffectReadOnly</span> <span class="o">&amp;&amp;</span>
-    <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">getFrames</span><span class="p">().</span><span class="nx">some</span><span class="p">(</span>
+    <span class="nx">animation</span><span class="p">.</span><span class="nx">effect</span><span class="p">.</span><span class="nx">getKeyframes</span><span class="p">().</span><span class="nx">some</span><span class="p">(</span>
       <span class="nx">frame</span> <span class="o">=></span> <span class="nx">frame</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="s1">'transform'</span><span class="p">)</span>
     <span class="p">)</span>
 <span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">animation</span> <span class="o">=></span> <span class="p">{</span>
@@ -2127,7 +2127,7 @@ corresponding to the <a data-link-type="dfn" href="#current-iteration" id="ref-f
    <p>The length of a single iteration is called the <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="iteration
 duration" data-noexport="" id="iteration-duration">iteration
 duration<span class="dfn-panel" data-deco=""><b><a href="#iteration-duration">#iteration-duration</a></b><b>Referenced in:</b><span><a href="#ref-for-iteration-duration-1">3.8.1. Iteration intervals</a> <a href="#ref-for-iteration-duration-2">(2)</a> <a href="#ref-for-iteration-duration-3">(3)</a> <a href="#ref-for-iteration-duration-4">(4)</a> <a href="#ref-for-iteration-duration-5">(5)</a> <a href="#ref-for-iteration-duration-6">(6)</a></span><span><a href="#ref-for-iteration-duration-7">3.9.1. Overview</a> <a href="#ref-for-iteration-duration-8">(2)</a></span><span><a href="#ref-for-iteration-duration-9">3.9.2. Calculating the active duration</a> <a href="#ref-for-iteration-duration-10">(2)</a></span><span><a href="#ref-for-iteration-duration-11">3.9.3.2. Calculating the overall progress</a> <a href="#ref-for-iteration-duration-12">(2)</a></span><span><a href="#ref-for-iteration-duration-13">5.5. The AnimationEffectReadOnly interface</a></span><span><a href="#ref-for-iteration-duration-14">5.6. The AnimationEffectTimingReadOnly interface</a></span><span><a href="#ref-for-iteration-duration-15">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a></span><span><a href="#ref-for-iteration-duration-16">5.10.1. Creating a new KeyframeEffect object</a></span><span><a href="#ref-for-iteration-duration-17">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a></span><span><a href="#ref-for-iteration-duration-16">5.10.1. Creating a new KeyframeEffect object</a></span><span><a href="#ref-for-iteration-duration-17">5.10.3. Processing a keyframes
 argument</a></span></span></dfn>.
 The initial <a data-link-type="dfn" href="#iteration-duration" id="ref-for-iteration-duration-1">iteration duration</a> of an
 animation effect is zero.</p>
@@ -2532,7 +2532,7 @@ effect</a>.</p>
    <h4 class="heading settled" data-level="3.11.2" id="timing-functions"><span class="secno">3.11.2. </span><span class="content">Timing functions</span><a class="self-link" href="#timing-functions"></a></h4>
    <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="timing function" data-noexport="" id="timing-function">timing function<span class="dfn-panel" data-deco=""><b><a href="#timing-function">#timing-function</a></b><b>Referenced in:</b><span><a href="#ref-for-timing-function-1">3.9.3.3. Calculating the simple iteration progress</a></span><span><a href="#ref-for-timing-function-2">3.11.1. Scaling the time</a> <a href="#ref-for-timing-function-3">(2)</a> <a href="#ref-for-timing-function-4">(3)</a></span><span><a href="#ref-for-timing-function-5">3.11.2. Timing functions</a> <a href="#ref-for-timing-function-6">(2)</a></span><span><a href="#ref-for-timing-function-7">3.11.3. Scaling using a cubic Bézier curve</a></span><span><a href="#ref-for-timing-function-8">3.11.4. Timing in discrete steps</a></span><span><a href="#ref-for-timing-function-9">3.11.5. Calculating the transformed progress</a></span><span><a href="#ref-for-timing-function-10">4.2. Procedures for animating properties</a></span><span><a href="#ref-for-timing-function-11">4.4.1. Keyframes</a> <a href="#ref-for-timing-function-12">(2)</a></span><span><a href="#ref-for-timing-function-13">4.4.3. The effect value of
   a keyframe effect</a></span><span><a href="#ref-for-timing-function-14">5.6. The AnimationEffectTimingReadOnly interface</a></span><span><a href="#ref-for-timing-function-15">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-timing-function-16">(2)</a></span><span><a href="#ref-for-timing-function-17">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a> <a href="#ref-for-timing-function-16">(2)</a></span><span><a href="#ref-for-timing-function-17">5.10.3. Processing a keyframes
 argument</a> <a href="#ref-for-timing-function-18">(2)</a> <a href="#ref-for-timing-function-19">(3)</a> <a href="#ref-for-timing-function-20">(4)</a> <a href="#ref-for-timing-function-21">(5)</a> <a href="#ref-for-timing-function-22">(6)</a> <a href="#ref-for-timing-function-23">(7)</a> <a href="#ref-for-timing-function-24">(8)</a></span></span></dfn> takes an input progress value in the range
 [0, 1] and produces an output progress value whose range is unbounded
 (i.e. positive and negative infinity are permitted).</p>
@@ -2916,8 +2916,8 @@ number</a> but using the <a href="http://www.w3.org/TR/CSS2/cascade.html#used-va
 value</a> <a data-link-type="biblio" href="#biblio-css21">[CSS21]</a> for <var>V</var><sub>start</sub> and <var>V</var><sub>end</sub>.</p>
      <p>When there is insufficient context to calculate a used value for all
 possible values of <var>V</var><sub>start</sub> and <var>V</var><sub>end</sub>, the result of the <a data-link-type="dfn" href="#distance-computation" id="ref-for-distance-computation-6">distance computation</a> calculation is 1 (i.e. the behavior degenerates to <a data-link-type="dfn" href="#not-paceable" id="ref-for-not-paceable-1">not paceable</a>).</p>
-     <div class="example" id="example-fa07645c">
-      <a class="self-link" href="#example-fa07645c"></a> For example, for a <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-4">keyframe effect</a> that does not have
+     <div class="example" id="example-2c256492">
+      <a class="self-link" href="#example-2c256492"></a> For example, for a <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-4">keyframe effect</a> that does not have
   an <a data-link-type="dfn" href="#target-element" id="ref-for-target-element-1">target element</a>, there is no containing block for resolving
   percentage values against.
   As a result, the following code snippet falls back to <a data-link-type="dfn" href="#not-paceable" id="ref-for-not-paceable-2">not paceable</a> <a data-link-type="dfn" href="#animation-type" id="ref-for-animation-type-13">animation type</a>. 
@@ -2927,7 +2927,7 @@ possible values of <var>V</var><sub>start</sub> and <var>V</var><sub>end</sub>, 
                        <span class="p">{</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'50%'</span> <span class="p">}</span> <span class="p">],</span>
                      <span class="p">{</span> <span class="nx">spacing</span><span class="o">:</span> <span class="s1">'paced(top)'</span> <span class="p">});</span>
 <span class="c1">// Prints '0, 0.5, 1'</span>
-<span class="nx">effect</span><span class="p">.</span><span class="nx">getFrames</span><span class="p">().</span><span class="nx">map</span><span class="p">(</span><span class="nx">frame</span> <span class="o">=></span> <span class="nx">frame</span><span class="p">.</span><span class="nx">computedOffset</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">', '</span><span class="p">);</span></pre>
+<span class="nx">effect</span><span class="p">.</span><span class="nx">getKeyframes</span><span class="p">().</span><span class="nx">map</span><span class="p">(</span><span class="nx">frame</span> <span class="o">=></span> <span class="nx">frame</span><span class="p">.</span><span class="nx">computedOffset</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">', '</span><span class="p">);</span></pre>
       <p>For consistency, this definition applies even when a used value
   could be calculated for each of the animation values in question.
   As such, the following code fragment produces the same result.</p>
@@ -2937,7 +2937,7 @@ possible values of <var>V</var><sub>start</sub> and <var>V</var><sub>end</sub>, 
                        <span class="p">{</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'50px'</span> <span class="p">}</span> <span class="p">],</span>
                      <span class="p">{</span> <span class="nx">spacing</span><span class="o">:</span> <span class="s1">'paced(top)'</span> <span class="p">});</span>
 <span class="c1">// Prints '0, 0.5, 1'</span>
-<span class="nx">effect</span><span class="p">.</span><span class="nx">getFrames</span><span class="p">().</span><span class="nx">map</span><span class="p">(</span><span class="nx">frame</span> <span class="o">=></span> <span class="nx">frame</span><span class="p">.</span><span class="nx">computedOffset</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">', '</span><span class="p">);</span></pre>
+<span class="nx">effect</span><span class="p">.</span><span class="nx">getKeyframes</span><span class="p">().</span><span class="nx">map</span><span class="p">(</span><span class="nx">frame</span> <span class="o">=></span> <span class="nx">frame</span><span class="p">.</span><span class="nx">computedOffset</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">', '</span><span class="p">);</span></pre>
      </div>
    </ul>
    <h4 class="heading settled" data-level="4.3.5" id="color-animation-type-section"><span class="secno">4.3.5. </span><span class="content">Color</span><a class="self-link" href="#color-animation-type-section"></a></h4>
@@ -3152,7 +3152,7 @@ percentages)</p>
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="keyframe effect" data-noexport="" id="keyframe-effect">Keyframe effects<span class="dfn-panel" data-deco=""><b><a href="#keyframe-effect">#keyframe-effect</a></b><b>Referenced in:</b><span><a href="#ref-for-keyframe-effect-1">3.5.7. Waiting for the target effect</a></span><span><a href="#ref-for-keyframe-effect-2">3.6.2. Types of animation effects</a></span><span><a href="#ref-for-keyframe-effect-3">3.11.4. Timing in discrete steps</a></span><span><a href="#ref-for-keyframe-effect-4">4.3.4. Length, percentage, or
 calc</a></span><span><a href="#ref-for-keyframe-effect-5">4.4.1. Keyframes</a> <a href="#ref-for-keyframe-effect-6">(2)</a> <a href="#ref-for-keyframe-effect-7">(3)</a> <a href="#ref-for-keyframe-effect-8">(4)</a></span><span><a href="#ref-for-keyframe-effect-9">4.4.2. Spacing keyframes</a> <a href="#ref-for-keyframe-effect-10">(2)</a></span><span><a href="#ref-for-keyframe-effect-11">4.4.3. The effect value of
   a keyframe effect</a> <a href="#ref-for-keyframe-effect-12">(2)</a> <a href="#ref-for-keyframe-effect-13">(3)</a> <a href="#ref-for-keyframe-effect-14">(4)</a></span><span><a href="#ref-for-keyframe-effect-15">4.5. Combining effects</a> <a href="#ref-for-keyframe-effect-16">(2)</a> <a href="#ref-for-keyframe-effect-17">(3)</a> <a href="#ref-for-keyframe-effect-18">(4)</a> <a href="#ref-for-keyframe-effect-19">(5)</a> <a href="#ref-for-keyframe-effect-20">(6)</a> <a href="#ref-for-keyframe-effect-21">(7)</a></span><span><a href="#ref-for-keyframe-effect-22">4.5.2. The effect stack</a> <a href="#ref-for-keyframe-effect-23">(2)</a> <a href="#ref-for-keyframe-effect-24">(3)</a></span><span><a href="#ref-for-keyframe-effect-25">4.5.3. Calculating the result of an effect stack</a> <a href="#ref-for-keyframe-effect-26">(2)</a> <a href="#ref-for-keyframe-effect-27">(3)</a> <a href="#ref-for-keyframe-effect-28">(4)</a> <a href="#ref-for-keyframe-effect-29">(5)</a></span><span><a href="#ref-for-keyframe-effect-30">4.5.4. Effect composition</a></span><span><a href="#ref-for-keyframe-effect-31">4.6. Effect accumulation</a></span><span><a href="#ref-for-keyframe-effect-32">5.6. The AnimationEffectTimingReadOnly interface</a></span><span><a href="#ref-for-keyframe-effect-33">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframe-effect-34">(2)</a> <a href="#ref-for-keyframe-effect-35">(3)</a> <a href="#ref-for-keyframe-effect-36">(4)</a> <a href="#ref-for-keyframe-effect-37">(5)</a> <a href="#ref-for-keyframe-effect-38">(6)</a> <a href="#ref-for-keyframe-effect-39">(7)</a> <a href="#ref-for-keyframe-effect-40">(8)</a> <a href="#ref-for-keyframe-effect-41">(9)</a> <a href="#ref-for-keyframe-effect-42">(10)</a></span><span><a href="#ref-for-keyframe-effect-43">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframe-effect-34">(2)</a> <a href="#ref-for-keyframe-effect-35">(3)</a> <a href="#ref-for-keyframe-effect-36">(4)</a> <a href="#ref-for-keyframe-effect-37">(5)</a> <a href="#ref-for-keyframe-effect-38">(6)</a> <a href="#ref-for-keyframe-effect-39">(7)</a> <a href="#ref-for-keyframe-effect-40">(8)</a> <a href="#ref-for-keyframe-effect-41">(9)</a> <a href="#ref-for-keyframe-effect-42">(10)</a></span><span><a href="#ref-for-keyframe-effect-43">5.10.3. Processing a keyframes
 argument</a> <a href="#ref-for-keyframe-effect-44">(2)</a> <a href="#ref-for-keyframe-effect-45">(3)</a></span><span><a href="#ref-for-keyframe-effect-46">5.10.5. Computed keyframes</a></span><span><a href="#ref-for-keyframe-effect-47">5.17. Extensions to the CSSPseudoElement interface</a></span><span><a href="#ref-for-keyframe-effect-48">10. Changes since last publication</a> <a href="#ref-for-keyframe-effect-49">(2)</a></span></span></dfn> are a kind of <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-74">animation
 effect</a> that use the output of the timing model to update CSS properties for
 an element or pseudo-element such as <code>::before</code> or <code>::after</code> <a data-link-type="biblio" href="#biblio-select">[SELECT]</a> referred to as the <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="target element" data-noexport="" id="target-element">target element<span class="dfn-panel" data-deco=""><b><a href="#target-element">#target-element</a></b><b>Referenced in:</b><span><a href="#ref-for-target-element-1">4.3.4. Length, percentage, or
@@ -3164,13 +3164,13 @@ positioned at fractional offsets.
 Each set of property values indexed by an offset is called
 a <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="keyframe" data-noexport="" id="keyframe">keyframe<span class="dfn-panel" data-deco=""><b><a href="#keyframe">#keyframe</a></b><b>Referenced in:</b><span><a href="#ref-for-keyframe-1">3.11.4. Timing in discrete steps</a></span><span><a href="#ref-for-keyframe-2">4.4.1. Keyframes</a> <a href="#ref-for-keyframe-3">(2)</a> <a href="#ref-for-keyframe-4">(3)</a> <a href="#ref-for-keyframe-5">(4)</a> <a href="#ref-for-keyframe-6">(5)</a> <a href="#ref-for-keyframe-7">(6)</a> <a href="#ref-for-keyframe-8">(7)</a></span><span><a href="#ref-for-keyframe-9">4.4.2. Spacing keyframes</a> <a href="#ref-for-keyframe-10">(2)</a> <a href="#ref-for-keyframe-11">(3)</a></span><span><a href="#ref-for-keyframe-12">4.4.2.1. Applying spacing to keyframes</a> <a href="#ref-for-keyframe-13">(2)</a> <a href="#ref-for-keyframe-14">(3)</a> <a href="#ref-for-keyframe-15">(4)</a> <a href="#ref-for-keyframe-16">(5)</a> <a href="#ref-for-keyframe-17">(6)</a> <a href="#ref-for-keyframe-18">(7)</a> <a href="#ref-for-keyframe-19">(8)</a> <a href="#ref-for-keyframe-20">(9)</a> <a href="#ref-for-keyframe-21">(10)</a> <a href="#ref-for-keyframe-22">(11)</a> <a href="#ref-for-keyframe-23">(12)</a></span><span><a href="#ref-for-keyframe-24">4.4.3. The effect value of
   a keyframe effect</a> <a href="#ref-for-keyframe-25">(2)</a> <a href="#ref-for-keyframe-26">(3)</a> <a href="#ref-for-keyframe-27">(4)</a> <a href="#ref-for-keyframe-28">(5)</a> <a href="#ref-for-keyframe-29">(6)</a> <a href="#ref-for-keyframe-30">(7)</a> <a href="#ref-for-keyframe-31">(8)</a> <a href="#ref-for-keyframe-32">(9)</a> <a href="#ref-for-keyframe-33">(10)</a> <a href="#ref-for-keyframe-34">(11)</a> <a href="#ref-for-keyframe-35">(12)</a> <a href="#ref-for-keyframe-36">(13)</a> <a href="#ref-for-keyframe-37">(14)</a> <a href="#ref-for-keyframe-38">(15)</a> <a href="#ref-for-keyframe-39">(16)</a> <a href="#ref-for-keyframe-40">(17)</a> <a href="#ref-for-keyframe-41">(18)</a> <a href="#ref-for-keyframe-42">(19)</a> <a href="#ref-for-keyframe-43">(20)</a> <a href="#ref-for-keyframe-44">(21)</a></span><span><a href="#ref-for-keyframe-45">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframe-46">(2)</a> <a href="#ref-for-keyframe-47">(3)</a> <a href="#ref-for-keyframe-48">(4)</a> <a href="#ref-for-keyframe-49">(5)</a> <a href="#ref-for-keyframe-50">(6)</a> <a href="#ref-for-keyframe-51">(7)</a> <a href="#ref-for-keyframe-52">(8)</a> <a href="#ref-for-keyframe-53">(9)</a></span><span><a href="#ref-for-keyframe-54">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframe-46">(2)</a> <a href="#ref-for-keyframe-47">(3)</a> <a href="#ref-for-keyframe-48">(4)</a> <a href="#ref-for-keyframe-49">(5)</a> <a href="#ref-for-keyframe-50">(6)</a> <a href="#ref-for-keyframe-51">(7)</a> <a href="#ref-for-keyframe-52">(8)</a> <a href="#ref-for-keyframe-53">(9)</a></span><span><a href="#ref-for-keyframe-54">5.10.3. Processing a keyframes
 argument</a> <a href="#ref-for-keyframe-55">(2)</a> <a href="#ref-for-keyframe-56">(3)</a> <a href="#ref-for-keyframe-57">(4)</a> <a href="#ref-for-keyframe-58">(5)</a> <a href="#ref-for-keyframe-59">(6)</a> <a href="#ref-for-keyframe-60">(7)</a> <a href="#ref-for-keyframe-61">(8)</a> <a href="#ref-for-keyframe-62">(9)</a> <a href="#ref-for-keyframe-63">(10)</a></span><span><a href="#ref-for-keyframe-64">5.10.4. The KeyframeEffectOptions dictionary</a> <a href="#ref-for-keyframe-65">(2)</a></span><span><a href="#ref-for-keyframe-66">5.10.5. Computed keyframes</a></span><span><a href="#ref-for-keyframe-67">5.13. The SharedKeyframeList interface</a> <a href="#ref-for-keyframe-68">(2)</a></span><span><a href="#ref-for-keyframe-69">5.14. The Animatable interface</a></span></span></dfn>.</p>
    <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="keyframe offset" data-noexport="" id="keyframe-offset">offset of a keyframe<span class="dfn-panel" data-deco=""><b><a href="#keyframe-offset">#keyframe-offset</a></b><b>Referenced in:</b><span><a href="#ref-for-keyframe-offset-1">4.4.1. Keyframes</a> <a href="#ref-for-keyframe-offset-2">(2)</a></span><span><a href="#ref-for-keyframe-offset-3">4.4.2. Spacing keyframes</a> <a href="#ref-for-keyframe-offset-4">(2)</a> <a href="#ref-for-keyframe-offset-5">(3)</a> <a href="#ref-for-keyframe-offset-6">(4)</a> <a href="#ref-for-keyframe-offset-7">(5)</a> <a href="#ref-for-keyframe-offset-8">(6)</a> <a href="#ref-for-keyframe-offset-9">(7)</a> <a href="#ref-for-keyframe-offset-10">(8)</a> <a href="#ref-for-keyframe-offset-11">(9)</a></span><span><a href="#ref-for-keyframe-offset-12">4.4.2.1. Applying spacing to keyframes</a></span><span><a href="#ref-for-keyframe-offset-13">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframe-offset-14">(2)</a></span><span><a href="#ref-for-keyframe-offset-15">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframe-offset-14">(2)</a></span><span><a href="#ref-for-keyframe-offset-15">5.10.3. Processing a keyframes
 argument</a> <a href="#ref-for-keyframe-offset-16">(2)</a> <a href="#ref-for-keyframe-offset-17">(3)</a> <a href="#ref-for-keyframe-offset-18">(4)</a></span></span></dfn> is a value
 in the range [0, 1] or the special value null.
-The list of <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-2">keyframes</a> for a <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-6">keyframe effect</a> must be <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="loosely sorted by offset" data-noexport="" id="loosely-sorted-by-offset">loosely sorted by offset<span class="dfn-panel" data-deco=""><b><a href="#loosely-sorted-by-offset">#loosely-sorted-by-offset</a></b><b>Referenced in:</b><span><a href="#ref-for-loosely-sorted-by-offset-1">5.10.3. Processing a frames
+The list of <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-2">keyframes</a> for a <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-6">keyframe effect</a> must be <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="loosely sorted by offset" data-noexport="" id="loosely-sorted-by-offset">loosely sorted by offset<span class="dfn-panel" data-deco=""><b><a href="#loosely-sorted-by-offset">#loosely-sorted-by-offset</a></b><b>Referenced in:</b><span><a href="#ref-for-loosely-sorted-by-offset-1">5.10.3. Processing a keyframes
 argument</a></span></span></dfn> which means that for each <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-3">keyframe</a> in the list that has a <a data-link-type="dfn" href="#keyframe-offset" id="ref-for-keyframe-offset-1">keyframe offset</a> that is
 not null, the offset is greater than or equal to the offset of the
 previous <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-4">keyframe</a> in the list with a <a data-link-type="dfn" href="#keyframe-offset" id="ref-for-keyframe-offset-2">keyframe offset</a> that
@@ -3186,7 +3186,7 @@ list is never applied.</p>
    <p>Each <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-6">keyframe</a> may also have a <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="keyframe-specific composite
 operation" data-noexport="" id="keyframe-specific-composite-operation">keyframe-specific composite
 operation<span class="dfn-panel" data-deco=""><b><a href="#keyframe-specific-composite-operation">#keyframe-specific-composite-operation</a></b><b>Referenced in:</b><span><a href="#ref-for-keyframe-specific-composite-operation-1">4.4.1. Keyframes</a></span><span><a href="#ref-for-keyframe-specific-composite-operation-2">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframe-specific-composite-operation-3">(2)</a></span><span><a href="#ref-for-keyframe-specific-composite-operation-4">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframe-specific-composite-operation-3">(2)</a></span><span><a href="#ref-for-keyframe-specific-composite-operation-4">5.10.3. Processing a keyframes
 argument</a> <a href="#ref-for-keyframe-specific-composite-operation-5">(2)</a></span><span><a href="#ref-for-keyframe-specific-composite-operation-6">5.10.4. The KeyframeEffectOptions dictionary</a></span></span></dfn> that is applied to all values
 specified in that <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-7">keyframe</a>.
 The possible operations and their meanings are identical to those defined
@@ -3283,13 +3283,13 @@ The slope of the graph is equal for the first two segments but changes for the l
    <p>Before calculating effect values from a <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-9">keyframe effect</a>,
 an absolute value must be computed for <a data-link-type="dfn" href="#keyframe-offset" id="ref-for-keyframe-offset-7">keyframe offset</a> of each <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-9">keyframe</a> with a null offset.</p>
    <p>The values computed depend on the <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="keyframe spacing mode" data-noexport="" id="keyframe-spacing-mode">keyframe spacing mode<span class="dfn-panel" data-deco=""><b><a href="#keyframe-spacing-mode">#keyframe-spacing-mode</a></b><b>Referenced in:</b><span><a href="#ref-for-keyframe-spacing-mode-1">4.4.2.1. Applying spacing to keyframes</a></span><span><a href="#ref-for-keyframe-spacing-mode-2">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframe-spacing-mode-3">(2)</a> <a href="#ref-for-keyframe-spacing-mode-4">(3)</a> <a href="#ref-for-keyframe-spacing-mode-5">(4)</a> <a href="#ref-for-keyframe-spacing-mode-6">(5)</a></span><span><a href="#ref-for-keyframe-spacing-mode-7">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframe-spacing-mode-3">(2)</a> <a href="#ref-for-keyframe-spacing-mode-4">(3)</a> <a href="#ref-for-keyframe-spacing-mode-5">(4)</a> <a href="#ref-for-keyframe-spacing-mode-6">(5)</a></span><span><a href="#ref-for-keyframe-spacing-mode-7">5.10.3. Processing a keyframes
 argument</a> <a href="#ref-for-keyframe-spacing-mode-8">(2)</a> <a href="#ref-for-keyframe-spacing-mode-9">(3)</a></span><span><a href="#ref-for-keyframe-spacing-mode-10">5.10.4. The KeyframeEffectOptions dictionary</a></span><span><a href="#ref-for-keyframe-spacing-mode-11">5.10.5. Computed keyframes</a></span></span></dfn> specified for the <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-10">keyframe effect</a>.
 The keyframe spacing modes are:</p>
    <dl>
     <dt data-md="">
      <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="distribute keyframe spacing mode" data-noexport="" id="distribute-keyframe-spacing-mode">distribute<span class="dfn-panel" data-deco=""><b><a href="#distribute-keyframe-spacing-mode">#distribute-keyframe-spacing-mode</a></b><b>Referenced in:</b><span><a href="#ref-for-distribute-keyframe-spacing-mode-1">4.4.2. Spacing keyframes</a> <a href="#ref-for-distribute-keyframe-spacing-mode-2">(2)</a></span><span><a href="#ref-for-distribute-keyframe-spacing-mode-3">4.4.2.1. Applying spacing to keyframes</a></span><span><a href="#ref-for-distribute-keyframe-spacing-mode-4">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a></span><span><a href="#ref-for-distribute-keyframe-spacing-mode-5">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a></span><span><a href="#ref-for-distribute-keyframe-spacing-mode-5">5.10.3. Processing a keyframes
 argument</a></span></span></dfn></p>
     <p></p>
     <dd data-md="">
@@ -3312,7 +3312,7 @@ percentage values or em-based units), the original null values are not
 overwritten, rather, the calculated absolute values are stored as a separate
 value on each keyframe known as its <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="computed keyframe offset" data-noexport="" id="computed-keyframe-offset">computed keyframe offset<span class="dfn-panel" data-deco=""><b><a href="#computed-keyframe-offset">#computed-keyframe-offset</a></b><b>Referenced in:</b><span><a href="#ref-for-computed-keyframe-offset-1">4.4.2.1. Applying spacing to keyframes</a> <a href="#ref-for-computed-keyframe-offset-2">(2)</a> <a href="#ref-for-computed-keyframe-offset-3">(3)</a> <a href="#ref-for-computed-keyframe-offset-4">(4)</a> <a href="#ref-for-computed-keyframe-offset-5">(5)</a> <a href="#ref-for-computed-keyframe-offset-6">(6)</a> <a href="#ref-for-computed-keyframe-offset-7">(7)</a> <a href="#ref-for-computed-keyframe-offset-8">(8)</a> <a href="#ref-for-computed-keyframe-offset-9">(9)</a> <a href="#ref-for-computed-keyframe-offset-10">(10)</a> <a href="#ref-for-computed-keyframe-offset-11">(11)</a> <a href="#ref-for-computed-keyframe-offset-12">(12)</a> <a href="#ref-for-computed-keyframe-offset-13">(13)</a> <a href="#ref-for-computed-keyframe-offset-14">(14)</a></span><span><a href="#ref-for-computed-keyframe-offset-15">4.4.3. The effect value of
   a keyframe effect</a> <a href="#ref-for-computed-keyframe-offset-16">(2)</a> <a href="#ref-for-computed-keyframe-offset-17">(3)</a> <a href="#ref-for-computed-keyframe-offset-18">(4)</a> <a href="#ref-for-computed-keyframe-offset-19">(5)</a> <a href="#ref-for-computed-keyframe-offset-20">(6)</a> <a href="#ref-for-computed-keyframe-offset-21">(7)</a> <a href="#ref-for-computed-keyframe-offset-22">(8)</a> <a href="#ref-for-computed-keyframe-offset-23">(9)</a> <a href="#ref-for-computed-keyframe-offset-24">(10)</a> <a href="#ref-for-computed-keyframe-offset-25">(11)</a> <a href="#ref-for-computed-keyframe-offset-26">(12)</a></span><span><a href="#ref-for-computed-keyframe-offset-27">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-computed-keyframe-offset-28">(2)</a> <a href="#ref-for-computed-keyframe-offset-29">(3)</a></span><span><a href="#ref-for-computed-keyframe-offset-30">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a> <a href="#ref-for-computed-keyframe-offset-28">(2)</a> <a href="#ref-for-computed-keyframe-offset-29">(3)</a></span><span><a href="#ref-for-computed-keyframe-offset-30">5.10.3. Processing a keyframes
 argument</a> <a href="#ref-for-computed-keyframe-offset-31">(2)</a></span></span></dfn>.</p>
    <h5 class="heading settled" data-level="4.4.2.1" id="applying-spacing-to-keyframes"><span class="secno">4.4.2.1. </span><span class="content">Applying spacing to keyframes</span><a class="self-link" href="#applying-spacing-to-keyframes"></a></h5>
    <p>We define a generic procedure for <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="evenly distributing
@@ -3335,7 +3335,7 @@ after <var>start</var> has an <var>index</var> of 1.</p>
 (<a data-link-type="dfn" href="#offsetk" id="ref-for-offsetk-2">offset</a><sub><var>end</var></sub> − <a data-link-type="dfn" href="#offsetk" id="ref-for-offsetk-3">offset</a><sub><var>start</var></sub>)
 × <var>index</var> / <var>n</var>.</p>
    </ol>
-   <p>The procedure to <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="apply spacing to a series of keyframes" data-noexport="" id="apply-spacing-to-a-series-of-keyframes">apply spacing to a series of keyframes<span class="dfn-panel" data-deco=""><b><a href="#apply-spacing-to-a-series-of-keyframes">#apply-spacing-to-a-series-of-keyframes</a></b><b>Referenced in:</b><span><a href="#ref-for-apply-spacing-to-a-series-of-keyframes-1">5.10.3. Processing a frames
+   <p>The procedure to <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="apply spacing to a series of keyframes" data-noexport="" id="apply-spacing-to-a-series-of-keyframes">apply spacing to a series of keyframes<span class="dfn-panel" data-deco=""><b><a href="#apply-spacing-to-a-series-of-keyframes">#apply-spacing-to-a-series-of-keyframes</a></b><b>Referenced in:</b><span><a href="#ref-for-apply-spacing-to-a-series-of-keyframes-1">5.10.3. Processing a keyframes
 argument</a></span><span><a href="#ref-for-apply-spacing-to-a-series-of-keyframes-2">5.10.5. Computed keyframes</a></span></span></dfn> takes the
 following parameters:</p>
    <ul>
@@ -3629,7 +3629,7 @@ value on each keyframe.</p>
    <p class="note" role="note">Note: this procedure permits overlapping <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-41">keyframes</a>.
     The behavior is that at the point of overlap the output value jumps to
     the value of the last defined <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-42">keyframe</a> at that offset.
-    For overlapping frames at 0 or 1, the output value for <a data-link-type="dfn" href="#iteration-progress" id="ref-for-iteration-progress-12">iteration
+    For overlapping keyframes at 0 or 1, the output value for <a data-link-type="dfn" href="#iteration-progress" id="ref-for-iteration-progress-12">iteration
     progress</a> values less than 0 or greater than
     or equal to 1 is the value of the first <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-43">keyframe</a> or the last <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-44">keyframe</a> in <var>keyframes</var> respectively.</p>
    <div class="issue" id="issue-e5c1f2ca">
@@ -3743,7 +3743,7 @@ combined in composite order.</p>
    <p>Each step in the process of evaluating an <a data-link-type="dfn" href="#effect-stack" id="ref-for-effect-stack-8">effect stack</a> takes
 an <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="underlying value" data-noexport="" id="underlying-value">underlying value<span class="dfn-panel" data-deco=""><b><a href="#underlying-value">#underlying-value</a></b><b>Referenced in:</b><span><a href="#ref-for-underlying-value-1">4.1. Introduction</a></span><span><a href="#ref-for-underlying-value-2">4.4.3. The effect value of
   a keyframe effect</a> <a href="#ref-for-underlying-value-3">(2)</a></span><span><a href="#ref-for-underlying-value-4">4.5.3. Calculating the result of an effect stack</a> <a href="#ref-for-underlying-value-5">(2)</a> <a href="#ref-for-underlying-value-6">(3)</a></span><span><a href="#ref-for-underlying-value-7">4.5.4. Effect composition</a> <a href="#ref-for-underlying-value-8">(2)</a> <a href="#ref-for-underlying-value-9">(3)</a> <a href="#ref-for-underlying-value-10">(4)</a> <a href="#ref-for-underlying-value-11">(5)</a> <a href="#ref-for-underlying-value-12">(6)</a></span><span><a href="#ref-for-underlying-value-13">4.5.5. Applying the composited result</a></span><span><a href="#ref-for-underlying-value-14">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a></span><span><a href="#ref-for-underlying-value-15">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a></span><span><a href="#ref-for-underlying-value-15">5.10.3. Processing a keyframes
 argument</a></span><span><a href="#ref-for-underlying-value-16">5.12. The CompositeOperation enumeration</a> <a href="#ref-for-underlying-value-17">(2)</a> <a href="#ref-for-underlying-value-18">(3)</a></span></span></dfn> as input.</p>
    <p>For each <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-26">keyframe effect</a> in the stack, the appropriate <a data-link-type="dfn" href="#effect-value" id="ref-for-effect-value-10">effect value</a> from the <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-27">keyframe effect</a> is combined with the <a data-link-type="dfn" href="#underlying-value" id="ref-for-underlying-value-4">underlying value</a> to produce a new value.
 This resulting value becomes the <a data-link-type="dfn" href="#underlying-value" id="ref-for-underlying-value-5">underlying value</a> for combining
@@ -3752,7 +3752,7 @@ the next <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-ef
    <h4 class="heading settled" data-level="4.5.4" id="effect-composition"><span class="secno">4.5.4. </span><span class="content">Effect composition</span><a class="self-link" href="#effect-composition"></a></h4>
    <p>The specific operation used to combine an <a data-link-type="dfn" href="#effect-value" id="ref-for-effect-value-12">effect value</a> with an <a data-link-type="dfn" href="#underlying-value" id="ref-for-underlying-value-7">underlying value</a> is determined by the <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="composite operation" data-noexport="" id="composite-operation">composite operation<span class="dfn-panel" data-deco=""><b><a href="#composite-operation">#composite-operation</a></b><b>Referenced in:</b><span><a href="#ref-for-composite-operation-1">4.4.1. Keyframes</a> <a href="#ref-for-composite-operation-2">(2)</a></span><span><a href="#ref-for-composite-operation-3">4.4.3. The effect value of
   a keyframe effect</a> <a href="#ref-for-composite-operation-4">(2)</a> <a href="#ref-for-composite-operation-5">(3)</a> <a href="#ref-for-composite-operation-6">(4)</a> <a href="#ref-for-composite-operation-7">(5)</a> <a href="#ref-for-composite-operation-8">(6)</a> <a href="#ref-for-composite-operation-9">(7)</a> <a href="#ref-for-composite-operation-10">(8)</a></span><span><a href="#ref-for-composite-operation-11">4.5. Combining effects</a></span><span><a href="#ref-for-composite-operation-12">4.5.4. Effect composition</a></span><span><a href="#ref-for-composite-operation-13">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-composite-operation-14">(2)</a> <a href="#ref-for-composite-operation-15">(3)</a></span><span><a href="#ref-for-composite-operation-16">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a> <a href="#ref-for-composite-operation-14">(2)</a> <a href="#ref-for-composite-operation-15">(3)</a></span><span><a href="#ref-for-composite-operation-16">5.10.3. Processing a keyframes
 argument</a></span><span><a href="#ref-for-composite-operation-17">5.10.4. The KeyframeEffectOptions dictionary</a></span><span><a href="#ref-for-composite-operation-18">5.12. The CompositeOperation enumeration</a> <a href="#ref-for-composite-operation-19">(2)</a> <a href="#ref-for-composite-operation-20">(3)</a></span><span><a href="#ref-for-composite-operation-21">10. Changes since last publication</a></span></span></dfn> of the <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-30">keyframe effect</a> that
 produced the <a data-link-type="dfn" href="#effect-value" id="ref-for-effect-value-13">effect value</a>.</p>
    <p>This specification defines three <a data-link-type="dfn" href="#composite-operation" id="ref-for-composite-operation-12">composite operations</a> as
@@ -4144,7 +4144,7 @@ simply as removing the animation from its animation?</p>
    <h3 class="heading settled" data-level="5.6" id="the-animationeffecttimingreadonly-interface"><span class="secno">5.6. </span><span class="content">The <code>AnimationEffectTimingReadOnly</code> interface</span><a class="self-link" href="#the-animationeffecttimingreadonly-interface"></a></h3>
    <p class="issue" id="issue-f6fa9df9"><a class="self-link" href="#issue-f6fa9df9"></a> This interface needs a constructor.</p>
 <pre class="idl def">interface <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export="" data-lt="AnimationEffectTimingReadOnly" id="animationeffecttimingreadonly">AnimationEffectTimingReadOnly<span class="dfn-panel" data-deco=""><b><a href="#animationeffecttimingreadonly">#animationeffecttimingreadonly</a></b><b>Referenced in:</b><span><a href="#ref-for-animationeffecttimingreadonly-1">5.5. The AnimationEffectReadOnly interface</a> <a href="#ref-for-animationeffecttimingreadonly-2">(2)</a> <a href="#ref-for-animationeffecttimingreadonly-3">(3)</a></span><span><a href="#ref-for-animationeffecttimingreadonly-4">5.7. The AnimationEffectTiming interface</a> <a href="#ref-for-animationeffecttimingreadonly-5">(2)</a> <a href="#ref-for-animationeffecttimingreadonly-6">(3)</a> <a href="#ref-for-animationeffecttimingreadonly-7">(4)</a> <a href="#ref-for-animationeffecttimingreadonly-8">(5)</a> <a href="#ref-for-animationeffecttimingreadonly-9">(6)</a> <a href="#ref-for-animationeffecttimingreadonly-10">(7)</a> <a href="#ref-for-animationeffecttimingreadonly-11">(8)</a> <a href="#ref-for-animationeffecttimingreadonly-12">(9)</a> <a href="#ref-for-animationeffecttimingreadonly-13">(10)</a></span><span><a href="#ref-for-animationeffecttimingreadonly-14">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-animationeffecttimingreadonly-15">(2)</a> <a href="#ref-for-animationeffecttimingreadonly-16">(3)</a> <a href="#ref-for-animationeffecttimingreadonly-17">(4)</a></span><span><a href="#ref-for-animationeffecttimingreadonly-18">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a> <a href="#ref-for-animationeffecttimingreadonly-15">(2)</a> <a href="#ref-for-animationeffecttimingreadonly-16">(3)</a> <a href="#ref-for-animationeffecttimingreadonly-17">(4)</a></span><span><a href="#ref-for-animationeffecttimingreadonly-18">5.10.3. Processing a keyframes
 argument</a></span></span></dfn> {
     readonly attribute double                             <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="double" href="#dom-animationeffecttimingreadonly-delay" id="ref-for-dom-animationeffecttimingreadonly-delay-1">delay</a>;
     readonly attribute double                             <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="double" href="#dom-animationeffecttimingreadonly-enddelay" id="ref-for-dom-animationeffecttimingreadonly-enddelay-1">endDelay</a>;
@@ -4240,7 +4240,7 @@ effects.</p>
 defines whether playback proceeds forwards, backwards, or alternates
 on each iteration.</p>
      <dt data-md="">
-      <p><dfn class="dfn-paneled idl-code" data-dfn-for="AnimationEffectTimingReadOnly" data-dfn-type="attribute" data-export="" data-lt="easing" id="dom-animationeffecttimingreadonly-easing">easing<span class="dfn-panel" data-deco=""><b><a href="#dom-animationeffecttimingreadonly-easing">#dom-animationeffecttimingreadonly-easing</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-animationeffecttimingreadonly-easing-1">5.6. The AnimationEffectTimingReadOnly interface</a></span><span><a href="#ref-for-dom-animationeffecttimingreadonly-easing-2">5.7. The AnimationEffectTiming interface</a></span><span><a href="#ref-for-dom-animationeffecttimingreadonly-easing-3">5.10.3. Processing a frames
+      <p><dfn class="dfn-paneled idl-code" data-dfn-for="AnimationEffectTimingReadOnly" data-dfn-type="attribute" data-export="" data-lt="easing" id="dom-animationeffecttimingreadonly-easing">easing<span class="dfn-panel" data-deco=""><b><a href="#dom-animationeffecttimingreadonly-easing">#dom-animationeffecttimingreadonly-easing</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-animationeffecttimingreadonly-easing-1">5.6. The AnimationEffectTimingReadOnly interface</a></span><span><a href="#ref-for-dom-animationeffecttimingreadonly-easing-2">5.7. The AnimationEffectTiming interface</a></span><span><a href="#ref-for-dom-animationeffecttimingreadonly-easing-3">5.10.3. Processing a keyframes
 argument</a></span></span></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMString">DOMString</a>, readonly</span></p>
      <dd data-md="">
       <p>The <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-14">timing function</a> used to scale the time to
@@ -4261,7 +4261,7 @@ produce easing effects.</p>
 of a mutable <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-91">animation effect</a> such as <code class="idl"><a data-link-type="idl" href="#keyframeeffect" id="ref-for-keyframeeffect-1">KeyframeEffect</a></code>.</p>
    <p class="issue" id="issue-f6fa9df90"><a class="self-link" href="#issue-f6fa9df90"></a> This interface needs a constructor.</p>
 <pre class="idl def">interface <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export="" data-lt="AnimationEffectTiming" id="animationeffecttiming">AnimationEffectTiming<span class="dfn-panel" data-deco=""><b><a href="#animationeffecttiming">#animationeffecttiming</a></b><b>Referenced in:</b><span><a href="#ref-for-animationeffecttiming-1">3.11.3. Scaling using a cubic Bézier curve</a></span><span><a href="#ref-for-animationeffecttiming-2">5.7. The AnimationEffectTiming interface</a></span><span><a href="#ref-for-animationeffecttiming-3">5.8. The AnimationEffectTimingProperties dictionary</a> <a href="#ref-for-animationeffecttiming-4">(2)</a> <a href="#ref-for-animationeffecttiming-5">(3)</a> <a href="#ref-for-animationeffecttiming-6">(4)</a> <a href="#ref-for-animationeffecttiming-7">(5)</a> <a href="#ref-for-animationeffecttiming-8">(6)</a> <a href="#ref-for-animationeffecttiming-9">(7)</a> <a href="#ref-for-animationeffecttiming-10">(8)</a> <a href="#ref-for-animationeffecttiming-11">(9)</a></span><span><a href="#ref-for-animationeffecttiming-12">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-animationeffecttiming-13">(2)</a> <a href="#ref-for-animationeffecttiming-14">(3)</a></span><span><a href="#ref-for-animationeffecttiming-15">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a> <a href="#ref-for-animationeffecttiming-13">(2)</a> <a href="#ref-for-animationeffecttiming-14">(3)</a></span><span><a href="#ref-for-animationeffecttiming-15">5.10.3. Processing a keyframes
 argument</a></span></span></dfn> : <a data-link-type="idl-name" href="#animationeffecttimingreadonly" id="ref-for-animationeffecttimingreadonly-5">AnimationEffectTimingReadOnly</a> {
     inherit attribute double                             <a class="idl-code" data-link-type="attribute" data-type="double" href="#dom-animationeffecttiming-delay" id="ref-for-dom-animationeffecttiming-delay-1">delay</a>;
     inherit attribute double                             <a class="idl-code" data-link-type="attribute" data-type="double" href="#dom-animationeffecttiming-enddelay" id="ref-for-dom-animationeffecttiming-enddelay-1">endDelay</a>;
@@ -4497,37 +4497,37 @@ they are specified, odd iterations are played as specified.</p>
    <h3 class="heading settled" data-level="5.10" id="the-keyframeeffect-interfaces"><span class="secno">5.10. </span><span class="content">The <code>KeyframeEffectReadOnly</code> and <code>KeyframeEffect</code> interfaces</span><a class="self-link" href="#the-keyframeeffect-interfaces"></a></h3>
    <p><a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-33">Keyframe effects</a> are represented by the <code class="idl"><a data-link-type="idl" href="#keyframeeffectreadonly" id="ref-for-keyframeeffectreadonly-1">KeyframeEffectReadOnly</a></code> interface.
 Mutable <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-34">keyframe effects</a> are represented by the <code class="idl"><a data-link-type="idl" href="#keyframeeffect" id="ref-for-keyframeeffect-2">KeyframeEffect</a></code> interface.</p>
-<pre class="idl def">[<a class="idl-code" data-link-type="constructor" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly" id="ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-1">Constructor</a> (<a data-link-type="idl-name" href="#animatable" id="ref-for-animatable-1">Animatable</a>? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-target" id="ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-target-1">target</a>,
-              object? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-frames" id="ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-frames-1">frames</a>,
-              optional (unrestricted double or <a data-link-type="idl-name" href="#dictdef-keyframeeffectoptions" id="ref-for-dictdef-keyframeeffectoptions-1">KeyframeEffectOptions</a>) <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-options" id="ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-options-1">options</a>)]
+<pre class="idl def">[<a class="idl-code" data-link-type="constructor" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly" id="ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-1">Constructor</a> (<a data-link-type="idl-name" href="#animatable" id="ref-for-animatable-1">Animatable</a>? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-target" id="ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-target-1">target</a>,
+              object? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-keyframes" id="ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-keyframes-1">keyframes</a>,
+              optional (unrestricted double or <a data-link-type="idl-name" href="#dictdef-keyframeeffectoptions" id="ref-for-dictdef-keyframeeffectoptions-1">KeyframeEffectOptions</a>) <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-options" id="ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-options-1">options</a>)]
 interface <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export="" data-lt="KeyframeEffectReadOnly" id="keyframeeffectreadonly">KeyframeEffectReadOnly<span class="dfn-panel" data-deco=""><b><a href="#keyframeeffectreadonly">#keyframeeffectreadonly</a></b><b>Referenced in:</b><span><a href="#ref-for-keyframeeffectreadonly-1">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframeeffectreadonly-2">(2)</a> <a href="#ref-for-keyframeeffectreadonly-3">(3)</a> <a href="#ref-for-keyframeeffectreadonly-4">(4)</a> <a href="#ref-for-keyframeeffectreadonly-5">(5)</a> <a href="#ref-for-keyframeeffectreadonly-6">(6)</a> <a href="#ref-for-keyframeeffectreadonly-7">(7)</a></span><span><a href="#ref-for-keyframeeffectreadonly-8">5.10.1. Creating a new KeyframeEffect object</a></span><span><a href="#ref-for-keyframeeffectreadonly-9">5.14. The Animatable interface</a></span></span></dfn> : <a data-link-type="idl-name" href="#animationeffectreadonly" id="ref-for-animationeffectreadonly-7">AnimationEffectReadOnly</a> {
+  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframeeffectreadonly-2">(2)</a> <a href="#ref-for-keyframeeffectreadonly-3">(3)</a> <a href="#ref-for-keyframeeffectreadonly-4">(4)</a> <a href="#ref-for-keyframeeffectreadonly-5">(5)</a> <a href="#ref-for-keyframeeffectreadonly-6">(6)</a> <a href="#ref-for-keyframeeffectreadonly-7">(7)</a></span><span><a href="#ref-for-keyframeeffectreadonly-8">5.10.1. Creating a new KeyframeEffect object</a></span><span><a href="#ref-for-keyframeeffectreadonly-9">5.14. The Animatable interface</a></span><span><a href="#ref-for-keyframeeffectreadonly-10">10. Changes since last publication</a></span></span></dfn> : <a data-link-type="idl-name" href="#animationeffectreadonly" id="ref-for-animationeffectreadonly-7">AnimationEffectReadOnly</a> {
     readonly attribute <a data-link-type="idl-name" href="#animatable" id="ref-for-animatable-2">Animatable</a>?                 <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Animatable?" href="#dom-keyframeeffectreadonly-target" id="ref-for-dom-keyframeeffectreadonly-target-1">target</a>;
     readonly attribute <a data-link-type="idl-name" href="#enumdef-iterationcompositeoperation" id="ref-for-enumdef-iterationcompositeoperation-1">IterationCompositeOperation</a> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="IterationCompositeOperation" href="#dom-keyframeeffectreadonly-iterationcomposite" id="ref-for-dom-keyframeeffectreadonly-iterationcomposite-1">iterationComposite</a>;
     readonly attribute <a data-link-type="idl-name" href="#enumdef-compositeoperation" id="ref-for-enumdef-compositeoperation-1">CompositeOperation</a>          <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="CompositeOperation" href="#dom-keyframeeffectreadonly-composite" id="ref-for-dom-keyframeeffectreadonly-composite-1">composite</a>;
     readonly attribute DOMString                   <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="DOMString" href="#dom-keyframeeffectreadonly-spacing" id="ref-for-dom-keyframeeffectreadonly-spacing-1">spacing</a>;
     <a data-link-type="idl-name" href="#keyframeeffect" id="ref-for-keyframeeffect-3">KeyframeEffect</a>   <a class="idl-code" data-link-type="method" href="#dom-keyframeeffectreadonly-clone" id="ref-for-dom-keyframeeffectreadonly-clone-1">clone</a> ();
-    sequence&lt;object> <a class="idl-code" data-link-type="method" href="#dom-keyframeeffectreadonly-getframes" id="ref-for-dom-keyframeeffectreadonly-getframes-1">getFrames</a> ();
+    sequence&lt;object> <a class="idl-code" data-link-type="method" href="#dom-keyframeeffectreadonly-getkeyframes" id="ref-for-dom-keyframeeffectreadonly-getkeyframes-1">getKeyframes</a> ();
 };
 
-[<a class="idl-code" data-link-type="constructor" href="#dom-keyframeeffect-keyframeeffect" id="ref-for-dom-keyframeeffect-keyframeeffect-1">Constructor</a> (<a data-link-type="idl-name" href="#animatable" id="ref-for-animatable-3">Animatable</a>? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffect-keyframeeffect-target-frames-options-target" id="ref-for-dom-keyframeeffect-keyframeeffect-target-frames-options-target-1">target</a>,
-              object? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffect-keyframeeffect-target-frames-options-frames" id="ref-for-dom-keyframeeffect-keyframeeffect-target-frames-options-frames-1">frames</a>,
-              optional (unrestricted double or <a data-link-type="idl-name" href="#dictdef-keyframeeffectoptions" id="ref-for-dictdef-keyframeeffectoptions-2">KeyframeEffectOptions</a>) <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffect-keyframeeffect-target-frames-options-options" id="ref-for-dom-keyframeeffect-keyframeeffect-target-frames-options-options-1">options</a>)]
+[<a class="idl-code" data-link-type="constructor" href="#dom-keyframeeffect-keyframeeffect" id="ref-for-dom-keyframeeffect-keyframeeffect-1">Constructor</a> (<a data-link-type="idl-name" href="#animatable" id="ref-for-animatable-3">Animatable</a>? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffect-keyframeeffect-target-keyframes-options-target" id="ref-for-dom-keyframeeffect-keyframeeffect-target-keyframes-options-target-1">target</a>,
+              object? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffect-keyframeeffect-target-keyframes-options-keyframes" id="ref-for-dom-keyframeeffect-keyframeeffect-target-keyframes-options-keyframes-1">keyframes</a>,
+              optional (unrestricted double or <a data-link-type="idl-name" href="#dictdef-keyframeeffectoptions" id="ref-for-dictdef-keyframeeffectoptions-2">KeyframeEffectOptions</a>) <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffect-keyframeeffect-target-keyframes-options-options" id="ref-for-dom-keyframeeffect-keyframeeffect-target-keyframes-options-options-1">options</a>)]
 interface <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export="" data-lt="KeyframeEffect" id="keyframeeffect">KeyframeEffect<span class="dfn-panel" data-deco=""><b><a href="#keyframeeffect">#keyframeeffect</a></b><b>Referenced in:</b><span><a href="#ref-for-keyframeeffect-1">5.7. The AnimationEffectTiming interface</a></span><span><a href="#ref-for-keyframeeffect-2">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframeeffect-3">(2)</a> <a href="#ref-for-keyframeeffect-4">(3)</a> <a href="#ref-for-keyframeeffect-5">(4)</a> <a href="#ref-for-keyframeeffect-6">(5)</a> <a href="#ref-for-keyframeeffect-7">(6)</a> <a href="#ref-for-keyframeeffect-8">(7)</a> <a href="#ref-for-keyframeeffect-9">(8)</a> <a href="#ref-for-keyframeeffect-10">(9)</a></span><span><a href="#ref-for-keyframeeffect-11">5.10.1. Creating a new KeyframeEffect object</a> <a href="#ref-for-keyframeeffect-12">(2)</a> <a href="#ref-for-keyframeeffect-13">(3)</a></span><span><a href="#ref-for-keyframeeffect-14">5.10.3. Processing a frames
-argument</a></span><span><a href="#ref-for-keyframeeffect-15">5.10.4. The KeyframeEffectOptions dictionary</a></span><span><a href="#ref-for-keyframeeffect-16">5.10.5. Computed keyframes</a></span><span><a href="#ref-for-keyframeeffect-17">5.13. The SharedKeyframeList interface</a> <a href="#ref-for-keyframeeffect-18">(2)</a></span><span><a href="#ref-for-keyframeeffect-19">5.14. The Animatable interface</a> <a href="#ref-for-keyframeeffect-20">(2)</a></span><span><a href="#ref-for-keyframeeffect-21">5.19. Model liveness</a></span></span></dfn> : <a data-link-type="idl-name" href="#keyframeeffectreadonly" id="ref-for-keyframeeffectreadonly-2">KeyframeEffectReadOnly</a> {
+  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframeeffect-3">(2)</a> <a href="#ref-for-keyframeeffect-4">(3)</a> <a href="#ref-for-keyframeeffect-5">(4)</a> <a href="#ref-for-keyframeeffect-6">(5)</a> <a href="#ref-for-keyframeeffect-7">(6)</a> <a href="#ref-for-keyframeeffect-8">(7)</a> <a href="#ref-for-keyframeeffect-9">(8)</a> <a href="#ref-for-keyframeeffect-10">(9)</a></span><span><a href="#ref-for-keyframeeffect-11">5.10.1. Creating a new KeyframeEffect object</a> <a href="#ref-for-keyframeeffect-12">(2)</a> <a href="#ref-for-keyframeeffect-13">(3)</a></span><span><a href="#ref-for-keyframeeffect-14">5.10.3. Processing a keyframes
+argument</a></span><span><a href="#ref-for-keyframeeffect-15">5.10.4. The KeyframeEffectOptions dictionary</a></span><span><a href="#ref-for-keyframeeffect-16">5.10.5. Computed keyframes</a></span><span><a href="#ref-for-keyframeeffect-17">5.13. The SharedKeyframeList interface</a> <a href="#ref-for-keyframeeffect-18">(2)</a></span><span><a href="#ref-for-keyframeeffect-19">5.14. The Animatable interface</a> <a href="#ref-for-keyframeeffect-20">(2)</a></span><span><a href="#ref-for-keyframeeffect-21">5.19. Model liveness</a></span><span><a href="#ref-for-keyframeeffect-22">10. Changes since last publication</a></span></span></dfn> : <a data-link-type="idl-name" href="#keyframeeffectreadonly" id="ref-for-keyframeeffectreadonly-2">KeyframeEffectReadOnly</a> {
     inherit attribute <a data-link-type="idl-name" href="#animatable" id="ref-for-animatable-4">Animatable</a>?                 <a class="idl-code" data-link-type="attribute" data-type="Animatable?" href="#dom-keyframeeffect-target" id="ref-for-dom-keyframeeffect-target-1">target</a>;
     inherit attribute <a data-link-type="idl-name" href="#enumdef-iterationcompositeoperation" id="ref-for-enumdef-iterationcompositeoperation-2">IterationCompositeOperation</a> <a class="idl-code" data-link-type="attribute" data-type="IterationCompositeOperation" href="#dom-keyframeeffect-iterationcomposite" id="ref-for-dom-keyframeeffect-iterationcomposite-1">iterationComposite</a>;
     inherit attribute <a data-link-type="idl-name" href="#enumdef-compositeoperation" id="ref-for-enumdef-compositeoperation-2">CompositeOperation</a>          <a class="idl-code" data-link-type="attribute" data-type="CompositeOperation" href="#dom-keyframeeffect-composite" id="ref-for-dom-keyframeeffect-composite-1">composite</a>;
     inherit attribute DOMString                   <a class="idl-code" data-link-type="attribute" data-type="DOMString" href="#dom-keyframeeffect-spacing" id="ref-for-dom-keyframeeffect-spacing-1">spacing</a>;
-    void <a class="idl-code" data-link-type="method" href="#dom-keyframeeffect-setframes" id="ref-for-dom-keyframeeffect-setframes-1">setFrames</a> (object? <dfn class="idl-code" data-dfn-for="KeyframeEffect/setFrames(frames)" data-dfn-type="argument" data-export="" id="dom-keyframeeffect-setframes-frames-frames">frames<a class="self-link" href="#dom-keyframeeffect-setframes-frames-frames"></a></dfn>);
+    void <a class="idl-code" data-link-type="method" href="#dom-keyframeeffect-setkeyframes" id="ref-for-dom-keyframeeffect-setkeyframes-1">setKeyframes</a> (object? <dfn class="idl-code" data-dfn-for="KeyframeEffect/setKeyframes(keyframes)" data-dfn-type="argument" data-export="" id="dom-keyframeeffect-setkeyframes-keyframes-keyframes">keyframes<a class="self-link" href="#dom-keyframeeffect-setkeyframes-keyframes-keyframes"></a></dfn>);
 };
 </pre>
    <div class="constructors">
     <dl>
      <dt data-md="">
-      <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffectReadOnly" data-dfn-type="constructor" data-export="" data-lt="KeyframeEffectReadOnly(target, frames, options)" id="dom-keyframeeffectreadonly-keyframeeffectreadonly"> KeyframeEffectReadOnly ()<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly">#dom-keyframeeffectreadonly-keyframeeffectreadonly</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-1">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-2">(2)</a></span><span><a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-3">5.10.1. Creating a new KeyframeEffect object</a></span><span><a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-4">5.10.3. Processing a frames
+      <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffectReadOnly" data-dfn-type="constructor" data-export="" data-lt="KeyframeEffectReadOnly(target, keyframes, options)" id="dom-keyframeeffectreadonly-keyframeeffectreadonly"> KeyframeEffectReadOnly ()<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly">#dom-keyframeeffectreadonly-keyframeeffectreadonly</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-1">5.10. The KeyframeEffectReadOnly
+  and KeyframeEffect interfaces</a> <a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-2">(2)</a></span><span><a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-3">5.10.1. Creating a new KeyframeEffect object</a></span><span><a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-4">5.10.3. Processing a keyframes
 argument</a></span><span><a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-5">5.10.4. The KeyframeEffectOptions dictionary</a></span></span></dfn></p>
      <dd data-md="">
       <p>Creates a new <code class="idl"><a data-link-type="idl" href="#keyframeeffectreadonly" id="ref-for-keyframeeffectreadonly-3">KeyframeEffectReadOnly</a></code> object
@@ -4580,29 +4580,29 @@ As such, if any of those setters require an exception to be thrown
 for the values specified by <var>options</var>, this procedure must <a data-link-type="dfn" href="https://heycam.github.io/webidl/#dfn-throw">throw</a> the same exception and abort all further steps.</p>
        <li data-md="">
         <p>Initialize the set of <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-45">keyframes</a> by performing the procedure
-defined for <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-setframes" id="ref-for-dom-keyframeeffect-setframes-2">setFrames()</a></code> passing <var>frames</var> as the input.</p>
+defined for <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-setkeyframes" id="ref-for-dom-keyframeeffect-setkeyframes-2">setKeyframes()</a></code> passing <var>keyframes</var> as the input.</p>
       </ol>
       <div class="parameters">
        <dl>
         <dt data-md="">
-         <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)" data-dfn-type="argument" data-export="" data-lt="target" id="dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-target"><span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-target">#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-target</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-target-1">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a></span></span></dfn><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffect/KeyframeEffect(target, frames, options)" data-dfn-type="argument" data-export="" data-lt="target" id="dom-keyframeeffect-keyframeeffect-target-frames-options-target">Animatable? target<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffect-keyframeeffect-target-frames-options-target">#dom-keyframeeffect-keyframeeffect-target-frames-options-target</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffect-keyframeeffect-target-frames-options-target-1">5.10. The KeyframeEffectReadOnly
+         <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, keyframes, options)" data-dfn-type="argument" data-export="" data-lt="target" id="dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-target"><span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-target">#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-target</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-target-1">5.10. The KeyframeEffectReadOnly
+  and KeyframeEffect interfaces</a></span></span></dfn><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffect/KeyframeEffect(target, keyframes, options)" data-dfn-type="argument" data-export="" data-lt="target" id="dom-keyframeeffect-keyframeeffect-target-keyframes-options-target">Animatable? target<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffect-keyframeeffect-target-keyframes-options-target">#dom-keyframeeffect-keyframeeffect-target-keyframes-options-target</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffect-keyframeeffect-target-keyframes-options-target-1">5.10. The KeyframeEffectReadOnly
   and KeyframeEffect interfaces</a></span></span></dfn></p>
         <dd data-md="">
          <p>The <a data-link-type="dfn" href="#target-element" id="ref-for-target-element-4">target element</a> or target pseudo-element.
 This may be <code>null</code> for animations that do not target
 a specific element.</p>
         <dt data-md="">
-         <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)" data-dfn-type="argument" data-export="" data-lt="frames" id="dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-frames"><span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-frames">#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-frames</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-frames-1">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a></span></span></dfn><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffect/KeyframeEffect(target, frames, options)" data-dfn-type="argument" data-export="" data-lt="frames" id="dom-keyframeeffect-keyframeeffect-target-frames-options-frames">object? frames<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffect-keyframeeffect-target-frames-options-frames">#dom-keyframeeffect-keyframeeffect-target-frames-options-frames</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffect-keyframeeffect-target-frames-options-frames-1">5.10. The KeyframeEffectReadOnly
+         <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, keyframes, options)" data-dfn-type="argument" data-export="" data-lt="keyframes" id="dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-keyframes"><span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-keyframes">#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-keyframes</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-keyframes-1">5.10. The KeyframeEffectReadOnly
+  and KeyframeEffect interfaces</a></span></span></dfn><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffect/KeyframeEffect(target, keyframes, options)" data-dfn-type="argument" data-export="" data-lt="keyframes" id="dom-keyframeeffect-keyframeeffect-target-keyframes-options-keyframes">object? keyframes<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffect-keyframeeffect-target-keyframes-options-keyframes">#dom-keyframeeffect-keyframeeffect-target-keyframes-options-keyframes</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffect-keyframeeffect-target-keyframes-options-keyframes-1">5.10. The KeyframeEffectReadOnly
   and KeyframeEffect interfaces</a></span></span></dfn></p>
         <dd data-md="">
          <p>The set of <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-46">keyframes</a> to use.
-The format and processing of this argument is defined in <a href="#processing-a-frames-argument">§5.10.3 Processing a frames
+The format and processing of this argument is defined in <a href="#processing-a-keyframes-argument">§5.10.3 Processing a keyframes
 argument</a>.</p>
         <dt data-md="">
-         <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, frames, options)" data-dfn-type="argument" data-export="" data-lt="options" id="dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-options"><span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-options">#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-options</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-options-1">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a></span></span></dfn><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffect/KeyframeEffect(target, frames, options)" data-dfn-type="argument" data-export="" data-lt="options" id="dom-keyframeeffect-keyframeeffect-target-frames-options-options">optional KeyframeEffectOptions options<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffect-keyframeeffect-target-frames-options-options">#dom-keyframeeffect-keyframeeffect-target-frames-options-options</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffect-keyframeeffect-target-frames-options-options-1">5.10. The KeyframeEffectReadOnly
+         <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, keyframes, options)" data-dfn-type="argument" data-export="" data-lt="options" id="dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-options"><span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-options">#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-options</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-options-1">5.10. The KeyframeEffectReadOnly
+  and KeyframeEffect interfaces</a></span></span></dfn><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffect/KeyframeEffect(target, keyframes, options)" data-dfn-type="argument" data-export="" data-lt="options" id="dom-keyframeeffect-keyframeeffect-target-keyframes-options-options">optional KeyframeEffectOptions options<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffect-keyframeeffect-target-keyframes-options-options">#dom-keyframeeffect-keyframeeffect-target-keyframes-options-options</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffect-keyframeeffect-target-keyframes-options-options-1">5.10. The KeyframeEffectReadOnly
   and KeyframeEffect interfaces</a></span></span></dfn></p>
         <dd data-md="">
          <p>Either a number specifying the <a data-link-type="dfn" href="#iteration-duration" id="ref-for-iteration-duration-15">iteration duration</a> of the effect,
@@ -4611,8 +4611,8 @@ the effect.</p>
        </dl>
       </div>
      <dt data-md="">
-      <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffect" data-dfn-type="constructor" data-export="" data-lt="KeyframeEffect(target, frames, options)" id="dom-keyframeeffect-keyframeeffect"> KeyframeEffect ()<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffect-keyframeeffect">#dom-keyframeeffect-keyframeeffect</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffect-keyframeeffect-1">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a></span><span><a href="#ref-for-dom-keyframeeffect-keyframeeffect-2">5.10.1. Creating a new KeyframeEffect object</a></span><span><a href="#ref-for-dom-keyframeeffect-keyframeeffect-3">5.10.3. Processing a frames
+      <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffect" data-dfn-type="constructor" data-export="" data-lt="KeyframeEffect(target, keyframes, options)" id="dom-keyframeeffect-keyframeeffect"> KeyframeEffect ()<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffect-keyframeeffect">#dom-keyframeeffect-keyframeeffect</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffect-keyframeeffect-1">5.10. The KeyframeEffectReadOnly
+  and KeyframeEffect interfaces</a></span><span><a href="#ref-for-dom-keyframeeffect-keyframeeffect-2">5.10.1. Creating a new KeyframeEffect object</a></span><span><a href="#ref-for-dom-keyframeeffect-keyframeeffect-3">5.10.3. Processing a keyframes
 argument</a></span><span><a href="#ref-for-dom-keyframeeffect-keyframeeffect-4">5.10.4. The KeyframeEffectOptions dictionary</a></span><span><a href="#ref-for-dom-keyframeeffect-keyframeeffect-5">5.14. The Animatable interface</a> <a href="#ref-for-dom-keyframeeffect-keyframeeffect-6">(2)</a> <a href="#ref-for-dom-keyframeeffect-keyframeeffect-7">(3)</a></span></span></dfn></p>
      <dd data-md="">
       <p>Creates a new <code class="idl"><a data-link-type="idl" href="#keyframeeffect" id="ref-for-keyframeeffect-5">KeyframeEffect</a></code> object using the same procedure as with
@@ -4711,16 +4711,16 @@ as this object using the following procedure.</p>
  and <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-spacing" id="ref-for-dom-keyframeeffect-spacing-2">spacing</a></code> attributes on <var>dest</var> using
  the value returned by the getter of the corresponding attribute on <var>source</var>.</p>
        <li data-md="">
-        <p>Let <var>frames</var> be the result of calling the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getframes" id="ref-for-dom-keyframeeffectreadonly-getframes-2">getFrames()</a></code> method on <var>source</var>.</p>
+        <p>Let <var>keyframes</var> be the result of calling the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getkeyframes" id="ref-for-dom-keyframeeffectreadonly-getkeyframes-2">getKeyframes()</a></code> method on <var>source</var>.</p>
         <p class="issue" id="issue-95ade2bb"><a class="self-link" href="#issue-95ade2bb"></a> If <var>source</var> is using a <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist" id="ref-for-sharedkeyframelist-1">SharedKeyframeList</a></code> should
  we continue to share it?</p>
        <li data-md="">
-        <p>Call the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-setframes" id="ref-for-dom-keyframeeffect-setframes-3">setFrames()</a></code> method on <var>dest</var> passing <var>frames</var> as the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-setframes-frames" id="ref-for-dom-keyframeeffect-setframes-frames-1">frames</a></code> argument.</p>
+        <p>Call the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-setkeyframes" id="ref-for-dom-keyframeeffect-setkeyframes-3">setKeyframes()</a></code> method on <var>dest</var> passing <var>keyframes</var> as the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-setkeyframes-keyframes" id="ref-for-dom-keyframeeffect-setkeyframes-keyframes-1">keyframes</a></code> argument.</p>
       </ol>
      <dt data-md="">
-      <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffectReadOnly" data-dfn-type="method" data-export="" data-lt="getFrames()" id="dom-keyframeeffectreadonly-getframes"> sequence&lt;object> getFrames()<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffectreadonly-getframes">#dom-keyframeeffectreadonly-getframes</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffectreadonly-getframes-1">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-dom-keyframeeffectreadonly-getframes-2">(2)</a></span><span><a href="#ref-for-dom-keyframeeffectreadonly-getframes-3">5.10.3. Processing a frames
-argument</a> <a href="#ref-for-dom-keyframeeffectreadonly-getframes-4">(2)</a> <a href="#ref-for-dom-keyframeeffectreadonly-getframes-5">(3)</a></span><span><a href="#ref-for-dom-keyframeeffectreadonly-getframes-6">5.10.5. Computed keyframes</a> <a href="#ref-for-dom-keyframeeffectreadonly-getframes-7">(2)</a></span><span><a href="#ref-for-dom-keyframeeffectreadonly-getframes-8">10. Changes since last publication</a></span></span></dfn></p>
+      <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffectReadOnly" data-dfn-type="method" data-export="" data-lt="getKeyframes()" id="dom-keyframeeffectreadonly-getkeyframes"> sequence&lt;object> getKeyframes()<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffectreadonly-getkeyframes">#dom-keyframeeffectreadonly-getkeyframes</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffectreadonly-getkeyframes-1">5.10. The KeyframeEffectReadOnly
+  and KeyframeEffect interfaces</a> <a href="#ref-for-dom-keyframeeffectreadonly-getkeyframes-2">(2)</a></span><span><a href="#ref-for-dom-keyframeeffectreadonly-getkeyframes-3">5.10.3. Processing a keyframes
+argument</a> <a href="#ref-for-dom-keyframeeffectreadonly-getkeyframes-4">(2)</a> <a href="#ref-for-dom-keyframeeffectreadonly-getkeyframes-5">(3)</a></span><span><a href="#ref-for-dom-keyframeeffectreadonly-getkeyframes-6">5.10.5. Computed keyframes</a> <a href="#ref-for-dom-keyframeeffectreadonly-getkeyframes-7">(2)</a></span><span><a href="#ref-for-dom-keyframeeffectreadonly-getkeyframes-8">10. Changes since last publication</a> <a href="#ref-for-dom-keyframeeffectreadonly-getkeyframes-9">(2)</a></span></span></dfn></p>
      <dd data-md="">
       <p>Returns the <a data-link-type="dfn" href="#computed-keyframes" id="ref-for-computed-keyframes-2">computed keyframes</a> that make up this effect along with
 their <a data-link-type="dfn" href="#computed-keyframe-offset" id="ref-for-computed-keyframe-offset-27">computed keyframe offsets</a>.</p>
@@ -4827,21 +4827,21 @@ and Boolean flag <span class="esvalue">false.</span></p>
         <p>Return <var>result</var>.</p>
       </ol>
      <dt data-md="">
-      <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffect" data-dfn-type="method" data-export="" data-lt="setFrames(frames)" id="dom-keyframeeffect-setframes"> void setFrames(object? frames)<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffect-setframes">#dom-keyframeeffect-setframes</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffect-setframes-1">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-dom-keyframeeffect-setframes-2">(2)</a> <a href="#ref-for-dom-keyframeeffect-setframes-3">(3)</a></span><span><a href="#ref-for-dom-keyframeeffect-setframes-4">5.10.3. Processing a frames
-argument</a> <a href="#ref-for-dom-keyframeeffect-setframes-5">(2)</a></span></span></dfn></p>
+      <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffect" data-dfn-type="method" data-export="" data-lt="setKeyframes(keyframes)" id="dom-keyframeeffect-setkeyframes"> void setKeyframes(object? keyframes)<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffect-setkeyframes">#dom-keyframeeffect-setkeyframes</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffect-setkeyframes-1">5.10. The KeyframeEffectReadOnly
+  and KeyframeEffect interfaces</a> <a href="#ref-for-dom-keyframeeffect-setkeyframes-2">(2)</a> <a href="#ref-for-dom-keyframeeffect-setkeyframes-3">(3)</a></span><span><a href="#ref-for-dom-keyframeeffect-setkeyframes-4">5.10.3. Processing a keyframes
+argument</a> <a href="#ref-for-dom-keyframeeffect-setkeyframes-5">(2)</a></span><span><a href="#ref-for-dom-keyframeeffect-setkeyframes-6">10. Changes since last publication</a></span></span></dfn></p>
      <dd data-md="">
       <p>Replaces the set of <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-51">keyframes</a> that make up this effect.</p>
       <div class="parameters">
        <dl>
         <dt data-md="">
-         <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffect/setFrames" data-dfn-type="argument" data-export="" data-lt="frames" id="dom-keyframeeffect-setframes-frames">frames<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffect-setframes-frames">#dom-keyframeeffect-setframes-frames</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffect-setframes-frames-1">5.10. The KeyframeEffectReadOnly
+         <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffect/setKeyframes" data-dfn-type="argument" data-export="" data-lt="keyframes" id="dom-keyframeeffect-setkeyframes-keyframes">keyframes<span class="dfn-panel" data-deco=""><b><a href="#dom-keyframeeffect-setkeyframes-keyframes">#dom-keyframeeffect-setkeyframes-keyframes</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-keyframeeffect-setkeyframes-keyframes-1">5.10. The KeyframeEffectReadOnly
   and KeyframeEffect interfaces</a></span></span></dfn></p>
         <dd data-md="">
-         <p>A series of keyframes whose format and processing is defined by <a href="#processing-a-frames-argument">§5.10.3 Processing a frames
+         <p>A series of keyframes whose format and processing is defined by <a href="#processing-a-keyframes-argument">§5.10.3 Processing a keyframes
 argument</a>.</p>
          <p>This effect’s set of <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-52">keyframes</a> is replaced with the result
-of performing the procedure to <a data-link-type="dfn" href="#process-a-frames-argument" id="ref-for-process-a-frames-argument-1">process a frames argument</a>.
+of performing the procedure to <a data-link-type="dfn" href="#process-a-keyframes-argument" id="ref-for-process-a-keyframes-argument-1">process a keyframes argument</a>.
 If that procedure throws an exception, this effect’s <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-53">keyframes</a> are not modified.</p>
        </dl>
       </div>
@@ -4860,14 +4860,14 @@ seconds can be constructed as follows:</p>
 <pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="mi">3000</span><span class="p">);</span></pre>
     </div>
     <p>The second parameter, representing the list of keyframes, may
-specify multiple properties. (See <a href="#processing-a-frames-argument">§5.10.3 Processing a frames
+specify multiple properties. (See <a href="#processing-a-keyframes-argument">§5.10.3 Processing a keyframes
 argument</a>.)</p>
-    <div class="example" id="example-4bc519cf">
-     <a class="self-link" href="#example-4bc519cf"></a>
+    <div class="example" id="example-7bdf4ba3">
+     <a class="self-link" href="#example-7bdf4ba3"></a>
 <pre class="lang-javascript highlight"><span></span><span class="c1">// Specify multiple properties at once</span>
 <span class="kd">var</span> <span class="nx">effectA</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span><span class="p">,</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'300px'</span> <span class="p">},</span> <span class="mi">3000</span><span class="p">);</span>
 
-<span class="c1">// Specify multiple frames</span>
+<span class="c1">// Specify multiple keyframes</span>
 <span class="kd">var</span> <span class="nx">effectB</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">[</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'100px'</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">left</span><span class="o">:</span> <span class="s1">'300px'</span> <span class="p">}</span> <span class="p">],</span> <span class="mi">3000</span><span class="p">);</span></pre>
     </div>
     <p>The third parameter, representing the animation’s timing, may
@@ -4898,7 +4898,7 @@ automatically. For example,</p>
    </div>
    <h4 class="heading settled" data-level="5.10.2" id="property-name-conversion"><span class="secno">5.10.2. </span><span class="content">Property names and IDL names</span><a class="self-link" href="#property-name-conversion"></a></h4>
    <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="animation property name to IDL attribute name" data-noexport="" id="animation-property-name-to-idl-attribute-name">animation property name to IDL attribute name<span class="dfn-panel" data-deco=""><b><a href="#animation-property-name-to-idl-attribute-name">#animation-property-name-to-idl-attribute-name</a></b><b>Referenced in:</b><span><a href="#ref-for-animation-property-name-to-idl-attribute-name-1">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a></span><span><a href="#ref-for-animation-property-name-to-idl-attribute-name-2">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a></span><span><a href="#ref-for-animation-property-name-to-idl-attribute-name-2">5.10.3. Processing a keyframes
 argument</a></span></span></dfn> algorithm for <var>property</var> is as follows:</p>
    <ol>
     <li data-md="">
@@ -4908,7 +4908,7 @@ return the string "cssFloat".</p>
      <p>Otherwise, return the result of applying the <a data-link-type="dfn" href="https://drafts.w3.org/csswg/cssom/#css-property-to-idl-attribute">CSS property to IDL
 attribute</a> algorithm <a data-link-type="biblio" href="#biblio-cssom">[CSSOM]</a> to <var>property</var>.</p>
    </ol>
-   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="IDL attribute name to animation property name" data-noexport="" id="idl-attribute-name-to-animation-property-name">IDL attribute name to animation property name<span class="dfn-panel" data-deco=""><b><a href="#idl-attribute-name-to-animation-property-name">#idl-attribute-name-to-animation-property-name</a></b><b>Referenced in:</b><span><a href="#ref-for-idl-attribute-name-to-animation-property-name-1">5.10.3. Processing a frames
+   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="IDL attribute name to animation property name" data-noexport="" id="idl-attribute-name-to-animation-property-name">IDL attribute name to animation property name<span class="dfn-panel" data-deco=""><b><a href="#idl-attribute-name-to-animation-property-name">#idl-attribute-name-to-animation-property-name</a></b><b>Referenced in:</b><span><a href="#ref-for-idl-attribute-name-to-animation-property-name-1">5.10.3. Processing a keyframes
 argument</a></span></span></dfn> algorithm for <var>attribute</var> is as follows:</p>
    <ol>
     <li data-md="">
@@ -4918,7 +4918,7 @@ an animation property representing the CSS <a class="property" data-link-type="p
      <p>Otherwise, return the result of applying the <a data-link-type="dfn" href="https://drafts.w3.org/csswg/cssom/#idl-attribute-to-css-property">IDL attribute to CSS
 property</a> algorithm <a data-link-type="biblio" href="#biblio-cssom">[CSSOM]</a> to <var>attribute</var>.</p>
    </ol>
-   <h4 class="heading settled" data-level="5.10.3" id="processing-a-frames-argument"><span class="secno">5.10.3. </span><span class="content">Processing a <code>frames</code> argument</span><a class="self-link" href="#processing-a-frames-argument"></a></h4>
+   <h4 class="heading settled" data-level="5.10.3" id="processing-a-keyframes-argument"><span class="secno">5.10.3. </span><span class="content">Processing a <code>keyframes</code> argument</span><a class="self-link" href="#processing-a-keyframes-argument"></a></h4>
    <div class="informative-bg">
     <em>This section is non-normative</em> 
     <p>The following methods all accept a set of keyframes as an argument:</p>
@@ -4928,7 +4928,7 @@ property</a> algorithm <a data-link-type="biblio" href="#biblio-cssom">[CSSOM]</
      <li data-md="">
       <p>the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-keyframeeffect" id="ref-for-dom-keyframeeffect-keyframeeffect-3">KeyframeEffect()</a></code> constructor,</p>
      <li data-md="">
-      <p>the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-setframes" id="ref-for-dom-keyframeeffect-setframes-4">setFrames()</a></code> method on the <code class="idl"><a data-link-type="idl" href="#keyframeeffect" id="ref-for-keyframeeffect-14">KeyframeEffect</a></code> interface,</p>
+      <p>the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-setkeyframes" id="ref-for-dom-keyframeeffect-setkeyframes-4">setKeyframes()</a></code> method on the <code class="idl"><a data-link-type="idl" href="#keyframeeffect" id="ref-for-keyframeeffect-14">KeyframeEffect</a></code> interface,</p>
      <li data-md="">
       <p>the <code class="idl"><a data-link-type="idl" href="#dom-sharedkeyframelist-sharedkeyframelist" id="ref-for-dom-sharedkeyframelist-sharedkeyframelist-1">SharedKeyframeList()</a></code> constructor, and</p>
      <li data-md="">
@@ -4962,7 +4962,7 @@ property</a> algorithm <a data-link-type="biblio" href="#biblio-cssom">[CSSOM]</
 keyframe may specify at most one value per animation property.
 The second form (the object-form) consists of an object where each animation
 property may specify a single animation value or an array of animation values.</p>
-    <p>The first array-form is the canonical form and is the form returned by the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getframes" id="ref-for-dom-keyframeeffectreadonly-getframes-3">getFrames()</a></code> method.</p>
+    <p>The first array-form is the canonical form and is the form returned by the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getkeyframes" id="ref-for-dom-keyframeeffectreadonly-getkeyframes-3">getKeyframes()</a></code> method.</p>
     <p><a data-link-type="dfn" href="#keyframe-offset" id="ref-for-keyframe-offset-15">Keyframe offsets</a> and <a data-link-type="dfn" href="#keyframe-specific-composite-operation" id="ref-for-keyframe-specific-composite-operation-4">keyframe-specific composite operations</a> can
 only be specified using the array-form as illustrated below:</p>
     <div class="example" id="example-141dd143">
@@ -5052,11 +5052,11 @@ effect</a> will be used.</p>
     <p>Since this type cannot be expressed in WebIDL, its processing is defined in
 prose following.</p>
    </div>
-   <p>For each method that takes a <code>frames</code> argument, the
-procedure to <a data-link-type="dfn" href="#process-a-frames-argument" id="ref-for-process-a-frames-argument-2">process a frames argument</a> is run on the input and
+   <p>For each method that takes a <code>keyframes</code> argument, the
+procedure to <a data-link-type="dfn" href="#process-a-keyframes-argument" id="ref-for-process-a-keyframes-argument-2">process a keyframes argument</a> is run on the input and
 the result of that procedure is retained.</p>
    <p>First we define two supporting definitions.</p>
-   <p>The instruction, <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="check the completion record" data-noexport="" id="check-the-completion-record">check the completion record<span class="dfn-panel" data-deco=""><b><a href="#check-the-completion-record">#check-the-completion-record</a></b><b>Referenced in:</b><span><a href="#ref-for-check-the-completion-record-1">5.10.3. Processing a frames
+   <p>The instruction, <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="check the completion record" data-noexport="" id="check-the-completion-record">check the completion record<span class="dfn-panel" data-deco=""><b><a href="#check-the-completion-record">#check-the-completion-record</a></b><b>Referenced in:</b><span><a href="#ref-for-check-the-completion-record-1">5.10.3. Processing a keyframes
 argument</a> <a href="#ref-for-check-the-completion-record-2">(2)</a> <a href="#ref-for-check-the-completion-record-3">(3)</a> <a href="#ref-for-check-the-completion-record-4">(4)</a> <a href="#ref-for-check-the-completion-record-5">(5)</a></span></span></dfn> of <var>result</var>,
 where <var>result</var> is a <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-completion-record-specification-type">completion record</a> from calling
 an ECMAScript operation, is equivalent to the following steps:</p>
@@ -5068,7 +5068,7 @@ an ECMAScript operation, is equivalent to the following steps:</p>
      <p>Replace <var>result</var> with the value contained in the [[value]] field
 of <var>result</var>.</p>
    </ol>
-   <p>The procedure to <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="process a keyframe-like object" data-noexport="" id="process-a-keyframe-like-object">process a keyframe-like object<span class="dfn-panel" data-deco=""><b><a href="#process-a-keyframe-like-object">#process-a-keyframe-like-object</a></b><b>Referenced in:</b><span><a href="#ref-for-process-a-keyframe-like-object-1">5.10.3. Processing a frames
+   <p>The procedure to <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="process a keyframe-like object" data-noexport="" id="process-a-keyframe-like-object">process a keyframe-like object<span class="dfn-panel" data-deco=""><b><a href="#process-a-keyframe-like-object">#process-a-keyframe-like-object</a></b><b>Referenced in:</b><span><a href="#ref-for-process-a-keyframe-like-object-1">5.10.3. Processing a keyframes
 argument</a> <a href="#ref-for-process-a-keyframe-like-object-2">(2)</a></span></span></dfn>, takes two
 arguments:</p>
    <ul>
@@ -5171,9 +5171,9 @@ property name</var> as the property name, and <var>property values</var> as the 
     <li data-md="">
      <p>Return <var>keyframe output</var>.</p>
    </ol>
-   <p>The procedure to <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="process a frames argument" data-noexport="" id="process-a-frames-argument">process a frames argument<span class="dfn-panel" data-deco=""><b><a href="#process-a-frames-argument">#process-a-frames-argument</a></b><b>Referenced in:</b><span><a href="#ref-for-process-a-frames-argument-1">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a></span><span><a href="#ref-for-process-a-frames-argument-2">5.10.3. Processing a frames
-argument</a></span><span><a href="#ref-for-process-a-frames-argument-3">5.10.5. Computed keyframes</a></span></span></dfn> takes a nullable
+   <p>The procedure to <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="process a keyframes argument" data-noexport="" id="process-a-keyframes-argument">process a keyframes argument<span class="dfn-panel" data-deco=""><b><a href="#process-a-keyframes-argument">#process-a-keyframes-argument</a></b><b>Referenced in:</b><span><a href="#ref-for-process-a-keyframes-argument-1">5.10. The KeyframeEffectReadOnly
+  and KeyframeEffect interfaces</a></span><span><a href="#ref-for-process-a-keyframes-argument-2">5.10.3. Processing a keyframes
+argument</a></span><span><a href="#ref-for-process-a-keyframes-argument-3">5.10.5. Computed keyframes</a></span></span></dfn> takes a nullable
 ECMAScript object, <var>object</var>, as input and returns either a sequence of
 keyframes or a <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist" id="ref-for-sharedkeyframelist-2">SharedKeyframeList</a></code> object using the following procedure:</p>
    <ol>
@@ -5182,7 +5182,7 @@ keyframes or a <code class="idl"><a data-link-type="idl" href="#sharedkeyframeli
     <li data-md="">
      <p>If <var>object</var> is a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#dfn-platform-object">platform object</a> that implements <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist" id="ref-for-sharedkeyframelist-3">SharedKeyframeList</a></code>, return <var>object</var>.</p>
     <li data-md="">
-     <p>Let <var>processed frames</var> be an empty sequence of <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-57">keyframes</a>.</p>
+     <p>Let <var>processed keyframes</var> be an empty sequence of <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-57">keyframes</a>.</p>
     <li data-md="">
      <p>Let <var>method</var> be the result of <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-getmethod">GetMethod</a>(<var>object</var>, <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-well-known-symbols">@@iterator</a>).</p>
     <li data-md="">
@@ -5216,14 +5216,14 @@ keyframes or a <code class="idl"><a data-link-type="idl" href="#sharedkeyframeli
             <p>If <var>nextItem</var> is not an object, throw a <span class="exceptionname">TypeError</span> and abort these
 steps.</p>
            <li data-md="">
-            <p>Append to <var>processed frames</var> the result of
+            <p>Append to <var>processed keyframes</var> the result of
 running the procedure to <a data-link-type="dfn" href="#process-a-keyframe-like-object" id="ref-for-process-a-keyframe-like-object-1">process a keyframe-like object</a> passing <var>nextItem</var> as the <var>keyframe input</var> and with the <var>allow lists</var> flag set to false.</p>
           </ol>
          <li data-md="">
-          <p>If <var>processed frames</var> is not <a data-link-type="dfn" href="#loosely-sorted-by-offset" id="ref-for-loosely-sorted-by-offset-1">loosely sorted by
+          <p>If <var>processed keyframes</var> is not <a data-link-type="dfn" href="#loosely-sorted-by-offset" id="ref-for-loosely-sorted-by-offset-1">loosely sorted by
 offset</a>, <a data-link-type="dfn" href="https://heycam.github.io/webidl/#dfn-throw">throw</a> a <span class="exceptionname">TypeError</span> and abort these steps.</p>
          <li data-md="">
-          <p>If there exist any <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-58">keyframe</a> in <var>processed frames</var> whose <a data-link-type="dfn" href="#keyframe-offset" id="ref-for-keyframe-offset-17">keyframe offset</a> is non-null and less
+          <p>If there exist any <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-58">keyframe</a> in <var>processed keyframes</var> whose <a data-link-type="dfn" href="#keyframe-offset" id="ref-for-keyframe-offset-17">keyframe offset</a> is non-null and less
 than zero or greater than one, <a data-link-type="dfn" href="https://heycam.github.io/webidl/#dfn-throw">throw</a> a <span class="exceptionname">TypeError</span> and abort these steps.</p>
         </ol>
        <dt data-md="">
@@ -5269,19 +5269,19 @@ with the value of <var>easing</var>.</p>
 keyframes</a> to <var>property keyframes</var> using a <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-8">spacing mode</a> of <a data-link-type="dfn" href="#distribute-keyframe-spacing-mode" id="ref-for-distribute-keyframe-spacing-mode-5">distribute</a>.</p>
             <div class="note" role="note">
              <p>We unconditionally apply distribute spacing simply for the
-purposes of merging frames. This produces consistent and
+purposes of merging keyframes. This produces consistent and
 intuitive results.</p>
              <p>Paced spacing can produce different results depending on the
 context in which relative values are resolved. Using paced
 spacing to calculate offsets and then merging would mean that
 the merge results could differ over time. It would also mean
-that the frames returned from <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getframes" id="ref-for-dom-keyframeeffectreadonly-getframes-4">getFrames()</a></code> would
-produce a different result if passed back to <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-setframes" id="ref-for-dom-keyframeeffect-setframes-5">setFrames()</a></code> since the merge result which,
+that the keyframes returned from <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getkeyframes" id="ref-for-dom-keyframeeffectreadonly-getkeyframes-4">getKeyframes()</a></code> would
+produce a different result if passed back to <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-setkeyframes" id="ref-for-dom-keyframeeffect-setkeyframes-5">setKeyframes()</a></code> since the merge result which,
 until that point, was dynamic, would suddenly become fixed.</p>
              <p>Due to these considerations we apply merging once when updating
 the keyframes using distribute spacing which does not vary in
 its results.</p>
-             <p>Before computing the effect result or returning keyframes from <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getframes" id="ref-for-dom-keyframeeffectreadonly-getframes-5">getFrames()</a></code> the specified <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-9">spacing mode</a> is applied.</p>
+             <p>Before computing the effect result or returning keyframes from <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getkeyframes" id="ref-for-dom-keyframeeffectreadonly-getkeyframes-5">getKeyframes()</a></code> the specified <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-9">spacing mode</a> is applied.</p>
             </div>
            <li data-md="">
             <p>Add <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-61">keyframes</a> in <var>property keyframes</var> to <var>processed keyframes</var>.</p>
@@ -5324,7 +5324,7 @@ is successfully parsed).</p>
    <h4 class="heading settled" data-level="5.10.4" id="the-keyframeeffectoptions-dictionary"><span class="secno">5.10.4. </span><span class="content">The <code>KeyframeEffectOptions</code> dictionary</span><a class="self-link" href="#the-keyframeeffectoptions-dictionary"></a></h4>
    <p>Additional parameters may be passed to the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly" id="ref-for-dom-keyframeeffectreadonly-keyframeeffectreadonly-5">KeyframeEffectReadOnly()</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-keyframeeffect" id="ref-for-dom-keyframeeffect-keyframeeffect-4">KeyframeEffect()</a></code> constructors by providing a <code class="idl"><a data-link-type="idl" href="#dictdef-keyframeeffectoptions" id="ref-for-dictdef-keyframeeffectoptions-6">KeyframeEffectOptions</a></code> object.</p>
 <pre class="idl def">dictionary <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export="" data-lt="KeyframeEffectOptions" id="dictdef-keyframeeffectoptions">KeyframeEffectOptions<span class="dfn-panel" data-deco=""><b><a href="#dictdef-keyframeeffectoptions">#dictdef-keyframeeffectoptions</a></b><b>Referenced in:</b><span><a href="#ref-for-dictdef-keyframeeffectoptions-1">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-dictdef-keyframeeffectoptions-2">(2)</a> <a href="#ref-for-dictdef-keyframeeffectoptions-3">(3)</a> <a href="#ref-for-dictdef-keyframeeffectoptions-4">(4)</a></span><span><a href="#ref-for-dictdef-keyframeeffectoptions-5">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a> <a href="#ref-for-dictdef-keyframeeffectoptions-2">(2)</a> <a href="#ref-for-dictdef-keyframeeffectoptions-3">(3)</a> <a href="#ref-for-dictdef-keyframeeffectoptions-4">(4)</a></span><span><a href="#ref-for-dictdef-keyframeeffectoptions-5">5.10.3. Processing a keyframes
 argument</a></span><span><a href="#ref-for-dictdef-keyframeeffectoptions-6">5.10.4. The KeyframeEffectOptions dictionary</a></span><span><a href="#ref-for-dictdef-keyframeeffectoptions-7">5.14. The Animatable interface</a></span></span></dfn> : <a data-link-type="idl-name" href="#dictdef-animationeffecttimingproperties" id="ref-for-dictdef-animationeffecttimingproperties-7">AnimationEffectTimingProperties</a> {
     <a data-link-type="idl-name" href="#enumdef-iterationcompositeoperation" id="ref-for-enumdef-iterationcompositeoperation-4">IterationCompositeOperation</a> <a class="idl-code" data-default="&quot;replace&quot;" data-link-type="dict-member" data-type="IterationCompositeOperation " href="#dom-keyframeeffectoptions-iterationcomposite" id="ref-for-dom-keyframeeffectoptions-iterationcomposite-1">iterationComposite</a> = "replace";
     <a data-link-type="idl-name" href="#enumdef-compositeoperation" id="ref-for-enumdef-compositeoperation-7">CompositeOperation</a>          <a class="idl-code" data-default="&quot;replace&quot;" data-link-type="dict-member" data-type="CompositeOperation          " href="#dom-keyframeeffectoptions-composite" id="ref-for-dom-keyframeeffectoptions-composite-1">composite</a> = "replace";
@@ -5359,13 +5359,13 @@ their meanings.</p>
    <p>Before calculating the effect value
 (see <a href="#the-effect-value-of-a-keyframe-animation-effect">§4.4.3 The effect value of
   a keyframe effect</a>)
-of a <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-46">keyframe effect</a> represented by a <code class="idl"><a data-link-type="idl" href="#keyframeeffect" id="ref-for-keyframeeffect-16">KeyframeEffect</a></code> object, <var>effect</var>, as well as each time the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getframes" id="ref-for-dom-keyframeeffectreadonly-getframes-6">getFrames()</a></code> method is called,
+of a <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-46">keyframe effect</a> represented by a <code class="idl"><a data-link-type="idl" href="#keyframeeffect" id="ref-for-keyframeeffect-16">KeyframeEffect</a></code> object, <var>effect</var>, as well as each time the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getkeyframes" id="ref-for-dom-keyframeeffectreadonly-getkeyframes-6">getKeyframes()</a></code> method is called,
 the <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="computed keyframes" data-noexport="" id="computed-keyframes">computed keyframes<span class="dfn-panel" data-deco=""><b><a href="#computed-keyframes">#computed-keyframes</a></b><b>Referenced in:</b><span><a href="#ref-for-computed-keyframes-1">4.4.3. The effect value of
   a keyframe effect</a></span><span><a href="#ref-for-computed-keyframes-2">5.10. The KeyframeEffectReadOnly
   and KeyframeEffect interfaces</a> <a href="#ref-for-computed-keyframes-3">(2)</a> <a href="#ref-for-computed-keyframes-4">(3)</a></span></span></dfn> are produced as follows:</p>
    <ol>
     <li data-md="">
-     <p>Let <var>computed keyframes</var> refer to the sequence of <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-66">keyframes</a> returned by the procedure to <a data-link-type="dfn" href="#process-a-frames-argument" id="ref-for-process-a-frames-argument-3">process a frames argument</a> when it was
+     <p>Let <var>computed keyframes</var> refer to the sequence of <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-66">keyframes</a> returned by the procedure to <a data-link-type="dfn" href="#process-a-keyframes-argument" id="ref-for-process-a-keyframes-argument-3">process a keyframes argument</a> when it was
 last successfully called (i.e. did not throw an exception) for <var>effect</var>.
 If that procedure returned a <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist" id="ref-for-sharedkeyframelist-4">SharedKeyframeList</a></code> object, then let <var>computed keyframes</var> refer to the result returned by that same
 procedure but for the <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist" id="ref-for-sharedkeyframelist-5">SharedKeyframeList</a></code> object instead of <var>effect</var>.</p>
@@ -5377,9 +5377,9 @@ this effect as <var>spacing</var>, and the <a data-link-type="dfn" href="#target
      <p>Return <var>computed keyframes</var>.</p>
    </ol>
    <p class="note" role="note">Note: This procedure is performed every time the keyframe effect value is
-computed as well as every time <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getframes" id="ref-for-dom-keyframeeffectreadonly-getframes-7">getFrames()</a></code> is called
-such that changes to any referenced <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist" id="ref-for-sharedkeyframelist-6">SharedKeyframeList</a></code> object or to the
-context used to resolve relative units are reflected in the result.</p>
+computed as well as every time <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getkeyframes" id="ref-for-dom-keyframeeffectreadonly-getkeyframes-7">getKeyframes()</a></code> is
+called such that changes to any referenced <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist" id="ref-for-sharedkeyframelist-6">SharedKeyframeList</a></code> object or to
+the context used to resolve relative units are reflected in the result.</p>
    <h3 class="heading settled" data-level="5.11" id="the-iterationcompositeoperation-enumeration"><span class="secno">5.11. </span><span class="content">The <code>IterationCompositeOperation</code> enumeration</span><a class="self-link" href="#the-iterationcompositeoperation-enumeration"></a></h3>
    <p>The possible values of an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-104">animation effect</a>’s <a data-link-type="dfn" href="#iteration-composite-operation" id="ref-for-iteration-composite-operation-9">iteration composite operation</a> are represented by the <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="IterationCompositeOperation" data-noexport="" id="iterationcompositeoperation">IterationCompositeOperation<span class="dfn-panel" data-deco=""><b><a href="#iterationcompositeoperation">#iterationcompositeoperation</a></b><b>Referenced in:</b><span><a href="#ref-for-iterationcompositeoperation-1">5.10. The KeyframeEffectReadOnly
   and KeyframeEffect interfaces</a></span></span></dfn> enumeration.</p>
@@ -5403,7 +5403,7 @@ on the final value of the previous iteration.</p>
 composition behavior are represented by the <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="CompositeOperation" data-noexport="" id="compositeoperation">CompositeOperation<span class="dfn-panel" data-deco=""><b><a href="#compositeoperation">#compositeoperation</a></b><b>Referenced in:</b><span><a href="#ref-for-compositeoperation-1">5.10. The KeyframeEffectReadOnly
   and KeyframeEffect interfaces</a></span><span><a href="#ref-for-compositeoperation-2">5.10.4. The KeyframeEffectOptions dictionary</a></span></span></dfn> enumeration.</p>
 <pre class="idl def">enum <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export="" data-lt="CompositeOperation" id="enumdef-compositeoperation">CompositeOperation<span class="dfn-panel" data-deco=""><b><a href="#enumdef-compositeoperation">#enumdef-compositeoperation</a></b><b>Referenced in:</b><span><a href="#ref-for-enumdef-compositeoperation-1">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-enumdef-compositeoperation-2">(2)</a> <a href="#ref-for-enumdef-compositeoperation-3">(3)</a> <a href="#ref-for-enumdef-compositeoperation-4">(4)</a></span><span><a href="#ref-for-enumdef-compositeoperation-5">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a> <a href="#ref-for-enumdef-compositeoperation-2">(2)</a> <a href="#ref-for-enumdef-compositeoperation-3">(3)</a> <a href="#ref-for-enumdef-compositeoperation-4">(4)</a></span><span><a href="#ref-for-enumdef-compositeoperation-5">5.10.3. Processing a keyframes
 argument</a> <a href="#ref-for-enumdef-compositeoperation-6">(2)</a></span><span><a href="#ref-for-enumdef-compositeoperation-7">5.10.4. The KeyframeEffectOptions dictionary</a> <a href="#ref-for-enumdef-compositeoperation-8">(2)</a></span></span></dfn> {<dfn class="idl-code" data-dfn-for="CompositeOperation" data-dfn-type="enum-value" data-export="" data-lt="&quot;replace&quot;|replace" id="dom-compositeoperation-replace">"replace"<a class="self-link" href="#dom-compositeoperation-replace"></a></dfn>, <dfn class="idl-code" data-dfn-for="CompositeOperation" data-dfn-type="enum-value" data-export="" data-lt="&quot;add&quot;|add" id="dom-compositeoperation-add">"add"<a class="self-link" href="#dom-compositeoperation-add"></a></dfn>, <dfn class="idl-code" data-dfn-for="CompositeOperation" data-dfn-type="enum-value" data-export="" data-lt="&quot;accumulate&quot;|accumulate" id="dom-compositeoperation-accumulate">"accumulate"<a class="self-link" href="#dom-compositeoperation-accumulate"></a></dfn>};
 </pre>
    <dl>
@@ -5442,26 +5442,26 @@ multiple times.</p>
 <span class="kd">var</span> <span class="nx">player2</span> <span class="o">=</span> <span class="nx">element2</span><span class="p">.</span><span class="nx">animate</span><span class="p">(</span><span class="nx">keyframes</span><span class="p">,</span> <span class="p">{</span> <span class="nx">duration</span><span class="o">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="nx">delay</span><span class="o">:</span> <span class="mi">1000</span> <span class="p">});</span></pre>
     </div>
    </div>
-<pre class="idl def">[<a class="idl-code" data-link-type="constructor" href="#dom-sharedkeyframelist-sharedkeyframelist" id="ref-for-dom-sharedkeyframelist-sharedkeyframelist-2">Constructor</a> (object? <a class="idl-code" data-link-type="argument" href="#dom-sharedkeyframelist-sharedkeyframelist-frames-frames" id="ref-for-dom-sharedkeyframelist-sharedkeyframelist-frames-frames-1">frames</a>)]
+<pre class="idl def">[<a class="idl-code" data-link-type="constructor" href="#dom-sharedkeyframelist-sharedkeyframelist" id="ref-for-dom-sharedkeyframelist-sharedkeyframelist-2">Constructor</a> (object? <a class="idl-code" data-link-type="argument" href="#dom-sharedkeyframelist-sharedkeyframelist-keyframes-keyframes" id="ref-for-dom-sharedkeyframelist-sharedkeyframelist-keyframes-keyframes-1">keyframes</a>)]
 interface <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export="" data-lt="SharedKeyframeList" id="sharedkeyframelist">SharedKeyframeList<span class="dfn-panel" data-deco=""><b><a href="#sharedkeyframelist">#sharedkeyframelist</a></b><b>Referenced in:</b><span><a href="#ref-for-sharedkeyframelist-1">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a></span><span><a href="#ref-for-sharedkeyframelist-2">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a></span><span><a href="#ref-for-sharedkeyframelist-2">5.10.3. Processing a keyframes
 argument</a> <a href="#ref-for-sharedkeyframelist-3">(2)</a></span><span><a href="#ref-for-sharedkeyframelist-4">5.10.5. Computed keyframes</a> <a href="#ref-for-sharedkeyframelist-5">(2)</a> <a href="#ref-for-sharedkeyframelist-6">(3)</a></span><span><a href="#ref-for-sharedkeyframelist-7">5.13. The SharedKeyframeList interface</a> <a href="#ref-for-sharedkeyframelist-8">(2)</a> <a href="#ref-for-sharedkeyframelist-9">(3)</a></span></span></dfn> {
 };
 </pre>
    <div class="constructors">
     <dl>
      <dt data-md="">
-      <p><dfn class="dfn-paneled idl-code" data-dfn-for="SharedKeyframeList" data-dfn-type="constructor" data-export="" data-lt="SharedKeyframeList(frames)" id="dom-sharedkeyframelist-sharedkeyframelist"> SharedKeyframeList(frames)<span class="dfn-panel" data-deco=""><b><a href="#dom-sharedkeyframelist-sharedkeyframelist">#dom-sharedkeyframelist-sharedkeyframelist</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-sharedkeyframelist-sharedkeyframelist-1">5.10.3. Processing a frames
+      <p><dfn class="dfn-paneled idl-code" data-dfn-for="SharedKeyframeList" data-dfn-type="constructor" data-export="" data-lt="SharedKeyframeList(keyframes)" id="dom-sharedkeyframelist-sharedkeyframelist"> SharedKeyframeList(keyframes)<span class="dfn-panel" data-deco=""><b><a href="#dom-sharedkeyframelist-sharedkeyframelist">#dom-sharedkeyframelist-sharedkeyframelist</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-sharedkeyframelist-sharedkeyframelist-1">5.10.3. Processing a keyframes
 argument</a></span><span><a href="#ref-for-dom-sharedkeyframelist-sharedkeyframelist-2">5.13. The SharedKeyframeList interface</a></span></span></dfn></p>
      <dd data-md="">
       <p>Creates a new <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist" id="ref-for-sharedkeyframelist-9">SharedKeyframeList</a></code> object.</p>
       <div class="parameters">
        <dl>
         <dt data-md="">
-         <p><dfn class="dfn-paneled idl-code" data-dfn-for="SharedKeyframeList/SharedKeyframeList(frames)" data-dfn-type="argument" data-export="" data-lt="frames" id="dom-sharedkeyframelist-sharedkeyframelist-frames-frames">frames<span class="dfn-panel" data-deco=""><b><a href="#dom-sharedkeyframelist-sharedkeyframelist-frames-frames">#dom-sharedkeyframelist-sharedkeyframelist-frames-frames</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-sharedkeyframelist-sharedkeyframelist-frames-frames-1">5.13. The SharedKeyframeList interface</a></span></span></dfn></p>
+         <p><dfn class="dfn-paneled idl-code" data-dfn-for="SharedKeyframeList/SharedKeyframeList(keyframes)" data-dfn-type="argument" data-export="" data-lt="keyframes" id="dom-sharedkeyframelist-sharedkeyframelist-keyframes-keyframes">keyframes<span class="dfn-panel" data-deco=""><b><a href="#dom-sharedkeyframelist-sharedkeyframelist-keyframes-keyframes">#dom-sharedkeyframelist-sharedkeyframelist-keyframes-keyframes</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-sharedkeyframelist-sharedkeyframelist-keyframes-keyframes-1">5.13. The SharedKeyframeList interface</a></span></span></dfn></p>
         <dd data-md="">
          <p>The keyframes to be shared. This argument is processed using the
-procedure defined in <a href="#processing-a-frames-argument">§5.10.3 Processing a frames
+procedure defined in <a href="#processing-a-keyframes-argument">§5.10.3 Processing a keyframes
 argument</a>.</p>
        </dl>
       </div>
@@ -5472,13 +5472,13 @@ argument</a>.</p>
 the <code class="idl"><a data-link-type="idl" href="#animatable" id="ref-for-animatable-8">Animatable</a></code> interface.</p>
 <pre class="idl def">[NoInterfaceObject]
 interface <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export="" data-lt="Animatable" id="animatable">Animatable<span class="dfn-panel" data-deco=""><b><a href="#animatable">#animatable</a></b><b>Referenced in:</b><span><a href="#ref-for-animatable-1">5.10. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-animatable-2">(2)</a> <a href="#ref-for-animatable-3">(3)</a> <a href="#ref-for-animatable-4">(4)</a> <a href="#ref-for-animatable-5">(5)</a></span><span><a href="#ref-for-animatable-6">5.10.3. Processing a frames
+  and KeyframeEffect interfaces</a> <a href="#ref-for-animatable-2">(2)</a> <a href="#ref-for-animatable-3">(3)</a> <a href="#ref-for-animatable-4">(4)</a> <a href="#ref-for-animatable-5">(5)</a></span><span><a href="#ref-for-animatable-6">5.10.3. Processing a keyframes
 argument</a> <a href="#ref-for-animatable-7">(2)</a></span><span><a href="#ref-for-animatable-8">5.14. The Animatable interface</a></span><span><a href="#ref-for-animatable-9">5.15. Extensions to the Document interface</a></span><span><a href="#ref-for-animatable-10">5.16. Extensions to the Element interface</a></span><span><a href="#ref-for-animatable-11">5.17. Extensions to the CSSPseudoElement interface</a></span><span><a href="#ref-for-animatable-12">10. Changes since last publication</a></span></span></dfn> {
-    <a data-link-type="idl-name" href="#animation" id="ref-for-animation-9">Animation</a>           <a class="idl-code" data-link-type="method" href="#dom-animatable-animate" id="ref-for-dom-animatable-animate-3">animate</a> (object? <a class="idl-code" data-link-type="argument" href="#dom-animatable-animate-frames-options-frames" id="ref-for-dom-animatable-animate-frames-options-frames-1">frames</a>,
-                                 optional (unrestricted double or <a data-link-type="idl-name" href="#dictdef-keyframeanimationoptions" id="ref-for-dictdef-keyframeanimationoptions-2">KeyframeAnimationOptions</a>) <a class="idl-code" data-link-type="argument" href="#dom-animatable-animate-frames-options-options" id="ref-for-dom-animatable-animate-frames-options-options-1">options</a>);
+    <a data-link-type="idl-name" href="#animation" id="ref-for-animation-9">Animation</a>           <a class="idl-code" data-link-type="method" href="#dom-animatable-animate" id="ref-for-dom-animatable-animate-3">animate</a> (object? <a class="idl-code" data-link-type="argument" href="#dom-animatable-animate-keyframes-options-keyframes" id="ref-for-dom-animatable-animate-keyframes-options-keyframes-1">keyframes</a>,
+                                 optional (unrestricted double or <a data-link-type="idl-name" href="#dictdef-keyframeanimationoptions" id="ref-for-dictdef-keyframeanimationoptions-2">KeyframeAnimationOptions</a>) <a class="idl-code" data-link-type="argument" href="#dom-animatable-animate-keyframes-options-options" id="ref-for-dom-animatable-animate-keyframes-options-options-1">options</a>);
     sequence&lt;<a data-link-type="idl-name" href="#animation" id="ref-for-animation-10">Animation</a>> <a class="idl-code" data-link-type="method" href="#dom-animatable-getanimations" id="ref-for-dom-animatable-getanimations-1">getAnimations</a> ();
 };
-dictionary <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export="" data-lt="KeyframeAnimationOptions" id="dictdef-keyframeanimationoptions">KeyframeAnimationOptions<span class="dfn-panel" data-deco=""><b><a href="#dictdef-keyframeanimationoptions">#dictdef-keyframeanimationoptions</a></b><b>Referenced in:</b><span><a href="#ref-for-dictdef-keyframeanimationoptions-1">5.10.3. Processing a frames
+dictionary <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export="" data-lt="KeyframeAnimationOptions" id="dictdef-keyframeanimationoptions">KeyframeAnimationOptions<span class="dfn-panel" data-deco=""><b><a href="#dictdef-keyframeanimationoptions">#dictdef-keyframeanimationoptions</a></b><b>Referenced in:</b><span><a href="#ref-for-dictdef-keyframeanimationoptions-1">5.10.3. Processing a keyframes
 argument</a></span><span><a href="#ref-for-dictdef-keyframeanimationoptions-2">5.14. The Animatable interface</a></span><span><a href="#ref-for-dictdef-keyframeanimationoptions-3">10. Changes since last publication</a></span></span></dfn> : <a data-link-type="idl-name" href="#dictdef-keyframeeffectoptions" id="ref-for-dictdef-keyframeeffectoptions-7">KeyframeEffectOptions</a> {
     DOMString <a class="idl-code" data-default="&quot;&quot;" data-link-type="dict-member" data-type="DOMString " href="#dom-keyframeanimationoptions-id" id="ref-for-dom-keyframeanimationoptions-id-1">id</a> = "";
 };
@@ -5486,7 +5486,7 @@ argument</a></span><span><a href="#ref-for-dictdef-keyframeanimationoptions-2">5
    <div class="methods">
     <dl>
      <dt data-md="">
-      <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animatable" data-dfn-type="method" data-export="" data-lt="animate(frames, options)" id="dom-animatable-animate">Animation animate(frames, options)<span class="dfn-panel" data-deco=""><b><a href="#dom-animatable-animate">#dom-animatable-animate</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-animatable-animate-1">5.10.3. Processing a frames
+      <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animatable" data-dfn-type="method" data-export="" data-lt="animate(keyframes, options)" id="dom-animatable-animate">Animation animate(keyframes, options)<span class="dfn-panel" data-deco=""><b><a href="#dom-animatable-animate">#dom-animatable-animate</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-animatable-animate-1">5.10.3. Processing a keyframes
 argument</a> <a href="#ref-for-dom-animatable-animate-2">(2)</a></span><span><a href="#ref-for-dom-animatable-animate-3">5.14. The Animatable interface</a></span><span><a href="#ref-for-dom-animatable-animate-4">10. Changes since last publication</a> <a href="#ref-for-dom-animatable-animate-5">(2)</a></span></span></dfn></p>
      <dd data-md="">
       <p>Performs the following steps:</p>
@@ -5494,7 +5494,8 @@ argument</a> <a href="#ref-for-dom-animatable-animate-2">(2)</a></span><span><a 
        <li data-md="">
         <p>Construct a new <code class="idl"><a data-link-type="idl" href="#keyframeeffect" id="ref-for-keyframeeffect-19">KeyframeEffect</a></code> object, <var>effect</var>, passing
 the object on which this method was called as the <var>target</var> argument,
-and the <var>frames</var> and <var>options</var> arguments as supplied.</p>
+and the <var>keyframes</var> and <var>options</var> arguments as
+supplied.</p>
         <p>If the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-keyframeeffect" id="ref-for-dom-keyframeeffect-keyframeeffect-5">KeyframeEffect()</a></code> constructor caused an exception to be
 thrown, propagate the exception and abort this procedure.</p>
        <li data-md="">
@@ -5518,13 +5519,13 @@ as the <var>timeline</var> argument.</p>
       <div class="parameters">
        <dl>
         <dt data-md="">
-         <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animatable/animate(frames, options)" data-dfn-type="argument" data-export="" data-lt="frames" id="dom-animatable-animate-frames-options-frames">frames<span class="dfn-panel" data-deco=""><b><a href="#dom-animatable-animate-frames-options-frames">#dom-animatable-animate-frames-options-frames</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-animatable-animate-frames-options-frames-1">5.14. The Animatable interface</a></span></span></dfn></p>
+         <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animatable/animate(keyframes, options)" data-dfn-type="argument" data-export="" data-lt="keyframes" id="dom-animatable-animate-keyframes-options-keyframes">keyframes<span class="dfn-panel" data-deco=""><b><a href="#dom-animatable-animate-keyframes-options-keyframes">#dom-animatable-animate-keyframes-options-keyframes</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-animatable-animate-keyframes-options-keyframes-1">5.14. The Animatable interface</a></span></span></dfn></p>
         <dd data-md="">
          <p>The <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-69">keyframes</a> to use.
-This value is passed to the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-keyframeeffect" id="ref-for-dom-keyframeeffect-keyframeeffect-6">KeyframeEffect()</a></code> constructor as the <var>frames</var> parameter and has the
+This value is passed to the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-keyframeeffect" id="ref-for-dom-keyframeeffect-keyframeeffect-6">KeyframeEffect()</a></code> constructor as the <var>keyframes</var> parameter and has the
 same interpretation as defined for that constructor.</p>
         <dt data-md="">
-         <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animatable/animate(frames, options)" data-dfn-type="argument" data-export="" data-lt="options" id="dom-animatable-animate-frames-options-options">options<span class="dfn-panel" data-deco=""><b><a href="#dom-animatable-animate-frames-options-options">#dom-animatable-animate-frames-options-options</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-animatable-animate-frames-options-options-1">5.14. The Animatable interface</a></span><span><a href="#ref-for-dom-animatable-animate-frames-options-options-2">10. Changes since last publication</a></span></span></dfn></p>
+         <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animatable/animate(keyframes, options)" data-dfn-type="argument" data-export="" data-lt="options" id="dom-animatable-animate-keyframes-options-options">options<span class="dfn-panel" data-deco=""><b><a href="#dom-animatable-animate-keyframes-options-options">#dom-animatable-animate-keyframes-options-options</a></b><b>Referenced in:</b><span><a href="#ref-for-dom-animatable-animate-keyframes-options-options-1">5.14. The Animatable interface</a></span><span><a href="#ref-for-dom-animatable-animate-keyframes-options-options-2">10. Changes since last publication</a></span></span></dfn></p>
         <dd data-md="">
          <p>The timing and animation options for the created <code class="idl"><a data-link-type="idl" href="#keyframeeffect" id="ref-for-keyframeeffect-20">KeyframeEffect</a></code>.
 This value is passed to the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-keyframeeffect" id="ref-for-dom-keyframeeffect-keyframeeffect-7">KeyframeEffect()</a></code> constructor as the <var>options</var> parameter and has the same interpretation as
@@ -5858,8 +5859,11 @@ values are no longer stored but, instead, cause a <span class="exceptionname">Ty
      <p>Changed the type of the <code class="idl"><a data-link-type="idl" href="#dom-computedtimingproperties-progress" id="ref-for-dom-computedtimingproperties-progress-2">progress</a></code> member of the <code class="idl"><a data-link-type="idl" href="#dictdef-computedtimingproperties" id="ref-for-dictdef-computedtimingproperties-3">ComputedTimingProperties</a></code> dictionary from <code>unrestricted
 double?</code> to <code>double?</code>.</p>
     <li data-md="">
-     <p>Rewrote the handling of keyframes arguments (see <a href="#processing-a-frames-argument">§5.10.3 Processing a frames
-argument</a> and the definition of <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getframes" id="ref-for-dom-keyframeeffectreadonly-getframes-8">getFrames()</a></code>) to be valid WebIDL.</p>
+     <p>Renamed <code>getFrames()</code> and <code>setKeyframes()</code> on the <code class="idl"><a data-link-type="idl" href="#keyframeeffectreadonly" id="ref-for-keyframeeffectreadonly-10">KeyframeEffectReadOnly</a></code> and <code class="idl"><a data-link-type="idl" href="#keyframeeffect" id="ref-for-keyframeeffect-22">KeyframeEffect</a></code> interfaces
+to <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getkeyframes" id="ref-for-dom-keyframeeffectreadonly-getkeyframes-8">getKeyframes()</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-setkeyframes" id="ref-for-dom-keyframeeffect-setkeyframes-6">setKeyframes()</a></code> respectively, and renamed the <code>frames</code> argument to <code>keyframes</code>.</p>
+    <li data-md="">
+     <p>Rewrote the handling of keyframes arguments (see <a href="#processing-a-keyframes-argument">§5.10.3 Processing a keyframes
+argument</a> and the definition of <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getkeyframes" id="ref-for-dom-keyframeeffectreadonly-getkeyframes-9">getKeyframes()</a></code>) to be valid WebIDL.</p>
      <ul>
       <li data-md="">
        <p>In doing this the <code>Keyframe</code>, <code>PropertyIndexedKeyframe</code> and <code>ComputedKeyframe</code> dictionaries have been replaced with <code class="idl"><a data-link-type="idl" href="#dictdef-basekeyframe" id="ref-for-dictdef-basekeyframe-1">BaseKeyframe</a></code>, <code class="idl"><a data-link-type="idl" href="#dictdef-basepropertyindexedkeyframe" id="ref-for-dictdef-basepropertyindexedkeyframe-1">BasePropertyIndexedKeyframe</a></code>, and <code class="idl"><a data-link-type="idl" href="#dictdef-basecomputedkeyframe" id="ref-for-dictdef-basecomputedkeyframe-1">BaseComputedKeyframe</a></code> respectively.</p>
@@ -5875,7 +5879,7 @@ effect</a>’s <a data-link-type="dfn" href="#composite-operation" id="ref-for-c
      <p>Made the <code class="idl"><a data-link-type="idl" href="#dom-animatable-animate" id="ref-for-dom-animatable-animate-4">animate()</a></code> method of the <code class="idl"><a data-link-type="idl" href="#animatable" id="ref-for-animatable-12">Animatable</a></code> interface
 take a <code class="idl"><a data-link-type="idl" href="#dictdef-keyframeanimationoptions" id="ref-for-dictdef-keyframeanimationoptions-3">KeyframeAnimationOptions</a></code> parameter so that the <code class="idl"><a data-link-type="idl" href="#dom-animation-id" id="ref-for-dom-animation-id-5">id</a></code> of an <code class="idl"><a data-link-type="idl" href="#animation" id="ref-for-animation-20">Animation</a></code> can be specified.</p>
     <li data-md="">
-     <p>Corrected the type of <code class="idl"><a data-link-type="idl" href="#dom-animatable-animate-frames-options-options" id="ref-for-dom-animatable-animate-frames-options-options-2">options</a></code> parameter to the <code class="idl"><a data-link-type="idl" href="#dom-animatable-animate" id="ref-for-dom-animatable-animate-5">animate()</a></code> method to use an <code>unrestricted double</code> rather than a <code>double</code>.</p>
+     <p>Corrected the type of <code class="idl"><a data-link-type="idl" href="#dom-animatable-animate-keyframes-options-options" id="ref-for-dom-animatable-animate-keyframes-options-options-2">options</a></code> parameter to the <code class="idl"><a data-link-type="idl" href="#dom-animatable-animate" id="ref-for-dom-animatable-animate-5">animate()</a></code> method to use an <code>unrestricted double</code> rather than a <code>double</code>.</p>
     <li data-md="">
      <p>Moved <code class="idl"><a data-link-type="idl" href="#dom-document-getanimations" id="ref-for-dom-document-getanimations-2">getAnimations()</a></code> from the <code class="idl"><a data-link-type="idl" href="#animationtimeline" id="ref-for-animationtimeline-6">AnimationTimeline</a></code> interface
 to the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/#document">Document</a></code> interface.</p>
@@ -5945,7 +5949,7 @@ to the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.
    <li><a href="#dom-playbackdirection-alternate-reverse">alternate-reverse</a><span>, in §5.9.2</span>
    <li><a href="#concept-animatable">animatable</a><span>, in §4.2</span>
    <li><a href="#animatable">Animatable</a><span>, in §5.14</span>
-   <li><a href="#dom-animatable-animate">animate(frames, options)</a><span>, in §5.14</span>
+   <li><a href="#dom-animatable-animate">animate(keyframes, options)</a><span>, in §5.14</span>
    <li><a href="#concept-animation">animation</a><span>, in §3.5</span>
    <li><a href="#animation">Animation</a><span>, in §5.4</span>
    <li><a href="#animation-accumulation">animation accumulation</a><span>, in §4.2</span>
@@ -6126,7 +6130,7 @@ a keyframe</a><span>, in §4.4.2.1</span>
      <li><a href="#dom-document-getanimations">method for Document</a><span>, in §5.15</span>
     </ul>
    <li><a href="#dom-animationeffectreadonly-getcomputedtiming">getComputedTiming()</a><span>, in §5.5</span>
-   <li><a href="#dom-keyframeeffectreadonly-getframes">getFrames()</a><span>, in §5.10</span>
+   <li><a href="#dom-keyframeeffectreadonly-getkeyframes">getKeyframes()</a><span>, in §5.10</span>
    <li><a href="#global-animation-list">global animation list</a><span>, in §3.5</span>
    <li><a href="#global-clock">global clock</a><span>, in §3.3</span>
    <li><a href="#hold-time">hold time</a><span>, in §3.5</span>
@@ -6185,8 +6189,8 @@ duration</a><span>, in §3.8.1</span>
    <li><a href="#keyframe-effect">keyframe effect</a><span>, in §4.4</span>
    <li><a href="#dictdef-keyframeeffectoptions">KeyframeEffectOptions</a><span>, in §5.10.4</span>
    <li><a href="#keyframeeffectreadonly">KeyframeEffectReadOnly</a><span>, in §5.10</span>
-   <li><a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly">KeyframeEffectReadOnly(target, frames, options)</a><span>, in §5.10</span>
-   <li><a href="#dom-keyframeeffect-keyframeeffect">KeyframeEffect(target, frames, options)</a><span>, in §5.10</span>
+   <li><a href="#dom-keyframeeffectreadonly-keyframeeffectreadonly">KeyframeEffectReadOnly(target, keyframes, options)</a><span>, in §5.10</span>
+   <li><a href="#dom-keyframeeffect-keyframeeffect">KeyframeEffect(target, keyframes, options)</a><span>, in §5.10</span>
    <li><a href="#keyframe-offset">keyframe offset</a><span>, in §4.4.1</span>
    <li><a href="#keyframe-spacing-mode">keyframe spacing mode</a><span>, in §4.4.2</span>
    <li><a href="#keyframe-specific-composite-operation">keyframe-specific composite
@@ -6241,8 +6245,8 @@ direction</a><span>, in §3.10</span>
    <li><a href="#play-state">play state</a><span>, in §3.5.19</span>
    <li><a href="#previous-current-time">previous current
 time</a><span>, in §3.5.14</span>
-   <li><a href="#process-a-frames-argument">process a frames argument</a><span>, in §5.10.3</span>
    <li><a href="#process-a-keyframe-like-object">process a keyframe-like object</a><span>, in §5.10.3</span>
+   <li><a href="#process-a-keyframes-argument">process a keyframes argument</a><span>, in §5.10.3</span>
    <li><a href="#dom-computedtimingproperties-progress">progress</a><span>, in §5.9</span>
    <li>
     ready
@@ -6274,14 +6278,14 @@ time</a><span>, in §3.5.14</span>
    <li><a href="#dom-animationplaystate-running">"running"</a><span>, in §5.4.1</span>
    <li><a href="#running-play-state">running play state</a><span>, in §3.5.19</span>
    <li><a href="#sampling">sampling</a><span>, in §3.2</span>
-   <li><a href="#dom-keyframeeffect-setframes">setFrames(frames)</a><span>, in §5.10</span>
+   <li><a href="#dom-keyframeeffect-setkeyframes">setKeyframes(keyframes)</a><span>, in §5.10</span>
    <li><a href="#set-the-animation-playback-rate">set the animation playback rate</a><span>, in §3.5.17.1</span>
    <li><a href="#set-the-animation-start-time">set the animation start time</a><span>, in §3.5.6</span>
    <li><a href="#set-the-current-time">set the current time</a><span>, in §3.5.5</span>
    <li><a href="#set-the-target-effect-of-an-animation">set the target effect of an animation</a><span>, in §3.5.3</span>
    <li><a href="#set-the-timeline-of-an-animation">set the timeline of an animation</a><span>, in §3.5.1</span>
    <li><a href="#sharedkeyframelist">SharedKeyframeList</a><span>, in §5.13</span>
-   <li><a href="#dom-sharedkeyframelist-sharedkeyframelist">SharedKeyframeList(frames)</a><span>, in §5.13</span>
+   <li><a href="#dom-sharedkeyframelist-sharedkeyframelist">SharedKeyframeList(keyframes)</a><span>, in §5.13</span>
    <li><a href="#silently-set-the-animation-playback-rate">silently set the animation playback rate</a><span>, in §3.5.17.1</span>
    <li><a href="#silently-set-the-current-time">silently set the current time</a><span>, in §3.5.5</span>
    <li><a href="#simple-iteration-progress">simple iteration progress</a><span>, in §3.9.3.3</span>
@@ -6594,27 +6598,27 @@ enum <a href="#enumdef-fillmode">FillMode</a> { <a href="#dom-fillmode-none">"no
 
 enum <a href="#enumdef-playbackdirection">PlaybackDirection</a> { <a href="#dom-playbackdirection-normal">"normal"</a>, <a href="#dom-playbackdirection-reverse">"reverse"</a>, <a href="#dom-playbackdirection-alternate">"alternate"</a>, <a href="#dom-playbackdirection-alternate-reverse">"alternate-reverse"</a> };
 
-[<a class="idl-code" data-link-type="constructor" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly">Constructor</a> (<a data-link-type="idl-name" href="#animatable">Animatable</a>? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-target">target</a>,
-              object? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-frames">frames</a>,
-              optional (unrestricted double or <a data-link-type="idl-name" href="#dictdef-keyframeeffectoptions">KeyframeEffectOptions</a>) <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-frames-options-options">options</a>)]
+[<a class="idl-code" data-link-type="constructor" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly">Constructor</a> (<a data-link-type="idl-name" href="#animatable">Animatable</a>? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-target">target</a>,
+              object? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-keyframes">keyframes</a>,
+              optional (unrestricted double or <a data-link-type="idl-name" href="#dictdef-keyframeeffectoptions">KeyframeEffectOptions</a>) <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffectreadonly-keyframeeffectreadonly-target-keyframes-options-options">options</a>)]
 interface <a href="#keyframeeffectreadonly">KeyframeEffectReadOnly</a> : <a data-link-type="idl-name" href="#animationeffectreadonly">AnimationEffectReadOnly</a> {
     readonly attribute <a data-link-type="idl-name" href="#animatable">Animatable</a>?                 <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="Animatable?" href="#dom-keyframeeffectreadonly-target">target</a>;
     readonly attribute <a data-link-type="idl-name" href="#enumdef-iterationcompositeoperation">IterationCompositeOperation</a> <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="IterationCompositeOperation" href="#dom-keyframeeffectreadonly-iterationcomposite">iterationComposite</a>;
     readonly attribute <a data-link-type="idl-name" href="#enumdef-compositeoperation">CompositeOperation</a>          <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="CompositeOperation" href="#dom-keyframeeffectreadonly-composite">composite</a>;
     readonly attribute DOMString                   <a class="idl-code" data-link-type="attribute" data-readonly="" data-type="DOMString" href="#dom-keyframeeffectreadonly-spacing">spacing</a>;
     <a data-link-type="idl-name" href="#keyframeeffect">KeyframeEffect</a>   <a class="idl-code" data-link-type="method" href="#dom-keyframeeffectreadonly-clone">clone</a> ();
-    sequence&lt;object> <a class="idl-code" data-link-type="method" href="#dom-keyframeeffectreadonly-getframes">getFrames</a> ();
+    sequence&lt;object> <a class="idl-code" data-link-type="method" href="#dom-keyframeeffectreadonly-getkeyframes">getKeyframes</a> ();
 };
 
-[<a class="idl-code" data-link-type="constructor" href="#dom-keyframeeffect-keyframeeffect">Constructor</a> (<a data-link-type="idl-name" href="#animatable">Animatable</a>? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffect-keyframeeffect-target-frames-options-target">target</a>,
-              object? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffect-keyframeeffect-target-frames-options-frames">frames</a>,
-              optional (unrestricted double or <a data-link-type="idl-name" href="#dictdef-keyframeeffectoptions">KeyframeEffectOptions</a>) <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffect-keyframeeffect-target-frames-options-options">options</a>)]
+[<a class="idl-code" data-link-type="constructor" href="#dom-keyframeeffect-keyframeeffect">Constructor</a> (<a data-link-type="idl-name" href="#animatable">Animatable</a>? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffect-keyframeeffect-target-keyframes-options-target">target</a>,
+              object? <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffect-keyframeeffect-target-keyframes-options-keyframes">keyframes</a>,
+              optional (unrestricted double or <a data-link-type="idl-name" href="#dictdef-keyframeeffectoptions">KeyframeEffectOptions</a>) <a class="idl-code" data-link-type="argument" href="#dom-keyframeeffect-keyframeeffect-target-keyframes-options-options">options</a>)]
 interface <a href="#keyframeeffect">KeyframeEffect</a> : <a data-link-type="idl-name" href="#keyframeeffectreadonly">KeyframeEffectReadOnly</a> {
     inherit attribute <a data-link-type="idl-name" href="#animatable">Animatable</a>?                 <a class="idl-code" data-link-type="attribute" data-type="Animatable?" href="#dom-keyframeeffect-target">target</a>;
     inherit attribute <a data-link-type="idl-name" href="#enumdef-iterationcompositeoperation">IterationCompositeOperation</a> <a class="idl-code" data-link-type="attribute" data-type="IterationCompositeOperation" href="#dom-keyframeeffect-iterationcomposite">iterationComposite</a>;
     inherit attribute <a data-link-type="idl-name" href="#enumdef-compositeoperation">CompositeOperation</a>          <a class="idl-code" data-link-type="attribute" data-type="CompositeOperation" href="#dom-keyframeeffect-composite">composite</a>;
     inherit attribute DOMString                   <a class="idl-code" data-link-type="attribute" data-type="DOMString" href="#dom-keyframeeffect-spacing">spacing</a>;
-    void <a class="idl-code" data-link-type="method" href="#dom-keyframeeffect-setframes">setFrames</a> (object? <a href="#dom-keyframeeffect-setframes-frames-frames">frames</a>);
+    void <a class="idl-code" data-link-type="method" href="#dom-keyframeeffect-setkeyframes">setKeyframes</a> (object? <a href="#dom-keyframeeffect-setkeyframes-keyframes-keyframes">keyframes</a>);
 };
 
 dictionary <a href="#dictdef-basecomputedkeyframe">BaseComputedKeyframe</a> {
@@ -6645,14 +6649,14 @@ enum <a href="#enumdef-iterationcompositeoperation">IterationCompositeOperation<
 
 enum <a href="#enumdef-compositeoperation">CompositeOperation</a> {<a href="#dom-compositeoperation-replace">"replace"</a>, <a href="#dom-compositeoperation-add">"add"</a>, <a href="#dom-compositeoperation-accumulate">"accumulate"</a>};
 
-[<a class="idl-code" data-link-type="constructor" href="#dom-sharedkeyframelist-sharedkeyframelist">Constructor</a> (object? <a class="idl-code" data-link-type="argument" href="#dom-sharedkeyframelist-sharedkeyframelist-frames-frames">frames</a>)]
+[<a class="idl-code" data-link-type="constructor" href="#dom-sharedkeyframelist-sharedkeyframelist">Constructor</a> (object? <a class="idl-code" data-link-type="argument" href="#dom-sharedkeyframelist-sharedkeyframelist-keyframes-keyframes">keyframes</a>)]
 interface <a href="#sharedkeyframelist">SharedKeyframeList</a> {
 };
 
 [NoInterfaceObject]
 interface <a href="#animatable">Animatable</a> {
-    <a data-link-type="idl-name" href="#animation">Animation</a>           <a class="idl-code" data-link-type="method" href="#dom-animatable-animate">animate</a> (object? <a class="idl-code" data-link-type="argument" href="#dom-animatable-animate-frames-options-frames">frames</a>,
-                                 optional (unrestricted double or <a data-link-type="idl-name" href="#dictdef-keyframeanimationoptions">KeyframeAnimationOptions</a>) <a class="idl-code" data-link-type="argument" href="#dom-animatable-animate-frames-options-options">options</a>);
+    <a data-link-type="idl-name" href="#animation">Animation</a>           <a class="idl-code" data-link-type="method" href="#dom-animatable-animate">animate</a> (object? <a class="idl-code" data-link-type="argument" href="#dom-animatable-animate-keyframes-options-keyframes">keyframes</a>,
+                                 optional (unrestricted double or <a data-link-type="idl-name" href="#dictdef-keyframeanimationoptions">KeyframeAnimationOptions</a>) <a class="idl-code" data-link-type="argument" href="#dom-animatable-animate-keyframes-options-options">options</a>);
     sequence&lt;<a data-link-type="idl-name" href="#animation">Animation</a>> <a class="idl-code" data-link-type="method" href="#dom-animatable-getanimations">getAnimations</a> ();
 };
 dictionary <a href="#dictdef-keyframeanimationoptions">KeyframeAnimationOptions</a> : <a data-link-type="idl-name" href="#dictdef-keyframeeffectoptions">KeyframeEffectOptions</a> {
