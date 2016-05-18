@@ -6338,19 +6338,18 @@ Mutable <a>keyframe effects</a> are represented by the
 <pre class='idl'>
 [Constructor (Animatable? target,
               object? keyframes,
-              optional (unrestricted double or KeyframeEffectOptions) options)]
+              optional (unrestricted double or KeyframeEffectOptions) options),
 interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
     readonly attribute Animatable?                 target;
     readonly attribute IterationCompositeOperation iterationComposite;
     readonly attribute CompositeOperation          composite;
     readonly attribute DOMString                   spacing;
-    KeyframeEffect   clone ();
     sequence&lt;object&gt; getKeyframes ();
 };
 
 [Constructor (Animatable? target,
               object? keyframes,
-              optional (unrestricted double or KeyframeEffectOptions) options)]
+              optional (unrestricted double or KeyframeEffectOptions) options),
 interface KeyframeEffect : KeyframeEffectReadOnly {
     inherit attribute Animatable?                 target;
     inherit attribute IterationCompositeOperation iterationComposite;
@@ -6367,15 +6366,14 @@ KeyframeEffect implements AnimationEffectMutable;
 
 :   <dfn constructor for=KeyframeEffectReadOnly
      lt="KeyframeEffectReadOnly(target, keyframes, options)">
-    KeyframeEffectReadOnly ()</dfn>
+    KeyframeEffectReadOnly (target, keyframes, options)</dfn>
 ::  Creates a new {{KeyframeEffectReadOnly}} object
     using the following procedure:
 
     1.  Create a new {{KeyframeEffectReadOnly}} object,
         <var>effect</var>.</li>
 
-    1.  Set the <code>target</code> property of <var>effect</var>
-        to <var>target</var>.
+    1.  Set the <a>target element</a> of <var>effect</var> to <var>target</var>.
 
     1.  Let <var>timing input</var> be the result corresponding to the first
         matching condition from below.
@@ -6465,20 +6463,129 @@ KeyframeEffect implements AnimationEffectMutable;
         or a collection of properties specifying the timing and behavior of
         the effect.
 
+:   <dfn constructor for=KeyframeEffectReadOnly
+     lt="KeyframeEffectReadOnly(source)">
+    KeyframeEffectReadOnly (source)</dfn>
+::  Creates a new {{KeyframeEffectReadOnly}} object with the same properties
+    as {{KeyframeEffectReadOnly/KeyframeEffectReadOnly(source)/source}}
+    using the following procedure:
+
+    1.  Create a new {{KeyframeEffectReadOnly}} object, <var>effect</var>.
+
+    1.  Set the following properties of <var>effect</var> using the
+        corresponding values of <var>source</var>:
+
+        *    <a>target element</a>,
+        *    <a>keyframes</a>,
+        *    <a>iteration composite operation</a>,
+        *    <a>composite operation</a>, and
+        *    <a lt="keyframe spacing mode">spacing mode</a>.
+
+        Issue: If <var>source</var> is using a {{SharedKeyframeList}} should
+        we continue to share it?
+
+    1.  Set <var>effect</var>'s {{AnimationEffectReadOnly/timing}} member
+        to a new {{AnimationEffectTimingReadOnly}} object whose attributes
+        are assigned the value of the member of the same name on
+        <var>source</var>'s {{AnimationEffectReadOnly/timing}} object.
+
+        Note: Unlike the {{KeyframeEffectReadOnly(target, keyframes,
+        options)}} constructor, we do not need to re-throw exceptions or
+        specify the order in which members are assigned since the values
+        specified on <var>source</var>'s {{AnimationEffectReadOnly/timing}}
+        can be assumed to be valid.
+
+    <div class="parameters">
+
+    :   <dfn argument
+        for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(source)"
+        lt="source"></dfn><dfn argument
+        for="KeyframeEffect/KeyframeEffect(source)"
+        lt="source">KeyframeEffectReadOnly source</dfn>
+    ::  The <a>keyframe effect</a> from which to copy the various properties
+        that define the new <a>keyframe effect</a>.
+
+    </div>
+
+    <p class="annotation">
+    This method is largely provided for consistency with
+    {{KeyframeEffect(source)}}.
+    </p>
+
 :   <dfn constructor for=KeyframeEffect
     lt="KeyframeEffect(target, keyframes, options)">
-    KeyframeEffect ()</dfn>
+    KeyframeEffect (target, keyframes, options)</dfn>
 ::  Creates a new {{KeyframeEffect}} object using the same procedure as with
-    the {{KeyframeEffectReadOnly()}} constructor with the following differences:
+    the {{KeyframeEffectReadOnly(target, keyframes, options)}} constructor with
+    the following differences:
 
     *   <var>effect</var> is initialized to a new {{KeyframeEffect}} object
         rather than a new {{KeyframeEffectReadOnly}} object.
     *   <code><var>effect</var>.timing</code> is set to a new
-        {{AnimationEffectTiming}} object rather than a new {{AnimationEffectTimingReadOnly}}
-        object.
+        {{AnimationEffectTiming}} object rather than a new
+        {{AnimationEffectTimingReadOnly}} object.
 
     Examples of the usage of this constructor are given in
     [[#creating-a-new-keyframeeffect-object]].
+
+:   <dfn constructor for=KeyframeEffect
+     lt="KeyframeEffect(source)">KeyframeEffect (source)</dfn>
+::  Creates a new {{KeyframeEffect}} object using the same procedure as with
+    the {{KeyframeEffectReadOnly(source)}} constructor with the following
+    differences:
+
+    *   <var>effect</var> is initialized to a new {{KeyframeEffect}} object
+        rather than a new {{KeyframeEffectReadOnly}} object.
+    *   <code><var>effect</var>.timing</code> is set to a new
+        {{AnimationEffectTiming}} object rather than a new
+        {{AnimationEffectTimingReadOnly}} object.
+
+    <div class='informative-bg'><em>This section is non-normative</em>
+
+    This constructor is provided so that authors can take the animations
+    generated by declarative markup, which are returned in a read-only format,
+    and produce a mutable copy.
+
+    <div class="example">
+
+    For example, it is possible to define an animation using CSS and
+    subsequently replace its <a>animation effect</a> as follows:
+
+    <pre class="lang-javascript">
+    // Create and get a CSSAnimation
+    elem.style.animation = 'swellMargin 2s';
+    const animation = elem.getAnimations().find(
+      animation =&gt; animation.animationName == 'swellMargin');
+    console.log(animation.effect.constructor.name); // "KeyframeEffectReadOnly"
+
+    // Make a mutable copy
+    animation.effect = new KeyframeEffect(animation.effect);
+    console.log(animation.effect.constructor.name); // "KeyframeEffect"
+
+    // It is now possible to manipulate the effect
+    // e.g. apply 'paced' spacing
+    const keyframes = animation.effect.getKeyframes();
+    animation.setKeyframes(keyframes.map(
+      keyframe => Object.assign(keyframe, { offset: null }));
+    animation.effect.spacing = 'paced(margin-left)';
+
+    // Note that changing 'animation-*' properties will not affect the
+    // new effect.
+    elem.style.animationDuration = '3s';
+    console.log(animation.effect.timing.duration); // 2000
+
+    // However, 'animation-*' properties still affect the /Animation/
+    elem.style.animationPlayState = 'paused';
+    console.log(animation.playState); // "pending" (waiting to pause)
+
+    // Likewise:
+    elem.style.animation = '';
+    console.log(animation.playState); // "idle" (animation has been cancelled)
+    </pre>
+
+    </div>
+
+    </div>
 
 </div>
 
@@ -6554,33 +6661,6 @@ KeyframeEffect implements AnimationEffectMutable;
 </div>
 
 <div class="methods">
-
-:   <dfn method for=KeyframeEffectReadOnly lt="clone()">
-    KeyframeEffect clone ()</dfn>
-::  Issue: This method is likely going to be removed in favor of another
-    {{KeyframeEffect}} constructor that can create a {{KeyframeEffect}} from
-    a {{KeyframeEffectReadOnly}} object.
-
-    Returns a new {{KeyframeEffect}} object whose members have the same values
-    as this object using the following procedure.
-
-    1.   Let <var>source</var> be the {{KeyframeEffectReadOnly}} object on which
-         this method was called.
-    2.   Let <var>dest</var> be a new {{KeyframeEffect}} object.
-    3.   Set each of the {{KeyframeEffect/iterationComposite}},
-         {{KeyframeEffect/composite}},
-         and {{KeyframeEffect/spacing}} attributes on <var>dest</var> using
-         the value returned by the getter of the corresponding attribute on
-         <var>source</var>.
-    4.   Let <var>keyframes</var> be the result of calling the
-         {{KeyframeEffectReadOnly/getKeyframes()}} method on <var>source</var>.
-
-         Issue: If <var>source</var> is using a {{SharedKeyframeList}} should
-         we continue to share it?
-
-    5.   Call the {{KeyframeEffect/setKeyframes()}} method on <var>dest</var>
-         passing <var>keyframes</var> as the
-         {{KeyframeEffect/setKeyframes/keyframes}} argument.
 
 :   <dfn method for=KeyframeEffectReadOnly lt="getKeyframes()">
     sequence&lt;object&gt; getKeyframes()</dfn>
@@ -6702,7 +6782,7 @@ KeyframeEffect implements AnimationEffectMutable;
     <div class="parameters">
 
     :   <dfn argument for="KeyframeEffect/setKeyframes"
-        lt="keyframes">keyframes</dfn>
+        lt="keyframes">object? keyframes</dfn>
     ::  A series of keyframes whose format and processing is defined by
         [[#processing-a-keyframes-argument]].
 
@@ -6719,9 +6799,10 @@ KeyframeEffect implements AnimationEffectMutable;
 
 <div class='informative-bg'><em>This section is non-normative</em>
 
-The {{KeyframeEffectReadOnly()}} and {{KeyframeEffect()}} constructors offer
-a number of approaches to creating a new {{KeyframeEffectReadOnly}} and
-{{KeyframeEffect}} objects.
+The {{KeyframeEffectReadOnly(target, keyframes,
+options)|KeyframeEffectReadOnly}} and {{KeyframeEffect(target, keyframes,
+options)|KeyframeEffect}} constructors offer a number of approaches to creating
+new {{KeyframeEffectReadOnly}} and {{KeyframeEffect}} objects.
 
 At its simplest, an {{KeyframeEffect}} object that changes the
 &lsquo;left&rsquo; property of <code>elem</code> to 100px over three
@@ -6819,8 +6900,8 @@ argument</h4>
 
 The following methods all accept a set of keyframes as an argument:
 
-*   the {{KeyframeEffectReadOnly()}} constructor,
-*   the {{KeyframeEffect()}} constructor,
+*   the {{KeyframeEffectReadOnly(target, keyframes, options)}} constructor,
+*   the {{KeyframeEffect(target, keyframes, options)}} constructor,
 *   the {{KeyframeEffect/setKeyframes()}} method on the {{KeyframeEffect}}
     interface,
 *   the {{SharedKeyframeList()}} constructor, and
@@ -7259,9 +7340,9 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
 
 <h4 id="the-keyframeeffectoptions-dictionary">The <code>KeyframeEffectOptions</code> dictionary</h4>
 
-Additional parameters may be passed to the {{KeyframeEffectReadOnly()}} and
-{{KeyframeEffect()}} constructors by providing a {{KeyframeEffectOptions}}
-object.
+Additional parameters may be passed to the {{KeyframeEffectReadOnly(target,
+keyframes, options)}} and {{KeyframeEffect(target, keyframes, options)}}
+constructors by providing a {{KeyframeEffectOptions}} object.
 
 <pre class='idl'>
 dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
@@ -7500,14 +7581,15 @@ dictionary KeyframeAnimationOptions : KeyframeEffectOptions {
 :   <dfn method for=Animatable lt="animate(keyframes, options)">Animation animate(keyframes, options)</dfn>
 ::  Performs the following steps:
 
-    1.  Construct a new {{KeyframeEffect}} object, <var>effect</var>, passing
-        the object on which this method was called as the
-        <var>target</var> argument,
+    1.  Construct a new {{KeyframeEffect}} object, <var>effect</var>,
+        by using the same procedure as the {{KeyframeEffect(target, keyframes,
+        options)}} constructor, passing the object on which this method was
+        called as the <var>target</var> argument,
         and the <var>keyframes</var> and <var>options</var> arguments as
         supplied.
 
-        If the {{KeyframeEffect()}} constructor caused an exception to be
-        thrown, propagate the exception and abort this procedure.
+        If the above procedure caused an exception to be thrown, propagate the
+        exception and abort this procedure.
 
     1.  Construct a new {{Animation}} object, <var>animation</var>, passing
         <var>effect</var> as the argument of the same name, and the
@@ -7540,15 +7622,15 @@ animation.play();</pre>
     :   <dfn argument for="Animatable/animate(keyframes, options)"
         lt="keyframes">keyframes</dfn>
     ::  The <a>keyframes</a> to use.
-        This value is passed to the {{KeyframeEffect()}}
-        constructor as the <var>keyframes</var> parameter and has the
+        This value is passed to the {{KeyframeEffect(target, keyframes,
+        options)}} constructor as the <var>keyframes</var> parameter and has the
         same interpretation as defined for that constructor.
     :   <dfn argument for="Animatable/animate(keyframes, options)"
         lt="options">options</dfn>
     ::  The timing and animation options for the created {{KeyframeEffect}}.
-        This value is passed to the {{KeyframeEffect()}} constructor as the
-        <var>options</var> parameter and has the same interpretation as
-        defined for that constructor.
+        This value is passed to the {{KeyframeEffect(target, keyframes,
+        options)}} constructor as the <var>options</var> parameter and has the
+        same interpretation as defined for that constructor.
 
     </div>
 
@@ -7944,6 +8026,9 @@ The following changes have been made since the <a
     to CSS properties is steadily shrinking and the remaining attributes
     are not well supported and introduce significant complexity (e.g.
     the <code>class</code> attribute).
+*   Removed the <code>clone()</code> method from {{KeyframeEffectReadOnly}}
+    and added the {{KeyframeEffectReadOnly(source)}} and
+    {{KeyframeEffect(source)}} constructors instead.
 *   Renamed &ldquo;animation behavior&rdquo; to <a>animation type</a>
     (the existing &ldquo;animation type&rdquo; concept was simultaneously
     renamed to <a>animation class</a> as mentioned below).
