@@ -6630,20 +6630,16 @@ KeyframeEffect implements AnimationEffectMutable;
     Recognized values are defined by the following grammar:
 
     <blockquote>
-      <div class="production">distribute | paced({ident})</div>
+      <pre class="prod">distribute | paced(<<ident>>)</pre>
     </blockquote>
-
-    <code>{ident}</code> here is an <a
-    href="http://www.w3.org/TR/css3-values/#identifier">identifier</a>
-    as defined by CSS3 Values [[!CSS3VAL]].
 
     The meaning of each value is as follows:
 
     :   distribute
     ::  Use the <a>distribute keyframe spacing mode</a>.
-    :   paced({ident})
+    :   paced(<<ident>>)
     ::  Use the <a>paced keyframe spacing mode</a> with the property
-        name indicated by <code>{ident}</code> as the <a>paced
+        name indicated by <code>&lt;ident&gt;</code> as the <a>paced
         property</a>.
 
         For example, <code>paced(transform)</code> would indicate that
@@ -6656,9 +6652,14 @@ KeyframeEffect implements AnimationEffectMutable;
     must be <a>thrown</a> and the value of the <a
     lt="keyframe spacing mode">spacing mode</a> left unaffected.
 
-    Issue: Need to define what happens above when <code>{ident}</code> is not
-    recognized, and when it *is* recognized but does not appear in any of
-    the keyframes.
+    If the <a>paced property</a> is not a property supported by the
+    implementation, or is not animatable by the implementation, the <a
+    lt="keyframe spacing mode">spacing mode</a> must be set to <a
+    lt="distribute keyframe spacing mode">distribute</a>.
+    A property is considered to be animatable if its <a>animation type</a> is
+    anything other than <a>not animatable</a>, or, for shorthand properties, if
+    at least one of its component longhand properties has an <a>animation
+    type</a> other than <a>not animatable</a>.
 
 </div>
 
