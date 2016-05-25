@@ -249,13 +249,13 @@
 .highlight .il { color: #000000 } /* Literal.Number.Integer.Long */
         .highlight { background: hsl(24, 20%, 95%); }
         code.highlight { padding: .1em; border-radius: .3em; }
-        pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em 0; overflow: auto; border-radius: 0; }
+        xmp.highlight, pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em 0; overflow: auto; border-radius: 0; }
         </style>
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Web Animations Level 2</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft, <time class="dt-updated" datetime="2016-05-18">18 May 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft, <time class="dt-updated" datetime="2016-05-25">25 May 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -5654,9 +5654,8 @@ use for this <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyfram
       <p>On setting, sets the <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-4">spacing mode</a> property of this <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-40">keyframe effect</a> to the provided value.</p>
       <p>Recognized values are defined by the following grammar:</p>
       <blockquote>
-       <div class="production">distribute | paced({ident})</div>
+<pre class="prod">distribute <a data-link-type="grammar" href="https://drafts.csswg.org/css-values-3/#comb-one">|</a> paced(<a class="production" data-link-type="type" href="https://drafts.csswg.org/css-values-3/#typedef-ident">&lt;ident></a>)</pre>
       </blockquote>
-      <p><code>{ident}</code> here is an <a href="http://www.w3.org/TR/css3-values/#identifier">identifier</a> as defined by CSS3 Values <a data-link-type="biblio" href="#biblio-css3val">[CSS3VAL]</a>.</p>
       <p>The meaning of each value is as follows:</p>
       <dl>
        <dt data-md="">
@@ -5664,10 +5663,10 @@ use for this <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyfram
        <dd data-md="">
         <p>Use the <a data-link-type="dfn" href="#distribute-keyframe-spacing-mode" id="ref-for-distribute-keyframe-spacing-mode-4">distribute keyframe spacing mode</a>.</p>
        <dt data-md="">
-        <p>paced({ident})</p>
+        <p>paced(<a class="production css" data-link-type="type" href="https://drafts.csswg.org/css-values-3/#typedef-ident">&lt;ident></a>)</p>
        <dd data-md="">
         <p>Use the <a data-link-type="dfn" href="#paced-keyframe-spacing-mode" id="ref-for-paced-keyframe-spacing-mode-8">paced keyframe spacing mode</a> with the property
-name indicated by <code>{ident}</code> as the <a data-link-type="dfn" href="#paced-property" id="ref-for-paced-property-5">paced
+name indicated by <code>&lt;ident></code> as the <a data-link-type="dfn" href="#paced-property" id="ref-for-paced-property-5">paced
 property</a>.</p>
         <p>For example, <code>paced(transform)</code> would indicate that
 the keyframes should be spaced such that changes to the <span class="prop-name">transform</span> property occur at
@@ -5675,9 +5674,12 @@ a constant rate.</p>
       </dl>
       <p>If an attempt is made to set the spacing mode to a value that does not
 conform to the above grammar, a <span class="exceptionname">TypeError</span> must be <a data-link-type="dfn" href="https://heycam.github.io/webidl/#dfn-throw">thrown</a> and the value of the <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-5">spacing mode</a> left unaffected.</p>
-      <p class="issue" id="issue-5da8463f"><a class="self-link" href="#issue-5da8463f"></a> Need to define what happens above when <code>{ident}</code> is not
-recognized, and when it *is* recognized but does not appear in any of
-the keyframes.</p>
+      <p>If the <a data-link-type="dfn" href="#paced-property" id="ref-for-paced-property-6">paced property</a> is not a property supported by the
+implementation, or is not animatable by the implementation, the <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-6">spacing mode</a> must be set to <a data-link-type="dfn" href="#distribute-keyframe-spacing-mode" id="ref-for-distribute-keyframe-spacing-mode-5">distribute</a>.
+A property is considered to be animatable if its <a data-link-type="dfn" href="#animation-type" id="ref-for-animation-type-24">animation type</a> is
+anything other than <a data-link-type="dfn" href="#concept-not-animatable" id="ref-for-concept-not-animatable-5">not animatable</a>, or, for shorthand properties, if
+at least one of its component longhand properties has an <a data-link-type="dfn" href="#animation-type" id="ref-for-animation-type-25">animation
+type</a> other than <a data-link-type="dfn" href="#concept-not-animatable" id="ref-for-concept-not-animatable-6">not animatable</a>.</p>
     </dl>
    </div>
    <div class="methods">
@@ -5707,11 +5709,11 @@ their <a data-link-type="dfn" href="#computed-keyframe-offset" id="ref-for-compu
          <p>The <a data-link-type="dfn" href="#keyframe-offset" id="ref-for-keyframe-offset-13">keyframe offset</a> of the <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-48">keyframe</a> specified as
   a number between 0.0 and 1.0 inclusive or <code>null</code>.</p>
          <p>This will be <code>null</code> if the <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-49">keyframe</a> is
-  automatically spaced using the <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-41">keyframe effect</a>’s <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-6">keyframe spacing mode</a>.</p>
+  automatically spaced using the <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-41">keyframe effect</a>’s <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-7">keyframe spacing mode</a>.</p>
         <dt data-md="">
          <p><code>computedOffset</code></p>
         <dd data-md="">
-         <p>The <a data-link-type="dfn" href="#computed-keyframe-offset" id="ref-for-computed-keyframe-offset-29">computed keyframe offset</a> for this <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-50">keyframe</a> calculated by applying the <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-42">keyframe effect</a>’s <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-7">keyframe
+         <p>The <a data-link-type="dfn" href="#computed-keyframe-offset" id="ref-for-computed-keyframe-offset-29">computed keyframe offset</a> for this <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-50">keyframe</a> calculated by applying the <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-42">keyframe effect</a>’s <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-8">keyframe
   spacing mode</a> when the list of <a data-link-type="dfn" href="#computed-keyframes" id="ref-for-computed-keyframes-3">computed keyframes</a> was
   produced.</p>
          <p>Unlike the <code>offset</code> member, the <code>computedOffset</code> is never null.</p>
@@ -5994,7 +5996,7 @@ typedef KeyframeArgument (sequence<span class="o">&lt;</span>Keyframe<span class
      <dd data-md="">
       <p>The <a data-link-type="dfn" href="#keyframe-offset" id="ref-for-keyframe-offset-16">keyframe offset</a> of the <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-56">keyframe</a> specified as
 a number between 0.0 and 1.0 inclusive or <code>null</code>.</p>
-      <p>A <code>null</code> value indicates that the <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-57">keyframe</a> should be positioned using the <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-47">keyframe effect</a>’s <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-8">keyframe spacing mode</a>.</p>
+      <p>A <code>null</code> value indicates that the <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-57">keyframe</a> should be positioned using the <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-47">keyframe effect</a>’s <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-9">keyframe spacing mode</a>.</p>
       <p>Specifying an offset outside the range [0.0, 1.0] will cause
 a <span class="exceptionname">TypeError</span> to be thrown.</p>
       <p>Keyframes that specify an offset must be provided in increasing
@@ -6228,7 +6230,7 @@ with the value of <var>easing</var>.</p>
             </ol>
            <li data-md="">
             <p>Apply the procedure to <a data-link-type="dfn" href="#apply-spacing-to-a-series-of-keyframes" id="ref-for-apply-spacing-to-a-series-of-keyframes-1">apply spacing to a series of
-keyframes</a> to <var>property keyframes</var> using a <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-9">spacing mode</a> of <a data-link-type="dfn" href="#distribute-keyframe-spacing-mode" id="ref-for-distribute-keyframe-spacing-mode-5">distribute</a>.</p>
+keyframes</a> to <var>property keyframes</var> using a <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-10">spacing mode</a> of <a data-link-type="dfn" href="#distribute-keyframe-spacing-mode" id="ref-for-distribute-keyframe-spacing-mode-6">distribute</a>.</p>
             <div class="note" role="note">
              <p>We unconditionally apply distribute spacing simply for the
 purposes of merging keyframes. This produces consistent and
@@ -6243,7 +6245,7 @@ until that point, was dynamic, would suddenly become fixed.</p>
              <p>Due to these considerations we apply merging once when updating
 the keyframes using distribute spacing which does not vary in
 its results.</p>
-             <p>Before computing the effect result or returning keyframes from <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getkeyframes" id="ref-for-dom-keyframeeffectreadonly-getkeyframes-4">getKeyframes()</a></code> the specified <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-10">spacing mode</a> is applied.</p>
+             <p>Before computing the effect result or returning keyframes from <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffectreadonly-getkeyframes" id="ref-for-dom-keyframeeffectreadonly-getkeyframes-4">getKeyframes()</a></code> the specified <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-11">spacing mode</a> is applied.</p>
             </div>
            <li data-md="">
             <p>Add <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-62">keyframes</a> in <var>property keyframes</var> to <var>processed keyframes</var>.</p>
@@ -6310,7 +6312,7 @@ a <a data-link-type="dfn" href="#keyframe-specific-composite-operation" id="ref-
      <dt data-md="">
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="KeyframeEffectOptions" data-dfn-type="dict-member" data-export="" id="dom-keyframeeffectoptions-spacing">spacing</dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-DOMString">DOMString</a>, defaulting to <code>"distribute"</code></span></p>
      <dd data-md="">
-      <p>The <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-11">spacing mode</a> to apply
+      <p>The <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-12">spacing mode</a> to apply
 to this <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-200">animation effect</a>’s <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe-66">keyframes</a>.</p>
       <p>See the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-spacing" id="ref-for-dom-keyframeeffect-spacing-2">spacing</a></code> attribute of the <code class="idl"><a data-link-type="idl" href="#keyframeeffect" id="ref-for-keyframeeffect-13">KeyframeEffect</a></code> interface for the recognized values and
 their meanings.</p>
@@ -6329,9 +6331,9 @@ last successfully called (i.e. did not throw an exception) for <var>effect</var>
 If that procedure returned a <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist" id="ref-for-sharedkeyframelist-4">SharedKeyframeList</a></code> object, then let <var>computed keyframes</var> refer to the result returned by that same
 procedure but for the <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist" id="ref-for-sharedkeyframelist-5">SharedKeyframeList</a></code> object instead of <var>effect</var>.</p>
     <li data-md="">
-     <p>Perform the procedure to <a data-link-type="dfn" href="#apply-spacing-to-a-series-of-keyframes" id="ref-for-apply-spacing-to-a-series-of-keyframes-2">apply spacing to a series of keyframes</a> on <var>computed keyframes</var> using the <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-12">keyframe spacing mode</a> for
+     <p>Perform the procedure to <a data-link-type="dfn" href="#apply-spacing-to-a-series-of-keyframes" id="ref-for-apply-spacing-to-a-series-of-keyframes-2">apply spacing to a series of keyframes</a> on <var>computed keyframes</var> using the <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-13">keyframe spacing mode</a> for
 this effect as <var>spacing</var>, and the <a data-link-type="dfn" href="#target-element" id="ref-for-target-element-12">target element</a> for this effect as the <var>context element</var>.
-If this effect has no <a data-link-type="dfn" href="#target-element" id="ref-for-target-element-13">target element</a>, use <a data-link-type="dfn" href="#distribute-keyframe-spacing-mode" id="ref-for-distribute-keyframe-spacing-mode-6">distribute keyframe
+If this effect has no <a data-link-type="dfn" href="#target-element" id="ref-for-target-element-13">target element</a>, use <a data-link-type="dfn" href="#distribute-keyframe-spacing-mode" id="ref-for-distribute-keyframe-spacing-mode-7">distribute keyframe
 spacing mode</a> as the value for <var>spacing</var>.</p>
     <li data-md="">
      <p>Return <var>computed keyframes</var>.</p>
@@ -7359,6 +7361,12 @@ time</a><span>, in §3.5.14</span>
      <li><a href="https://drafts.csswg.org/css-transforms-1/#propdef-transform">transform</a>
     </ul>
    <li>
+    <a data-link-type="biblio">[CSS3VAL]</a> defines the following terms:
+    <ul>
+     <li><a href="https://drafts.csswg.org/css-values-3/#typedef-ident">&lt;ident></a>
+     <li><a href="https://drafts.csswg.org/css-values-3/#comb-one">|</a>
+    </ul>
+   <li>
     <a data-link-type="biblio">[css-will-change-1]</a> defines the following terms:
     <ul>
      <li><a href="https://drafts.csswg.org/css-will-change-1/#propdef-will-change">will-change</a>
@@ -7455,7 +7463,7 @@ time</a><span>, in §3.5.14</span>
    <dt id="biblio-css-backgrounds-3">[CSS-BACKGROUNDS-3]
    <dd>CSS Backgrounds and Borders Module Level 3 URL: <a href="https://drafts.csswg.org/css-backgrounds-3/">https://drafts.csswg.org/css-backgrounds-3/</a>
    <dt id="biblio-css-cascade-3">[CSS-CASCADE-3]
-   <dd>Elika Etemad; Tab Atkins Jr.. <a href="http://dev.w3.org/csswg/css-cascade-3/">CSS Cascading and Inheritance Level 3</a>. 16 April 2015. CR. URL: <a href="http://dev.w3.org/csswg/css-cascade-3/">http://dev.w3.org/csswg/css-cascade-3/</a>
+   <dd>Elika Etemad; Tab Atkins Jr.. <a href="https://drafts.csswg.org/css-cascade-3/">CSS Cascading and Inheritance Level 3</a>. 19 May 2016. CR. URL: <a href="https://drafts.csswg.org/css-cascade-3/">https://drafts.csswg.org/css-cascade-3/</a>
    <dt id="biblio-css-overflow-4">[CSS-OVERFLOW-4]
    <dd>CSS Overflow Module Level 4 URL: <a href="https://drafts.csswg.org/css-overflow-4/">https://drafts.csswg.org/css-overflow-4/</a>
    <dt id="biblio-css-position-3">[CSS-POSITION-3]
@@ -7949,9 +7957,6 @@ feedback</a>).<a href="#issue-d0344606"> ↵ </a></div>
 that here.<a href="#issue-c84185b9"> ↵ </a></div>
    <div class="issue"> If <var>source</var> is using a <code class="idl"><a data-link-type="idl" href="#sharedkeyframelist">SharedKeyframeList</a></code> should
 we continue to share it?<a href="#issue-ffa5fa19"> ↵ </a></div>
-   <div class="issue"> Need to define what happens above when <code>{ident}</code> is not
-recognized, and when it *is* recognized but does not appear in any of
-the keyframes.<a href="#issue-5da8463f"> ↵ </a></div>
    <div class="issue"> What should we do if the [[type]] is <span class="esvalue">break</span>, <span class="esvalue">continue</span>, or <span class="esvalue">return</span>? Can it be?<a href="#issue-60682dbc"> ↵ </a></div>
    <div class="issue"> Do we need null offsets or is it enough to just test for the
 absence of the property?<a href="#issue-361f2071"> ↵ </a></div>
@@ -9423,6 +9428,8 @@ calc</a> <a href="#ref-for-animation-type-13">(2)</a>
     <li><a href="#ref-for-animation-type-19">4.4.3. The effect value of
   a keyframe effect</a> <a href="#ref-for-animation-type-20">(2)</a> <a href="#ref-for-animation-type-21">(3)</a>
     <li><a href="#ref-for-animation-type-22">4.5.4. Effect composition</a> <a href="#ref-for-animation-type-23">(2)</a>
+    <li><a href="#ref-for-animation-type-24">5.13. The KeyframeEffectReadOnly
+  and KeyframeEffect interfaces</a> <a href="#ref-for-animation-type-25">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="not-paceable">
@@ -9438,6 +9445,8 @@ calc</a> <a href="#ref-for-not-paceable-2">(2)</a>
     <li><a href="#ref-for-concept-not-animatable-1">4.3.1. Not animatable</a> <a href="#ref-for-concept-not-animatable-2">(2)</a> <a href="#ref-for-concept-not-animatable-3">(3)</a>
     <li><a href="#ref-for-concept-not-animatable-4">4.4.3. The effect value of
   a keyframe effect</a>
+    <li><a href="#ref-for-concept-not-animatable-5">5.13. The KeyframeEffectReadOnly
+  and KeyframeEffect interfaces</a> <a href="#ref-for-concept-not-animatable-6">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="real-number-animation-type">
@@ -9544,11 +9553,11 @@ argument</a> <a href="#ref-for-keyframe-specific-composite-operation-5">(2)</a>
    <ul>
     <li><a href="#ref-for-keyframe-spacing-mode-1">4.4.2.1. Applying spacing to keyframes</a>
     <li><a href="#ref-for-keyframe-spacing-mode-2">5.13. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframe-spacing-mode-3">(2)</a> <a href="#ref-for-keyframe-spacing-mode-4">(3)</a> <a href="#ref-for-keyframe-spacing-mode-5">(4)</a> <a href="#ref-for-keyframe-spacing-mode-6">(5)</a> <a href="#ref-for-keyframe-spacing-mode-7">(6)</a>
-    <li><a href="#ref-for-keyframe-spacing-mode-8">5.13.3. Processing a keyframes
-argument</a> <a href="#ref-for-keyframe-spacing-mode-9">(2)</a> <a href="#ref-for-keyframe-spacing-mode-10">(3)</a>
-    <li><a href="#ref-for-keyframe-spacing-mode-11">5.13.4. The KeyframeEffectOptions dictionary</a>
-    <li><a href="#ref-for-keyframe-spacing-mode-12">5.13.5. Computed keyframes</a>
+  and KeyframeEffect interfaces</a> <a href="#ref-for-keyframe-spacing-mode-3">(2)</a> <a href="#ref-for-keyframe-spacing-mode-4">(3)</a> <a href="#ref-for-keyframe-spacing-mode-5">(4)</a> <a href="#ref-for-keyframe-spacing-mode-6">(5)</a> <a href="#ref-for-keyframe-spacing-mode-7">(6)</a> <a href="#ref-for-keyframe-spacing-mode-8">(7)</a>
+    <li><a href="#ref-for-keyframe-spacing-mode-9">5.13.3. Processing a keyframes
+argument</a> <a href="#ref-for-keyframe-spacing-mode-10">(2)</a> <a href="#ref-for-keyframe-spacing-mode-11">(3)</a>
+    <li><a href="#ref-for-keyframe-spacing-mode-12">5.13.4. The KeyframeEffectOptions dictionary</a>
+    <li><a href="#ref-for-keyframe-spacing-mode-13">5.13.5. Computed keyframes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="distribute-keyframe-spacing-mode">
@@ -9557,10 +9566,10 @@ argument</a> <a href="#ref-for-keyframe-spacing-mode-9">(2)</a> <a href="#ref-fo
     <li><a href="#ref-for-distribute-keyframe-spacing-mode-1">4.4.2. Spacing keyframes</a> <a href="#ref-for-distribute-keyframe-spacing-mode-2">(2)</a>
     <li><a href="#ref-for-distribute-keyframe-spacing-mode-3">4.4.2.1. Applying spacing to keyframes</a>
     <li><a href="#ref-for-distribute-keyframe-spacing-mode-4">5.13. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a>
-    <li><a href="#ref-for-distribute-keyframe-spacing-mode-5">5.13.3. Processing a keyframes
+  and KeyframeEffect interfaces</a> <a href="#ref-for-distribute-keyframe-spacing-mode-5">(2)</a>
+    <li><a href="#ref-for-distribute-keyframe-spacing-mode-6">5.13.3. Processing a keyframes
 argument</a>
-    <li><a href="#ref-for-distribute-keyframe-spacing-mode-6">5.13.5. Computed keyframes</a>
+    <li><a href="#ref-for-distribute-keyframe-spacing-mode-7">5.13.5. Computed keyframes</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="paced-keyframe-spacing-mode">
@@ -9578,7 +9587,7 @@ argument</a>
     <li><a href="#ref-for-paced-property-1">4.4.2. Spacing keyframes</a>
     <li><a href="#ref-for-paced-property-2">4.4.2.1. Applying spacing to keyframes</a> <a href="#ref-for-paced-property-3">(2)</a> <a href="#ref-for-paced-property-4">(3)</a>
     <li><a href="#ref-for-paced-property-5">5.13. The KeyframeEffectReadOnly
-  and KeyframeEffect interfaces</a>
+  and KeyframeEffect interfaces</a> <a href="#ref-for-paced-property-6">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="computed-keyframe-offset">
