@@ -652,22 +652,15 @@ follows:
     <var>animation</var>, if any.
 1.  If <var>new timeline</var> is the same object as <var>old timeline</var>,
     abort this procedure.
-1.  Let <var>previous animation time</var> be the <a>current time</a> of
-    <var>animation</var>.
-1.  If <var>new timeline</var> is null and <var>old timeline</var> is not null,
-    run the procedure to <a>reset an animation's pending tasks</a> on
-    <var>animation</var>.
-    <p class="note">
-      Note that if <var>new timeline</var> is not null and <var>animation</var>
-      has a <a>pending play task</a> or a <a>pending pause task</a> no special
-      handling is required: the pending task will run as soon as the
-      <a>animation</a> is <a>ready</a> even though this may occur at a different
-      moment than it might have done with the old timeline.
-    </p>
 1.  Let the <a>timeline</a> of <var>animation</var> be <var>new timeline</var>.
-1.  If <var>previous animation time</var> is <a lt=unresolved>resolved</a>,
-    run the procedure to <a>silently set the current time</a> of
-    <var>animation</var> to <var>previous animation time</var>.
+1.  If the <a>animation start time</a> of <var>animation</var> is <a
+    lt=unresolved>resolved</a>, make <var>animation</var>'s <a>hold time</a>
+    <a>unresolved</a>.
+
+    Note: This step ensures that the <a>finished play state</a> of
+    <var>animation</var> is not &ldquo;sticky&rdquo; but is re-evaluated
+    based on its updated <a>current time</a>.
+
 <!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
 1.  Issue: If <var>new timeline</var> is null, we should ensure that <a>custom
     effects</a> get called with an <a>unresolved</a> <a>iteration progress</a>
@@ -7996,6 +7989,8 @@ The following changes have been made since the <a
   href="https://www.w3.org/TR/2015/WD-web-animations-1-20150707/">7 July
 2015 Working Draft</a>:
 
+*   Greatly simplified the procedure to <a>set the timeline of an animation</a>
+    to be more predictable and consistent.
 *   Made the procedure to <a>set the animation start time</a> set the
     <var>did seek</var> flag to true.
 *   Made the procedure to <a>play an animation</a> take an
