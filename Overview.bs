@@ -2843,7 +2843,10 @@ as follows,
     :   If the <a>fill mode</a> is <span
         class="prop-mode">forwards</span> or <span
         class="prop-mode">both</span>,
-    ::  Return the <a>active duration</a>.
+    ::  Return the result of evaluating
+        <code>max(min(<a>active duration</a>,
+                      <a>active duration</a> + <a>end delay</a>),
+                  0)</code>.
     :   Otherwise,
     ::  Return an <a>unresolved</a> <a>time value</a>.
 
@@ -2932,9 +2935,27 @@ applied to the effect, and is calculated as follows:
 
     * the <var>simple iteration progress</var> calculated above is zero,
     * the animation effect is in the <a>after phase</a>, <em>and</em>
-    * <a>iteration count</a> is <em>not</em> equal to zero
+    * <a>iteration count</a> is <em>not</em> equal to zero, <em>and</em>
+    * <em>either</em> the <a>active time</a> is <em>not</em> zero <em>or</em>
+        the <a>iteration duration</a> is zero.
 
     let the <var>simple iteration progress</var> be 1.0.
+
+    <div class="note">
+
+      The above step implements the behavior that when an animation's
+      active interval ends precisely at the end of an iteration, it fills by
+      holding the endpoint of the final iteration rather than the start of the
+      next iteration.
+
+      The final two conditions prevent this from applying when we never played
+      any iterations of the animation to begin with because either (a) the
+      <a>iteration count</a> was zero, or (b) the playback range of the
+      <a>active interval</a> was clipped to zero using a negative <a>end
+      delay</a>.
+      In detecting if the <a>active interval</a>'s playback range was clipped
+
+    </div>
 
 1.  Return <var>simple iteration progress</var>.
 
