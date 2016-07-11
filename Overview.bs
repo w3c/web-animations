@@ -3729,7 +3729,7 @@ In order to animate a property, the following procedures must be defined.
 *   <dfn lt="animation interpolation">interpolation</dfn> &mdash;
     given two property values <var>V</var><sub>start</sub> and
     <var>V</var><sub>end</sub>, produces an intermediate value
-    <var>V</var><sub>res</sub> at a distance of <var>p</var> along the
+    <var>V</var><sub>result</sub> at a distance of <var>p</var> along the
     interval between <var>V</var><sub>start</sub> and
     <var>V</var><sub>end</sub> such that
     <var>p</var> = 0 produces <var>V</var><sub>start</sub> and
@@ -3857,7 +3857,7 @@ lt="discrete animation type">discrete</dfn> has the following behavior:
     <div role="math" aria-describedby="math-string-interpolation"
     style="display: inline">
     <math xmlns="http://www.w3.org/1998/Math/MathML">
-      <msub><mi>V</mi><mn>res</mn></msub><mo>=</mo>
+      <msub><mi>V</mi><mn>result</mn></msub><mo>=</mo>
       <mrow>
         <mfenced open="{" close="">
           <mtable>
@@ -3884,7 +3884,7 @@ lt="discrete animation type">discrete</dfn> has the following behavior:
       </mrow>
     </math>
     <div id="math-string-interpolation" class="explanation">
-      <var>V</var><sub>res</sub> =
+      <var>V</var><sub>result</sub> =
         <var>V</var><sub>start</sub>, if <var>p</var> &lt; 0.5 or
         <var>V</var><sub>end</sub>, if <var>p</var> &ge; 0.5
     </div>
@@ -3896,10 +3896,11 @@ A property whose <a>animation type</a> is <dfn
 lt="real number animation type">real number</dfn> has the following behavior:
 
 *   <a lt="animation interpolation">interpolation</a>:
-    <var>V</var><sub>res</sub> =
+    <var>V</var><sub>result</sub> =
       (1 - <var>p</var>) &times; <var>V</var><sub>start</sub> +
       <var>p</var> &times; <var>V</var><sub>end</sub>
 *   <a lt="animation addition">addition</a>:
+    <var>V</var><sub>result</sub> =
       <var>V</var><sub>a</sub> + <var>V</var><sub>b</sub>
 *   <a>distance computation</a>:
     <var>distance</var> =
@@ -3915,6 +3916,7 @@ calc</dfn> has the following behavior:
 *   <a lt="animation interpolation">interpolation</a>:
     as defined in [[CSS3-TRANSITIONS]].
 *   <a lt="animation addition">addition</a>:
+    <var>V</var><sub>result</sub> =
     calc(<var>V</var><sub>a</sub> + <var>V</var><sub>b</sub>)<br>
     (Nested <code>calc()</code> functions are expanded when
     determining the computed value as defined in <a
@@ -4309,7 +4311,7 @@ The slope of the graph is equal for the first two segments but changes for the l
 </div>
 
 Before calculating effect values from a <a>keyframe effect</a>,
-an absolute value must be computed for <a>keyframe offset</a>
+an absolute value must be computed for the <a>keyframe offset</a>
 of each <a>keyframe</a> with a null offset.
 
 The values computed depend on the <dfn>keyframe spacing mode</dfn>
@@ -7335,13 +7337,10 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
     following steps:
 
     1.  For each property-value pair in <var>frame</var>, parse the property
-        value using the syntax specified for that property and store the result.
+        value using the syntax specified for that property.
 
         If the property value is invalid according to the syntax for the
         property, store the original DOMString used for the property value.
-
-        Issue: Should we really retain this? It might aid feature-detection
-        if we could replace it with some value indicating an error?
 
         User agents that provide support for diagnosing errors in content
         SHOULD produce an appropriate warning highlighting the unrecognized
@@ -7353,15 +7352,16 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
         {{AnimationEffectTimingReadOnly/easing}} property of the
         {{AnimationEffectTimingReadOnly}} interface.
 
-        If parsing the &ldquo;easing&rdquo; property failed, let the <a>timing
+        If parsing the &ldquo;easing&rdquo; property fails, let the <a>timing
         function</a> of <var>frame</var> be &ldquo;linear&rdquo;.
+
         User agents that provide support for diagnosing errors in content
         SHOULD produce an appropriate warning highlighting the unrecognized
         <a>timing function</a> in this case.
 
         Note: Using the CSS parser in both of the above steps implies that CSS
-        comments and escaping are allowed (but are not retained when the value
-        is successfully parsed).
+        comments and escaping are allowed but are not retained when the value
+        is successfully parsed.
 
 <h4 id="the-keyframeeffectoptions-dictionary">The <code>KeyframeEffectOptions</code> dictionary</h4>
 
