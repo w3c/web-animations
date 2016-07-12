@@ -253,11 +253,11 @@ pre.idl.highlight { color: #708090; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1>Web Animations</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">W3C Working Draft, <time class="dt-updated" datetime="2016-07-11">11 July 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">W3C Working Draft, <time class="dt-updated" datetime="2016-07-12">12 July 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
-     <dd><a class="u-url" href="http://www.w3.org/TR/2016/WD-web-animations-1-20160711/">http://www.w3.org/TR/2016/WD-web-animations-1-20160711/</a>
+     <dd><a class="u-url" href="http://www.w3.org/TR/2016/WD-web-animations-1-20160712/">http://www.w3.org/TR/2016/WD-web-animations-1-20160712/</a>
      <dt>Latest published version:
      <dd><a href="https://www.w3.org/TR/web-animations-1/">https://www.w3.org/TR/web-animations-1/</a>
      <dt>Editor's Draft:
@@ -5483,16 +5483,18 @@ the <code class="idl"><a data-link-type="idl" href="#animatable" id="ref-for-ani
       <p>Performs the following steps:</p>
       <ol>
        <li data-md="">
+        <p>Let <var>target</var> be the object on which this method was called.</p>
+       <li data-md="">
         <p>Construct a new <code class="idl"><a data-link-type="idl" href="#keyframeeffect" id="ref-for-keyframeeffect-16">KeyframeEffect</a></code> object, <var>effect</var>,
-by using the same procedure as the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-keyframeeffect" id="ref-for-dom-keyframeeffect-keyframeeffect-5">KeyframeEffect(target, keyframes,
-options)</a></code> constructor, passing the object on which this method was
-called as the <var>target</var> argument,
-and the <var>keyframes</var> and <var>options</var> arguments as
-supplied.</p>
+in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-realm">relevant Realm</a> of <var>target</var> by using the same
+procedure as the <code class="idl"><a data-link-type="idl" href="#dom-keyframeeffect-keyframeeffect" id="ref-for-dom-keyframeeffect-keyframeeffect-5">KeyframeEffect(target, keyframes,
+options)</a></code> constructor, passing <var>target</var> as the <var>target</var> argument, and the <var>keyframes</var> and <var>options</var> arguments as supplied.</p>
         <p>If the above procedure caused an exception to be thrown, propagate the
 exception and abort this procedure.</p>
        <li data-md="">
-        <p>Construct a new <code class="idl"><a data-link-type="idl" href="#animation" id="ref-for-animation-11">Animation</a></code> object, <var>animation</var>, passing <var>effect</var> as the argument of the same name, and the
+        <p>Construct a new <code class="idl"><a data-link-type="idl" href="#animation" id="ref-for-animation-11">Animation</a></code> object, <var>animation</var>, in
+the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-realm">relevant Realm</a> of <var>target</var> by using the
+same procedure as the <code class="idl"><a data-link-type="idl" href="#dom-animation-animation" id="ref-for-dom-animation-animation-3">Animation()</a></code> constructor, passing <var>effect</var> as the argument of the same name, and
 the <a data-link-type="dfn" href="#default-document-timeline" id="ref-for-default-document-timeline-8">default document timeline</a> of the <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-node-document">node document</a> of the element on which this method was called as the <var>timeline</var> argument.</p>
        <li data-md="">
         <p>Assign the value of the <code>id</code> member of <var>options</var> to <var>animation</var>’s <code class="idl"><a data-link-type="idl" href="#dom-animation-id" id="ref-for-dom-animation-id-2">id</a></code> attribute.</p>
@@ -5501,14 +5503,17 @@ the <a data-link-type="dfn" href="#default-document-timeline" id="ref-for-defaul
        <li data-md="">
         <p>Return <var>animation</var>.</p>
       </ol>
-      <p>The following code fragment:</p>
+      <div class="informative-bg">
+       <em>This section is non-normative</em> 
+       <p>The following code fragment:</p>
 <pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
 </pre>
-      <p>is equivalent to:</p>
+       <p>is roughly equivalent to:</p>
 <pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="p">{</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span> <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
 <span class="kd">var</span> <span class="nx">animation</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">effect</span><span class="p">,</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">ownerDocument</span><span class="p">.</span><span class="nx">timeline</span><span class="p">);</span>
 <span class="nx">animation</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
 </pre>
+      </div>
       <div class="parameters">
        <dl>
         <dt data-md="">
@@ -5846,7 +5851,7 @@ renamed to <a data-link-type="dfn" href="#animation-class" id="ref-for-animation
       <li data-md="">
        <p>Made the <code class="idl"><a data-link-type="idl" href="#animation" id="ref-for-animation-19">Animation</a></code> interface inherit from <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#eventtarget">EventTarget</a></code>.</p>
       <li data-md="">
-       <p>Updated the <code class="idl"><a data-link-type="idl" href="#dom-animation-animation" id="ref-for-dom-animation-animation-3">Animation()</a></code> constructor so that if a <var>timeline</var> is not provided, the <a data-link-type="dfn" href="#default-document-timeline" id="ref-for-default-document-timeline-11">default document
+       <p>Updated the <code class="idl"><a data-link-type="idl" href="#dom-animation-animation" id="ref-for-dom-animation-animation-4">Animation()</a></code> constructor so that if a <var>timeline</var> is not provided, the <a data-link-type="dfn" href="#default-document-timeline" id="ref-for-default-document-timeline-11">default document
 timeline</a> of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document">active document</a> is used.</p>
       <li data-md="">
        <p>Added the <code class="idl"><a data-link-type="idl" href="#dom-animation-id" id="ref-for-dom-animation-id-4">id</a></code> attribute.</p>
@@ -6444,6 +6449,7 @@ to the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.
      <li><a href="https://html.spec.whatwg.org/multipage/embedded-content.html#media-element">media element</a>
      <li><a href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask">queue a microtask</a>
      <li><a href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue a task</a>
+     <li><a href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-realm">relevant realm</a>
      <li><a href="https://html.spec.whatwg.org/multipage/browsers.html#session-history-entry">session history entry</a>
     </ul>
    <li>
@@ -8410,7 +8416,8 @@ argument</a>
    <ul>
     <li><a href="#ref-for-dom-animation-animation-1">5.4. The Animation interface</a>
     <li><a href="#ref-for-dom-animation-animation-2">5.8. The AnimationEffectTimingProperties dictionary</a>
-    <li><a href="#ref-for-dom-animation-animation-3">10. Changes since last publication</a>
+    <li><a href="#ref-for-dom-animation-animation-3">5.14. The Animatable interface</a>
+    <li><a href="#ref-for-dom-animation-animation-4">10. Changes since last publication</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-animation-animation-effect-timeline-effect">
