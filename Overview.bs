@@ -52,7 +52,9 @@ urlPrefix: https://heycam.github.io/webidl/; type: dfn; spec: webidl
     text: es to DOMString; url: es-to-DOMString
     text: DOMString to es; url: DOMString-to-es
 urlPrefix: http://www.ecma-international.org/ecma-262/6.0/#sec-; type: dfn; spec: ecma-262
+    text: code realms
     text: completion record specification type
+    text: execution contexts
     text: EnumerableOwnNames
     text: GetIterator
     text: GetMethod
@@ -6101,8 +6103,11 @@ GroupEffect implements GroupEffectMutable;
         {{GroupEffectReadOnly/GroupEffectReadOnly(children, timing)/timing}}.
 
     1.  Set <code><var>group</var>.timing</code> to a new
-        {{AnimationEffectTimingReadOnly}} object whose attributes are assigned
-        the value of the member of the same name on <var>timing input</var>.
+        {{AnimationEffectTimingReadOnly}} object created in the <a
+        lt="execution contexts">current realm</a> (that is, the same
+        <a lt="code realms">realm</a> used to create <var>effect</var>)
+        whose attributes are assigned the value of the member of the same name
+        on <var>timing input</var>.
 
     1.  <a lt="insert children">Insert</a>
         {{GroupEffectReadOnly/GroupEffectReadOnly(children, timing)/children}}
@@ -6457,8 +6462,11 @@ KeyframeEffect implements AnimationEffectMutable;
             object with all members set to their default values.
 
     1.  Set <code><var>effect</var>.timing</code> to a new
-        {{AnimationEffectTimingReadOnly}} object whose attributes are assigned
-        the value of the member of the same name on <var>timing input</var>.
+        {{AnimationEffectTimingReadOnly}} object created in the <a
+        lt="execution contexts">current realm</a> (that is, the same <a lt="code
+        realms">realm</a> used to create <var>effect</var>) whose attributes are
+        assigned the value of the member of the same name on <var>timing
+        input</var>.
 
         When assigning the attributes, apply the same error-handling as defined
         for setters on the {{AnimationEffectTiming}} interface.
@@ -6548,9 +6556,11 @@ KeyframeEffect implements AnimationEffectMutable;
         we continue to share it?
 
     1.  Set <var>effect</var>'s {{AnimationEffectReadOnly/timing}} member
-        to a new {{AnimationEffectTimingReadOnly}} object whose attributes
-        are assigned the value of the member of the same name on
-        <var>source</var>'s {{AnimationEffectReadOnly/timing}} object.
+        to a new {{AnimationEffectTimingReadOnly}} object
+        created in the <a lt="execution contexts">current realm</a> (that is,
+        the same <a lt="code realms">realm</a> used to create <var>effect</var>)
+        whose attributes are assigned the value of the member of the same name
+        on <var>source</var>'s {{AnimationEffectReadOnly/timing}} object.
 
         Note: Unlike the {{KeyframeEffectReadOnly(target, keyframes,
         options)}} constructor, we do not need to re-throw exceptions or
