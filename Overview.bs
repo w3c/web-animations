@@ -76,6 +76,7 @@ urlPrefix: https://html.spec.whatwg.org/multipage/webappapis.html; type: dfn; sp
     text: DOM manipulation task source
     text: event loop processing model
     text: document.open(); url: dom-document-open
+    text: relevant Realm
 urlPrefix: https://html.spec.whatwg.org/multipage/infrastructure.html; type: dfn; spec: html
     text: fire; url: concept-event-fire
 urlPrefix: https://html.spec.whatwg.org/multipage/embedded-content.html; type: dfn; spec: html
@@ -7647,18 +7648,22 @@ dictionary KeyframeAnimationOptions : KeyframeEffectOptions {
 :   <dfn method for=Animatable lt="animate(keyframes, options)">Animation animate(keyframes, options)</dfn>
 ::  Performs the following steps:
 
+    1.  Let <var>target</var> be the object on which this method was called.
+
     1.  Construct a new {{KeyframeEffect}} object, <var>effect</var>,
-        by using the same procedure as the {{KeyframeEffect(target, keyframes,
-        options)}} constructor, passing the object on which this method was
-        called as the <var>target</var> argument,
-        and the <var>keyframes</var> and <var>options</var> arguments as
-        supplied.
+        in the <a>relevant Realm</a> of <var>target</var> by using the same
+        procedure as the {{KeyframeEffect(target, keyframes,
+        options)}} constructor, passing <var>target</var> as the
+        <var>target</var> argument, and the <var>keyframes</var> and
+        <var>options</var> arguments as supplied.
 
         If the above procedure caused an exception to be thrown, propagate the
         exception and abort this procedure.
 
-    1.  Construct a new {{Animation}} object, <var>animation</var>, passing
-        <var>effect</var> as the argument of the same name, and the
+    1.  Construct a new {{Animation}} object, <var>animation</var>, in
+        the <a>relevant Realm</a> of <var>target</var> by using the
+        same procedure as the {{Animation()}} constructor, passing
+        <var>effect</var> as the argument of the same name, and
         the <a>default document timeline</a> of the <a>node document</a>
         of the element on which this method was called as the
         <var>timeline</var> argument.
@@ -7671,17 +7676,21 @@ dictionary KeyframeAnimationOptions : KeyframeEffectOptions {
 
     1.  Return <var>animation</var>.
 
+    <div class="informative-bg"><em>This section is non-normative</em>
+
     The following code fragment:
 
     <pre class="lang-javascript">
 var animation = elem.animate({ opacity: 0 }, 2000);</pre>
 
-    is equivalent to:
+    is roughly equivalent to:
 
     <pre class="lang-javascript">
 var effect = new KeyframeEffect(elem, { opacity: 0 }, 2000);
 var animation = new Animation(effect, elem.ownerDocument.timeline);
 animation.play();</pre>
+
+    </div>
 
     <div class="parameters">
 
