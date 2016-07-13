@@ -253,11 +253,11 @@ pre.idl.highlight { color: #708090; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1>Web Animations</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">W3C Working Draft, <time class="dt-updated" datetime="2016-07-12">12 July 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">W3C Working Draft, <time class="dt-updated" datetime="2016-07-13">13 July 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
-     <dd><a class="u-url" href="http://www.w3.org/TR/2016/WD-web-animations-1-20160712/">http://www.w3.org/TR/2016/WD-web-animations-1-20160712/</a>
+     <dd><a class="u-url" href="http://www.w3.org/TR/2016/WD-web-animations-1-20160713/">http://www.w3.org/TR/2016/WD-web-animations-1-20160713/</a>
      <dt>Latest published version:
      <dd><a href="https://www.w3.org/TR/web-animations-1/">https://www.w3.org/TR/web-animations-1/</a>
      <dt>Editor's Draft:
@@ -1430,6 +1430,10 @@ the playback of <var>animation</var>’s <a data-link-type="dfn" href="#target-e
 The task shall perform the following steps:</p>
      <ol>
       <li data-md="">
+       <p>Let <var>ready time</var> be the time value of the timeline associated
+with <var>animation</var> at the moment when the user agent completed
+processing necessary to suspend playback of <var>animation</var>’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-10">target effect</a>.</p>
+      <li data-md="">
        <p>If <var>animation</var>’s <a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time-20">start time</a> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-39">resolved</a> and its <a data-link-type="dfn" href="#hold-time" id="ref-for-hold-time-22">hold time</a> is <em>not</em> resolved,
 let <var>animation</var>’s <a data-link-type="dfn" href="#hold-time" id="ref-for-hold-time-23">hold time</a> be the result of evaluating <code><var>ready time</var> - (<a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time-21">start
 time</a> / <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-13">playback rate</a>)</code>.</p>
@@ -1461,7 +1465,7 @@ If such players are able to play in reverse, they typically stop
 playing when they reach the beginning of their media.
 In order to emulate this behavior and to provide consistency
 with HTML’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/embedded-content.html#media-element">media elements</a> <a data-link-type="biblio" href="#biblio-html">[HTML]</a>, the <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-24">current time</a> of Web
-Animations' animations do not play forwards beyond the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-1">end time</a> of their <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-10">target effect</a> or play backwards past time zero.</p>
+Animations' animations do not play forwards beyond the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-1">end time</a> of their <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-11">target effect</a> or play backwards past time zero.</p>
     <p>An animation that has reached the natural boundary of its playback range
 is said to have <em>finished</em>.</p>
     <p>Graphically, the effect of limiting the current time is shown below.</p>
@@ -1473,16 +1477,16 @@ is said to have <em>finished</em>.</p>
     target effect, it is capped at 3s. </figcaption>
     </figure>
     <p>It is possible, however, to <em>seek</em> the <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-27">current time</a> of
-an <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-16">animation</a> to a time past the end of the <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-11">target effect</a>.
+an <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-16">animation</a> to a time past the end of the <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-12">target effect</a>.
 When doing so, the <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-28">current time</a> will not progress but the
 animation will act as if it had been paused at the seeked time.</p>
     <p>This allows, for example, seeking the <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-29">current time</a> of
-an animation with <em>no</em> <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-12">target effect</a> to 5s.
-If <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-13">target effect</a> with an <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-2">end time</a> later than 5s is
+an animation with <em>no</em> <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-13">target effect</a> to 5s.
+If <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-14">target effect</a> with an <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-2">end time</a> later than 5s is
 later associated with the animation, playback will begin from the 5s
 mark.</p>
     <p>Similar behavior to the above scenario may arise when the
-length of an animation’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-14">target effect</a> changes.</p>
+length of an animation’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-15">target effect</a> changes.</p>
     <p>Similarly, when the <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-15">animation playback rate</a> is negative, the <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-30">current time</a> does not progress past time zero.</p>
    </div>
    <h4 class="heading settled" data-level="3.5.13" id="the-current-finished-promise"><span class="secno">3.5.13. </span><span class="content">The current finished promise</span><a class="self-link" href="#the-current-finished-promise"></a></h4>
@@ -1495,8 +1499,8 @@ the animation leaves the <a data-link-type="dfn" href="#finished-play-state" id=
 rate</a>, the <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-31">current time</a> continues to increase until it
 reaches the <a data-link-type="dfn" href="#target-effect-end" id="ref-for-target-effect-end-7">target effect end</a>.</p>
    <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="target-effect-end">target effect end</dfn> of an animation is equal to the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-3">end
-time</a> of the animation’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-15">target effect</a>.
-If the animation has no <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-16">target effect</a>, the <a data-link-type="dfn" href="#target-effect-end" id="ref-for-target-effect-end-8">target effect
+time</a> of the animation’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-16">target effect</a>.
+If the animation has no <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-17">target effect</a>, the <a data-link-type="dfn" href="#target-effect-end" id="ref-for-target-effect-end-8">target effect
 end</a> is zero.</p>
    <p>An animation with a negative <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-17">playback
 rate</a>, the <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-32">current time</a> continues to decrease until it
@@ -1504,7 +1508,7 @@ reaches zero.</p>
    <p>A running animation that has reached this boundary (or overshot it) and has a <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-40">resolved</a> <a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time-23">animation start time</a> is said to be <a data-link-type="dfn" href="#finished-play-state" id="ref-for-finished-play-state-4">finished</a>.</p>
    <p>The crossing of this boundary is checked on each modification to the
 animation object using the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state" id="ref-for-update-an-animations-finished-state-9">update an animation’s finished
-state</a> defined below. This procedure is also run on each <a data-link-type="dfn" href="#sampling" id="ref-for-sampling-3">sample</a> and each time the timing properties of the <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-17">target effect</a> associated
+state</a> defined below. This procedure is also run on each <a data-link-type="dfn" href="#sampling" id="ref-for-sampling-3">sample</a> and each time the timing properties of the <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-18">target effect</a> associated
 with an <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-17">animation</a> are updated.</p>
    <p>For each animation, the user agent maintains a <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="previous current time" data-noexport="" id="previous-current-time">previous current
 time</dfn> <a data-link-type="dfn" href="#time-value" id="ref-for-time-value-30">time value</a> that is originally <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-41">unresolved</a>.</p>
@@ -1686,7 +1690,7 @@ and the <var>synchronously notify</var> flag set to true.</p>
    </ol>
    <h4 class="heading settled" data-level="3.5.16" id="canceling-an-animation-section"><span class="secno">3.5.16. </span><span class="content">Canceling an animation</span><a class="self-link" href="#canceling-an-animation-section"></a></h4>
    <p>An animation can be canceled which causes the <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-41">current time</a> to
-become <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-53">unresolved</a> hence removing any effects caused by the <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-18">target effect</a>.</p>
+become <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-53">unresolved</a> hence removing any effects caused by the <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-19">target effect</a>.</p>
    <p>The procedure to <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="cancel-an-animation">cancel an animation</dfn> for <var>animation</var> is
 as follows:</p>
    <ol>
@@ -1835,7 +1839,7 @@ without restarting by setting the <a data-link-type="dfn" href="#animation-start
    <h4 class="heading settled" data-level="3.5.20" id="animation-events-section"><span class="secno">3.5.20. </span><span class="content">Animation events</span><a class="self-link" href="#animation-events-section"></a></h4>
    <p>As <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-28">animations</a> play, they report changes to their status through <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="animation-events">animation events</dfn>.</p>
    <p><a data-link-type="dfn" href="#animation-events" id="ref-for-animation-events-1">Animation events</a> are a property of the timing model. As a result they
-are dispatched even when the <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-19">target effect</a> of the <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-29">animation</a> is
+are dispatched even when the <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-20">target effect</a> of the <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-29">animation</a> is
 absent or has no observable result.</p>
    <h5 class="heading settled" data-level="3.5.20.1" id="animation-event-types"><span class="secno">3.5.20.1. </span><span class="content">Types of animation events</span><a class="self-link" href="#animation-event-types"></a></h5>
    <dl>
@@ -1864,8 +1868,8 @@ a <a data-link-type="dfn" href="#timeline" id="ref-for-timeline-38">timeline</a>
 the timing hierarchy.</p>
    <h4 class="heading settled" data-level="3.6.1" id="animation-effects-and-animations"><span class="secno">3.6.1. </span><span class="content">Relationship between animation effects
   and animations</span><a class="self-link" href="#animation-effects-and-animations"></a></h4>
-   <p>The <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-20">target effect</a> of an <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-35">animation</a>, if set, is a type of <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-5">animation effect</a>.
-The <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-21">target effect</a> of an <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-36">animation</a> is said to be <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="associated with an animation" data-noexport="" id="associated-with-an-animation">associated</dfn> with that animation.
+   <p>The <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-21">target effect</a> of an <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-35">animation</a>, if set, is a type of <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-5">animation effect</a>.
+The <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-22">target effect</a> of an <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-36">animation</a> is said to be <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="associated with an animation" data-noexport="" id="associated-with-an-animation">associated</dfn> with that animation.
 At a given moment, an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-6">animation effect</a> can be <a data-link-type="dfn" href="#associated-with-an-animation" id="ref-for-associated-with-an-animation-1">associated</a> with at most one <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-37">animation</a>.</p>
    <p>An <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-7">animation effect</a>, <var>effect</var>, is <dfn data-dfn-type="dfn" data-lt="associated with a timeline" data-noexport="" id="associated-with-a-timeline">associated with
 a timeline<a class="self-link" href="#associated-with-a-timeline"></a></dfn>, <var>timeline</var>, if <var>effect</var> is <a data-link-type="dfn" href="#associated-with-an-animation" id="ref-for-associated-with-an-animation-2">associated with an animation</a> which, in turn, is associated with <var>timeline</var>.</p>
@@ -2214,7 +2218,7 @@ This model provides sensible behavior when intervals are repeated and
 sequenced since there is no overlap between the intervals.</p>
     <p>In the examples below, for the repeated effect, at local time 1s,
 the iteration time is 0.
-For the sequenced animations, at timeline time 1s, only animation B’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-22">target effect</a> will be <a data-link-type="dfn" href="#in-play" id="ref-for-in-play-12">in play</a>; there is no overlap.</p>
+For the sequenced animations, at timeline time 1s, only animation B’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-23">target effect</a> will be <a data-link-type="dfn" href="#in-play" id="ref-for-in-play-12">in play</a>; there is no overlap.</p>
     <figure>
      <p><img alt="Illustration of end-point exclusive timing." src="img/endpoint-exclusive-timing-without-groups.svg" width="600"></p>
      <figcaption> Illustration of end-point exclusive timing. For both repeated and
@@ -3920,7 +3924,7 @@ effect</var>.</p>
         <dt data-md="">
          <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animation/Animation(effect, timeline)" data-dfn-type="argument" data-export="" id="dom-animation-animation-effect-timeline-effect">effect</dfn></p>
         <dd data-md="">
-         <p>An optional value which, if not null, specifies the <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-23">target
+         <p>An optional value which, if not null, specifies the <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-24">target
 effect</a> to assign to the newly created <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-49">animation</a>.</p>
         <dt data-md="">
          <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animation/Animation(effect, timeline)" data-dfn-type="argument" data-export="" id="dom-animation-animation-effect-timeline-timeline">timeline</dfn></p>
@@ -3940,8 +3944,8 @@ If not provided, the <a data-link-type="dfn" href="#default-document-timeline" i
      <dt data-md="">
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animation" data-dfn-type="attribute" data-export="" id="dom-animation-effect">effect</dfn>, <span> of type <a data-link-type="idl-name" href="#animationeffectreadonly" id="ref-for-animationeffectreadonly-3">AnimationEffectReadOnly</a>, nullable</span></p>
      <dd data-md="">
-      <p>The <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-24">target effect</a> associated with this animation.
-Setting this attribute updates the object’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-25">target effect</a> using
+      <p>The <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-25">target effect</a> associated with this animation.
+Setting this attribute updates the object’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-26">target effect</a> using
 the procedure to <a data-link-type="dfn" href="#set-the-target-effect-of-an-animation" id="ref-for-set-the-target-effect-of-an-animation-3">set the target effect of an animation</a>.</p>
      <dt data-md="">
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animation" data-dfn-type="attribute" data-export="" id="dom-animation-timeline">timeline</dfn>, <span> of type <a data-link-type="idl-name" href="#animationtimeline" id="ref-for-animationtimeline-5">AnimationTimeline</a>, nullable</span></p>
@@ -4003,7 +4007,7 @@ by running the <a data-link-type="dfn" href="#cancel-an-animation" id="ref-for-c
      <dt data-md="">
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animation" data-dfn-type="method" data-export="" data-lt="finish()" id="dom-animation-finish">void finish()</dfn></p>
      <dd data-md="">
-      <p>Seeks the animation to the end of the <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-26">target effect</a> in the
+      <p>Seeks the animation to the end of the <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-27">target effect</a> in the
 current direction by running the <a data-link-type="dfn" href="#finish-an-animation" id="ref-for-finish-an-animation-3">finish an animation</a> procedure
 for this object.</p>
       <div class="exceptions">
@@ -4012,7 +4016,7 @@ for this object.</p>
          <p>DOMException of type <code>InvalidStateError</code></p>
         <dd data-md="">
          <p>Raised if this animation’s <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-36">playback
-rate</a> is zero, or if this animation’s <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-37">playback rate</a> is > zero and the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-8">end time</a> of this animation’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-27">target effect</a> is infinity.</p>
+rate</a> is zero, or if this animation’s <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-37">playback rate</a> is > zero and the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-8">end time</a> of this animation’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-28">target effect</a> is infinity.</p>
        </dl>
       </div>
      <dt data-md="">
@@ -4033,7 +4037,7 @@ this animation and plays it using the <a data-link-type="dfn" href="#reverse-an-
 for this object.
 As with <a class="idl-code" data-link-type="method" href="#dom-animation-play" id="ref-for-dom-animation-play-2">play()</a>, this
 method unpauses the animation and, if the animation has already finished
-playing in the reversed direction, seeks to the start of the <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-28">target
+playing in the reversed direction, seeks to the start of the <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-29">target
 effect</a>.</p>
     </dl>
    </div>
@@ -5540,7 +5544,7 @@ same interpretation as defined for that constructor.</p>
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="Animatable" data-dfn-type="method" data-export="" data-lt="getAnimations()" id="dom-animatable-getanimations"> sequence&lt;Animation> getAnimations()</dfn></p>
      <dd data-md="">
       <p>Returns the set of <code class="idl"><a data-link-type="idl" href="#animation" id="ref-for-animation-12">Animation</a></code> objects
-whose <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-29">target effect</a> is <a data-link-type="dfn" href="#current" id="ref-for-current-3">current</a> or <a data-link-type="dfn" href="#in-effect" id="ref-for-in-effect-6">in effect</a> and
+whose <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-30">target effect</a> is <a data-link-type="dfn" href="#current" id="ref-for-current-3">current</a> or <a data-link-type="dfn" href="#in-effect" id="ref-for-in-effect-6">in effect</a> and
 contains at least one <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-111">animation effect</a> whose <a data-link-type="dfn" href="#target-element" id="ref-for-target-element-13">target element</a> is this object.</p>
       <p>The returned list is sorted using the composite order described
 for the associated <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-53">animations</a> of effects in <a href="#the-effect-stack">§4.5.2 The effect stack</a>.</p>
@@ -5580,7 +5584,7 @@ the <a data-link-type="dfn" href="#default-document-timeline" id="ref-for-defaul
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="Document" data-dfn-type="method" data-export="" data-lt="getAnimations()" id="dom-document-getanimations"> sequence&lt;Animation> getAnimations()</dfn></p>
      <dd data-md="">
       <p>Returns the set of <code class="idl"><a data-link-type="idl" href="#animation" id="ref-for-animation-15">Animation</a></code> objects
-that have an associated <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-30">target effect</a> which is <a data-link-type="dfn" href="#current" id="ref-for-current-4">current</a> or <a data-link-type="dfn" href="#in-effect" id="ref-for-in-effect-7">in effect</a> and whose <a data-link-type="dfn" href="#target-element" id="ref-for-target-element-14">target element</a> is a <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-tree-descendant">descendant</a> of the document.</p>
+that have an associated <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-31">target effect</a> which is <a data-link-type="dfn" href="#current" id="ref-for-current-4">current</a> or <a data-link-type="dfn" href="#in-effect" id="ref-for-in-effect-7">in effect</a> and whose <a data-link-type="dfn" href="#target-element" id="ref-for-target-element-14">target element</a> is a <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-tree-descendant">descendant</a> of the document.</p>
       <p>The returned list is sorted using the composite order described
 for the associated <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-54">animations</a> of effects in <a href="#the-effect-stack">§4.5.2 The effect stack</a>.</p>
       <p>The returned list reflects the state <em>after</em> applying any pending
@@ -5590,7 +5594,7 @@ that have yet to be processed.</p>
        repeatedly produces forwards-filling animations will consume memory
        in an unbounded fashion.
        We may need to revise this definition (previously these methods
-       only returned animations whose <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-31">target effect</a> was <a data-link-type="dfn" href="#current" id="ref-for-current-5">current</a>) or provide a loophole for implementations to discard
+       only returned animations whose <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-32">target effect</a> was <a data-link-type="dfn" href="#current" id="ref-for-current-5">current</a>) or provide a loophole for implementations to discard
        old animations in such conditions.</p>
     </dl>
    </div>
@@ -7071,17 +7075,17 @@ Time values in the programming interface</a>
     <li><a href="#ref-for-target-effect-6">3.5.4. The current time of an animation</a>
     <li><a href="#ref-for-target-effect-7">3.5.7. Waiting for the target effect</a>
     <li><a href="#ref-for-target-effect-8">3.5.10. Playing an animation</a>
-    <li><a href="#ref-for-target-effect-9">3.5.11. Pausing an animation</a>
-    <li><a href="#ref-for-target-effect-10">3.5.12. Reaching the end</a> <a href="#ref-for-target-effect-11">(2)</a> <a href="#ref-for-target-effect-12">(3)</a> <a href="#ref-for-target-effect-13">(4)</a> <a href="#ref-for-target-effect-14">(5)</a>
-    <li><a href="#ref-for-target-effect-15">3.5.14. Updating the finished state</a> <a href="#ref-for-target-effect-16">(2)</a> <a href="#ref-for-target-effect-17">(3)</a>
-    <li><a href="#ref-for-target-effect-18">3.5.16. Canceling an animation</a>
-    <li><a href="#ref-for-target-effect-19">3.5.20. Animation events</a>
-    <li><a href="#ref-for-target-effect-20">3.6.1. Relationship between animation effects
-  and animations</a> <a href="#ref-for-target-effect-21">(2)</a>
-    <li><a href="#ref-for-target-effect-22">3.8.4. Interval timing</a>
-    <li><a href="#ref-for-target-effect-23">5.4. The Animation interface</a> <a href="#ref-for-target-effect-24">(2)</a> <a href="#ref-for-target-effect-25">(3)</a> <a href="#ref-for-target-effect-26">(4)</a> <a href="#ref-for-target-effect-27">(5)</a> <a href="#ref-for-target-effect-28">(6)</a>
-    <li><a href="#ref-for-target-effect-29">5.14. The Animatable interface</a>
-    <li><a href="#ref-for-target-effect-30">5.15. Extensions to the Document interface</a> <a href="#ref-for-target-effect-31">(2)</a>
+    <li><a href="#ref-for-target-effect-9">3.5.11. Pausing an animation</a> <a href="#ref-for-target-effect-10">(2)</a>
+    <li><a href="#ref-for-target-effect-11">3.5.12. Reaching the end</a> <a href="#ref-for-target-effect-12">(2)</a> <a href="#ref-for-target-effect-13">(3)</a> <a href="#ref-for-target-effect-14">(4)</a> <a href="#ref-for-target-effect-15">(5)</a>
+    <li><a href="#ref-for-target-effect-16">3.5.14. Updating the finished state</a> <a href="#ref-for-target-effect-17">(2)</a> <a href="#ref-for-target-effect-18">(3)</a>
+    <li><a href="#ref-for-target-effect-19">3.5.16. Canceling an animation</a>
+    <li><a href="#ref-for-target-effect-20">3.5.20. Animation events</a>
+    <li><a href="#ref-for-target-effect-21">3.6.1. Relationship between animation effects
+  and animations</a> <a href="#ref-for-target-effect-22">(2)</a>
+    <li><a href="#ref-for-target-effect-23">3.8.4. Interval timing</a>
+    <li><a href="#ref-for-target-effect-24">5.4. The Animation interface</a> <a href="#ref-for-target-effect-25">(2)</a> <a href="#ref-for-target-effect-26">(3)</a> <a href="#ref-for-target-effect-27">(4)</a> <a href="#ref-for-target-effect-28">(5)</a> <a href="#ref-for-target-effect-29">(6)</a>
+    <li><a href="#ref-for-target-effect-30">5.14. The Animatable interface</a>
+    <li><a href="#ref-for-target-effect-31">5.15. Extensions to the Document interface</a> <a href="#ref-for-target-effect-32">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="animation-start-time">
