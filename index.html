@@ -90,7 +90,7 @@
                 counter-increment: figure;
             }
             figcaption:not(.no-marker)::before {
-                content: "Figure " counter(figure);
+                content: "Figure " counter(figure) " ";
             }</style>
 <style>/* style-autolinks */
 
@@ -253,7 +253,7 @@ pre.idl.highlight { color: #708090; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1>Web Animations</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-07-13">13 July 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2016-08-01">1 August 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1040,9 +1040,11 @@ the <var>synchronously notify</var> flag set to false.</p>
    <p>The procedure to <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="reset-an-animations-pending-tasks">reset an animation’s pending tasks</dfn> for <var>animation</var> is as follows:</p>
    <ol>
     <li data-md="">
-     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-2">pending play task</a>, cancel that task.</p>
+     <p>If <var>animation</var> does not have a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-2">pending play task</a> or a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-2">pending pause task</a>, abort this procedure.</p>
     <li data-md="">
-     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-2">pending pause task</a>, cancel that task.</p>
+     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-3">pending play task</a>, cancel that task.</p>
+    <li data-md="">
+     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-3">pending pause task</a>, cancel that task.</p>
     <li data-md="">
      <p><a data-link-type="dfn" href="#reject-a-promise" id="ref-for-reject-a-promise-1">Reject</a> <var>animation</var>’s <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise-1">current ready
 promise</a> with a DOMException named "AbortError".</p>
@@ -1140,7 +1142,7 @@ make <var>animation</var>’s <a data-link-type="dfn" href="#animation-start-tim
     <li data-md="">
      <p>Run the steps to <a data-link-type="dfn" href="#silently-set-the-current-time" id="ref-for-silently-set-the-current-time-2">silently set the current time</a> of <var>animation</var> to <var>seek time</var>.</p>
     <li data-md="">
-     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-3">pending pause task</a>, synchronously
+     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-4">pending pause task</a>, synchronously
 complete the pause operation by performing the following steps:</p>
      <ol>
       <li data-md="">
@@ -1148,7 +1150,7 @@ complete the pause operation by performing the following steps:</p>
       <li data-md="">
        <p>Make <var>animation</var>’s <a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time-10">start time</a> <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-17">unresolved</a>.</p>
       <li data-md="">
-       <p>Cancel the <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-4">pending pause task</a>.</p>
+       <p>Cancel the <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-5">pending pause task</a>.</p>
       <li data-md="">
        <p><a data-link-type="dfn" href="#resolve-a-promise" id="ref-for-resolve-a-promise-1">Resolve</a> <var>animation</var>’s <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise-3">current ready promise</a> with <var>animation</var>.</p>
      </ol>
@@ -1195,8 +1197,8 @@ time</var> even if <var>previous current time</var> is <a data-link-type="dfn" h
       </dl>
      </div>
     <li data-md="">
-     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-3">pending play task</a> or
-a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-5">pending pause task</a>, cancel that task and <a data-link-type="dfn" href="#resolve-a-promise" id="ref-for-resolve-a-promise-2">resolve</a> <var>animation</var>’s <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise-4">current ready promise</a> with <var>animation</var>.</p>
+     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-4">pending play task</a> or
+a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-6">pending pause task</a>, cancel that task and <a data-link-type="dfn" href="#resolve-a-promise" id="ref-for-resolve-a-promise-2">resolve</a> <var>animation</var>’s <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise-4">current ready promise</a> with <var>animation</var>.</p>
     <li data-md="">
      <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state" id="ref-for-update-an-animations-finished-state-4">update an animation’s finished state</a> for <var>animation</var> with the <var>did seek</var> flag set to true, and
 the <var>synchronously notify</var> flag set to false.</p>
@@ -1273,7 +1275,7 @@ that build on this model but do not require the rewinding behavior, such
 as CSS Animations <a data-link-type="biblio" href="#biblio-css3-animations">[CSS3-ANIMATIONS]</a>.</p>
    <ol>
     <li data-md="">
-     <p>Let <var>aborted pause</var> be a boolean flag that is true if <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-6">pending pause task</a>, and false otherwise.</p>
+     <p>Let <var>aborted pause</var> be a boolean flag that is true if <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-7">pending pause task</a>, and false otherwise.</p>
     <li data-md="">
      <p>Let <var>has pending ready promise</var> be a boolean flag that is
 initially false.</p>
@@ -1318,7 +1320,7 @@ effect end</a>.</p>
       </dl>
      </div>
     <li data-md="">
-     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-4">pending play task</a> or a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-7">pending pause task</a>,</p>
+     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-5">pending play task</a> or a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-8">pending pause task</a>,</p>
      <ol>
       <li data-md="">
        <p>Cancel that task.</p>
@@ -1385,7 +1387,7 @@ reflects the state drawn by the animation process.</p>
 follows:</p>
    <ol>
     <li data-md="">
-     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-8">pending pause task</a>, abort these steps.</p>
+     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-9">pending pause task</a>, abort these steps.</p>
     <li data-md="">
      <p>If the <a data-link-type="dfn" href="#play-state" id="ref-for-play-state-1">play state</a> of <var>animation</var> is <a data-link-type="dfn" href="#paused-play-state" id="ref-for-paused-play-state-1">paused</a>, abort these steps.</p>
     <li data-md="">
@@ -1410,7 +1412,7 @@ perform the steps according to the first matching condition from below:</p>
      <p>Let <var>has pending ready promise</var> be a boolean flag that is
 initially false.</p>
     <li data-md="">
-     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-5">pending play task</a>, cancel that task
+     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-6">pending play task</a>, cancel that task
 and let <var>has pending ready promise</var> be true.</p>
     <li data-md="">
      <p>If <var>has pending ready promise</var> is false,
@@ -1444,7 +1446,7 @@ ready promise</a> with <var>animation</var>.</p>
 and the <var>synchronously notify</var> flag set to false.</p>
      </ol>
      <p>So long as the above task is scheduled but has yet to run, <var>animation</var> is described as having a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="pending-pause-task">pending pause task</dfn>.
-While the task is running, however, <var>animation</var> does <em>not</em> have a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-9">pending pause task</a>.</p>
+While the task is running, however, <var>animation</var> does <em>not</em> have a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-10">pending pause task</a>.</p>
     <li data-md="">
      <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state" id="ref-for-update-an-animations-finished-state-8">update an animation’s finished state</a> for <var>animation</var> with the <var>did seek</var> flag set to false,
 and the <var>synchronously notify</var> flag set to false.</p>
@@ -1522,7 +1524,7 @@ follows:</p>
       <li data-md="">
        <p><var>animation</var>’s <a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time-24">start time</a> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-42">resolved</a>, and</p>
       <li data-md="">
-       <p><var>animation</var> does <em>not</em> have a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-6">pending play task</a> or a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-10">pending pause task</a>,</p>
+       <p><var>animation</var> does <em>not</em> have a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-7">pending play task</a> or a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-11">pending pause task</a>,</p>
      </ul>
      <p>then update <var>animation</var>’s <a data-link-type="dfn" href="#hold-time" id="ref-for-hold-time-26">hold time</a> based on the first
 matching condition for <var>animation</var> from below, if any:</p>
@@ -1662,19 +1664,19 @@ abort these steps.</p>
 rate</a>)</code> where <var>timeline time</var> is the current <a data-link-type="dfn" href="#time-value" id="ref-for-time-value-32">time
 value</a> of the associated <a data-link-type="dfn" href="#timeline" id="ref-for-timeline-30">timeline</a>.</p>
     <li data-md="">
-     <p>If there is a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-11">pending pause task</a> and <a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time-28">start time</a> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-50">resolved</a>,</p>
+     <p>If there is a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-12">pending pause task</a> and <a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time-28">start time</a> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-50">resolved</a>,</p>
      <ol>
       <li data-md="">
        <p>Let the <a data-link-type="dfn" href="#hold-time" id="ref-for-hold-time-35">hold time</a> be <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-51">unresolved</a>.</p>
        <div class="note" role="note">Typically the <a data-link-type="dfn" href="#hold-time" id="ref-for-hold-time-36">hold time</a> will already be
 unresolved except in the case when the animation was previously <a data-link-type="dfn" href="#idle-play-state" id="ref-for-idle-play-state-2">idle</a>.</div>
       <li data-md="">
-       <p>Cancel the <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-12">pending pause task</a>.</p>
+       <p>Cancel the <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-13">pending pause task</a>.</p>
       <li data-md="">
        <p><a data-link-type="dfn" href="#resolve-a-promise" id="ref-for-resolve-a-promise-6">Resolve</a> the <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise-14">current ready promise</a> of <var>animation</var> with <var>animation</var>.</p>
      </ol>
     <li data-md="">
-     <p>If there is a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-7">pending play task</a> and <a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time-29">start time</a> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-52">resolved</a>,
+     <p>If there is a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-8">pending play task</a> and <a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time-29">start time</a> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-52">resolved</a>,
 cancel that task and <a data-link-type="dfn" href="#resolve-a-promise" id="ref-for-resolve-a-promise-7">resolve</a> the <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise-15">current
 ready promise</a> of <var>animation</var> with <var>animation</var>.</p>
     <li data-md="">
@@ -1787,7 +1789,7 @@ condition from the following:</p>
    <div class="switch">
     <dl>
      <dt data-md="">
-      <p><var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-8">pending play task</a> or a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-13">pending pause task</a>,</p>
+      <p><var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task-9">pending play task</a> or a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-14">pending pause task</a>,</p>
      <dd data-md="">
       <p>→ <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="pending play state" data-noexport="" id="pending-play-state">pending</dfn></p>
      <dt data-md="">
@@ -3054,8 +3056,8 @@ with the non-matching portions of the two lists as follows:
     <li data-md="">
      <p><a data-link-type="dfn" href="#distance-computation" id="ref-for-distance-computation-8">distance computation</a>: See issue below.</p>
    </ul>
-   <div class="issue" id="issue-b82dbcbe">
-    <a class="self-link" href="#issue-b82dbcbe"></a> 
+   <div class="issue" id="issue-789f9fd1">
+    <a class="self-link" href="#issue-789f9fd1"></a> 
     <p>For <a data-link-type="dfn" href="#distance-computation" id="ref-for-distance-computation-9">distance computation</a> we previously defined it as follows:</p>
     <ol>
      <li data-md="">
@@ -3084,8 +3086,8 @@ by other specifications.
 For example, properties with using the &lt;image> type are
 animated using the interpolation behavior defined in <a href="https://drafts.csswg.org/css-images/#interpolating-images">CSS Image
 Values and Replaced Content</a> <a data-link-type="biblio" href="#biblio-css3-images">[CSS3-IMAGES]</a>.</p>
-   <div class="issue" id="issue-65c86c91">
-    <a class="self-link" href="#issue-65c86c91"></a> 
+   <div class="issue" id="issue-b34a7893">
+    <a class="self-link" href="#issue-b34a7893"></a> 
     <p>There are a bunch of CSS properties for which distance (and in
     some cases addition) is not defined or which need special
     handling.</p>
@@ -4693,7 +4695,7 @@ use for this <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyfram
       <p>On setting, sets the <a data-link-type="dfn" href="#keyframe-spacing-mode" id="ref-for-keyframe-spacing-mode-5">spacing mode</a> property of this <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-44">keyframe effect</a> to the provided value.</p>
       <p>Recognized values are defined by the following grammar:</p>
       <blockquote>
-<pre class="prod">distribute <a data-link-type="grammar" href="https://drafts.csswg.org/css-values-3/#comb-one">|</a> paced(<a class="production" data-link-type="type" href="https://drafts.csswg.org/css-values-3/#typedef-ident">&lt;ident></a>)</pre>
+<pre class="prod">distribute <a data-link-type="grammar" href="https://drafts.csswg.org/css-values-4/#comb-one">|</a> paced(<a class="production" data-link-type="type" href="https://drafts.csswg.org/css-values-3/#typedef-ident">&lt;ident></a>)</pre>
       </blockquote>
       <p>The meaning of each value is as follows:</p>
       <dl>
@@ -5861,7 +5863,7 @@ timeline</a> of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/m
 for registering <a data-link-type="dfn" href="#animation-events" id="ref-for-animation-events-4">animation event</a> handlers.</p>
       <li data-md="">
        <p>Removed the behavior that required <code class="idl"><a data-link-type="idl" href="#dom-animation-currenttime" id="ref-for-dom-animation-currenttime-2">currentTime</a></code> to be null
-when the animation has a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-14">pending pause task</a>.</p>
+when the animation has a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task-15">pending pause task</a>.</p>
      </ul>
     <li data-md="">
      <p>Replaced the <code>computedTiming</code> parameter on the <code class="idl"><a data-link-type="idl" href="#animationeffectreadonly" id="ref-for-animationeffectreadonly-8">AnimationEffectReadOnly</a></code> interface with
@@ -6383,7 +6385,11 @@ to the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.
     <a data-link-type="biblio">[CSS3VAL]</a> defines the following terms:
     <ul>
      <li><a href="https://drafts.csswg.org/css-values-3/#typedef-ident">&lt;ident></a>
-     <li><a href="https://drafts.csswg.org/css-values-3/#comb-one">|</a>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[CSS3VAL]</a> defines the following terms:
+    <ul>
+     <li><a href="https://drafts.csswg.org/css-values-4/#comb-one">|</a>
     </ul>
    <li>
     <a data-link-type="biblio">[css-will-change-1]</a> defines the following terms:
@@ -6759,7 +6765,7 @@ euclidean distance between translate components</p>
     Going through each component, working out the distance and then
     getting the square of the distance also seems much more consistent
     with what we do elsewhere.</p>
-     <a href="#issue-b82dbcbe"> ↵ </a>
+     <a href="#issue-789f9fd1"> ↵ </a>
    </div>
    <div class="issue">
     <p>There are a bunch of CSS properties for which distance (and in
@@ -6791,7 +6797,7 @@ percentages)</p>
       <p>pair lists</p>
     </ul>
     <p>Should we define these here or in the CSS Transitions 2 spec?</p>
-     <a href="#issue-65c86c91"> ↵ </a>
+     <a href="#issue-b34a7893"> ↵ </a>
    </div>
    <div class="issue"> It seems like this could be done as a separate step at the end
     and applied to all types of animation effects consistently.<a href="#issue-8b7cca9f"> ↵ </a></div>
@@ -7263,13 +7269,13 @@ Time values in the programming interface</a>
    <b><a href="#pending-play-task">#pending-play-task</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-pending-play-task-1">3.5.3. Setting the target effect of an
-  animation</a> <a href="#ref-for-pending-play-task-2">(2)</a>
-    <li><a href="#ref-for-pending-play-task-3">3.5.6. Setting the start time of an animation</a>
-    <li><a href="#ref-for-pending-play-task-4">3.5.10. Playing an animation</a>
-    <li><a href="#ref-for-pending-play-task-5">3.5.11. Pausing an animation</a>
-    <li><a href="#ref-for-pending-play-task-6">3.5.14. Updating the finished state</a>
-    <li><a href="#ref-for-pending-play-task-7">3.5.15. Finishing an animation</a>
-    <li><a href="#ref-for-pending-play-task-8">3.5.19. Play states</a>
+  animation</a> <a href="#ref-for-pending-play-task-2">(2)</a> <a href="#ref-for-pending-play-task-3">(3)</a>
+    <li><a href="#ref-for-pending-play-task-4">3.5.6. Setting the start time of an animation</a>
+    <li><a href="#ref-for-pending-play-task-5">3.5.10. Playing an animation</a>
+    <li><a href="#ref-for-pending-play-task-6">3.5.11. Pausing an animation</a>
+    <li><a href="#ref-for-pending-play-task-7">3.5.14. Updating the finished state</a>
+    <li><a href="#ref-for-pending-play-task-8">3.5.15. Finishing an animation</a>
+    <li><a href="#ref-for-pending-play-task-9">3.5.19. Play states</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="pause-an-animation">
@@ -7283,15 +7289,15 @@ Time values in the programming interface</a>
    <b><a href="#pending-pause-task">#pending-pause-task</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-pending-pause-task-1">3.5.3. Setting the target effect of an
-  animation</a> <a href="#ref-for-pending-pause-task-2">(2)</a>
-    <li><a href="#ref-for-pending-pause-task-3">3.5.5. Setting the current time of an animation</a> <a href="#ref-for-pending-pause-task-4">(2)</a>
-    <li><a href="#ref-for-pending-pause-task-5">3.5.6. Setting the start time of an animation</a>
-    <li><a href="#ref-for-pending-pause-task-6">3.5.10. Playing an animation</a> <a href="#ref-for-pending-pause-task-7">(2)</a>
-    <li><a href="#ref-for-pending-pause-task-8">3.5.11. Pausing an animation</a> <a href="#ref-for-pending-pause-task-9">(2)</a>
-    <li><a href="#ref-for-pending-pause-task-10">3.5.14. Updating the finished state</a>
-    <li><a href="#ref-for-pending-pause-task-11">3.5.15. Finishing an animation</a> <a href="#ref-for-pending-pause-task-12">(2)</a>
-    <li><a href="#ref-for-pending-pause-task-13">3.5.19. Play states</a>
-    <li><a href="#ref-for-pending-pause-task-14">10. Changes since last publication</a>
+  animation</a> <a href="#ref-for-pending-pause-task-2">(2)</a> <a href="#ref-for-pending-pause-task-3">(3)</a>
+    <li><a href="#ref-for-pending-pause-task-4">3.5.5. Setting the current time of an animation</a> <a href="#ref-for-pending-pause-task-5">(2)</a>
+    <li><a href="#ref-for-pending-pause-task-6">3.5.6. Setting the start time of an animation</a>
+    <li><a href="#ref-for-pending-pause-task-7">3.5.10. Playing an animation</a> <a href="#ref-for-pending-pause-task-8">(2)</a>
+    <li><a href="#ref-for-pending-pause-task-9">3.5.11. Pausing an animation</a> <a href="#ref-for-pending-pause-task-10">(2)</a>
+    <li><a href="#ref-for-pending-pause-task-11">3.5.14. Updating the finished state</a>
+    <li><a href="#ref-for-pending-pause-task-12">3.5.15. Finishing an animation</a> <a href="#ref-for-pending-pause-task-13">(2)</a>
+    <li><a href="#ref-for-pending-pause-task-14">3.5.19. Play states</a>
+    <li><a href="#ref-for-pending-pause-task-15">10. Changes since last publication</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="current-finished-promise">
