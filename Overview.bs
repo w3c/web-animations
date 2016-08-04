@@ -3936,33 +3936,40 @@ calc</dfn> has the following behavior:
     Values and Units</a> [[!CSS3VAL]].)
 *   <a>distance computation</a>: as with <a lt="real number animation type">real
     number</a> but using the <a
-    href="http://www.w3.org/TR/CSS2/cascade.html#used-value">used
+    href="http://www.w3.org/TR/CSS2/cascade.html#used-value">computed
     value</a> [[!CSS21]] for <var>V</var><sub>start</sub> and
     <var>V</var><sub>end</sub>.
 
-    When there is insufficient context to calculate a used value for all
+    Issue: This whole section needs to be rewritten to account for when we
+    have lengths and percentages. In short, we don't expand these to
+    used values since that was deemed overly complex (without compelling use
+    cases) and makes calculating keyframe offsets dependent on layout. So we
+    should probably just use the square distance of each component, despite the
+    fact that it will rarely produce a useful result.
+
+    When there is insufficient context to calculate a computed value for all
     possible values of <var>V</var><sub>start</sub> and
     <var>V</var><sub>end</sub>, the result of the <a>distance computation</a>
     calculation is zero (i.e. the behavior degenerates to <a>not paceable</a>).
 
     <div class="example">
       For example, for a <a>keyframe effect</a> that does not have
-      an <a>target element</a>, there is no containing block for resolving
-      percentage values against.
+      an <a>target element</a>, there is no context for resolving
+      em-based values against.
       As a result, the following code snippet falls back to <a>not paceable</a>
       <a>animation type</a>.
 
       <pre class='lang-javascript'>
 var effect =
-  new KeyframeEffect([ { top: '10%' },
-                       { top: '20%' },
-                       { top: '50%' } ],
+  new KeyframeEffect([ { top: '10px' },
+                       { top: '20em' },
+                       { top: '50em' } ],
                      { spacing: 'paced(top)' });
 // Prints '0, 0.5, 1'
 effect.getKeyframes().map(frame =&gt; frame.computedOffset).join(', ');
       </pre>
 
-      For consistency, this definition applies even when a used value
+      For consistency, this definition applies even when a computed value
       could be calculated for each of the animation values in question.
       As such, the following code fragment produces the same result.
 
@@ -4345,8 +4352,8 @@ The keyframe spacing modes are:
 Since the absolute value calculated for a <a>keyframe offset</a> may change
 depending on the keyframe values, the number of values, or external context
 (such as when using <a>paced keyframe spacing mode</a> in combination with
-percentage values or em-based units), the original null values are not
-overwritten but rather, the calculated absolute values are stored as a separate
+em-based units), the original null values are not overwritten but rather, the
+calculated absolute values are stored as a separate
 value on each keyframe known as its <dfn>computed keyframe offset</dfn>.
 
 <h5 id="applying-spacing-to-keyframes">Applying spacing to keyframes</h5>
@@ -4460,8 +4467,7 @@ and has the following steps:
                 successive <a>paceable</a> keyframes in the range
                 [<var>paced A</var>, <var>k</var>].
                 Use <var>context element</var> as the basis for resolving
-                context-sensitive values such as percentages units and
-                font-size based units.
+                context-sensitive values such as font-size based units.
             1.  Set the <a>computed keyframe offset</a> of <var>k</var> to
                 <a lt="offsetk">offset</a><sub><var>paced
                   A</var></sub> +
