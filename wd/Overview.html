@@ -253,11 +253,11 @@ pre.idl.highlight { color: #708090; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1>Web Animations</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">W3C Working Draft, <time class="dt-updated" datetime="2016-08-01">1 August 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">W3C Working Draft, <time class="dt-updated" datetime="2016-08-04">4 August 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
-     <dd><a class="u-url" href="http://www.w3.org/TR/2016/WD-web-animations-1-20160801/">http://www.w3.org/TR/2016/WD-web-animations-1-20160801/</a>
+     <dd><a class="u-url" href="https://www.w3.org/TR/2016/WD-web-animations-1-20160804/">https://www.w3.org/TR/2016/WD-web-animations-1-20160804/</a>
      <dt>Latest published version:
      <dd><a href="https://www.w3.org/TR/web-animations-1/">https://www.w3.org/TR/web-animations-1/</a>
      <dt>Editor's Draft:
@@ -2887,24 +2887,30 @@ determining the computed value as defined in <a href="http://www.w3.org/TR/css3-
 Values and Units</a> <a data-link-type="biblio" href="#biblio-css3val">[CSS3VAL]</a>.)</p>
     <li data-md="">
      <p><a data-link-type="dfn" href="#distance-computation" id="ref-for-distance-computation-5">distance computation</a>: as with <a data-link-type="dfn" href="#real-number-animation-type" id="ref-for-real-number-animation-type-1">real
-number</a> but using the <a href="http://www.w3.org/TR/CSS2/cascade.html#used-value">used
+number</a> but using the <a href="http://www.w3.org/TR/CSS2/cascade.html#used-value">computed
 value</a> <a data-link-type="biblio" href="#biblio-css21">[CSS21]</a> for <var>V</var><sub>start</sub> and <var>V</var><sub>end</sub>.</p>
-     <p>When there is insufficient context to calculate a used value for all
+     <p class="issue" id="issue-1ec19ef8"><a class="self-link" href="#issue-1ec19ef8"></a> This whole section needs to be rewritten to account for when we
+have lengths and percentages. In short, we don’t expand these to
+used values since that was deemed overly complex (without compelling use
+cases) and makes calculating keyframe offsets dependent on layout. So we
+should probably just use the square distance of each component, despite the
+fact that it will rarely produce a useful result.</p>
+     <p>When there is insufficient context to calculate a computed value for all
 possible values of <var>V</var><sub>start</sub> and <var>V</var><sub>end</sub>, the result of the <a data-link-type="dfn" href="#distance-computation" id="ref-for-distance-computation-6">distance computation</a> calculation is zero (i.e. the behavior degenerates to <a data-link-type="dfn" href="#not-paceable" id="ref-for-not-paceable-1">not paceable</a>).</p>
-     <div class="example" id="example-2c256492">
-      <a class="self-link" href="#example-2c256492"></a> For example, for a <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-4">keyframe effect</a> that does not have
-  an <a data-link-type="dfn" href="#target-element" id="ref-for-target-element-1">target element</a>, there is no containing block for resolving
-  percentage values against.
+     <div class="example" id="example-3421d0e2">
+      <a class="self-link" href="#example-3421d0e2"></a> For example, for a <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect-4">keyframe effect</a> that does not have
+  an <a data-link-type="dfn" href="#target-element" id="ref-for-target-element-1">target element</a>, there is no context for resolving
+  em-based values against.
   As a result, the following code snippet falls back to <a data-link-type="dfn" href="#not-paceable" id="ref-for-not-paceable-2">not paceable</a> <a data-link-type="dfn" href="#animation-type" id="ref-for-animation-type-13">animation type</a>. 
 <pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span>
-  <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">([</span> <span class="p">{</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'10%'</span> <span class="p">},</span>
-                       <span class="p">{</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'20%'</span> <span class="p">},</span>
-                       <span class="p">{</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'50%'</span> <span class="p">}</span> <span class="p">],</span>
+  <span class="k">new</span> <span class="nx">KeyframeEffect</span><span class="p">([</span> <span class="p">{</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'10px'</span> <span class="p">},</span>
+                       <span class="p">{</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'20em'</span> <span class="p">},</span>
+                       <span class="p">{</span> <span class="nx">top</span><span class="o">:</span> <span class="s1">'50em'</span> <span class="p">}</span> <span class="p">],</span>
                      <span class="p">{</span> <span class="nx">spacing</span><span class="o">:</span> <span class="s1">'paced(top)'</span> <span class="p">});</span>
 <span class="c1">// Prints '0, 0.5, 1'</span>
 <span class="nx">effect</span><span class="p">.</span><span class="nx">getKeyframes</span><span class="p">().</span><span class="nx">map</span><span class="p">(</span><span class="nx">frame</span> <span class="o">=></span> <span class="nx">frame</span><span class="p">.</span><span class="nx">computedOffset</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">', '</span><span class="p">);</span>
 </pre>
-      <p>For consistency, this definition applies even when a used value
+      <p>For consistency, this definition applies even when a computed value
   could be calculated for each of the animation values in question.
   As such, the following code fragment produces the same result.</p>
 <pre class="lang-javascript highlight"><span></span><span class="kd">var</span> <span class="nx">effect</span> <span class="o">=</span>
@@ -3269,8 +3275,8 @@ with the <a data-link-type="dfn" href="#paced-property" id="ref-for-paced-proper
    <p>Since the absolute value calculated for a <a data-link-type="dfn" href="#keyframe-offset" id="ref-for-keyframe-offset-11">keyframe offset</a> may change
 depending on the keyframe values, the number of values, or external context
 (such as when using <a data-link-type="dfn" href="#paced-keyframe-spacing-mode" id="ref-for-paced-keyframe-spacing-mode-5">paced keyframe spacing mode</a> in combination with
-percentage values or em-based units), the original null values are not
-overwritten but rather, the calculated absolute values are stored as a separate
+em-based units), the original null values are not overwritten but rather, the
+calculated absolute values are stored as a separate
 value on each keyframe known as its <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="computed-keyframe-offset">computed keyframe offset</dfn>.</p>
    <h5 class="heading settled" data-level="4.4.2.1" id="applying-spacing-to-keyframes"><span class="secno">4.4.2.1. </span><span class="content">Applying spacing to keyframes</span><a class="self-link" href="#applying-spacing-to-keyframes"></a></h5>
    <p>We define a generic procedure for <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="evenly distributing a keyframe" data-noexport="" id="evenly-distributing-a-keyframe">evenly distributing
@@ -3375,8 +3381,7 @@ values of the <a data-link-type="dfn" href="#paced-property" id="ref-for-paced-p
 successive <a data-link-type="dfn" href="#paceable" id="ref-for-paceable-4">paceable</a> keyframes in the range
 [<var>paced A</var>, <var>k</var>].
 Use <var>context element</var> as the basis for resolving
-context-sensitive values such as percentages units and
-font-size based units.</p>
+context-sensitive values such as font-size based units.</p>
            <li data-md="">
             <p>Set the <a data-link-type="dfn" href="#computed-keyframe-offset" id="ref-for-computed-keyframe-offset-12">computed keyframe offset</a> of <var>k</var> to <a data-link-type="dfn" href="#offsetk" id="ref-for-offsetk-4">offset</a><sub><var>paced
   A</var></sub> +
@@ -6739,6 +6744,12 @@ map arbitrary curves (e.g. bounce functions) to timing functions.</p>
    </div>
    <div class="issue"> <code>step-middle</code> and the <code>middle</code> keyword will
 likely be removed in favor of a <code>frames()</code> timing function.<a href="#issue-fc1dd2fc"> ↵ </a></div>
+   <div class="issue"> This whole section needs to be rewritten to account for when we
+have lengths and percentages. In short, we don’t expand these to
+used values since that was deemed overly complex (without compelling use
+cases) and makes calculating keyframe offsets dependent on layout. So we
+should probably just use the square distance of each component, despite the
+fact that it will rarely produce a useful result.<a href="#issue-1ec19ef8"> ↵ </a></div>
    <div class="issue"> We should probably expand 2d functions to their 3d
   equivalents before matching? <a href="#issue-3540bd4c"> ↵ </a></div>
    <div class="issue"> This needs to be more specific, e.g. when combining <code>translate(20px)</code> and <code>translate(30px
