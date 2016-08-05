@@ -3815,6 +3815,19 @@ are referred to as the property's <dfn>animation type</dfn>.
 The <a>animation type</a> of each CSS property is defined by the
 "Animatable:" line in the summary of the property's definition or in
 [[CSS3-TRANSITIONS]] for properties that lack a such a line.
+For <a>custom properties</a> registered using the {{CSS/registerProperty()}}
+method, the <a>animation type</a> is derived from the type used to define
+the property's {{PropertyDescriptor/syntax}}.
+Where there is no <a>animation type</a> that corresponds to the property's
+specified {{PropertyDescriptor/syntax}} (e.g. when the syntax is "*") the
+<a>animation type</a> is <a lt="discrete animation type">discrete</a>.
+The <a>animation type</a> of all other custom properties is <a lt="discrete
+animation type">discrete</a>.
+
+Issue: The above doesn't explain the animation type to use for of syntax
+such as "&lt;length&gt;+". We will fix this once the definition of animation
+types has moved to CSS Values and Units where we should define generic handling
+for list types etc.
 
 Following is a series of pre-defined <a>animation types</a>.
 [[CSS3-TRANSITIONS]] provides further CSS-specific <a>animation
@@ -6965,6 +6978,9 @@ elem.animate({ left: '100px' }, 3000);</pre></div>
 The <dfn>animation property name to IDL attribute name</dfn> algorithm for
 <var>property</var> is as follows:
 
+1.  If <var>property</var> follows the <<custom-property-name>> production,
+    return <var>property</var>.
+
 1.  If <var>property</var> refers to the CSS 'float' property,
     return the string "cssFloat".
 
@@ -6973,6 +6989,9 @@ The <dfn>animation property name to IDL attribute name</dfn> algorithm for
 
 The <dfn>IDL attribute name to animation property name</dfn> algorithm for
 <var>attribute</var> is as follows:
+
+1.  If <var>attribute</var> conforms to the <<custom-property-name>> production,
+    return <var>attribute</var>.
 
 1.  If <var>attribute</var> is the string "cssFloat", then return
     an animation property representing the CSS 'float' property.
@@ -7221,7 +7240,9 @@ otherwise, using the following procedure:
 
 1.  Make up a new list <var>animation properties</var> that consists of
     all of the properties that are in <em>both</em> <var>input
-    properties</var> and <var>animatable properties</var>.
+    properties</var> and <var>animatable properties</var>, <em>or</em>
+    which are in <var>input properties</var> and conform to the
+    <<custom-property-name>> production.
 
 1.  Sort <var>animation properties</var> in ascending order by the Unicode
     codepoints that define each property name.
