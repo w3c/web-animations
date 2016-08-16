@@ -2156,25 +2156,42 @@ The normative definition of each of these states follows.
 
 </div>
 
+Determining the phase of an <a>animation effect</a> requires the following
+definitions:
+
+:   <dfn>animation direction</dfn>
+::  &lsquo;backwards&rsquo; if the effect is <a>associated with an
+    animation</a> <em>and</em> the associated <a>animation</a>'s <a
+    lt="animation playback rate">playback rate</a> is less than zero;
+    in all other cases, the <a>animation direction</a> is
+    &lsquo;forwards&rsquo;.
+:   <dfn>before-active boundary time</dfn>
+::  <code>min(<a>start delay</a>, <a>end time</a>)</code>
+:   <dfn>active-after boundary time</dfn>
+::  <code>min(<a>start delay</a> + <a>active duration</a>,
+              <a>end time</a>)</code>
+
 An <a>animation effect</a> is in the <dfn>before phase</dfn> if the
-animation effect's <a>local time</a> is not <a>unresolved</a> and is
-less than <code>min(<a>start delay</a>, <a>end time</a>)</code>.
+animation effect's <a>local time</a> is not <a>unresolved</a> and
+<em>either</em> of the following conditions are met:
 
-An <a>animation effect</a> is in the <dfn>active phase</dfn> if
-<em>all</em> of the following conditions are met:
-
-1.  the <a>animation effect</a>'s <a>local time</a> is not
-    <a>unresolved</a>, and
-2.  the <a>animation effect</a>'s <a>local time</a> is <em>greater than
-    or equal</em> to its <a>start delay</a>, and
-3.  the <a>animation effect</a>'s <a>local time</a> is <em>less
-    than</em> <code>min(<a>start delay</a> + <a>active duration</a>,
-    <a>end time</a>)</code>.
+1.  the <a>local time</a> is less than the <a>before-active boundary time</a>,
+    <em>or</em>
+1.  the <a>animation direction</a> is &lsquo;backwards&rsquo; and the <a>local
+    time</a> is equal to the <a>before-active boundary time</a>.
 
 An <a>animation effect</a> is in the <dfn>after phase</dfn> if the
-animation effect's <a>local time</a> is not <a>unresolved</a> and is
-<em>greater than or equal</em> to <code>min(<a>start delay</a> + <a>active
-duration</a>, <a>end time</a>)</code>.
+animation effect's <a>local time</a> is not <a>unresolved</a> and
+<em>either</em> of the following conditions are met:
+
+1.  the <a>local time</a> is greater than the <a>active-after boundary
+    time</a>, <em>or</em>
+1.  the <a>animation direction</a> is &lsquo;forwards&rsquo; and the <a>local
+    time</a> is equal to the <a>active-after boundary time</a>.
+
+An <a>animation effect</a> is in the <dfn>active phase</dfn> if the
+animation effect's <a>local time</a> is not <a>unresolved</a> and it is
+not in either the <a>before phase</a> nor the <a>after phase</a>.
 
 An <a>animation effect</a> is <dfn>in play</dfn> if <em>all</em>
 of the following conditions are met:
@@ -8136,6 +8153,8 @@ The following changes have been made since the <a
     the end of the procedure.
 *   Reverted the change to the definition of an <a>animation effect</a>'s
     <a>end time</a> to no longer clamp the time to zero.
+*   Reworked the definition of animation phases to reflect the playback rate
+    when at a phase boundary (see [[#animation-effect-phases-and-states]]).
 *   Significantly reworked the core animation effect timing calculations
     to operate on a fraction value instead of a time-based value.
     This makes a number of edge cases well-defined and simplifies a lot
