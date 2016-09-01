@@ -253,7 +253,7 @@ pre.idl.highlight { color: #708090; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="http://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1>Web Animations Level 2</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft, <time class="dt-updated" datetime="2016-08-19">19 August 2016</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Unofficial Proposal Draft, <time class="dt-updated" datetime="2016-09-01">1 September 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2007,7 +2007,10 @@ duration</a>, the calculation of which is defined in <a href="#calculating-the-a
    <p>Similar to the <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-7">start delay</a>, an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-29">animation effect</a> also has
 an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="end-delay">end delay</dfn> which may be used to delay the <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-11">start time</a> of the <a data-link-type="dfn" href="#next-sibling" id="ref-for-next-sibling-1">next
 sibling</a> in a <a data-link-type="dfn" href="#sequence-effect" id="ref-for-sequence-effect-4">sequence effect</a>.</p>
-   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="end-time">end time</dfn> of an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-30">animation effect</a> is simply the sum of its <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-12">start time</a>, <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-8">start delay</a>, <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-4">active duration</a>, and <a data-link-type="dfn" href="#end-delay" id="ref-for-end-delay-2">end delay</a>.</p>
+   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="end-time">end time</dfn> of an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-30">animation effect</a> is
+the result of evaluating <code>max(<a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-12">start
+time</a> + <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-8">start delay</a> + <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-4">active duration</a> + <a data-link-type="dfn" href="#end-delay" id="ref-for-end-delay-2">end delay</a>,
+0)</code>.</p>
    <h4 class="heading settled" data-level="3.6.4" id="local-time-and-inherited-time"><span class="secno">3.6.4. </span><span class="content">Local time and inherited time</span><a class="self-link" href="#local-time-and-inherited-time"></a></h4>
    <div class="informative-bg">
     <p>In Web Animations all times are relative to some point of reference.
@@ -2079,17 +2082,20 @@ time</a> it will not be in any phase.</p>
       <p><a data-link-type="dfn" href="#before-phase" id="ref-for-before-phase-1">before phase</a></p>
      <dd data-md="">
       <p>The <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-43">animation effect</a>’s <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-7">local time</a> falls before the
-effect’s <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-11">active interval</a>.</p>
+effect’s <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-11">active interval</a> and <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-4">end time</a>, <em>or</em> occurs during the range when a negative <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-11">start delay</a> is in
+effect.</p>
      <dt data-md="">
       <p><a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-1">active phase</a></p>
      <dd data-md="">
       <p>The <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-44">animation effect</a>’s <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-8">local time</a> falls inside the
-effect’s <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-12">active interval</a>.</p>
+effect’s <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-12">active interval</a> and outside the range of any
+negative <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-12">start delay</a> or negative <a data-link-type="dfn" href="#end-delay" id="ref-for-end-delay-3">end delay</a>.</p>
      <dt data-md="">
       <p><a data-link-type="dfn" href="#after-phase" id="ref-for-after-phase-1">after phase</a></p>
      <dd data-md="">
       <p>The <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-45">animation effect</a>’s <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-9">local time</a> falls after the
-effect’s <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-13">active interval</a>.</p>
+effect’s <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-13">active interval</a> or after the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-5">end time</a> if that
+comes first (due to a negative <a data-link-type="dfn" href="#end-delay" id="ref-for-end-delay-4">end delay</a>), but <em>not</em> during the range when a negative <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-13">start delay</a> is in effect.</p>
     </dl>
     <p>In addition to these phases, an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-46">animation effect</a> may also be
 described as being in one of several overlapping <em>states</em>.
@@ -2126,7 +2132,7 @@ possibility that this <a data-link-type="dfn" href="#animation-effect" id="ref-f
       <p><a data-link-type="dfn" href="#in-effect" id="ref-for-in-effect-1">in effect</a></p>
      <dd data-md="">
       <p>Corresponds to an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-56">animation effect</a> that has a resolved <a data-link-type="dfn" href="#active-time" id="ref-for-active-time-3">active time</a>.
-This occurs when either the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-57">animation effect</a> is in its <a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-5">active phase</a> or outside the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-15">active interval</a> but at
+This occurs when either the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-57">animation effect</a> is in its <a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-5">active phase</a> or outside the <a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-6">active phase</a> but at
 a time where the effect’s <a data-link-type="dfn" href="#fill-mode" id="ref-for-fill-mode-3">fill mode</a> (see <a href="#fill-behavior">§3.7 Fill behavior</a>)
 causes its <a data-link-type="dfn" href="#active-time" id="ref-for-active-time-4">active time</a> to be resolved.
 Only <a data-link-type="dfn" href="#in-effect" id="ref-for-in-effect-2">in effect</a> <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-58">animation effects</a> apply
@@ -2147,11 +2153,11 @@ in all other cases, the <a data-link-type="dfn" href="#animation-direction" id="
     <dt data-md="">
      <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="before-active-boundary-time">before-active boundary time</dfn></p>
     <dd data-md="">
-     <p><code>min(<a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-11">start delay</a>, <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-4">end time</a>)</code></p>
+     <p><code>max(min(<a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-14">start delay</a>, <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-6">end time</a>), 0)</code></p>
     <dt data-md="">
      <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="active-after-boundary-time">active-after boundary time</dfn></p>
     <dd data-md="">
-     <p><code>min(<a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-12">start delay</a> + <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-5">active duration</a>, <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-5">end time</a>)</code></p>
+     <p><code>max(min(<a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-15">start delay</a> + <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-5">active duration</a>, <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-7">end time</a>), 0)</code></p>
    </dl>
    <p>An <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-60">animation effect</a> is in the <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="before-phase">before phase</dfn> if the
 animation effect’s <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-10">local time</a> is not <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-72">unresolved</a> and <em>either</em> of the following conditions are met:</p>
@@ -2178,7 +2184,7 @@ not in either the <a data-link-type="dfn" href="#before-phase" id="ref-for-befor
    <p>An <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-63">animation effect</a> is <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="in-play">in play</dfn> if <em>all</em> of the following conditions are met:</p>
    <ol>
     <li data-md="">
-     <p>the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-64">animation effect</a> is in the <a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-6">active phase</a>, and</p>
+     <p>the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-64">animation effect</a> is in the <a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-7">active phase</a>, and</p>
     <li data-md="">
      <p>the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-65">animation effect</a> has a <a data-link-type="dfn" href="#parent-group" id="ref-for-parent-group-12">parent group</a> that
 is <a data-link-type="dfn" href="#in-play" id="ref-for-in-play-8">in play</a> or else the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-66">animation effect</a> is <a data-link-type="dfn" href="#directly-associated-with-an-animation" id="ref-for-directly-associated-with-an-animation-5">directly associated with an animation</a> that is not <a data-link-type="dfn" href="#finished-play-state" id="ref-for-finished-play-state-12">finished</a>.</p>
@@ -2224,7 +2230,7 @@ calculation of the <a data-link-type="dfn" href="#active-time" id="ref-for-activ
       <p>forwards</p>
      <dd data-md="">
       <p>When the animation effect is in the <a data-link-type="dfn" href="#after-phase" id="ref-for-after-phase-3">after phase</a>,
-or when the animation effect is in the <a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-7">active phase</a> but an <a data-link-type="dfn" href="#ancestor" id="ref-for-ancestor-2">ancestor</a> is in its <a data-link-type="dfn" href="#after-phase" id="ref-for-after-phase-4">after phase</a>,
+or when the animation effect is in the <a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-8">active phase</a> but an <a data-link-type="dfn" href="#ancestor" id="ref-for-ancestor-2">ancestor</a> is in its <a data-link-type="dfn" href="#after-phase" id="ref-for-after-phase-4">after phase</a>,
 the animation effect will produce the same <a data-link-type="dfn" href="#iteration-progress" id="ref-for-iteration-progress-3">iteration progress</a> value as the last moment it is scheduled to be <a data-link-type="dfn" href="#in-play" id="ref-for-in-play-12">in play</a>.</p>
       <p>For all other times that the animation effect is not <a data-link-type="dfn" href="#in-play" id="ref-for-in-play-13">in play</a>,
 it will have no effect.</p>
@@ -2232,7 +2238,7 @@ it will have no effect.</p>
       <p>backwards</p>
      <dd data-md="">
       <p>When the animation effect is in the <a data-link-type="dfn" href="#before-phase" id="ref-for-before-phase-5">before phase</a>,
-or when the animation effect is in the <a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-8">active phase</a> but an <a data-link-type="dfn" href="#ancestor" id="ref-for-ancestor-3">ancestor</a> is in its <a data-link-type="dfn" href="#before-phase" id="ref-for-before-phase-6">before phase</a>,
+or when the animation effect is in the <a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-9">active phase</a> but an <a data-link-type="dfn" href="#ancestor" id="ref-for-ancestor-3">ancestor</a> is in its <a data-link-type="dfn" href="#before-phase" id="ref-for-before-phase-6">before phase</a>,
 the animation effect will produce the same <a data-link-type="dfn" href="#iteration-progress" id="ref-for-iteration-progress-4">iteration progress</a> value as the earliest moment that it is scheduled to be <a data-link-type="dfn" href="#in-play" id="ref-for-in-play-14">in play</a>.</p>
       <p>For all other times that the animation effect is not <a data-link-type="dfn" href="#in-play" id="ref-for-in-play-15">in play</a>,
 it will have no effect.</p>
@@ -2248,17 +2254,17 @@ or an <a data-link-type="dfn" href="#ancestor" id="ref-for-ancestor-5">ancestor<
     <figure>
       <img alt="Examples of various fill modes and the states produced." src="img/animation-state-and-fill-behavior.svg" width="600"> 
      <figcaption> Examples of various fill modes and the states produced.<br> (a) fill mode ‘none’. The animation effect has no effect
-        outside its active interval.<br> (b) fill mode ‘forwards’. After the active interval has
+        outside its active phase.<br> (b) fill mode ‘forwards’. After the active phase has
         finished, the <a data-link-type="dfn" href="#iteration-progress" id="ref-for-iteration-progress-5">iteration progress</a> value continues to maintain
         a fill value.<br> (c) fill mode ‘backwards’. The animation effect produces
-        a fill value until the start of the active interval.<br> (d) fill mode ‘both’. Both before and after the active
-        interval the animation effect produces a fill value. </figcaption>
+        a fill value until the start of the active phase.<br> (d) fill mode ‘both’. Both before and after the active
+        phase the animation effect produces a fill value. </figcaption>
     </figure>
-    <p class="note" role="note">Note: setting a fill mode has no bearing on the endpoints of the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-16">active interval</a>.
+    <p class="note" role="note">Note: setting a fill mode has no bearing on the endpoints of the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-15">active interval</a> or the boundaries between <a href="#animation-effect-phases-and-states">phases</a>.
     However, the fill mode <em>does</em> have an effect on various other
     properties of the timing model since the <a data-link-type="dfn" href="#active-time" id="ref-for-active-time-7">active time</a> of an
     animation effect is only defined (that is, not <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-76">unresolved</a>) inside
-    the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-17">active interval</a> <em>or</em> when a fill is applied.</p>
+    the <a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-10">active phase</a> <em>or</em> when a fill is applied.</p>
     <div class="issue" id="issue-5b9a5216">
      <a class="self-link" href="#issue-5b9a5216"></a> Currently <a data-link-type="dfn" href="#timing-function" id="ref-for-timing-function-1">timing functions</a> that generate results outside the
 range [0, 1] will behave unexpectedly when applied to group
@@ -2277,10 +2283,10 @@ active time range by extrapolating rather than filling.</p>
    <h4 class="heading settled" data-level="3.8.1" id="iteration-intervals"><span class="secno">3.8.1. </span><span class="content">Iteration intervals</span><a class="self-link" href="#iteration-intervals"></a></h4>
    <p>It is possible to specify that an animation effect should repeat
 a fixed number of times or indefinitely.
-This repetition occurs <em>within</em> the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-18">active interval</a>.
+This repetition occurs <em>within</em> the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-16">active interval</a>.
 The span of time during which a single repetition takes place is
 called an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="iteration-interval">iteration interval</dfn>.</p>
-   <p>Unlike the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-19">active interval</a>, an animation effect can have multiple <a data-link-type="dfn" href="#iteration-interval" id="ref-for-iteration-interval-1">iteration intervals</a> although typically only the interval
+   <p>Unlike the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-17">active interval</a>, an animation effect can have multiple <a data-link-type="dfn" href="#iteration-interval" id="ref-for-iteration-interval-1">iteration intervals</a> although typically only the interval
 corresponding to the <a data-link-type="dfn" href="#current-iteration" id="ref-for-current-iteration-1">current iteration</a> is of interest.</p>
    <p>The length of a single iteration is called the <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="iteration duration" data-noexport="" id="iteration-duration">iteration
 duration</dfn>.
@@ -2431,12 +2437,12 @@ calculations</a>.</p>
     <ul>
      <li data-md="">
       <p>The <a data-link-type="dfn" href="#animation-effect-playback-rate" id="ref-for-animation-effect-playback-rate-6">playback rate</a> is
-applied only to the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-20">active interval</a> of an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-84">animation
-effect</a> and not to the time while it is <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-13">delayed</a> or <a data-link-type="dfn" href="#fill-mode" id="ref-for-fill-mode-6">filling</a>.</p>
+applied only to the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-18">active interval</a> of an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-84">animation
+effect</a> and not to the time while it is <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-16">delayed</a> or <a data-link-type="dfn" href="#fill-mode" id="ref-for-fill-mode-6">filling</a>.</p>
      <li data-md="">
       <p>Setting a negative <a data-link-type="dfn" href="#animation-effect-playback-rate" id="ref-for-animation-effect-playback-rate-7">playback
 rate</a> on an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-85">animation effect</a> causes the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-86">animation
-effect</a> to begin at the end of its <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-21">active interval</a>.
+effect</a> to begin at the end of its <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-19">active interval</a>.
 This differs from the <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-37">playback
 rate</a> on an <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-44">animation</a>.
 Setting a <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-38">playback rate</a> on
@@ -2448,7 +2454,7 @@ the <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-
      <li data-md="">
       <p>Changing the <a data-link-type="dfn" href="#animation-effect-playback-rate" id="ref-for-animation-effect-playback-rate-9">playback
 rate</a> of an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-88">animation effect</a> whose <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-19">local time</a> is
-within its <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-22">active interval</a> will cause it to jump.
+within its <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-20">active interval</a> will cause it to jump.
 This is because the <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-12">active duration</a> will be updated but the <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-20">local time</a> will not.</p>
       <p>Furthermore, if other <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-89">animation effects</a> depend on the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-90">animation effect</a>’s <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-13">active duration</a>, such as sibling <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-91">animation effect</a> in a <a data-link-type="dfn" href="#sequence-effect" id="ref-for-sequence-effect-5">sequence effect</a>, they
 too may jump as a result of setting the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-92">animation effect</a>’s <a data-link-type="dfn" href="#animation-effect-playback-rate" id="ref-for-animation-effect-playback-rate-10">playback rate</a>.</p>
@@ -2463,7 +2469,7 @@ calculations</span><a class="self-link" href="#core-animation-effect-calculation
     <p>At the core of the Web Animations timing model is the process that
 takes an <a data-link-type="dfn" href="#inherited-time" id="ref-for-inherited-time-8">inherited time</a> value
 and converts it to an <a data-link-type="dfn" href="#iteration-progress" id="ref-for-iteration-progress-9">iteration progress</a>.</p>
-    <p>The first step in this process is to calculate the bounds of the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-23">active interval</a> which is determined by the <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-14">active
+    <p>The first step in this process is to calculate the bounds of the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-21">active interval</a> which is determined by the <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-14">active
 duration</a>.</p>
     <p>This process is illustrated below.</p>
     <figure>
@@ -2480,7 +2486,7 @@ duration</a>.</p>
       <img alt="An overview of timing model calculations." src="img/time-calculations.svg" width="650"> 
      <figcaption> An overview of timing model calculations.<br> (1) The <a data-link-type="dfn" href="#inherited-time" id="ref-for-inherited-time-10">inherited time</a> is converted into a <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-21">local time</a> by
     incorporating the <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-18">start time</a>.<br> (2) The <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-22">local time</a> is converted into an <a data-link-type="dfn" href="#active-time" id="ref-for-active-time-11">active time</a> by
-    incorporating the <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-14">start
+    incorporating the <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-17">start
     delay</a>.<br> (3) The <a data-link-type="dfn" href="#active-time" id="ref-for-active-time-12">active time</a> is divided by the <a data-link-type="dfn" href="#iteration-duration" id="ref-for-iteration-duration-9">iteration duration</a> incorporating also the <a data-link-type="dfn" href="#iteration-start" id="ref-for-iteration-start-7">iteration start</a> property and the <a data-link-type="dfn" href="#animation-effect-playback-rate" id="ref-for-animation-effect-playback-rate-12">playback rate</a> property
     to produce the <a data-link-type="dfn" href="#overall-progress" id="ref-for-overall-progress-1">overall progress</a>.<br> (4) The <a data-link-type="dfn" href="#overall-progress" id="ref-for-overall-progress-2">overall progress</a> time is then converted to an offset
     within a single iteration: the <a data-link-type="dfn" href="#simple-iteration-progress" id="ref-for-simple-iteration-progress-1">simple iteration progress</a>.<br> (5) The <a data-link-type="dfn" href="#simple-iteration-progress" id="ref-for-simple-iteration-progress-2">simple iteration progress</a> is converted into a <a data-link-type="dfn" href="#directed-progress" id="ref-for-directed-progress-1">directed
@@ -2510,7 +2516,7 @@ steps:</p>
    </ol>
    <h4 class="heading settled" data-level="3.10.3" id="transforming-the-local-time"><span class="secno">3.10.3. </span><span class="content">Transforming the local time</span><a class="self-link" href="#transforming-the-local-time"></a></h4>
    <h5 class="heading settled" data-level="3.10.3.1" id="calculating-the-active-time"><span class="secno">3.10.3.1. </span><span class="content">Calculating the active time</span><a class="self-link" href="#calculating-the-active-time"></a></h5>
-   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="active-time">active time</dfn> is based on the <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-24">local time</a> and <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-15">start delay</a>.
+   <p>The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="active-time">active time</dfn> is based on the <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-24">local time</a> and <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-18">start delay</a>.
 However, it is only defined when the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-94">animation effect</a> should
 produce an output and hence depends on its <a data-link-type="dfn" href="#fill-mode" id="ref-for-fill-mode-7">fill mode</a> and
 phase
@@ -2533,7 +2539,7 @@ phase</a>,</p>
         <dt data-md="">
          <p>If the <a data-link-type="dfn" href="#fill-mode" id="ref-for-fill-mode-8">fill mode</a> is <span class="prop-mode">backwards</span> or <span class="prop-mode">both</span>,</p>
         <dd data-md="">
-         <p>Return zero.</p>
+         <p>Return the result of evaluating <code>max(<a data-link-type="dfn" href="#local-time" id="ref-for-local-time-25">local time</a> - <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-19">start delay</a>, 0)</code>.</p>
         <dt data-md="">
          <p>Otherwise,</p>
         <dd data-md="">
@@ -2541,7 +2547,7 @@ phase</a>,</p>
        </dl>
       </div>
      <dt data-md="">
-      <p>If the animation effect is in the <a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-9">active phase</a>,</p>
+      <p>If the animation effect is in the <a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-11">active phase</a>,</p>
      <dd data-md="">
       <p>The result depends on the first matching condition from the
 following,</p>
@@ -2562,7 +2568,7 @@ is <span class="prop-value">none</span> or <span class="prop-value">backwards,</
         <dt data-md="">
          <p>Otherwise,</p>
         <dd data-md="">
-         <p>Return <code><a data-link-type="dfn" href="#local-time" id="ref-for-local-time-25">local time</a> - <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-16">start delay</a></code>.</p>
+         <p>Return the result of evaluating <code><a data-link-type="dfn" href="#local-time" id="ref-for-local-time-26">local time</a> - <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-20">start delay</a></code>.</p>
        </dl>
       </div>
      <dt data-md="">
@@ -2580,7 +2586,7 @@ phase</a>,</p>
         <dt data-md="">
          <p>If the <a data-link-type="dfn" href="#fill-mode" id="ref-for-fill-mode-11">fill mode</a> is <span class="prop-mode">forwards</span> or <span class="prop-mode">both</span>,</p>
         <dd data-md="">
-         <p>Return the result of evaluating <code>max(min(<a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-19">active duration</a>, <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-20">active duration</a> + <a data-link-type="dfn" href="#end-delay" id="ref-for-end-delay-3">end delay</a>),
+         <p>Return the result of evaluating <code>max(min(<a data-link-type="dfn" href="#local-time" id="ref-for-local-time-27">local time</a> - <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-21">start delay</a>, <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-19">active duration</a>),
           0)</code>.</p>
         <dt data-md="">
          <p>Otherwise,</p>
@@ -2589,7 +2595,7 @@ phase</a>,</p>
        </dl>
       </div>
      <dt data-md="">
-      <p>Otherwise (the <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-26">local time</a> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-83">unresolved</a>),</p>
+      <p>Otherwise (the <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-28">local time</a> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-83">unresolved</a>),</p>
      <dd data-md="">
       <p>Return an <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-84">unresolved</a> <a data-link-type="dfn" href="#time-value" id="ref-for-time-value-45">time value</a>.</p>
     </dl>
@@ -2620,7 +2626,7 @@ matching condition from below:</p>
           <dt data-md="">
            <p>If the <a data-link-type="dfn" href="#animation-effect-playback-rate" id="ref-for-animation-effect-playback-rate-15">animation effect playback rate</a> is less than zero,</p>
           <dd data-md="">
-           <p>Let <var>overall progress</var> be <code>(<a data-link-type="dfn" href="#active-time" id="ref-for-active-time-14">active time</a> - <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-21">active duration</a>)
+           <p>Let <var>overall progress</var> be <code>(<a data-link-type="dfn" href="#active-time" id="ref-for-active-time-14">active time</a> - <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-20">active duration</a>)
 × <a data-link-type="dfn" href="#animation-effect-playback-rate" id="ref-for-animation-effect-playback-rate-16">playback
 rate</a> / <a data-link-type="dfn" href="#iteration-duration" id="ref-for-iteration-duration-13">iteration duration</a></code>.</p>
           <dt data-md="">
@@ -2670,9 +2676,9 @@ otherwise, let the <var>simple iteration progress</var> be <code><a data-link-ty
   holding the endpoint of the final iteration rather than the start of the
   next iteration.</p>
       <p>The final two conditions prevent this from applying when we never played
-  any iterations of the animation to begin with because either (a) the <a data-link-type="dfn" href="#iteration-count" id="ref-for-iteration-count-14">iteration count</a> was zero, or (b) the playback range of the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-24">active interval</a> was clipped to zero using a negative <a data-link-type="dfn" href="#end-delay" id="ref-for-end-delay-4">end
+  any iterations of the animation to begin with because either (a) the <a data-link-type="dfn" href="#iteration-count" id="ref-for-iteration-count-14">iteration count</a> was zero, or (b) the playback range of the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-22">active interval</a> was clipped to zero using a negative <a data-link-type="dfn" href="#end-delay" id="ref-for-end-delay-5">end
   delay</a>.
-  In detecting if the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-25">active interval</a>’s playback range was clipped
+  In detecting if the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-23">active interval</a>’s playback range was clipped
   to zero, we check for a zero <a data-link-type="dfn" href="#active-time" id="ref-for-active-time-17">active time</a> in the after phase, but
   if the <a data-link-type="dfn" href="#iteration-duration" id="ref-for-iteration-duration-16">iteration duration</a> was zero to begin with then we say that
   the animation was <em>not</em> clipped.</p>
@@ -2929,7 +2935,7 @@ which may be either the start, midpoint, or end of the interval.</p>
 interval timing (see <a href="#interval-timing">§3.8.4 Interval timing</a>), the output time at the transition
 point is the time <em>after</em> applying the increase (i.e. the top of the
 step) with the following exception.</p>
-   <p>When a transition point coincides with the end of the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-26">active
+   <p>When a transition point coincides with the end of the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-24">active
 interval</a> extra care must be taken to produce the correct result
 when performing a <a data-link-type="dfn" href="#fill-mode" id="ref-for-fill-mode-12">fill</a>.
 To achieve this, when a <a data-link-type="dfn" href="#step-timing-function" id="ref-for-step-timing-function-1">step timing function</a> is
@@ -3072,8 +3078,8 @@ since they effectively play <em>inside</em> the group’s iterations.</p>
     children play again. </figcaption>
     </figure>
     <p>Note that even in this case, the child <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-115">animation effects</a> still
-have only <em>one</em> <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-27">active interval</a>.
-However, as a result of the parent’s timing, the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-28">active
+have only <em>one</em> <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-25">active interval</a>.
+However, as a result of the parent’s timing, the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-26">active
 interval</a> is played twice.</p>
     <p>If an <a data-link-type="dfn" href="#iteration-count" id="ref-for-iteration-count-17">iteration count</a> is specified for the children of a group
 as well as for the group itself, the effect is as if the <a data-link-type="dfn" href="#iteration-count" id="ref-for-iteration-count-18">iteration
@@ -3085,15 +3091,15 @@ count</a> of the group was multiplied with the <a data-link-type="dfn" href="#it
     </figure>
     <p>A further result of the children of a <a data-link-type="dfn" href="#group-effect" id="ref-for-group-effect-17">group effect</a> basing
 their timing on the group’s <a data-link-type="dfn" href="#transformed-time" id="ref-for-transformed-time-7">transformed time</a> is that they
-cannot animate outside of the group’s <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-29">active interval</a>.
+cannot animate outside of the group’s <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-27">active interval</a>.
 This is because the <a data-link-type="dfn" href="#transformed-time" id="ref-for-transformed-time-8">transformed time</a> of a group will not
-change outside its <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-30">active interval</a>.
+change outside its <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-28">active interval</a>.
 This allows groups to <em>clip</em> the playback of their children.</p>
     <figure>
       <img alt="Groups clip the active interval of contained children." src="img/grouping-clipping.svg" width="600"> 
      <figcaption> In the first instance, an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-116">animation effect</a> has a negative delay
     and an infinite <a data-link-type="dfn" href="#iteration-count" id="ref-for-iteration-count-22">iteration count</a>.<br> However, when a similar <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-117">animation effect</a> is placed inside
-    a <a data-link-type="dfn" href="#group-effect" id="ref-for-group-effect-18">group effect</a> with a specified <a data-link-type="dfn" href="#iteration-duration" id="ref-for-iteration-duration-19">iteration duration</a> it has the effect of clipping the child <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-118">animation effect</a>’s <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-31">active interval</a>. </figcaption>
+    a <a data-link-type="dfn" href="#group-effect" id="ref-for-group-effect-18">group effect</a> with a specified <a data-link-type="dfn" href="#iteration-duration" id="ref-for-iteration-duration-19">iteration duration</a> it has the effect of clipping the child <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-118">animation effect</a>’s <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-29">active interval</a>. </figcaption>
     </figure>
     <p>Some further consequences of <a data-link-type="dfn" href="#group-effect" id="ref-for-group-effect-19">group effect</a> children basing
 their timing on their parent group’s <a data-link-type="dfn" href="#transformed-time" id="ref-for-transformed-time-9">transformed time</a> are:</p>
@@ -3119,7 +3125,7 @@ this definition to provide other kinds of synchronization behavior.</p>
   iteration duration of a group effect</span><a class="self-link" href="#the-intrinsic-iteration-duration-of-a-group-effect"></a></h4>
    <p>The <a data-link-type="dfn" href="#intrinsic-iteration-duration" id="ref-for-intrinsic-iteration-duration-3">intrinsic iteration duration</a> of a <a data-link-type="dfn" href="#group-effect" id="ref-for-group-effect-25">group
 effect</a> is based on the time when the last <a data-link-type="dfn" href="#child-effect" id="ref-for-child-effect-5">child effect</a> completes
-its <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-32">active interval</a> and depends on the
+its <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-30">active interval</a> and depends on the
 number of <a data-link-type="dfn" href="#child-effect" id="ref-for-child-effect-6">child effects</a> as follows.</p>
    <div class="switch">
     <dl>
@@ -3133,7 +3139,7 @@ number of <a data-link-type="dfn" href="#child-effect" id="ref-for-child-effect-
       <ol>
        <li data-md="">
         <p>Let <var>maximum end time</var> be the maximum value
-after calculating the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-6">end time</a> of each <a data-link-type="dfn" href="#child-effect" id="ref-for-child-effect-8">child
+after calculating the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-8">end time</a> of each <a data-link-type="dfn" href="#child-effect" id="ref-for-child-effect-8">child
 effect</a> in the group.</p>
        <li data-md="">
         <p>The <a data-link-type="dfn" href="#intrinsic-iteration-duration" id="ref-for-intrinsic-iteration-duration-5">intrinsic iteration duration</a> is the result of
@@ -3176,36 +3182,36 @@ effect</a> in the group.</p>
    <h5 class="heading settled" data-level="3.13.4.1" id="the-start-time-of-children-of-a-sequence-effect"><span class="secno">3.13.4.1. </span><span class="content">The start time of
   children of a sequence effect</span><a class="self-link" href="#the-start-time-of-children-of-a-sequence-effect"></a></h5>
    <p>The <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-21">start time</a> of
-a <a data-link-type="dfn" href="#child-effect" id="ref-for-child-effect-11">child effect</a> of a <a data-link-type="dfn" href="#sequence-effect" id="ref-for-sequence-effect-12">sequence effect</a> is the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-7">end time</a> of the child’s <a data-link-type="dfn" href="#previous-sibling" id="ref-for-previous-sibling-1">previous sibling</a>.
+a <a data-link-type="dfn" href="#child-effect" id="ref-for-child-effect-11">child effect</a> of a <a data-link-type="dfn" href="#sequence-effect" id="ref-for-sequence-effect-12">sequence effect</a> is the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-9">end time</a> of the child’s <a data-link-type="dfn" href="#previous-sibling" id="ref-for-previous-sibling-1">previous sibling</a>.
 If the child has no <a data-link-type="dfn" href="#previous-sibling" id="ref-for-previous-sibling-2">previous sibling</a> the start time is zero.</p>
    <div class="note" role="note">
-     When the <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-22">active duration</a> is positive infinity the behavior
-for calculating the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-8">end time</a> of an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-119">animation effect</a> and the <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-22">start time</a> of
+     When the <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-21">active duration</a> is positive infinity the behavior
+for calculating the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-10">end time</a> of an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-119">animation effect</a> and the <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-22">start time</a> of
 subsequent children follows the usual behavior defined by IEEE
 754-2008.
 As a result, if any of the children of a <a data-link-type="dfn" href="#sequence-effect" id="ref-for-sequence-effect-13">sequence
-effect</a> has an infinite <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-23">active duration</a>, any children
+effect</a> has an infinite <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-22">active duration</a>, any children
 that occur later in the sequence will not play. 
     <p>Similarly, the above definition does not restrict <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-23">start times</a> to positive
-values and hence some children may not play due to a negative <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-17">start delay</a> on children that occur earlier in the group
-since their <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-33">active interval</a> may end before the group’s <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-24">start time</a>.</p>
+values and hence some children may not play due to a negative <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-22">start delay</a> on children that occur earlier in the group
+since their <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-31">active interval</a> may end before the group’s <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-24">start time</a>.</p>
    </div>
    <div class="informative-bg">
     <em>This section is non-normative</em> 
-    <p>Because the start of the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-34">active interval</a> is based on the
-sum of an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-120">animation effect</a>’s <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-25">start time</a> <em>and</em> <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-18">start delay</a>, the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-35">active intervals</a> of
+    <p>Because the start of the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-32">active interval</a> is based on the
+sum of an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-120">animation effect</a>’s <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-25">start time</a> <em>and</em> <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-23">start delay</a>, the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-33">active intervals</a> of
 children of a <a data-link-type="dfn" href="#sequence-effect" id="ref-for-sequence-effect-14">sequence effect</a> need not run in strict
-sequence but can be shifted back and forth by using the <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-19">start
+sequence but can be shifted back and forth by using the <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-24">start
 delay</a> as shown in the following diagram.</p>
     <figure>
       <img alt="Using negative start delays to overlap children of seq
         groups" src="img/sequence-groups-and-start-delays.svg" width="600"> 
-     <figcaption> Example of using the <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-20">start delay</a> on children of a <a data-link-type="dfn" href="#sequence-effect" id="ref-for-sequence-effect-15">sequence effect</a> to shift their timing so that they
+     <figcaption> Example of using the <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-25">start delay</a> on children of a <a data-link-type="dfn" href="#sequence-effect" id="ref-for-sequence-effect-15">sequence effect</a> to shift their timing so that they
     overlap (a negative delay) or are spaced apart (a positive delay). </figcaption>
     </figure>
-    <p>A negative <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-21">start delay</a> can be used to cause the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-36">active
+    <p>A negative <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-26">start delay</a> can be used to cause the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-34">active
 interval</a> of two children to overlap.
-Note that the <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-22">start delay</a> affects the <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-26">start time</a> of subsequent
+Note that the <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-27">start delay</a> affects the <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-26">start time</a> of subsequent
 children in the group.</p>
    </div>
    <h5 class="heading settled" data-level="3.13.4.2" id="the-intrinsic-iteration-duration-of-a-sequence-effect"><span class="secno">3.13.4.2. </span><span class="content">The intrinsic
@@ -4361,7 +4367,7 @@ incorporated in the calculation of the <a data-link-type="dfn" href="#effect-val
     <p>As a result of the above requirement, if an animation targets, for example,
 the <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css-transforms-1/#propdef-transform">transform</a> property of an element, a <a data-link-type="dfn" href="https://drafts.csswg.org/css-position-3/#stacking-context">stacking context</a> will be
 created for the <a data-link-type="dfn" href="#target-element" id="ref-for-target-element-6">target element</a> so long as the <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-56">animation</a> is in
-the <a data-link-type="dfn" href="#before-phase" id="ref-for-before-phase-13">before phase</a>, the <a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-10">active phase</a> or, if it has a <a data-link-type="dfn" href="#fill-mode" id="ref-for-fill-mode-13">fill
+the <a data-link-type="dfn" href="#before-phase" id="ref-for-before-phase-13">before phase</a>, the <a data-link-type="dfn" href="#active-phase" id="ref-for-active-phase-12">active phase</a> or, if it has a <a data-link-type="dfn" href="#fill-mode" id="ref-for-fill-mode-13">fill
 mode</a> of ‘forwards’ or ‘both’, the <a data-link-type="dfn" href="#after-phase" id="ref-for-after-phase-12">after
 phase</a>.</p>
    </div>
@@ -4706,7 +4712,7 @@ for this object.</p>
          <p>DOMException of type <code>InvalidStateError</code></p>
         <dd data-md="">
          <p>Raised if this animation’s <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-41">playback
-rate</a> is zero, or if this animation’s <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-42">playback rate</a> is > zero and the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-9">end time</a> of this animation’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-32">target effect</a> is infinity.</p>
+rate</a> is zero, or if this animation’s <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-42">playback rate</a> is > zero and the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-11">end time</a> of this animation’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-32">target effect</a> is infinity.</p>
        </dl>
       </div>
      <dt data-md="">
@@ -4901,21 +4907,21 @@ effect</a> from its <a data-link-type="dfn" href="#parent-group" id="ref-for-par
      <dt data-md="">
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="AnimationEffectTimingReadOnly" data-dfn-type="attribute" data-export="" id="dom-animationeffecttimingreadonly-delay">delay</dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#dom-double">double</a>, readonly</span></p>
      <dd data-md="">
-      <p>The <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-23">start delay</a> which represents the number of milliseconds
+      <p>The <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-28">start delay</a> which represents the number of milliseconds
 from an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-164">animation effect</a>’s <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-28">start
-time</a> to the start of the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-37">active interval</a>.</p>
+time</a> to the start of the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-35">active interval</a>.</p>
      <dt data-md="">
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="AnimationEffectTimingReadOnly" data-dfn-type="attribute" data-export="" id="dom-animationeffecttimingreadonly-enddelay">endDelay</dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#dom-double">double</a>, readonly</span></p>
      <dd data-md="">
-      <p>The <a data-link-type="dfn" href="#end-delay" id="ref-for-end-delay-5">end delay</a> which represents the number of milliseconds
-from the end of an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-165">animation effect</a>’s <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-38">active interval</a> until the <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-29">start time</a> of any <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-166">animation effect</a> that may
+      <p>The <a data-link-type="dfn" href="#end-delay" id="ref-for-end-delay-6">end delay</a> which represents the number of milliseconds
+from the end of an <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-165">animation effect</a>’s <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-36">active interval</a> until the <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-29">start time</a> of any <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-166">animation effect</a> that may
 follow, for example, in a <a data-link-type="dfn" href="#sequence-effect" id="ref-for-sequence-effect-19">sequence effect</a>.
-until its <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-10">end time</a>.</p>
+until its <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-12">end time</a>.</p>
      <dt data-md="">
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="AnimationEffectTimingReadOnly" data-dfn-type="attribute" data-export="" id="dom-animationeffecttimingreadonly-fill">fill</dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-fillmode" id="ref-for-enumdef-fillmode-3">FillMode</a>, readonly</span></p>
      <dd data-md="">
       <p>The <a data-link-type="dfn" href="#fill-mode" id="ref-for-fill-mode-14">fill mode</a> which defines the behavior of the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-167">animation
-effect</a> outside its <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-39">active interval</a>.</p>
+effect</a> outside its <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-37">active interval</a>.</p>
       <p>When performing timing calculations the special value <span class="enum-value">auto</span> is expanded
 to one of the <a data-link-type="dfn" href="#fill-mode" id="ref-for-fill-mode-15">fill modes</a> recognized by the timing model as
 follows,</p>
@@ -4975,7 +4981,7 @@ The string value <code>auto</code> is used to indicate that the <a data-link-typ
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="AnimationEffectTimingReadOnly" data-dfn-type="attribute" data-export="" id="dom-animationeffecttimingreadonly-playbackrate">playbackRate</dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#dom-double">double</a>, readonly</span></p>
      <dd data-md="">
       <p>The <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-172">animation effect</a>’s <a data-link-type="dfn" href="#animation-effect-playback-rate" id="ref-for-animation-effect-playback-rate-21">playback rate</a> property
-which is a multiplier applied to the <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-27">local time</a> potentially
+which is a multiplier applied to the <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-29">local time</a> potentially
 causing the effect to run at a different rate to its natural speed.</p>
      <dt data-md="">
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="AnimationEffectTimingReadOnly" data-dfn-type="attribute" data-export="" id="dom-animationeffecttimingreadonly-direction">direction</dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-playbackdirection" id="ref-for-enumdef-playbackdirection-2">PlaybackDirection</a>, readonly</span></p>
@@ -5157,24 +5163,24 @@ of the <code class="idl"><a data-link-type="idl" href="#animationeffecttiming" i
 This is the time at which the <a data-link-type="dfn" href="#parent-group" id="ref-for-parent-group-31">parent group</a>, if
 any, has scheduled this child to run within its <a data-link-type="dfn" href="#transformed-time" id="ref-for-transformed-time-10">transformed time space</a>, that is, the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-177">animation effect</a>’s <a data-link-type="dfn" href="#inherited-time" id="ref-for-inherited-time-12">inherited time
 space</a>.</p>
-      <p>The start of the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-40">active interval</a> is based on the sum of
-the <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-31">start time</a> and <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-24">start delay</a>.</p>
+      <p>The start of the <a data-link-type="dfn" href="#active-interval" id="ref-for-active-interval-38">active interval</a> is based on the sum of
+the <a data-link-type="dfn" href="#animation-effect-start-time" id="ref-for-animation-effect-start-time-31">start time</a> and <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-29">start delay</a>.</p>
      <dt data-md="">
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="ComputedTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-computedtimingproperties-endtime">endTime</dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#dom-unrestricteddouble">unrestricted double</a></span></p>
      <dd data-md="">
-      <p>The <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-11">end time</a> of the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-178">animation effect</a> expressed
+      <p>The <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-13">end time</a> of the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-178">animation effect</a> expressed
 in    milliseconds in <a data-link-type="dfn" href="#inherited-time" id="ref-for-inherited-time-13">inherited time
 space</a>.
 This corresponds to the end of the <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-179">animation effect</a>’s active
-interval plus any <a data-link-type="dfn" href="#end-delay" id="ref-for-end-delay-6">end delay</a>.</p>
+interval plus any <a data-link-type="dfn" href="#end-delay" id="ref-for-end-delay-7">end delay</a>.</p>
      <dt data-md="">
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="ComputedTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-computedtimingproperties-activeduration">activeDuration</dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#dom-unrestricteddouble">unrestricted double</a></span></p>
      <dd data-md="">
-      <p>The <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-24">active duration</a> of this <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-180">animation effect</a>.</p>
+      <p>The <a data-link-type="dfn" href="#active-duration" id="ref-for-active-duration-23">active duration</a> of this <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-180">animation effect</a>.</p>
      <dt data-md="">
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="ComputedTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-computedtimingproperties-localtime">localTime</dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#dom-double">double</a>, nullable</span></p>
      <dd data-md="">
-      <p>The <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-28">local time</a> of this <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-181">animation effect</a>.</p>
+      <p>The <a data-link-type="dfn" href="#local-time" id="ref-for-local-time-30">local time</a> of this <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-181">animation effect</a>.</p>
       <p>This will be <code>null</code> if this <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-182">animation effect</a> is not <a data-link-type="dfn" href="#associated-with-an-animation" id="ref-for-associated-with-an-animation-5">associated with an animation</a> or if it has a <a data-link-type="dfn" href="#parent-group" id="ref-for-parent-group-32">parent group</a> that is not <a data-link-type="dfn" href="#in-effect" id="ref-for-in-effect-12">in effect</a>.</p>
      <dt data-md="">
       <p><dfn class="dfn-paneled idl-code" data-dfn-for="ComputedTimingProperties" data-dfn-type="dict-member" data-export="" id="dom-computedtimingproperties-progress">progress</dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#dom-double">double</a>, nullable</span></p>
@@ -5820,13 +5826,13 @@ type</a> other than <a data-link-type="dfn" href="#concept-not-animatable" id="r
        <em>This section is non-normative</em> 
        <p>The result of this method is a sequence of objects of the following
   format:</p>
-<pre class="lang-idl highlight"><span></span>dictionary ComputedKeyframe {
-    <span class="o">//</span> ... property<span class="o">-</span>value pairs ...
-    <span class="o">//</span> i.e. DOMString propertyName
-    <span class="nb">double</span>?             offset <span class="o">=</span> null;
-    <span class="nb">double</span>              computedOffset;
-    DOMString           easing <span class="o">=</span> <span class="s2">"linear"</span>;
-    CompositeOperation? composite;
+<pre class="lang-idl highlight"><span class="kt">dictionary</span> <span class="nv">ComputedKeyframe</span> {
+    // ... property-value pairs ...
+    // i.e. DOMString propertyName
+    <span class="kt">double</span>?             <span class="nv">offset</span> = <span class="kt">null</span>;
+    <span class="kt">double</span>              <span class="nv">computedOffset</span>;
+    <span class="kt">DOMString</span>           <span class="nv">easing</span> = "linear";
+    <span class="n">CompositeOperation</span>? <span class="nv">composite</span>;
 };
 </pre>
        <p>The meaning and values of each member is as follows:</p>
@@ -5960,7 +5966,7 @@ argument</a>.)</p>
     <p>The third parameter, representing the animation’s timing, may
 simply be a number representing the <a data-link-type="dfn" href="#iteration-duration" id="ref-for-iteration-duration-25">iteration duration</a> in
 milliseconds as above, or, to specify further timing properties such
-as the <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-25">start delay</a>, an <code class="idl"><a data-link-type="idl" href="#dictdef-animationeffecttimingproperties" id="ref-for-dictdef-animationeffecttimingproperties-14">AnimationEffectTimingProperties</a></code> object can
+as the <a data-link-type="dfn" href="#start-delay" id="ref-for-start-delay-30">start delay</a>, an <code class="idl"><a data-link-type="idl" href="#dictdef-animationeffecttimingproperties" id="ref-for-dictdef-animationeffecttimingproperties-14">AnimationEffectTimingProperties</a></code> object can
 be used, as follows:</p>
     <div class="example" id="example-b231783a">
      <a class="self-link" href="#example-b231783a"></a>
@@ -5978,7 +5984,7 @@ without any interpolation as follows:</p>
 </pre>
     </div>
     <p>This is particularly useful in combination with other <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect-197">animation effects</a>.
-For example, fading an element before switching <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility">visibility</a> to ‘hidden’ can be achieved as
+For example, fading an element before switching <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css21/visufx.html#propdef-visibility">visibility</a> to ‘hidden’ can be achieved as
 follows,</p>
     <div class="example" id="example-ee500db4">
      <a class="self-link" href="#example-ee500db4"></a>
@@ -6007,7 +6013,7 @@ automatically. For example,
      <p>If <var>property</var> follows the <a class="production css" data-link-type="type" href="https://drafts.csswg.org/css-variables-1/#typedef-custom-property-name">&lt;custom-property-name></a> production,
 return <var>property</var>.</p>
     <li data-md="">
-     <p>If <var>property</var> refers to the CSS <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visuren.html#propdef-float">float</a> property,
+     <p>If <var>property</var> refers to the CSS <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css21/visuren.html#propdef-float">float</a> property,
 return the string "cssFloat".</p>
     <li data-md="">
      <p>Otherwise, return the result of applying the <a data-link-type="dfn" href="https://drafts.csswg.org/cssom/#css-property-to-idl-attribute">CSS property to IDL
@@ -6020,7 +6026,7 @@ attribute</a> algorithm <a data-link-type="biblio" href="#biblio-cssom">[CSSOM]<
 return <var>attribute</var>.</p>
     <li data-md="">
      <p>If <var>attribute</var> is the string "cssFloat", then return
-an animation property representing the CSS <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css2/visuren.html#propdef-float">float</a> property.</p>
+an animation property representing the CSS <a class="property" data-link-type="propdesc" href="https://drafts.csswg.org/css21/visuren.html#propdef-float">float</a> property.</p>
     <li data-md="">
      <p>Otherwise, return the result of applying the <a data-link-type="dfn" href="https://drafts.csswg.org/cssom/#idl-attribute-to-css-property">IDL attribute to CSS
 property</a> algorithm <a data-link-type="biblio" href="#biblio-cssom">[CSSOM]</a> to <var>attribute</var>.</p>
@@ -6114,23 +6120,23 @@ using a <code class="idl"><a data-link-type="idl" href="#dictdef-keyframeeffecto
 a partially-open dictionary type.</p>
     <p>Conceptually, the type of this argument is equivalent to the following
 WebIDL-like definition:</p>
-<pre class="lang-idl highlight"><span></span>dictionary Keyframe {
-    <span class="o">//</span> ... property<span class="o">-</span>value pairs ...
-    <span class="o">//</span> i.e. DOMString propertyName
-    <span class="nb">double</span>?             offset <span class="o">=</span> null;
-    DOMString           easing <span class="o">=</span> <span class="s2">"linear"</span>;
-    CompositeOperation  composite;
+<pre class="lang-idl highlight"><span class="kt">dictionary</span> <span class="nv">Keyframe</span> {
+    // ... property-value pairs ...
+    // i.e. DOMString propertyName
+    <span class="kt">double</span>?             <span class="nv">offset</span> = <span class="kt">null</span>;
+    <span class="kt">DOMString</span>           <span class="nv">easing</span> = "linear";
+    <span class="n">CompositeOperation</span>  <span class="nv">composite</span>;
 };
 
-dictionary PropertyIndexedKeyframes {
-    <span class="o">//</span> ... property<span class="o">-</span>value <span class="k">and</span> property<span class="o">-</span>valuelist pairs ...
-    <span class="o">//</span> i.e. (DOMString <span class="k">or</span> sequence<span class="o">&lt;</span>DOMString<span class="o">></span>) propertyName
-    DOMString           easing <span class="o">=</span> <span class="s2">"linear"</span>;
+<span class="kt">dictionary</span> <span class="nv">PropertyIndexedKeyframes</span> {
+    // ... property-value and property-valuelist pairs ...
+    // i.e. (DOMString or sequence&lt;DOMString>) propertyName
+    <span class="kt">DOMString</span>           <span class="nv">easing</span> = "linear";
 };
 
-typedef KeyframeArgument (sequence<span class="o">&lt;</span>Keyframe<span class="o">></span> <span class="k">or</span>
-                          PropertyIndexedKeyframes <span class="k">or</span>
-                          SharedKeyframeList);
+<span class="kt">typedef</span> (<span class="kt">sequence</span>&lt;<span class="n">Keyframe</span>> <span class="kt">or</span>
+         <span class="n">PropertyIndexedKeyframes</span> <span class="kt">or</span>
+         <span class="n">SharedKeyframeList</span>) <span class="nv">KeyframeArgument</span>;
 </pre>
     <p>The meaning and allowed values of each argument is as follows:</p>
     <dl>
@@ -7554,8 +7560,8 @@ animations.</p>
    <li>
     <a data-link-type="biblio">[CSS21]</a> defines the following terms:
     <ul>
-     <li><a href="https://drafts.csswg.org/css2/visuren.html#propdef-float">float</a>
-     <li><a href="https://drafts.csswg.org/css2/visufx.html#propdef-visibility">visibility</a>
+     <li><a href="https://drafts.csswg.org/css21/visuren.html#propdef-float">float</a>
+     <li><a href="https://drafts.csswg.org/css21/visufx.html#propdef-visibility">visibility</a>
     </ul>
    <li>
     <a data-link-type="biblio">[CSSOM]</a> defines the following terms:
@@ -8922,20 +8928,20 @@ states</a>
    <ul>
     <li><a href="#ref-for-active-interval-1">3.6.3. The active interval</a> <a href="#ref-for-active-interval-2">(2)</a> <a href="#ref-for-active-interval-3">(3)</a> <a href="#ref-for-active-interval-4">(4)</a> <a href="#ref-for-active-interval-5">(5)</a> <a href="#ref-for-active-interval-6">(6)</a> <a href="#ref-for-active-interval-7">(7)</a> <a href="#ref-for-active-interval-8">(8)</a> <a href="#ref-for-active-interval-9">(9)</a> <a href="#ref-for-active-interval-10">(10)</a>
     <li><a href="#ref-for-active-interval-11">3.6.5. Animation effect phases and
-states</a> <a href="#ref-for-active-interval-12">(2)</a> <a href="#ref-for-active-interval-13">(3)</a> <a href="#ref-for-active-interval-14">(4)</a> <a href="#ref-for-active-interval-15">(5)</a>
-    <li><a href="#ref-for-active-interval-16">3.7.1. Fill modes</a> <a href="#ref-for-active-interval-17">(2)</a>
-    <li><a href="#ref-for-active-interval-18">3.8.1. Iteration intervals</a> <a href="#ref-for-active-interval-19">(2)</a>
-    <li><a href="#ref-for-active-interval-20">3.9. Animation effect speed control</a> <a href="#ref-for-active-interval-21">(2)</a> <a href="#ref-for-active-interval-22">(3)</a>
-    <li><a href="#ref-for-active-interval-23">3.10.1. Overview</a>
-    <li><a href="#ref-for-active-interval-24">3.10.3.3. Calculating the simple iteration progress</a> <a href="#ref-for-active-interval-25">(2)</a>
-    <li><a href="#ref-for-active-interval-26">3.12.4. Timing in discrete steps</a>
-    <li><a href="#ref-for-active-interval-27">3.13.1. Relationship of group time to child time</a> <a href="#ref-for-active-interval-28">(2)</a> <a href="#ref-for-active-interval-29">(3)</a> <a href="#ref-for-active-interval-30">(4)</a> <a href="#ref-for-active-interval-31">(5)</a>
-    <li><a href="#ref-for-active-interval-32">3.13.3. The intrinsic
+states</a> <a href="#ref-for-active-interval-12">(2)</a> <a href="#ref-for-active-interval-13">(3)</a> <a href="#ref-for-active-interval-14">(4)</a>
+    <li><a href="#ref-for-active-interval-15">3.7.1. Fill modes</a>
+    <li><a href="#ref-for-active-interval-16">3.8.1. Iteration intervals</a> <a href="#ref-for-active-interval-17">(2)</a>
+    <li><a href="#ref-for-active-interval-18">3.9. Animation effect speed control</a> <a href="#ref-for-active-interval-19">(2)</a> <a href="#ref-for-active-interval-20">(3)</a>
+    <li><a href="#ref-for-active-interval-21">3.10.1. Overview</a>
+    <li><a href="#ref-for-active-interval-22">3.10.3.3. Calculating the simple iteration progress</a> <a href="#ref-for-active-interval-23">(2)</a>
+    <li><a href="#ref-for-active-interval-24">3.12.4. Timing in discrete steps</a>
+    <li><a href="#ref-for-active-interval-25">3.13.1. Relationship of group time to child time</a> <a href="#ref-for-active-interval-26">(2)</a> <a href="#ref-for-active-interval-27">(3)</a> <a href="#ref-for-active-interval-28">(4)</a> <a href="#ref-for-active-interval-29">(5)</a>
+    <li><a href="#ref-for-active-interval-30">3.13.3. The intrinsic
   iteration duration of a group effect</a>
-    <li><a href="#ref-for-active-interval-33">3.13.4.1. The start time of
-  children of a sequence effect</a> <a href="#ref-for-active-interval-34">(2)</a> <a href="#ref-for-active-interval-35">(3)</a> <a href="#ref-for-active-interval-36">(4)</a>
-    <li><a href="#ref-for-active-interval-37">5.6. The AnimationEffectTimingReadOnly interface</a> <a href="#ref-for-active-interval-38">(2)</a> <a href="#ref-for-active-interval-39">(3)</a>
-    <li><a href="#ref-for-active-interval-40">5.9. The
+    <li><a href="#ref-for-active-interval-31">3.13.4.1. The start time of
+  children of a sequence effect</a> <a href="#ref-for-active-interval-32">(2)</a> <a href="#ref-for-active-interval-33">(3)</a> <a href="#ref-for-active-interval-34">(4)</a>
+    <li><a href="#ref-for-active-interval-35">5.6. The AnimationEffectTimingReadOnly interface</a> <a href="#ref-for-active-interval-36">(2)</a> <a href="#ref-for-active-interval-37">(3)</a>
+    <li><a href="#ref-for-active-interval-38">5.9. The
   ComputedTimingProperties dictionary</a>
    </ul>
   </aside>
@@ -8963,26 +8969,27 @@ states</a> <a href="#ref-for-active-interval-12">(2)</a> <a href="#ref-for-activ
     <li><a href="#ref-for-start-delay-1">3.6.3. The active interval</a> <a href="#ref-for-start-delay-2">(2)</a> <a href="#ref-for-start-delay-3">(3)</a> <a href="#ref-for-start-delay-4">(4)</a> <a href="#ref-for-start-delay-5">(5)</a> <a href="#ref-for-start-delay-6">(6)</a> <a href="#ref-for-start-delay-7">(7)</a> <a href="#ref-for-start-delay-8">(8)</a>
     <li><a href="#ref-for-start-delay-9">3.6.4. Local time and inherited time</a> <a href="#ref-for-start-delay-10">(2)</a>
     <li><a href="#ref-for-start-delay-11">3.6.5. Animation effect phases and
-states</a> <a href="#ref-for-start-delay-12">(2)</a>
-    <li><a href="#ref-for-start-delay-13">3.9. Animation effect speed control</a>
-    <li><a href="#ref-for-start-delay-14">3.10.1. Overview</a>
-    <li><a href="#ref-for-start-delay-15">3.10.3.1. Calculating the active time</a> <a href="#ref-for-start-delay-16">(2)</a>
-    <li><a href="#ref-for-start-delay-17">3.13.4.1. The start time of
-  children of a sequence effect</a> <a href="#ref-for-start-delay-18">(2)</a> <a href="#ref-for-start-delay-19">(3)</a> <a href="#ref-for-start-delay-20">(4)</a> <a href="#ref-for-start-delay-21">(5)</a> <a href="#ref-for-start-delay-22">(6)</a>
-    <li><a href="#ref-for-start-delay-23">5.6. The AnimationEffectTimingReadOnly interface</a>
-    <li><a href="#ref-for-start-delay-24">5.9. The
+states</a> <a href="#ref-for-start-delay-12">(2)</a> <a href="#ref-for-start-delay-13">(3)</a> <a href="#ref-for-start-delay-14">(4)</a> <a href="#ref-for-start-delay-15">(5)</a>
+    <li><a href="#ref-for-start-delay-16">3.9. Animation effect speed control</a>
+    <li><a href="#ref-for-start-delay-17">3.10.1. Overview</a>
+    <li><a href="#ref-for-start-delay-18">3.10.3.1. Calculating the active time</a> <a href="#ref-for-start-delay-19">(2)</a> <a href="#ref-for-start-delay-20">(3)</a> <a href="#ref-for-start-delay-21">(4)</a>
+    <li><a href="#ref-for-start-delay-22">3.13.4.1. The start time of
+  children of a sequence effect</a> <a href="#ref-for-start-delay-23">(2)</a> <a href="#ref-for-start-delay-24">(3)</a> <a href="#ref-for-start-delay-25">(4)</a> <a href="#ref-for-start-delay-26">(5)</a> <a href="#ref-for-start-delay-27">(6)</a>
+    <li><a href="#ref-for-start-delay-28">5.6. The AnimationEffectTimingReadOnly interface</a>
+    <li><a href="#ref-for-start-delay-29">5.9. The
   ComputedTimingProperties dictionary</a>
-    <li><a href="#ref-for-start-delay-25">5.13.1. Creating a new KeyframeEffect object</a>
+    <li><a href="#ref-for-start-delay-30">5.13.1. Creating a new KeyframeEffect object</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="end-delay">
    <b><a href="#end-delay">#end-delay</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-end-delay-1">3.6.3. The active interval</a> <a href="#ref-for-end-delay-2">(2)</a>
-    <li><a href="#ref-for-end-delay-3">3.10.3.1. Calculating the active time</a>
-    <li><a href="#ref-for-end-delay-4">3.10.3.3. Calculating the simple iteration progress</a>
-    <li><a href="#ref-for-end-delay-5">5.6. The AnimationEffectTimingReadOnly interface</a>
-    <li><a href="#ref-for-end-delay-6">5.9. The
+    <li><a href="#ref-for-end-delay-3">3.6.5. Animation effect phases and
+states</a> <a href="#ref-for-end-delay-4">(2)</a>
+    <li><a href="#ref-for-end-delay-5">3.10.3.3. Calculating the simple iteration progress</a>
+    <li><a href="#ref-for-end-delay-6">5.6. The AnimationEffectTimingReadOnly interface</a>
+    <li><a href="#ref-for-end-delay-7">5.9. The
   ComputedTimingProperties dictionary</a>
    </ul>
   </aside>
@@ -8992,14 +8999,14 @@ states</a> <a href="#ref-for-start-delay-12">(2)</a>
     <li><a href="#ref-for-end-time-1">3.5.12. Reaching the end</a> <a href="#ref-for-end-time-2">(2)</a>
     <li><a href="#ref-for-end-time-3">3.5.14. Updating the finished state</a>
     <li><a href="#ref-for-end-time-4">3.6.5. Animation effect phases and
-states</a> <a href="#ref-for-end-time-5">(2)</a>
-    <li><a href="#ref-for-end-time-6">3.13.3. The intrinsic
+states</a> <a href="#ref-for-end-time-5">(2)</a> <a href="#ref-for-end-time-6">(3)</a> <a href="#ref-for-end-time-7">(4)</a>
+    <li><a href="#ref-for-end-time-8">3.13.3. The intrinsic
   iteration duration of a group effect</a>
-    <li><a href="#ref-for-end-time-7">3.13.4.1. The start time of
-  children of a sequence effect</a> <a href="#ref-for-end-time-8">(2)</a>
-    <li><a href="#ref-for-end-time-9">5.4. The Animation interface</a>
-    <li><a href="#ref-for-end-time-10">5.6. The AnimationEffectTimingReadOnly interface</a>
-    <li><a href="#ref-for-end-time-11">5.9. The
+    <li><a href="#ref-for-end-time-9">3.13.4.1. The start time of
+  children of a sequence effect</a> <a href="#ref-for-end-time-10">(2)</a>
+    <li><a href="#ref-for-end-time-11">5.4. The Animation interface</a>
+    <li><a href="#ref-for-end-time-12">5.6. The AnimationEffectTimingReadOnly interface</a>
+    <li><a href="#ref-for-end-time-13">5.9. The
   ComputedTimingProperties dictionary</a>
    </ul>
   </aside>
@@ -9025,9 +9032,9 @@ states</a> <a href="#ref-for-local-time-7">(2)</a> <a href="#ref-for-local-time-
     <li><a href="#ref-for-local-time-17">3.8.3. Iteration time space</a>
     <li><a href="#ref-for-local-time-18">3.9. Animation effect speed control</a> <a href="#ref-for-local-time-19">(2)</a> <a href="#ref-for-local-time-20">(3)</a>
     <li><a href="#ref-for-local-time-21">3.10.1. Overview</a> <a href="#ref-for-local-time-22">(2)</a> <a href="#ref-for-local-time-23">(3)</a>
-    <li><a href="#ref-for-local-time-24">3.10.3.1. Calculating the active time</a> <a href="#ref-for-local-time-25">(2)</a> <a href="#ref-for-local-time-26">(3)</a>
-    <li><a href="#ref-for-local-time-27">5.6. The AnimationEffectTimingReadOnly interface</a>
-    <li><a href="#ref-for-local-time-28">5.9. The
+    <li><a href="#ref-for-local-time-24">3.10.3.1. Calculating the active time</a> <a href="#ref-for-local-time-25">(2)</a> <a href="#ref-for-local-time-26">(3)</a> <a href="#ref-for-local-time-27">(4)</a> <a href="#ref-for-local-time-28">(5)</a>
+    <li><a href="#ref-for-local-time-29">5.6. The AnimationEffectTimingReadOnly interface</a>
+    <li><a href="#ref-for-local-time-30">5.9. The
   ComputedTimingProperties dictionary</a>
    </ul>
   </aside>
@@ -9081,10 +9088,10 @@ states</a> <a href="#ref-for-after-phase-2">(2)</a>
    <b><a href="#active-phase">#active-phase</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-active-phase-1">3.6.5. Animation effect phases and
-states</a> <a href="#ref-for-active-phase-2">(2)</a> <a href="#ref-for-active-phase-3">(3)</a> <a href="#ref-for-active-phase-4">(4)</a> <a href="#ref-for-active-phase-5">(5)</a> <a href="#ref-for-active-phase-6">(6)</a>
-    <li><a href="#ref-for-active-phase-7">3.7.1. Fill modes</a> <a href="#ref-for-active-phase-8">(2)</a>
-    <li><a href="#ref-for-active-phase-9">3.10.3.1. Calculating the active time</a>
-    <li><a href="#ref-for-active-phase-10">4.7. Side effects of animation</a>
+states</a> <a href="#ref-for-active-phase-2">(2)</a> <a href="#ref-for-active-phase-3">(3)</a> <a href="#ref-for-active-phase-4">(4)</a> <a href="#ref-for-active-phase-5">(5)</a> <a href="#ref-for-active-phase-6">(6)</a> <a href="#ref-for-active-phase-7">(7)</a>
+    <li><a href="#ref-for-active-phase-8">3.7.1. Fill modes</a> <a href="#ref-for-active-phase-9">(2)</a> <a href="#ref-for-active-phase-10">(3)</a>
+    <li><a href="#ref-for-active-phase-11">3.10.3.1. Calculating the active time</a>
+    <li><a href="#ref-for-active-phase-12">4.7. Side effects of animation</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="in-play">
@@ -9233,11 +9240,11 @@ states</a>
     <li><a href="#ref-for-active-duration-11">3.9. Animation effect speed control</a> <a href="#ref-for-active-duration-12">(2)</a> <a href="#ref-for-active-duration-13">(3)</a>
     <li><a href="#ref-for-active-duration-14">3.10.1. Overview</a> <a href="#ref-for-active-duration-15">(2)</a> <a href="#ref-for-active-duration-16">(3)</a> <a href="#ref-for-active-duration-17">(4)</a>
     <li><a href="#ref-for-active-duration-18">3.10.2. Calculating the active duration</a>
-    <li><a href="#ref-for-active-duration-19">3.10.3.1. Calculating the active time</a> <a href="#ref-for-active-duration-20">(2)</a>
-    <li><a href="#ref-for-active-duration-21">3.10.3.2. Calculating the overall progress</a>
-    <li><a href="#ref-for-active-duration-22">3.13.4.1. The start time of
-  children of a sequence effect</a> <a href="#ref-for-active-duration-23">(2)</a>
-    <li><a href="#ref-for-active-duration-24">5.9. The
+    <li><a href="#ref-for-active-duration-19">3.10.3.1. Calculating the active time</a>
+    <li><a href="#ref-for-active-duration-20">3.10.3.2. Calculating the overall progress</a>
+    <li><a href="#ref-for-active-duration-21">3.13.4.1. The start time of
+  children of a sequence effect</a> <a href="#ref-for-active-duration-22">(2)</a>
+    <li><a href="#ref-for-active-duration-23">5.9. The
   ComputedTimingProperties dictionary</a>
    </ul>
   </aside>
