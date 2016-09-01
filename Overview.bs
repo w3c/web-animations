@@ -100,6 +100,15 @@ urlPrefix: https://drafts.csswg.org/cssom/; type: dfn; spec: cssom
 spec:dom; type:interface; text:EventTarget
 spec:dom; type:interface; text:Event
 spec:css-values-3; type:type; text:<ident>
+spec:css-backgrounds-3; type:property;
+    text:border-width
+    text:border-bottom-width
+    text:border-left-width
+    text:border-right-width
+    text:border-top-width
+    text:border-top-color
+    text:border-top
+    text:border-color
 </pre>
 
 <script type="text/x-mathjax-config">
@@ -1970,14 +1979,16 @@ attribute in SVG ([[SVG11]], Chapter 19).
 <!-- @endif -->
 
 <!-- @ifndef INCLUDE_GROUPS -->
-The <dfn>end time</dfn> of an <a>animation effect</a> is simply the sum of its
-<a>start delay</a>, <a>active duration</a>, and <a>end delay</a>.
+The <dfn>end time</dfn> of an <a>animation effect</a> is
+the result of evaluating <code>max(<a>start delay</a> + <a>active
+duration</a> + <a>end delay</a>, 0)</code>.
 
 <!-- @endif -->
 <!-- @ifdef INCLUDE_GROUPS -->
-The <dfn>end time</dfn> of an <a>animation effect</a> is simply the sum of its
-<a lt="animation effect start time">start time</a>, <a>start delay</a>,
-<a>active duration</a>, and <a>end delay</a>.
+The <dfn>end time</dfn> of an <a>animation effect</a> is
+the result of evaluating <code>max(<a lt="animation effect start time">start
+time</a> + <a>start delay</a> + <a>active duration</a> + <a>end delay</a>,
+0)</code>.
 
 <!-- @endif -->
 
@@ -2101,13 +2112,18 @@ The phases are as follows:
 
 :   <a>before phase</a>
 ::  The <a>animation effect</a>'s <a>local time</a> falls before the
-    effect's <a>active interval</a>.
+    effect's <a>active interval</a> and <a>end time</a>, <em>or</em>
+    occurs during the range when a negative <a>start delay</a> is in
+    effect.
 :   <a>active phase</a>
 ::  The <a>animation effect</a>'s <a>local time</a> falls inside the
-    effect's <a>active interval</a>.
+    effect's <a>active interval</a> and outside the range of any
+    negative <a>start delay</a> or negative <a>end delay</a>.
 :   <a>after phase</a>
 ::  The <a>animation effect</a>'s <a>local time</a> falls after the
-    effect's <a>active interval</a>.
+    effect's <a>active interval</a> or after the <a>end time</a> if that
+    comes first (due to a negative <a>end delay</a>), but <em>not</em>
+    during the range when a negative <a>start delay</a> is in effect.
 
 In addition to these phases, an <a>animation effect</a> may also be
 described as being in one of several overlapping <em>states</em>.
@@ -2140,17 +2156,23 @@ follows:
 :   <a>current</a>
 ::  Corresponds to an <a>animation effect</a> that is either <a>in
     play</a> or may become <a>in play</a> in the future.
+<!-- @ifndef INCLUDE_GROUPS -->
+    This will be the case if the <a>animation effect</a> is <a>in
+    play</a> or in its <a>before phase</a>.
+<!-- @endif -->
+<!-- @ifdef INCLUDE_GROUPS -->
     This will be the case if the <a>animation effect</a> is <a>in
     play</a> or in its <a>before phase</a>, <em>or</em> it has an
     ancestor for which this is true thereby opening up the
     possibility that this <a>animation effect</a> might play again
     (e.g. due to repeating).
+<!-- @endif -->
 
 :   <a>in effect</a>
 ::  Corresponds to an <a>animation effect</a> that has a resolved
     <a>active time</a>.
     This occurs when either the <a>animation effect</a> is in its
-    <a>active phase</a> or outside the <a>active interval</a> but at
+    <a>active phase</a> or outside the <a>active phase</a> but at
     a time where the effect's <a>fill mode</a> (see [[#fill-behavior]])
     causes its <a>active time</a> to be resolved.
     Only <a>in effect</a> <a>animation effects</a> apply
@@ -2170,10 +2192,10 @@ definitions:
     in all other cases, the <a>animation direction</a> is
     &lsquo;forwards&rsquo;.
 :   <dfn>before-active boundary time</dfn>
-::  <code>min(<a>start delay</a>, <a>end time</a>)</code>
+::  <code>max(min(<a>start delay</a>, <a>end time</a>), 0)</code>
 :   <dfn>active-after boundary time</dfn>
-::  <code>min(<a>start delay</a> + <a>active duration</a>,
-              <a>end time</a>)</code>
+::  <code>max(min(<a>start delay</a> + <a>active duration</a>,
+                  <a>end time</a>), 0)</code>
 
 An <a>animation effect</a> is in the <dfn>before phase</dfn> if the
 animation effect's <a>local time</a> is not <a>unresolved</a> and
@@ -2303,23 +2325,24 @@ Some examples of the these fill modes are illustrated below.
   <figcaption>
     Examples of various fill modes and the states produced.<br>
     (a) fill mode &lsquo;none&rsquo;. The animation effect has no effect
-        outside its active interval.<br>
-    (b) fill mode &lsquo;forwards&rsquo;. After the active interval has
+        outside its active phase.<br>
+    (b) fill mode &lsquo;forwards&rsquo;. After the active phase has
         finished, the <a>iteration progress</a> value continues to maintain
         a fill value.<br>
     (c) fill mode &lsquo;backwards&rsquo;. The animation effect produces
-        a fill value until the start of the active interval.<br>
+        a fill value until the start of the active phase.<br>
     (d) fill mode &lsquo;both&rsquo;. Both before and after the active
-        interval the animation effect produces a fill value.
+        phase the animation effect produces a fill value.
   </figcaption>
 </figure>
 
 Note: setting a fill mode has no bearing on the endpoints of the
-    <a>active interval</a>.
+    <a>active interval</a> or the boundaries between <a
+    href="#animation-effect-phases-and-states">phases</a>.
     However, the fill mode <em>does</em> have an effect on various other
     properties of the timing model since the <a>active time</a> of an
     animation effect is only defined (that is, not <a>unresolved</a>) inside
-    the <a>active interval</a> <em>or</em> when a fill is applied.
+    the <a>active phase</a> <em>or</em> when a fill is applied.
 
 <!-- @ifdef INCLUDE_GROUPS -->
 
@@ -2828,7 +2851,8 @@ as follows,
     :   If the <a>fill mode</a> is <span
         class="prop-mode">backwards</span> or <span
         class="prop-mode">both</span>,
-    ::  Return zero.
+    ::  Return the result of evaluating
+        <code>max(<a>local time</a> - <a>start delay</a>, 0)</code>.
     :   Otherwise,
     ::  Return an <a>unresolved</a> <a>time value</a>.
 
@@ -2854,12 +2878,14 @@ as follows,
         class="prop-value">backwards</a>,
     ::  Return an <a>unresolved</a> <a>time value</a>.
     :   Otherwise,
-    ::  Return <code><a>local time</a> - <a>start delay</a></code>.
+    ::  Return the result of evaluating
+        <code><a>local time</a> - <a>start delay</a></code>.
 
     </div>
 <!-- @endif -->
 <!-- @ifndef INCLUDE_GROUPS -->
-::  Return <code><a>local time</a> - <a>start delay</a></code>.
+::  Return the result of evaluating
+    <code><a>local time</a> - <a>start delay</a></code>.
 <!-- @endif -->
 
 :   If the animation effect is in the <a>after phase</a>,
@@ -2878,8 +2904,8 @@ as follows,
         class="prop-mode">forwards</span> or <span
         class="prop-mode">both</span>,
     ::  Return the result of evaluating
-        <code>max(min(<a>active duration</a>,
-                      <a>active duration</a> + <a>end delay</a>),
+        <code>max(min(<a>local time</a> - <a>start delay</a>,
+                      <a>active duration</a>),
                   0)</code>.
     :   Otherwise,
     ::  Return an <a>unresolved</a> <a>time value</a>.
@@ -8158,8 +8184,14 @@ The following changes have been made since the <a
     the end of the procedure.
 *   Reverted the change to the definition of an <a>animation effect</a>'s
     <a>end time</a> to no longer clamp the time to zero.
-*   Reworked the definition of animation phases to reflect the playback rate
-    when at a phase boundary (see [[#animation-effect-phases-and-states]]).
+*   Reworked the definition of animation phase boundaries to reflect the
+    playback rate when at a phase boundary (see
+    [[#animation-effect-phases-and-states]]).
+*   Also reworked the definition of animation phase boundaries to make them
+    line up with finish times to avoid a bug where a finished animation
+    playing in reverse would ignore the fill mode (see
+    [[#animation-effect-phases-and-states]] and <a
+    href="https://github.com/w3c/web-animations/issues/166">issue #166</a>).
 *   Significantly reworked the core animation effect timing calculations
     to operate on a fraction value instead of a time-based value.
     This makes a number of edge cases well-defined and simplifies a lot
