@@ -5320,28 +5320,42 @@ timeline</a> are represented in the Web Animations API by the
 {{DocumentTimeline}} interface.
 
 <pre class="idl">
-[Constructor (DOMHighResTimeStamp originTime)]
+dictionary DocumentTimelineOptions {
+  DOMHighResTimeStamp originTime = 0;
+};
+
+[Constructor (optional DocumentTimelineOptions options)]
 interface DocumentTimeline : AnimationTimeline {
 };
 </pre>
 
+<div class='members'>
+
+:   <dfn dict-member for=DocumentTimelineOptions>originTime</dfn>
+::  The <a>zero time</a> for the timeline specified as a real number of
+    milliseconds relative to <a
+    href="http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart">
+    <code>navigationStart</code></a> moment [[!NAVIGATION-TIMING]] of
+    the <a>active document</a> for the current <a>browsing context</a>.
+
+</div>
+
 <div class='constructors'>
 
 :   <dfn constructor for=DocumentTimeline
-    lt="DocumentTimeline(originTime)">DocumentTimeline (originTime)</dfn>
+    lt="DocumentTimeline(options)">DocumentTimeline (options)</dfn>
 ::  Creates a new {{DocumentTimeline}} object associated with the <a>active
     document</a> of the current <a>browsing context</a>.
 
     <div class='parameters'>
 
     :   <dfn argument
-        for="DocumentTimeline/DocumentTimeline(originTime)"
-        lt="originTime">originTime</dfn>
-    ::  The <a>zero time</a> for the timeline specified as a real number of
-        milliseconds relative to <a
-        href="http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart">
-        <code>navigationStart</code></a> moment [[!NAVIGATION-TIMING]] of
-        the <a>active document</a> for the current <a>browsing context</a>.
+        for="DocumentTimeline/DocumentTimeline(options)"
+        lt="options">options</dfn>
+    ::  Configuration parameters for the newly-created timeline.
+        This specification defines only the
+        {{DocumentTimelineOptions/originTime}} member but other specifications
+        may extend this set.
 
     </div>
 
@@ -8205,6 +8219,10 @@ The following changes have been made since the <a
     to CSS properties is steadily shrinking and the remaining attributes
     are not well supported and introduce significant complexity (e.g.
     the <code>class</code> attribute).
+*   Replaced the <code>originTime</code> parameter to the
+    {{DocumentTimeline()}} constructor with a
+    {{DocumentTimelineOptions}} dictionary parameter so that the set of options
+    can be more easily extended by other specifications.
 *   Removed the <code>clone()</code> method from {{KeyframeEffectReadOnly}}
     and added the {{KeyframeEffectReadOnly(source)}} and
     {{KeyframeEffect(source)}} constructors instead.
