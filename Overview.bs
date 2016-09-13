@@ -16,6 +16,7 @@ Shortname: web-animations
 TR: https://www.w3.org/TR/web-animations-1/
 <!-- @if LEVEL=1 -->
 ED: https://w3c.github.io/web-animations/
+Previous version: https://www.w3.org/TR/2016/WD-web-animations-1-20160913/
 Previous version: https://www.w3.org/TR/2015/WD-web-animations-1-20150707/
 Previous version: https://www.w3.org/TR/2014/WD-web-animations-20140605/
 Previous version: https://www.w3.org/TR/2013/WD-web-animations-20130625/
@@ -8172,115 +8173,10 @@ animations.
 <h2 id="changes-since-last-publication">Changes since last publication</h2>
 
 The following changes have been made since the <a
-  href="https://www.w3.org/TR/2015/WD-web-animations-1-20150707/">7 July
-2015 Working Draft</a>:
+  href="https://www.w3.org/TR/2016/WD-web-animations-1-20160913/">13 September
+2016 Working Draft</a>:
 
-*   Greatly simplified the procedure to <a>set the timeline of an animation</a>
-    to be more predictable and consistent.
-*   Made the procedure to <a>set the animation start time</a> set the
-    <var>did seek</var> flag to true.
-*   Made the procedure to <a>play an animation</a> take an
-    <var>auto-rewind</var> flag so that CSS Animations can re-use this
-    procedure without invoking the rewinding behavior.
-*   Made the procedure to <a>pause an animation</a> preserve the
-    <a>hold time</a> when completing the pause operation if it is already
-    set. This fixes a bug where pausing a <a lt="finished play
-    state">finished</a> animation would case the <a>current time</a> to change.
-*   Made the procedure to <a>update an animation's finished state</a>
-    conditionally check the <a lt="finished play state">finished state</a>
-    in an asynchronous manner based on the <var>synchronously notify</var>
-    flag.
-    *   Also, made this procedure only replace the <a>current finished
-        promise</a> if it has already been resolved.
-    *   Further fixed some bugs in the handling of negative playback rates.
-*   Made the procedure to <a>finish an animation</a> correctly handle
-    pause-pending animations and delay updating the finished state until
-    the end of the procedure.
-*   Reverted the change to the definition of an <a>animation effect</a>'s
-    <a>end time</a> to no longer clamp the time to zero.
-*   Reworked the definition of animation phase boundaries to reflect the
-    playback rate when at a phase boundary (see
-    [[#animation-effect-phases-and-states]]).
-*   Also reworked the definition of animation phase boundaries to make them
-    line up with finish times to avoid a bug where a finished animation
-    playing in reverse would ignore the fill mode (see
-    [[#animation-effect-phases-and-states]] and <a
-    href="https://github.com/w3c/web-animations/issues/166">issue #166</a>).
-*   Significantly reworked the core animation effect timing calculations
-    to operate on a fraction value instead of a time-based value.
-    This makes a number of edge cases well-defined and simplifies a lot
-    of the extra handling previously required for zero-duration animations.
-*   Updated the procedure to calculate the <a>current iteration</a> to
-    correctly handle zero-duration animation effects that are in the
-    <a>after phase</a>.
-*   Added [[#animation-events-section]].
-*   Removed ability to animate DOM attributes since the number of SVG
-    attributes that are commonly animated that have <em>not</em> been promoted
-    to CSS properties is steadily shrinking and the remaining attributes
-    are not well supported and introduce significant complexity (e.g.
-    the <code>class</code> attribute).
-*   Replaced the <code>originTime</code> parameter to the
-    {{DocumentTimeline()}} constructor with a
-    {{DocumentTimelineOptions}} dictionary parameter so that the set of options
-    can be more easily extended by other specifications.
-*   Removed the <code>clone()</code> method from {{KeyframeEffectReadOnly}}
-    and added the {{KeyframeEffectReadOnly(source)}} and
-    {{KeyframeEffect(source)}} constructors instead.
-*   Renamed &ldquo;animation behavior&rdquo; to <a>animation type</a>
-    (the existing &ldquo;animation type&rdquo; concept was simultaneously
-    renamed to <a>animation class</a> as mentioned below).
-*   Specified the <a>effect value</a> of a <a>keyframe effect</a> when the
-    <a>iteration progress</a> is <a>unresolved</a> (see
-    [[#the-effect-value-of-a-keyframe-animation-effect]]).
-*   Renamed &ldquo;animation type&rdquo; to <a>animation class</a>.
-*   Updated the {{Animation}} interface:
-
-    *   Made the {{Animation}} interface inherit from {{EventTarget}}.
-    *   Updated the {{Animation/Animation()}} constructor so that if a
-        <var>timeline</var> is not provided, the <a>default document
-        timeline</a> of the <a>active document</a> is used.
-    *   Added the {{Animation/id}} attribute.
-    *   Added the {{Animation/onfinish}} and {{Animation/oncancel}} attributes
-        for registering <a>animation event</a> handlers.
-    *   Removed the behavior that required {{Animation/currentTime}} to be null
-        when the animation has a <a>pending pause task</a>.
-
-*   Replaced the <code>computedTiming</code> parameter on the
-    {{AnimationEffectReadOnly}} interface with
-    a {{AnimationEffectReadOnly/getComputedTiming()}} method.
-*   Changed the handling of timing and options parameters such that invalid
-    values are no longer stored but, instead, cause a <span
-    class=exceptionname>TypeError</span> exception to be thrown.
-*   Changed the type of the {{ComputedTimingProperties/progress}} member of the
-    {{ComputedTimingProperties}} dictionary from <code>unrestricted
-    double?</code> to <code>double?</code>.
-*   Renamed <code>getFrames()</code> and <code>setKeyframes()</code>
-    on the {{KeyframeEffectReadOnly}} and {{KeyframeEffect}} interfaces
-    to {{KeyframeEffectReadOnly/getKeyframes()}} and
-    {{KeyframeEffect/setKeyframes()}} respectively, and renamed the
-    <code>frames</code> argument to <code>keyframes</code>.
-*   Rewrote the handling of keyframes arguments (see
-    [[#processing-a-keyframes-argument]] and the definition of
-    {{KeyframeEffectReadOnly/getKeyframes()}}) to be valid WebIDL.
-    *   In doing this the <code>Keyframe</code>,
-        <code>PropertyIndexedKeyframe</code> and <code>ComputedKeyframe</code>
-        dictionaries have been replaced with {{BaseKeyframe}},
-        {{BasePropertyIndexedKeyframe}}, and {{BaseComputedKeyframe}}
-        respectively.
-    *   Handling of invalid values has been adjusted to preserve invalid
-        values. The handling of these values was previously inconsistent.
-*   Made the <code>composite</code> member of {{BaseKeyframe}} and
-    {{BaseComputedKeyframe}} is no longer nullable. Rather than using
-    a null value, the absence of this member indicates that the <a>keyframe
-    effect</a>'s <a>composite operation</a> should be used.
-*   Made the {{Animatable/animate()}} method of the {{Animatable}} interface
-    take a {{KeyframeAnimationOptions}} parameter so that the {{Animation/id}}
-    of an {{Animation}} can be specified.
-*   Corrected the type of {{Animatable/animate(keyframes, options)/options}}
-    parameter to the {{Animatable/animate()}} method to use an
-    <code>unrestricted double</code> rather than a <code>double</code>.
-*   Moved {{Document/getAnimations()}} from the {{AnimationTimeline}} interface
-    to the {{Document}} interface.
+(None)
 
 <!-- @endif -->
 
