@@ -159,11 +159,13 @@ Promise.all(
     Alternatively, applications may wish to query the playback state of
     animations without waiting.
 
-    <div class='example'><pre class='lang-javascript'>
+    <div class='example'>
+    <pre class='lang-javascript'>
 var isAnimating = elem.getAnimations().some(
   animation =&gt; animation.playState == 'running'
 );
-    </pre></div>
+    </pre>
+    </div>
 
 :   Controlling running animations
 ::  It is sometimes useful to perform playback control on animations
@@ -172,12 +174,14 @@ var isAnimating = elem.getAnimations().some(
     displaying a modal dialog so that they do not distract the user's
     attention.
 
-    <div class='example'><pre class='lang-javascript'>
+    <div class='example'>
+    <pre class='lang-javascript'>
 // Pause all existing animations in the document
 document.getAnimations().forEach(
   animation =&gt; animation.pause()
 );
-    </pre></div>
+    </pre>
+    </div>
 
 :   Creating animations from script
 ::  While it is possible to use ECMAScript to perform animation using
@@ -190,10 +194,12 @@ document.getAnimations().forEach(
     create animations from script that have the same behavior and performance
     characteristics as declarative animations.
 
-    <div class='example'><pre class='lang-javascript'>
+    <div class='example'>
+    <pre class='lang-javascript'>
 // Fade out quickly
 elem.animate({ transform: 'scale(0)', opacity: 0 }, 300);
-    </pre></div>
+    </pre>
+    </div>
 
 :   Animation debugging
 ::  In a complex application, it may be difficult to determine how an
@@ -202,7 +208,8 @@ elem.animate({ transform: 'scale(0)', opacity: 0 }, 300);
     running animations to answer questions such as,
     &ldquo;Why is the opacity of this element changing?&rdquo;
 
-    <div class='example'><pre class='lang-javascript'>
+    <div class='example'>
+    <pre class='lang-javascript'>
 // Print the id of any opacity animations on elem
 elem.getAnimations().filter(
   animation =&gt;
@@ -211,12 +218,14 @@ elem.getAnimations().filter(
       frame =&gt; frame.hasOwnProperty('opacity')
     )
 ).forEach(animation =&gt; console.log(animation.id));
-    </pre></div>
+    </pre>
+    </div>
 
     Likewise, in order to fine tune animations, it is often necessary to
     reduce their playback rate and replay them.
 
-    <div class='example'><pre class='lang-javascript'>
+    <div class='example'>
+    <pre class='lang-javascript'>
 // Slow down and replay any transform animations
 elem.getAnimations().filter(
   animation =&gt;
@@ -228,7 +237,8 @@ elem.getAnimations().filter(
   animation.currentTime = 0;
   animation.playbackRate = 0.5;
 });
-    </pre></div>
+    </pre>
+    </div>
 
 :   Testing animations
 ::  In order to test applications that make use of animations it is often
@@ -4745,15 +4755,22 @@ referenced by a <a>keyframe effect</a> as one of its
 
         *   replace the property value of <var>target property</var>
             on <var>keyframe</var> with the result of combining the
-            property value (<var>V</var><sub>a</sub>) with the
-            property value on the final keyframe in
-            <var>property-specific keyframes</var>
+            property value on the final keyframe in <var>property-specific
+            keyframes</var> (<var>V</var><sub>a</sub>) with the
+            property value on <var>keyframe</var>
             (<var>V</var><sub>b</sub>) using the <a
             lt="animation accumulation">accumulation procedure</a>
             defined for <var>target property</var>.
 
-        Issue: It seems like this could be done as a separate step at the end
-            and applied to all types of animation effects consistently.
+        Note: The order of arguments here is important. In the case where
+              the animation type of the target property does not define a
+              procedure for accumulation or addition, the default definition
+              for these procedures result in <var>V</var><sub>b</sub> being
+              returned. When performing iteration composition on propreties
+              that do not support accumulation, the result should be the
+              initial property value of <var>target property</var> on
+              <var>keyframe</var>, hence we we make this
+              <var>V</var><sub>b</sub> in the above step.
 
 1.  If there is only one keyframe in <var>interval endpoints</var>
     return the property value of <var>target property</var> on that
@@ -7990,10 +8007,12 @@ in this specification, the following invariants can be observed:
     animation's <code>startTime</code> will reflect updated state of
     the model immediately.
 
-    <div class="example"><pre class="lang-javascript">
+    <div class="example">
+    <pre class="lang-javascript">
 // Initially animation.effect.getComputedTiming().localTime is 3000
 animation.currentTime += 2000;
-alert(animation.effect.getComputedTiming().localTime); // Displays &lsquo;5000&rsquo;</pre></div>
+alert(animation.effect.getComputedTiming().localTime); // Displays &lsquo;5000&rsquo;</pre>
+     </div>
 
 <!-- @ifdef INCLUDE_GROUPS -->
     The same concept applies to more complex modifications of the
@@ -8009,10 +8028,12 @@ alert(animation.effect.getComputedTiming().localTime); // Displays &lsquo;5000&r
     element, the result of the new animation will be
     incorporated in the value returned.
 
-    <div class="example"><pre class="lang-javascript">
+    <div class="example">
+    <pre class="lang-javascript">
 // Set opacity to 0 immediately
 elem.animate({ opacity: 0 }, { fill: 'forwards' });
-alert(window.getComputedStyle(elem).opacity); // Displays &lsquo;0&rsquo;</pre></div>
+alert(window.getComputedStyle(elem).opacity); // Displays &lsquo;0&rsquo;</pre>
+    </div>
 
 <!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
 :   Changes made to the model using the programming interface do
@@ -8043,11 +8064,13 @@ alert(timesCalled); // Displays &lsquo;0&rsquo;</pre></div>
     <em>only</em> the changes to specified style are rendered without
     applying animation.
 
-    <div class="example"><pre class="lang-javascript">
+    <div class="example">
+    <pre class="lang-javascript">
 // Fade the opacity with fallback for browsers that don't
 // support Element.animate
 elem.style.opacity = '0';
-elem.animate([ { opacity: 1 }, { opacity: 0 } ], 500);</pre></div>
+elem.animate([ { opacity: 1 }, { opacity: 0 } ], 500);</pre>
+    </div>
 
     Note, however, that in the example above, a user agent may render a
     frame with <em>none</em> of the above changes applied.
@@ -8065,11 +8088,13 @@ elem.animate([ { opacity: 1 }, { opacity: 0 } ], 500);</pre></div>
     a long block of code that is executed in the same script block
     will return the same value as shown in the following example.
 
-    <div class="example"><pre class="lang-javascript">
+    <div class="example">
+    <pre class="lang-javascript">
 var a = document.timeline.currentTime;
 // ... many lines of code ...
 var b = document.timeline.currentTime;
-alert(b - a); // Displays 0</pre></div>
+alert(b - a); // Displays 0</pre>
+    </div>
 
 :   The time passed to a <code>requestAnimationFrame</code> callback
     will be equal to <code>document.timeline.currentTime</code>
@@ -8089,11 +8114,13 @@ alert(b - a); // Displays 0</pre></div>
     and animation frame callbacks use the time recorded at the start of the
     <a>sample</a>, they should be equivalent.
 
-    <div class="example"><pre class="lang-javascript">
+    <div class="example">
+    <pre class="lang-javascript">
 window.requestAnimationFrame(function(sampleTime) {
   // Displays &lsquo;0&rsquo;
   alert(sampleTime - document.timeline.currentTime);
-});</pre></div>
+});</pre>
+    </div>
 
 </div>
 
