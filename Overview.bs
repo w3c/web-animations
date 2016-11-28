@@ -1366,10 +1366,22 @@ the update was called in a context where we expect finished event queueing
 and finished promise resolution to happen immediately, if at all) is as
 follows:
 
-1.  If both of the following conditions are true,
+1.  Let the <var>unconstrained current time</var> be the result of calculating
+    the <a>current time</a> substituting an <a>unresolved</a> time value for the
+    <a>hold time</a> if <var>did seek</var> is false.
+    If <var>did seek</var> is true, the <var>unconstrained current time</var>
+    is equal to the <a>current time</a>.
 
+    Note: This is required to accommodate timelines that may change direction.
+    Without this definition, a once-finished animation would remain finished
+    even when its timeline progresses in the opposite direction.
+
+1.  If <em>all three</em> of the following conditions are true,
+
+    *   the <var>unconstrained current time</var> is <a
+        lt=unresolved>resolved</a>, <em>and</em>
     *   <var>animation</var>'s <a lt="animation start time">start time</a> is
-        <a lt="unresolved">resolved</a>, and
+        <a lt="unresolved">resolved</a>, <em>and</em>
     *   <var>animation</var> does <em>not</em> have a <a>pending play task</a>
         or a <a>pending pause task</a>,
 
@@ -1379,10 +1391,10 @@ follows:
     <div class='switch'>
 
     :   If <a>animation playback rate</a> &gt; 0 and
-        <a>current time</a> is <a lt="unresolved">resolved</a> and
-        greater than or equal to <a>target effect end</a>,
+        <var>unconstrained current time</var> is greater than or equal to
+        <a>target effect end</a>,
     ::  If <var>did seek</var> is true, let the <a>hold time</a>
-        be the value of <a>current time</a>.
+        be the value of <var>unconstrained current time</var>.
 
         If <var>did seek</var> is false, let the <a>hold time</a> be the maximum
         value of <a>previous current time</a> and <a>target effect end</a>.
@@ -1390,17 +1402,15 @@ follows:
         <a>unresolved</a>, let the <a>hold time</a> be <a>target
         effect end</a>.
     :   If <a>animation playback rate</a> &lt; 0 and
-        <a>current time</a> is <a lt="unresolved">resolved</a> and
-        less than or equal to 0,
+        <var>unconstrained current time</var> is less than or equal to 0,
     ::  If <var>did seek</var> is true, let the <a>hold time</a>
-        be the value of <a>current time</a>.
+        be the value of <var>unconstrained current time</var>.
 
         If <var>did seek</var> is false, let the <a>hold time</a> be the
         minimum value of <a>previous current time</a> and zero.
         If the <a>previous current time</a> is
         <a>unresolved</a>, let the <a>hold time</a> be zero.
-    :   If <a>current time</a> is <a lt="unresolved">resolved</a>, and
-        <a>animation playback rate</a> &ne; 0, and
+    :   If <a>animation playback rate</a> &ne; 0, and
         <var>animation</var> is associated with an
         <a lt="inactive timeline">active timeline</a>,
     ::  Perform the following steps:
@@ -8208,7 +8218,9 @@ The following changes have been made since the <a
   href="https://www.w3.org/TR/2016/WD-web-animations-1-20160913/">13 September
 2016 Working Draft</a>:
 
-* Added a definition for the <a>idle phase</a>.
+*   Added a definition for the <a>idle phase</a>.
+*   Adjusted the procedure to <a>update an animation's finished state</a> to
+    accommodate timelines that change direction.
 
 <!-- @endif -->
 
