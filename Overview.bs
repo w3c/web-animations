@@ -117,6 +117,7 @@ spec:css-backgrounds-3; type:property;
     text:border-top-color
     text:border-top
     text:border-color
+spec:css-timing-1; type:type; for:<step-timing-function>; text:<single-timing-function>
 </pre>
 
 <script type="text/x-mathjax-config">
@@ -1031,7 +1032,7 @@ record</a> for the promise, passing <code>undefined</code> as
 (<var>reason</var>) as <var>argumentsList</var>.
 
 To <dfn>create a new resolved Promise</dfn> with <var>value</var>, call
-<a>Promise.resolve</a>, passing <var>value</var> as <var>x</var>.
+<a>Promise.resolve</a>, passing <var>value</var> as <var ignore>x</var>.
 
 <h4 id='the-current-ready-promise'>The current ready promise</h4>
 
@@ -3149,57 +3150,17 @@ The <dfn>directed progress</dfn> is calculated from the
 
 <h3 id="time-transformations">Time transformations</h3>
 
-<h4 id="scaling-the-time">Scaling the time</h4>
-
-<div class="informative-bg"><em>This section is non-normative</em>
-
 It is often desirable to control the rate at which an <a>animation
 effect</a> progresses.
 For example, easing the rate of animation can create a sense of
 momentum and produce a more natural effect.
-Conversely, in other situations such as when modeling a discrete
-change, a smooth transition is undesirable and instead it is necessary
-for the <a>animation effect</a> to progress in a series of distinct
-steps.
-
-For such situations Web Animations provides <a>timing functions</a>
-that scale the progress of an <a>animation effect</a>.
-
-<a>Timing functions</a> take an input progress value and produce
-a scaled output progress value.
-
-<figure>
-  <img src="img/timing-function-example.svg" width="350"
-    alt="Example of a timing function that produces an ease-in effect.">
-  <figcaption>
-    Example of a timing function that produces an ease-in effect.
-    Given an input progress of 0.7, the timing function scales the
-    value to produce an output progress of 0.52.<br>
-    By applying this timing function, time will appear to progress more
-    slowly at first but then gradually progress more quickly.
-  </figcaption>
-</figure>
-
-<a>Timing functions</a> are applied to an iteration of an <a>animation
-effect</a>.
-
-</div>
-
-<h4 id="timing-functions">Timing functions</h4>
-
-A <dfn>timing function</dfn> takes an input progress value in the range
-[0, 1] and produces an output progress value whose range is unbounded
-(i.e. positive and negative infinity are permitted).
+The CSS Timing Functions Module [[!CSS-TIMING]] defines <a>timing functions</a>
+for this purpose.
 
 <a>Animation effects</a> have one <a>timing function</a> associated with
 them.
-The default <a>timing function</a> is the <dfn>linear timing
-function</dfn> whose output is identical to its input.
-The <a>linear timing function</a> can be represented by the string
-&ldquo;linear&rdquo;.
-
-The range of timing functions that may be applied to a given
-<a>animation effects</a> depends on the type of the <a>animation effects</a>.
+The default <a>timing function</a> is the <a>linear timing
+function</a>.
 
 <!-- @ifdef INCLUDE_GROUPS -->
 <div class="issue">
@@ -3222,206 +3183,6 @@ href="http://lists.w3.org/Archives/Public/public-fx/2013JulSep/0076.html">sectio
 2 of the discussion from August 2013</a>.</div>
 <!-- @endif -->
 
-<h4 id="scaling-using-a-cubic-bezier-curve">Scaling using a cubic B&eacute;zier curve</h4>
-
-<div class="informative-bg"><em>This section is non-normative</em>
-
-A common method of producing easing effects is to use a cubic B&eacute;zier
-curve to scale the time.
-The endpoints of the curve are fixed at (0, 0) and (1, 1) while two
-control points <var>P1</var> and <var>P2</var> define the shape of
-the curve.
-Provided the <var>x</var> values of <var>P1</var> and <var>P2</var>
-lie within the range [0, 1] such a curve produces a function that is
-used to map input times (the <var>x</var> values) onto output times
-(the <var>y</var> values).
-This arrangement is illustrated below.
-
-<figure>
-  <img src="img/cubic-bezier-timing-curve.svg" width="500"
-      alt="A cubic Bezier curve used as a timing function.">
-  <figcaption>
-    A cubic B&eacute;zier curve used as a timing function.<br>
-    The shape of the curve is determined by the location of the control
-    points <var>P1</var> and <var>P2</var>.<br>
-    Input progress values serve as <var>x</var> values of the curve,
-    whilst the <var>y</var> values are the output progress values.
-  </figcaption>
-</figure>
-
-Some example cubic B&eacute;zier timing functions are illustrated below.
-
-<figure>
-  <img src="img/curve-keywords.svg" width="500"
-      alt="The timing functions produced by keyword values.">
-  <figcaption>
-    The timing functions produced by each of the keyword values
-    associated with cubic B&eacute;zier timing functions accepted by the
-    {{AnimationEffectTiming/easing}} member of the {{AnimationEffectTiming}}
-    interface member from the <a href="#programming-interface">programming
-    interface</a>.
-  </figcaption>
-</figure>
-
-</div>
-
-A <dfn>cubic B&eacute;zier timing function</dfn> is a type of <a>timing
-function</a> defined by four real numbers that specify the two control
-points, <var>P1</var> and <var>P2</var>, of a cubic B&eacute;zier curve whose
-end points are fixed at (0, 0) and (1, 1).
-The x coordinates of <var>P1</var> and <var>P2</var> are
-restricted to the range [0, 1].
-
-The evaluation of this curve is covered in many sources such as
-[[FUND-COMP-GRAPHICS]].
-
-A <a>cubic B&eacute;zier timing function</a> may be specified as a string
-using the following syntax (using notation from [[!CSS3VAL]]):
-<blockquote>
-  <div
-    class="production"><dfn>&lt;cubic-bezier-timing-function&gt;</dfn> =
-    ease | ease-in | ease-out | ease-in-out |
-    <span class="atom">cubic-bezier(&lt;number&gt;, &lt;number&gt;,
-      &lt;number&gt;, &lt;number&gt;)</span></div>
-</blockquote>
-
-The meaning of each value is as follows:
-
-:   ease
-::  Equivalent to cubic-bezier(0.25, 0.1, 0.25, 1).
-:   ease-in
-::  Equivalent to cubic-bezier(0.42, 0, 1, 1).
-:   ease-out
-::  Equivalent to cubic-bezier(0, 0, 0.58, 1).
-:   ease-in-out
-::  Equivalent to cubic-bezier(0.42, 0, 0.58, 1).
-:   cubic-bezier(&lt;number&gt;, &lt;number&gt;, &lt;number&gt;, &lt;number&gt;)
-::  Specifies a <a>cubic B&eacute;zier timing function</a>.
-    The four numbers specify points <var>P1</var> and <var>P2</var> of
-    the curve as (x1, y1, x2, y2).
-    Both x values must be in the range [0, 1] or the definition is
-    invalid.
-
-<div class="issue">
-It has been proposed to extend <code>cubic-bezier</code> to allow
-multiple segments, using syntax such as the following:
-
-<pre>
-<code>cubic-bezier( [ &lt;number&gt;{6} ; ]* &lt;number&gt;{4} )</code>
-</pre>
-
-(i.e. the curve starts at (0, 0); each segment is defined by six
-numbers where the start point is the end of the previous segment and
-the numbers define the two control points and the end point. The
-last segment is defined by four numbers since the end point is fixed
-at (1, 1).)
-
-This would provide a simple and compact syntax for tools trying to
-map arbitrary curves (e.g. bounce functions) to timing functions.
-</div>
-
-<h4 id="timing-in-discrete-steps">Timing in discrete steps</h4>
-
-<div class="informative-bg"><em>This section is non-normative</em>
-It is possible to scale an animation effect's timing so that the group
-effect occurs in a series of discrete steps using a stepping function.
-
-Some example step timing functions are illustrated below.
-
-<figure>
-  <img src="img/step-timing-func-examples.svg" width="700"
-      alt="Example step timing functions.">
-  <figcaption>
-    Example step timing functions.
-    In each case the domain is the input progress whilst the range
-    represents the output progress produced by the step function.<br>
-    The first row shows the function for each transition point when only
-    one step is specified whilst the second row shows the same for three
-    steps.
-  </figcaption>
-</figure>
-
-</div>
-
-A <dfn>step timing function</dfn> is a type of <a>timing function</a>
-that divides the input time into a specified number of intervals that
-are equal in duration.
-The output time, starting at zero, rises by an amount equal to the
-interval duration once during each interval at the transition point
-which may be either the start, midpoint, or end of the interval.
-
-In keeping with Web Animations' model of endpoint exclusive
-interval timing (see [[#interval-timing]]), the output time at the transition
-point is the time <em>after</em> applying the increase (i.e. the top of the
-step) with the following exception.
-
-When a transition point coincides with the end of the <a>active
-interval</a> extra care must be taken to produce the correct result
-when performing a <a lt="fill mode">fill</a>.
-To achieve this, when a <a>step timing function</a> is
-applied to an <a>animation effect</a> or applied to an <a>keyframe</a>
-associated with a <a>keyframe effect</a>, an additional
-<dfn>before flag</dfn> is passed.
-The value of the <a>before flag</a> is determined as follows:
-
-
-1.  If the <a>active time</a> of the animation effect is
-    <a>unresolved</a>, the <a>before flag</a> is not set and these
-    steps should be aborted.
-2.  Determine the <var>current direction</var> using the procedure
-    defined in <a href="#calculating-the-directed-progress"
-    section></a>.
-<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-3.  If <em>either</em> the <var>current direction</var> is <span
-    class="prop-value">forwards</span> or the <a>animation effect
-    playback rate</a> &ge; 0 (but <em>not</em> when both conditions
-    are true),
-<!-- @endif -->
-<!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
-3.  If the <var>current direction</var> is <span
-    class="prop-value">forwards</span>,
-<!-- @endif -->
-    let <var>going forwards</var> be true, otherwise it is false.
-4.  The <a>before flag</a> is set if the animation effect is in the
-    <a>before phase</a> and <var>going forwards</var> is true;
-    or if the animation effect is in the <a>after phase</a> and
-    <var>going forwards</var> is false.
-
-When a step timing function is evaluated at a transition point, if
-the <a>before flag</a> is set the result is the value <em>before</em>
-applying the increase.
-
-A <a>step timing function</a> may be specified as a string
-using the following syntax:
-
-<blockquote>
-  <div class="production"><dfn>&lt;step-timing-function&gt;</dfn> =
-    step-start | step-middle | step-end |
-    <span class="atom">steps(&lt;integer&gt;[,
-                       [ start | middle | end ] ]?)</span></div>
-</blockquote>
-
-Issue: <code>step-middle</code> and the <code>middle</code> keyword will
-likely be removed in favor of a <code>frames()</code> timing function.
-
-The meaning of each value is as follows:
-
-:   step-start
-::  Equivalent to steps(1, start);
-:   step-middle
-::  Equivalent to steps(1, middle);
-:   step-end
-::  Equivalent to steps(1, end);
-:   steps(&lt;integer&gt;[, [ start | middle | end ] ]?)
-::  Specifies a <a>step timing function</a>.
-    The first parameter specifies the number of intervals in the
-    function.
-    It must be a positive integer (greater than 0).
-    The second parameter, which is optional, specifies the point at
-    which the change of values occur within the interval.
-    If the second parameter is omitted, it is given the value <span
-    class="prop-value">end</span>.
-
 <h4 id="calculating-the-transformed-progress">Calculating the transformed progress</h4>
 
 The <dfn>transformed progress</dfn> is calculated from the
@@ -3430,8 +3191,31 @@ The <dfn>transformed progress</dfn> is calculated from the
 1.  If the <a>directed progress</a> is <a>unresolved</a>,
     return <a>unresolved</a>.
 
+1.  Calculate the value of the <var>before flag</var> as follows:
+
+    1.  Determine the <var>current direction</var> using the procedure
+        defined in <a href="#calculating-the-directed-progress"
+        section></a>.
+<!-- @ifdef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+    1.  If <em>either</em> the <var>current direction</var> is <span
+        class="prop-value">forwards</span> or the <a>animation effect
+        playback rate</a> &ge; 0 (but <em>not</em> when both conditions
+        are true),
+<!-- @endif -->
+<!-- @ifndef INCLUDE_ANIMATION_NODE_PLAYBACKRATE -->
+    1.  If the <var>current direction</var> is <span
+        class="prop-value">forwards</span>,
+<!-- @endif -->
+        let <var>going forwards</var> be true, otherwise it is false.
+    1.  The <var>before flag</var> is set if the animation effect is
+        in the <a>before phase</a> and <var>going forwards</var> is true; or if
+        the animation effect is in the <a>after phase</a> and <var>going
+        forwards</var> is false.
+
 1.  Return the result of evaluating the <a>animation effect</a>'s <a>timing
-    function</a> passing <a>directed progress</a> as the input progress.
+    function</a> passing <a>directed progress</a> as the <a
+    spec=css-timing>input progress value</a> and <var>before flag</var> as the
+    <a spec=css-timing>before flag</a>.
 
 
 <!-- @ifdef INCLUDE_GROUPS -->
@@ -3766,8 +3550,7 @@ effects</a> the <a>intrinsic iteration duration</a> will be
 zero.
 <!-- @endif -->
 
-<h4 id="calculating-the-iteration-progress">Calculating the iteration
-  progress</h4>
+<h3 id="the-iteration-progress">The iteration progress</h3>
 
 The <dfn>iteration progress</dfn> of an <a>animation effect</a> is simply
 its <a>transformed progress</a>.
@@ -5863,22 +5646,8 @@ interface AnimationEffectTimingReadOnly {
 ::  The <a>timing function</a> used to scale the time to
     produce easing effects.
 
-    The syntax of the string is defined by the following production:
-    <blockquote>
-      <div class="production">
-        "linear"
-          | <a>&lt;cubic-bezier-timing-function&gt;</a>
-          | <a>&lt;step-timing-function&gt;</a>
-      </div>
-    </blockquote>
-
-    <div class="annotation">
-      In future we may extend this so that it is possible to query the
-      individual functions in the string.
-      It may be possible to do this by extending this attribute using
-      some stringifier magic, or else we could just add
-      <code>easingList</code> similar to HTML's <code>classList</code>.
-    </div>
+    The syntax of the string is defined by the <<single-timing-function>>
+    production [[!CSS-TIMING]].
 
 </div>
 
