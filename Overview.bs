@@ -3657,11 +3657,6 @@ In order to animate a property, the following procedures must be defined.
 
     </div>
 
-*   <dfn>distance computation</dfn> &mdash; given two property
-    values <var>V</var><sub>start</sub> and
-    <var>V</var><sub>end</sub>, calculates some notion of scalar
-    distance between the values, <var>distance</var>.
-
 Note that the above procedures apply to CSS <a lt="computed value">computed
 property values</a> (see [[#calculating-computed-keyframes]]). As a result, it
 is not necessary to define, for example,  how to add a length value of "15pt"
@@ -3707,11 +3702,6 @@ lt="animation accumulation">accumulation procedure</a> is identical
 to the <a lt="animation addition">addition procedure</a> for that
 type.
 
-For <a>animation types</a> that do not define a specific procedure
-for <a>distance computation</a> or which are defined as <dfn>not
-paceable</dfn>, the <a>distance computation</a> procedure is simply
-<var>distance</var> = 0.
-
 <h4 id="not-animatable-section">Not animatable</h4>
 
 Some properties are specifically defined as <dfn
@@ -3721,8 +3711,9 @@ since doing so would create complex recursive behavior.
 
 Unlike other <a>animation types</a>, no procedures for
 <a lt="animation interpolation">interpolation</a>,
-<a lt="animation addition">addition</a> and <a>distance
-computation</a> are defined for properties whose <a>animation
+<a lt="animation addition">addition</a> and
+<a lt="animation accumulation">accumulation</a>
+are defined for properties whose <a>animation
 type</a> is <a>not animatable</a> since these
 properties should not be modified.
 
@@ -3789,9 +3780,6 @@ lt="real number animation type">real number</dfn> has the following behavior:
 *   <a lt="animation addition">addition</a>:
     <var>V</var><sub>result</sub> =
       <var>V</var><sub>a</sub> + <var>V</var><sub>b</sub>
-*   <a>distance computation</a>:
-    <var>distance</var> =
-      |<var>V</var><sub>end</sub> - <var>V</var><sub>start</sub>|
 
 <h4 id="length-percentage-or-calc-animation-type-section">Length, percentage, or
 calc</h4>
@@ -3809,55 +3797,6 @@ calc</dfn> has the following behavior:
     determining the computed value as defined in <a
     href="http://www.w3.org/TR/css3-values/#calc-computed-value">CSS
     Values and Units</a> [[!CSS3VAL]].)
-*   <a>distance computation</a>: as with <a lt="real number animation type">real
-    number</a> but using the <a
-    href="http://www.w3.org/TR/CSS2/cascade.html#used-value">computed
-    value</a> [[!CSS21]] for <var>V</var><sub>start</sub> and
-    <var>V</var><sub>end</sub>.
-
-    Issue: This whole section needs to be rewritten to account for when we
-    have lengths and percentages. In short, we don't expand these to
-    used values since that was deemed overly complex (without compelling use
-    cases) and makes calculating keyframe offsets dependent on layout. So we
-    should probably just use the square distance of each component, despite the
-    fact that it will rarely produce a useful result.
-
-    When there is insufficient context to calculate a computed value for all
-    possible values of <var>V</var><sub>start</sub> and
-    <var>V</var><sub>end</sub>, the result of the <a>distance computation</a>
-    calculation is zero (i.e. the behavior degenerates to <a>not paceable</a>).
-
-    <div class="example">
-      For example, for a <a>keyframe effect</a> that does not have
-      an <a>target element</a>, there is no context for resolving
-      em-based values against.
-      As a result, the following code snippet falls back to <a>not paceable</a>
-      <a>animation type</a>.
-
-      <pre class='lang-javascript'>
-var effect =
-  new KeyframeEffect([ { top: '10px' },
-                       { top: '20em' },
-                       { top: '50em' } ],
-                     { spacing: 'paced(top)' });
-// Prints '0, 0.5, 1'
-effect.getKeyframes().map(frame =&gt; frame.computedOffset).join(', ');
-      </pre>
-
-      For consistency, this definition applies even when a computed value
-      could be calculated for each of the animation values in question.
-      As such, the following code fragment produces the same result.
-
-      <pre class='lang-javascript'>
-var effect =
-  new KeyframeEffect([ { top: '10px' },
-                       { top: '20px' },
-                       { top: '50px' } ],
-                     { spacing: 'paced(top)' });
-// Prints '0, 0.5, 1'
-effect.getKeyframes().map(frame =&gt; frame.computedOffset).join(', ');
-      </pre>
-    </div>
 
 <h4 id="color-animation-type-section">Color</h4>
 
@@ -3874,67 +3813,6 @@ lt="color animation type">color</dfn> has the following behavior:
           the channel values may be performed upon each addition or once
           when <a>composition</a> is complete.
     </p>
-*   <a>distance computation</a>:
-    <div role="math" aria-describedby="math-color-distance">
-      <math xmlns="http://www.w3.org/1998/Math/MathML">
-      <mrow>
-        <mi>distance</mi><mo>=</mo>
-        <msqrt>
-          <msup>
-            <mrow>
-              <mfenced open="(" close=")" separators=",">
-                <mrow><msub><mi>R</mi><mn>end</mn></msub>
-                      <mo>-</mo>
-                      <msub><mi>R</mi><mn>start</mn></msub></mrow>
-              </mfenced>
-            </mrow><mn>2</mn>
-          </msup>
-          <mo>+</mo>
-          <msup>
-            <mrow>
-              <mfenced open="(" close=")" separators=",">
-                <mrow><msub><mi>G</mi><mn>end</mn></msub>
-                      <mo>-</mo>
-                      <msub><mi>G</mi><mn>start</mn></msub></mrow>
-              </mfenced>
-            </mrow><mn>2</mn>
-          </msup>
-          <mo>+</mo>
-          <msup>
-            <mrow>
-              <mfenced open="(" close=")" separators=",">
-                <mrow><msub><mi>B</mi><mn>end</mn></msub>
-                      <mo>-</mo>
-                      <msub><mi>B</mi><mn>start</mn></msub></mrow>
-                </mfenced>
-            </mrow><mn>2</mn>
-          </msup>
-          <mo>+</mo>
-          <msup>
-            <mrow>
-              <mfenced open="(" close=")" separators=",">
-                <mrow><msub><mi>A</mi><mn>end</mn></msub>
-                      <mo>-</mo>
-                      <msub><mi>A</mi><mn>start</mn></msub></mrow>
-              </mfenced>
-            </mrow><mn>2</mn>
-          </msup>
-        </msqrt>
-      </mrow>
-      </math>
-
-      <div id="math-color-distance" class="explanation">
-      distance = sqrt((R<sub>end</sub> - R<sub>start</sub>)^2 + (G<sub>end</sub> - G<sub>start</sub>)^2 + (B<sub>end</sub> - B<sub>start</sub>)^2 + (A<sub>end</sub> - A<sub>start</sub>)^2)
-      </div>
-
-    </div>
-
-    where &lt;<var>R|G|B|A</var><sub>start|end</sub>&gt;
-    represents the red, green, blue, or alpha channel of
-    <var>V</var><sub>start</sub> or <var>V</var><sub>end</sub>
-    respectively.
-    Each value is normalized to the [0.0, 1.0] range and expressed
-    in premultiplied color space.
 
 <h4 id="transform-list-animation-type-section">Transform list</h4>
 
@@ -3987,29 +3865,6 @@ behavior:
         <var>V</var><sub>remainder-b</sub>
         <var>V</var><sub>combined</sub>&rsquo;.
 
-*   <a>distance computation</a>: See issue below.
-
-<div class="issue">
-
-    For <a>distance computation</a> we previously defined it as follows:
-
-    1.  Look only at the first component of the two lists
-    2.  If both are translate &rarr; euclidean distance
-    3.  If both are scale &rarr; absolute difference
-    4.  If both are rotate &rarr; absolute difference
-    5.  If both match but are something else &rarr; use linear
-    6.  If they don't match &rarr; use matrix decomposition and
-        euclidean distance between translate components
-
-    This seems really arbitrary, especially part 5.
-
-    Also, looking at only the first component seems odd.
-    Going through each component, working out the distance and then
-    getting the square of the distance also seems much more consistent
-    with what we do elsewhere.
-
-</div>
-
 <h4 id="other-animation-types">Other animation types</h4>
 
 The set of <a>animation types</a> defined here may be extended
@@ -4019,31 +3874,6 @@ animated using the interpolation behavior defined in <a
 href="https://drafts.csswg.org/css-images/#interpolating-images">CSS Image
 Values and Replaced Content</a>
 [[CSS3-IMAGES]].
-
-<div class="issue">
-
-    There are a bunch of CSS properties for which distance (and in
-    some cases addition) is not defined or which need special
-    handling.
-
-    For example,
-
-    *   font-stretch (an enum but handled like an integer)
-    *   visibility (0 or 1 depending on if endpoints match or not)
-    *   flex-grow and flex-shrink which allow animation only if one of
-        the endpoints is 0)
-    *   value pairs, triples (use square distance)
-    *   rects (use square distance)
-    *   dash arrays (square distance but a bit weird due to
-        percentages)
-    *   shadows (square distance of components)
-    *   filters (undefined)
-    *   background-position (special list handling needed)
-    *   pair lists
-
-    Should we define these here or in the CSS Transitions 2 spec?
-
-</div>
 
 
 <h3 id="keyframe-effects">Keyframe effects</h3>
@@ -4091,189 +3921,36 @@ If no <a>keyframe-specific composite operation</a> is specified for
 a <a>keyframe</a>, the <a>composite operation</a> specified for the
 <a>keyframe effect</a> as a whole is used for values specified in that keyframe.
 
-<h4 id="spacing-keyframes">Spacing keyframes</h4>
-<div class="informative-bg"><em>This section is non-normative.</em>
+<h4 id="calculating-computed-keyframes">Calculating computed keyframes</h4>
 
-It is often useful to be able to provide a series of property values
-without having calculate the <a>keyframe offset</a> of each value in
-time but instead to rely on some automatic spacing.
+Before calculating the <a>effect value</a> of a <a>keyframe effect</a>,
+the property values specified on its <a>keyframes</a> are resolved to
+<a>computed values</a>, and the offset to use for any keyframes with a null
+<a>keyframe offset</a> is computed. The result of resolving these values is
+a set of <dfn>computed keyframes</dfn>.
 
-For example, rather than typing:
+The calculated <a>keyframe offsets</a> of a set of <a>keyframe</a> that
+includes suitable values for each null <a>keyframe offset</a> are referred
+to as the <dfn lt="computed keyframe offset">computed keyframe offsets</a>.
 
-<div class='example'><pre class='lang-javascript'>
-elem.animate([ { color: 'blue', offset: 0 },
-               { color: 'green', offset: 1/3 },
-               { color: 'red', offset: 2/3 },
-               { color: 'yellow', offset: 1 } ], 2000);</pre></div>
-
-It should be possible to type the following and allow the user agent
-to calculate the <a lt="keyframe offset">offset</a> of each
-keyframe:
-
-<div class='example'><pre class='lang-javascript'>
-elem.animate([ { color: 'blue' },
-               { color: 'green' },
-               { color: 'red' },
-               { color: 'yellow' } ], 2000);</pre></div>
-
-Web Animations provides spacing modes for this purpose. The default
-spacing mode for keyframe effects is
-&ldquo;<a
-lt="distribute keyframe spacing mode">distribute</a>&rdquo; which
-produces the result described above.
-
-The other spacing mode, &ldquo;<a
-lt="paced keyframe spacing mode">paced</a>&rdquo;, is useful when
-it is desirable to maintain an even rate of change such as for motion path
-animation.
-
-For example, consider the following animation:
-
-<div class='example'><pre class='lang-javascript'>
-elem.animate([ { left: '0px' },
-               { left: '-20px' },
-               { left: '100px' },
-               { left: '50px' } ], 1000);</pre></div>
-
-The resulting value of the <span class="prop-name">left</span>
-property is illustrated below:
-
-<figure>
-  <img src="img/spacing-distribute.svg" width="350"
-       alt="The animated value of the left property over time when applying the distribute spacing mode.
-The values are evenly spaced in time but the rate of change differs for each segment as indicated the varying slope of the graph.">
-  <figcaption>
-    The animated value of the left property over time when applying the
-    <a lt="distribute keyframe spacing mode">distribute</a> spacing
-    mode.
-    The values are evenly spaced in time but the rate of change differs
-    for each segment as indicated the varying slope of the graph.
-  </figcaption>
-</figure>
-
-We can use the <a lt="paced keyframe spacing mode">paced</a>
-spacing mode as follows:
-
-<div class='example'><pre class='lang-javascript'>
-elem.animate([ { left: '0px' },
-               { left: '-20px' },
-               { left: '100px' },
-               { left: '50px' } ],
-             { duration: 1000, spacing: "paced(left)" });</pre></div>
-
-The result is illustrated below:
-
-<figure>
-  <img src="img/spacing-paced.svg" width="350"
-      alt="The animated value of the left property over time when applying the paced spacing mode.
-The absolute value of the slope is graph is equal for all segments of the animation indicating a constant rate of change.">
-  <figcaption>
-    The animated value of the left property over time when applying the
-    <a lt="paced keyframe spacing mode">paced</a> spacing mode.
-    The absolute value of the slope is graph is equal for all segments
-    of the animation indicating a constant rate of change.
-  </figcaption>
-</figure>
-
-It is also possible to combine fixed <a>keyframe offsets</a> with
-spacing modes as follows:
-
-<div class='example'><pre class='lang-javascript'>
-elem.animate([ { left: '0px' },
-               { left: '-20px' },
-               { left: '100px', offset: 0.5 },
-               { left: '50px' } ],
-             { duration: 1000, spacing: "paced(left)" });</pre></div>
-
-The result is illustrated below:
-
-<figure>
-  <img src="img/spacing-paced-with-offset.svg" width="350"
-      alt="The animated value of the left property over time when applying the paced spacing mode and a fixed offset that puts the 100px value at 0.5.
-The slope of the graph is equal for the first two segments but changes for the last segment in order to accommodate the fixed offset.">
-  <figcaption>
-    The animated value of the left property over time when applying the
-    <a lt="paced keyframe spacing mode">paced</a> spacing mode and
-    a fixed <a>keyframe offset</a> that
-    puts the 100px value at 0.5.
-    The slope of the graph is equal for the first two segments but
-    changes for the last segment in order to accommodate the fixed
-    offset.
-  </figcaption>
-</figure>
-
-</div>
-
-Before calculating effect values from a <a>keyframe effect</a>,
-an absolute value must be computed for the <a>keyframe offset</a>
-of each <a>keyframe</a> with a null offset.
-
-The values computed depend on the <dfn>keyframe spacing mode</dfn>
-specified for the <a>keyframe effect</a>.
-The keyframe spacing modes are:
-
-:   <dfn lt="distribute keyframe spacing mode">distribute</dfn></dt>
-::  Indicates that <a>keyframes</a> with a null <a>keyframe offset</a>
-    are positioned so that the difference between subsequent
-    <a>keyframe offsets</a> are equal.
-:   <dfn lt="paced keyframe spacing mode">paced</dfn></dt>
-::  Indicates that <a>keyframes</a> with a null <a>keyframe offset</a>
-    are positioned so that the <em>distance</em> between subsequent
-    values of a specified <dfn>paced property</dfn> are equal.
-    The distance is calculated using the <a>distance computation</a>
-    procedure defined by the <a>animation type</a> associated
-    with the <a>paced property</a>.
-
-Since the absolute value calculated for a <a>keyframe offset</a> may change
-depending on the keyframe values, the number of values, or external context
-(such as when using <a>paced keyframe spacing mode</a> in combination with
-em-based units), the original null values are not overwritten but rather, the
-calculated absolute values are stored as a separate
-value on each keyframe known as its <dfn>computed keyframe offset</dfn>.
-
-<h5 id="applying-spacing-to-keyframes">Applying spacing to keyframes</h5>
-
-We define a generic procedure for <dfn>evenly distributing
-a keyframe</dfn>, <var>keyframe</var>, between two reference
-keyframes, <var>start</var> and <var>end</var>, whose <a>computed keyframe
-offsets</a> are <em>not</em> null, as follows:
-
-1.  Let <dfn>offset<sub><var>k</var></sub></dfn> be the <a>computed
-    keyframe offset</a> of a <a>keyframe</a> <var>k</var>.
-1.  Let <var>n</var> be the number of keyframes <em>between</em> and
-    including <var>start</var> and <var>end</var> minus 1.
-1.  Let <var>index</var> refer to the position of
-    <var>keyframe</var> in the sequence of keyframes between
-    <var>start</var> and <var>end</var> such that the first keyframe
-    after <var>start</var> has an <var>index</var> of 1.
-1.  Set the <a>computed keyframe offset</a> of <var>keyframe</var> to
-    <a lt="offsetk">offset</a><sub><var>start</var></sub> +
-    (<a lt="offsetk">offset</a><sub><var>end</var></sub> &minus;
-     <a lt="offsetk">offset</a><sub><var>start</var></sub>)
-    &times; <var>index</var> / <var>n</var>.
-
-The procedure to <dfn>apply spacing to a series of keyframes</dfn> takes the
-following parameters:
-
-*   a sequence of <a>keyframes</a>: <var>keyframes</var>,
-*   a <a lt="keyframe spacing mode">spacing mode</a>, <var>spacing</var>, and
-*   a context element used for resolving relative units, <var>context
-    element</var>, (only required when <var>spacing</var> is
-    <a lt="paced keyframe spacing mode">paced</a>)
-
-and has the following steps:
+To produce <a>computed keyframe offsets</a>, we define a procedure to
+<dfn>compute missing keyframe offsets</dfn> that takes a sequence of
+<a>keyframes</a>, <var>keyframes</var>, and has the following steps:
 
 1.  For each <a>keyframe</a>, in <var>keyframes</var>,
     let the <a>computed keyframe offset</a> of the <a>keyframe</a>
     be equal to its <a>keyframe offset</a> value.
+
 1.  If <var>keyframes</var> contains more than one
     <a>keyframe</a> and the <a>computed keyframe offset</a> of
     the first <a>keyframe</a> in <var>keyframes</var> is null,
     set the <a>computed keyframe offset</a> of
     the first <a>keyframe</a> to 0.
+
 1.  If the <a>computed keyframe offset</a> of the last <a>keyframe</a> in
     <var>keyframes</var> is null, set its
     <a>computed keyframe offset</a> to 1.
+
 1.  For each pair of <a>keyframes</a> <var>A</var> and <var>B</var>
     where:
 
@@ -4286,103 +3963,21 @@ and has the following steps:
 
     calculate the <a>computed keyframe offset</a> of
     each <a>keyframe</a> between <var>A</var> and <var>B</var>
-    depending on the value of <var>spacing</var> as follows:
+    as follows:
 
-    <div class="switch">
-
-    :   If <var>spacing</var> is <a
-        lt="paced keyframe spacing mode">paced</a>,</dt>
-    ::
-
-        1.  Define a keyframe as <dfn>paceable</dfn> if it
-            contains a value for the <a>paced property</a>.
-        1.  Let <var>paced A</var> be the first keyframe in the
-            range [<var>A</var>, <var>B</var>] that is
-            <a>paceable</a>, if any.
-        1.  Let <var>paced B</var> be the last keyframe in the
-            range [<var>A</var>, <var>B</var>] that is
-            <a>paceable</a>, if any.
-        1.  If there is no <var>paced A</var> or <var>paced
-            B</var> let both refer to <var>B</var>.
-
-            Note: In this case the spacing behavior degenerates to <a
-            lt="distribute keyframe spacing mode">distribute</a> spacing.
-
-        1.  For each keyframe in the range
-            (<var>A</var>, <var>paced A</var>] and
-            [<var>paced B</var>, <var>B</var>),
-            apply the procedure for <a>evenly distributing
-            a keyframe</a> using <var>A</var> and <var>B</var> as
-            the <var>start</var> and <var>end</var> keyframes
-            respectively.
-
-            <div class="annotation">
-
-            Yes, this is correct.
-            We want, <var>index</var> and <var>n</var> in that
-            procedure to reflect <em>all</em> the keyframes
-            between <var>A</var> and <var>B</var>, not just the
-            keyframes between, for example, <var>A</var> and
-            <var>paced A</var>.
-
-            </div>
-
-        1.  For each keyframe in the range
-            (<var>paced A</var>, <var>paced B</var>) that is
-            <a>paceable</a>:
-
-            1.  Let
-                <dfn lt="distk">dist<sub><var>k</var></sub></dfn>
-                represent the cumulative distance to a keyframe
-                <var>k</var> from <var>paced A</var>
-                as calculated by applying the <a>distance
-                computation</a> defined by the <a>animation
-                type</a> of the <a>paced property</a> to the
-                values of the <a>paced property</a> on each pair of
-                successive <a>paceable</a> keyframes in the range
-                [<var>paced A</var>, <var>k</var>].
-                Use <var>context element</var> as the basis for resolving
-                context-sensitive values such as font-size based units.
-            1.  Set the <a>computed keyframe offset</a> of <var>k</var> to
-                <a lt="offsetk">offset</a><sub><var>paced
-                  A</var></sub> +
-                (<a lt="offsetk">offset</a><sub><var>paced
-                  B</var></sub> &minus;
-                <a lt="offsetk">offset</a><sub><var>paced
-                  A</var></sub>) &times;
-                <a lt="distk">dist</a><sub><var>k</var></sub> /
-                <a lt="distk">dist</a><sub><var>paced
-                  B</var></sub>.
-                If <a lt="distk">dist</a><sub><var>paced B</var></sub>
-                is zero, leave the <a>computed keyframe offset</a> as
-                null&mdash;it will be set in the next step when we apply
-                distribute spacing to remaining keyframes.
-        1.  For each keyframe in the range (<var>paced A</var>,
-            <var>paced B</var>) that still has
-            a null <a>computed keyframe offset</a> (because it is not
-            <a>paceable</a>, or because the cumulative distance between
-            paceable properties was zero), apply the procedure
-            for <a>evenly distributing a keyframe</a> using
-            the nearest <a>keyframe</a> before and after the
-            keyframe in question in <var>keyframes</var> that has
-            a <a>computed keyframe offset</a> that is not null, as the
-            <var>start</var> and <var>end</var> keyframes
-            respectively.
-    :   Otherwise,</dt>
-    ::  Apply the procedure for <a>evenly distributing
-        a keyframe</a> to each keyframe in the range (<var>A</var>,
-        <var>B</var>) using <var>A</var> and <var>B</var> as the
-        <var>start</var> and <var>end</var> keyframes respectively.
-
-    </div>
-
-<h4 id="calculating-computed-keyframes">Calculating computed keyframes</h4>
-
-Before calculating the <a>effect value</a> of a <a>keyframe effect</a>,
-we must resolve specified property values to <a>computed values</a> and applying
-spacing to compute absolute values for the <a>keyframe offset</a> of each
-<a>keyframe</a> with a null offset. The result of resolving these values is
-a set of <dfn>computed keyframes</dfn>.
+    1.  Let <dfn>offset<sub><var>k</var></sub></dfn> be the <a>computed
+        keyframe offset</a> of a <a>keyframe</a> <var>k</var>.
+    1.  Let <var>n</var> be the number of keyframes <em>between</em> and
+        including <var>A</var> and <var>B</var> minus 1.
+    1.  Let <var>index</var> refer to the position of
+        <var>keyframe</var> in the sequence of keyframes between
+        <var>A</var> and <var>B</var> such that the first keyframe
+        after <var>A</var> has an <var>index</var> of 1.
+    1.  Set the <a>computed keyframe offset</a> of <var>keyframe</var> to
+        <a lt="offsetk">offset</a><sub><var>A</var></sub> +
+        (<a lt="offsetk">offset</a><sub><var>B</var></sub> &minus;
+        <a lt="offsetk">offset</a><sub><var>A</var></sub>)
+        &times; <var>index</var> / <var>n</var>.
 
 <a>Computed keyframes</a> are produced using the following procedure.
 Note that this procedure is only performed on a <a>keyframe effect</a> having
@@ -4422,22 +4017,15 @@ a <a>target element</a> for which computed property values can be calculated.
             'border-top-color' overrides 'border-top').
         1.  Shorthand properties with fewer longhand components override those
             with more longhand components (e.g. 'border-top' overrides
-            'border-color') 
+            'border-color').
         1.  For shorthand properties with an equal number of longhand
             components, properties whose IDL name (see the <a>CSS property to
             IDL attribute</a> algorithm [[!CSSOM]]) appears earlier when
             sorted in ascending order by the Unicode codepoints that make up
             each IDL name, override those who appear later.
 
-        NOTE: Invalid property values and values unsupported by the
-        implementation MUST be preserved such that when spacing is applied
-        later in this procedure, the keyframes are spaced <em>as if</em> the
-        value was supported.
-
-1.  Perform the procedure to <a>apply spacing to a series of keyframes</a>
-    on <var>computed keyframes</var> using the <a>keyframe spacing mode</a> for
-    this effect as <var>spacing</var>, and the <a>target element</a>
-    for this effect as the <var>context element</var>.
+1.  Apply the procedure to <a>compute missing keyframe offsets</a> to
+    <var>computed keyframes</var>.
 
 1.  Return <var>computed keyframes</var>.
 
@@ -4467,8 +4055,7 @@ referenced by a <a>keyframe effect</a> as one of its
     effect</a>.
 1.  Remove any <a>keyframes</a> from <var>property-specific
     keyframes</var> that do not have a property value for
-    <var>target property</var> or for which the property value is
-    invalid or unsupported by the implementation.
+    <var>target property</var>.
 1.  If <var>property-specific keyframes</var> is empty, return
     <var>underlying value</var>.
 1.  If there is no <a>keyframe</a> in <var>property-specific
@@ -6305,7 +5892,6 @@ interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
     readonly attribute Animatable?                 target;
     readonly attribute IterationCompositeOperation iterationComposite;
     readonly attribute CompositeOperation          composite;
-    readonly attribute DOMString                   spacing;
     sequence&lt;object&gt; getKeyframes ();
 };
 
@@ -6317,7 +5903,6 @@ interface KeyframeEffect : KeyframeEffectReadOnly {
     inherit attribute Animatable?                 target;
     inherit attribute IterationCompositeOperation iterationComposite;
     inherit attribute CompositeOperation          composite;
-    inherit attribute DOMString                   spacing;
     void setKeyframes (object? keyframes);
 };
 <!-- @ifdef INCLUDE_GROUPS -->
@@ -6384,9 +5969,8 @@ KeyframeEffect implements AnimationEffectMutable;
         that here.
 
     1.  If <var>options</var> is a {{KeyframeEffectOptions}} object,
-        assign the {{KeyframeEffectReadOnly/iterationComposite}},
-        {{KeyframeEffectReadOnly/composite}}, and
-        {{KeyframeEffectReadOnly/spacing}} properties of <var>effect</var> to
+        assign the {{KeyframeEffectReadOnly/iterationComposite}}, and
+        {{KeyframeEffectReadOnly/composite}}, properties of <var>effect</var> to
         the corresponding value from <var>options</var>.
 
         As with <var>timing input</var>, when assigning these properties the
@@ -6443,9 +6027,8 @@ KeyframeEffect implements AnimationEffectMutable;
 
         *    <a>target element</a>,
         *    <a>keyframes</a>,
-        *    <a>iteration composite operation</a>,
-        *    <a>composite operation</a>, and
-        *    <a lt="keyframe spacing mode">spacing mode</a>.
+        *    <a>iteration composite operation</a>, and
+        *    <a>composite operation</a>.
 
         Issue: If <var>source</var> is using a {{SharedKeyframeList}} should
         we continue to share it?
@@ -6531,11 +6114,8 @@ KeyframeEffect implements AnimationEffectMutable;
     console.log(animation.effect.constructor.name); // "KeyframeEffect"
 
     // It is now possible to manipulate the effect
-    // e.g. apply 'paced' spacing
-    const keyframes = animation.effect.getKeyframes();
-    animation.setKeyframes(keyframes.map(
-      keyframe => Object.assign(keyframe, { offset: null }));
-    animation.effect.spacing = 'paced(margin-left)';
+    // e.g. apply 'add' composite mode
+    animation.effect.composite = 'add';
 
     // Note that changing 'animation-*' properties will not affect the
     // new effect.
@@ -6585,55 +6165,14 @@ KeyframeEffect implements AnimationEffectMutable;
     On setting, sets the <a>composite operation</a> property of this
     <a>animation effect</a> to the provided value.
 
-:   <dfn attribute for=KeyframeEffectReadOnly>spacing</dfn><dfn attribute
-    for=KeyframeEffect lt='spacing'></dfn>
-::  On getting, returns the <a lt="keyframe spacing mode">spacing mode</a> to
-    use for this <a>keyframe effect</a>.
-
-    On setting, sets the <a lt="keyframe spacing mode">spacing mode</a>
-    property of this <a>keyframe effect</a> to the provided value.
-
-    Recognized values are defined by the following grammar:
-
-    <blockquote>
-      <pre class="prod">distribute | paced(<<ident>>)</pre>
-    </blockquote>
-
-    The meaning of each value is as follows:
-
-    :   distribute
-    ::  Use the <a>distribute keyframe spacing mode</a>.
-    :   paced(<<ident>>)
-    ::  Use the <a>paced keyframe spacing mode</a> with the property
-        name indicated by <code>&lt;ident&gt;</code> as the <a>paced
-        property</a>.
-
-        For example, <code>paced(transform)</code> would indicate that
-        the keyframes should be spaced such that changes to the <span
-        class="prop-name">transform</span> property occur at
-        a constant rate.
-
-    If an attempt is made to set the spacing mode to a value that does not
-    conform to the above grammar, a <span class=exceptionname>TypeError</span>
-    must be <a>thrown</a> and the value of the <a
-    lt="keyframe spacing mode">spacing mode</a> left unaffected.
-
-    If the <a>paced property</a> is not a property supported by the
-    implementation, or is not animatable by the implementation, the <a
-    lt="keyframe spacing mode">spacing mode</a> must be set to <a
-    lt="distribute keyframe spacing mode">distribute</a>.
-    A property is considered to be animatable if its <a>animation type</a> is
-    anything other than <a>not animatable</a>, or, for shorthand properties, if
-    at least one of its component longhand properties has an <a>animation
-    type</a> other than <a>not animatable</a>.
-
 </div>
 
 <div class="methods">
 
 :   <dfn method for=KeyframeEffectReadOnly lt="getKeyframes()">
     sequence&lt;object&gt; getKeyframes()</dfn>
-::  Returns the <a>computed-offset keyframes</a> that make up this effect.
+::  Returns the keyframes that make up this effect along with their
+    <a>computed keyframe offsets</a>.
 
     <div class='informative-bg'><em>This section is non-normative</em>
 
@@ -6655,17 +6194,15 @@ KeyframeEffect implements AnimationEffectMutable;
 
       :   <code>offset</code>
       ::  The <a>keyframe offset</a> of the <a>keyframe</a> specified as
-          a number between 0.0 and 1.0 inclusive or <code>null</code>.
+          a number between 0.0 and 1.0 inclusive, or <code>null</code>.
 
-          This will be <code>null</code> if the <a>keyframe</a> is
-          automatically spaced using the <a>keyframe effect</a>'s
-          <a>keyframe spacing mode</a>.
+          This will be <code>null</code> if the <a>keyframe</a> is to be
+          automatically spaced between adjacent keyframes.
 
       :   <code>computedOffset</code>
       ::  The <a>computed keyframe offset</a> for this <a>keyframe</a>
-          calculated by applying the <a>keyframe effect</a>'s <a>keyframe
-          spacing mode</a> when the list of <a>computed-offset keyframes</a>
-          was produced.
+          calculated as part of running the <a>compute missing keyframe
+          offsets</a> procedure.
 
           Unlike the <code>offset</code> member, the <code>computedOffset</code>
           is never null.
@@ -6688,9 +6225,9 @@ KeyframeEffect implements AnimationEffectMutable;
     used to prepare the result of this method is defined in prose below:
 
     1.  Let <var>result</var> be an empty sequence of objects.
-    1.  Let <var>keyframes</var> be the result of calculating the
-        <a>computed-offset keyframes</a> for this <a>keyframe effect</a>
-        (see [[#computed-offset-keyframes-section]]).
+    1.  Let <var>keyframes</var> be the result of applying the procedure to
+        <a>compute missing keyframe offsets</a> to the <a>keyframes</a>
+        for this <a>keyframe effect</a>.
     1.  For each <var>keyframe</var> in <var>keyframes</var>
         perform the following steps:
 
@@ -6997,14 +6534,13 @@ The meaning and allowed values of each argument is as follows:
     a number between 0.0 and 1.0 inclusive or <code>null</code>.
 
     A <code>null</code> value indicates that the <a>keyframe</a>
-    should be positioned using the <a>keyframe effect</a>'s
-    <a>keyframe spacing mode</a>.
+    should be automatically spaced between adjacent keyframes.
 
     Specifying an offset outside the range [0.0, 1.0] will cause
     a <span class=exceptionname>TypeError</span> to be thrown.
 
     Keyframes that specify an offset must be provided in increasing
-    order of offset. Overlapping offsets, however, are permitted.
+    order of offset. Adjacent and equal offsets, however, are permitted.
 
 :   <dfn id="dom-keyframe-easing">easing</dfn>
 ::  The <a>timing function</a> used to transform the progress of time
@@ -7241,36 +6777,8 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
 
                 1.  Append <var>k</var> to <var>property keyframes</var>.
 
-            1.  Apply the procedure to <a>apply spacing to a series of
-                keyframes</a> to <var>property keyframes</var> using a
-                <a lt="keyframe spacing mode">spacing mode</a> of <a
-                lt="distribute keyframe spacing mode">distribute</a>.
-
-                <div class="note">
-
-                We unconditionally apply distribute spacing simply for the
-                purposes of merging keyframes. This produces consistent and
-                intuitive results.
-
-                Paced spacing can produce different results depending on the
-                context in which relative values are resolved. Using paced
-                spacing to calculate offsets and then merging would mean that
-                the merge results could differ over time. It would also mean
-                that the keyframes returned from
-                {{KeyframeEffectReadOnly/getKeyframes()}} would
-                produce a different result if passed back to
-                {{KeyframeEffect/setKeyframes()}} since the merge result which,
-                until that point, was dynamic, would suddenly become fixed.
-
-                Due to these considerations we apply merging once when updating
-                the keyframes using distribute spacing which does not vary in
-                its results.
-
-                Before computing the effect result or returning keyframes from
-                {{KeyframeEffectReadOnly/getKeyframes()}} the specified <a
-                lt="keyframe spacing mode">spacing mode</a> is applied.
-
-                </div>
+            1.  Apply the procedure to <a>compute missing keyframe
+                offsets</a> to <var>property keyframes</var>.
 
             1.  Add <a>keyframes</a> in <var>property keyframes</var> to
                 <var>processed keyframes</var>.
@@ -7290,10 +6798,9 @@ keyframes or a {{SharedKeyframeList}} object using the following procedure:
         value using the syntax specified for that property.
 
         If the property value is invalid according to the syntax for the
-        property, store the original DOMString used for the property value.
-
+        property, discard the property-value pair.
         User agents that provide support for diagnosing errors in content
-        SHOULD produce an appropriate warning highlighting the unrecognized
+        SHOULD produce an appropriate warning highlighting the invalid
         property value.
 
     1.  Let the <a>timing function</a> of <var>frame</var> be the result of
@@ -7323,7 +6830,6 @@ constructors by providing a {{KeyframeEffectOptions}} object.
 dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
     IterationCompositeOperation iterationComposite = "replace";
     CompositeOperation          composite = "replace";
-    DOMString                   spacing = "distribute";
 };
 </pre>
 
@@ -7340,52 +6846,7 @@ dictionary KeyframeEffectOptions : AnimationEffectTimingProperties {
     This is used for all <a>keyframes</a> that do not specify
     a <a>keyframe-specific composite operation</a>.
 
-:   <dfn dict-member for=KeyframeEffectOptions>spacing</dfn>
-::  The <a lt="keyframe spacing mode">spacing mode</a> to apply
-    to this <a>animation effect</a>'s <a>keyframes</a>.
-
-    See the {{KeyframeEffect/spacing}} attribute of the
-    {{KeyframeEffect}} interface for the recognized values and
-    their meanings.
-
 </div>
-
-<h4 id="computed-offset-keyframes-section">Computed-offset keyframes</h4>
-
-The set of keyframes returned by {{KeyframeEffectReadOnly/getKeyframes()}}
-is based on the specified keyframes for the <a>keyframe effect</a> (i.e. the
-result of running the <a>process a keyframes argument</a> procedure) but also
-includes the offsets from the <a>computed keyframes</a>.
-This combined result is referred to as the <dfn>computed-offset keyframes</dfn>
-and, for {{KeyframeEffect}} <var>effect</var>, is produced as follows:
-
-1.  Let <var>computed-offset keyframes</var> be a copy of the keyframes
-    specified for <var>effect</var>.
-
-1.  If there is a <a>target element</a> specified for <var>effect</var> that
-    can be used to calculate CSS computed values, perform the following steps.
-
-    1.   Let <var>computed keyframes</var> be the result of calculating
-         the <a>computed keyframes</a> for <var>effect</var>.
-
-    1.   Copy the <a>computed keyframe offset</a> values from <var>computed
-         keyframes</var> to their corresponding keyframes in
-         <var>computed-offset keyframes</var>.
-
-    Otherwise, if there is no <a>target element</a> specified for
-    <var>effect</var>, or the <a>target element</a> is not able to be used to
-    calculate CSS computed values, perform the following steps:
-
-    1.   Apply the procedure to <a>apply spacing to a series of
-         keyframes</a> to <var>computed-offset keyframes</var> using a
-         <a lt="keyframe spacing mode">spacing mode</a> of <a
-         lt="distribute keyframe spacing mode">distribute</a>.
-
-1.  Return <var>computed-offset keyframes</var>.
-
-ISSUE: This procedure needs to be updated to correctly return
-a {{SharedKeyframeList}} object when specified. This is currently deferred
-since {{SharedKeyframeList}} is awaiting implementation experience.
 
 <h3 id="the-iterationcompositeoperation-enumeration">The <code>IterationCompositeOperation</code> enumeration</h3>
 
@@ -7996,6 +7457,8 @@ The following changes have been made since the <a
 *   Added a definition for the <a>idle phase</a>.
 *   Adjusted the procedure to <a>update an animation's finished state</a> to
     accommodate timelines that change direction.
+*   Dropped keyframe spacing, distance calculation, and retention of invalid
+    keyframe property values.
 
 <!-- @endif -->
 
