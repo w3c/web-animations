@@ -4,7 +4,8 @@
   <title>Web Animations</title>
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <meta content="ED" name="w3c-status">
-  <meta content="Bikeshed version 9a16729f5dbf458a556c2e0e347b203ca14e2c7d" name="generator">
+  <meta content="Bikeshed version 26ea3a45cb5052b41bc87174096f9f0093d5064f" name="generator">
+  <link href="https://www.w3.org/TR/web-animations-1/" rel="canonical">
 <style>/* style-md-lists */
 
             /* This is a weird hack for me not yet following the commonmark spec
@@ -254,7 +255,7 @@ pre.idl.highlight { color: #708090; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1>Web Animations</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2017-03-10">10 March 2017</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2017-03-28">28 March 2017</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1726,6 +1727,8 @@ abort these steps.</p>
     seek despite the fact that we are most likely not exiting the <a data-link-type="dfn" href="#pending-play-state" id="ref-for-pending-play-state-5">pending play state</a>. </div>
     <li data-md="">
      <p>Run the steps to <a data-link-type="dfn" href="#play-an-animation" id="ref-for-play-an-animation-2">play an animation</a> for <var>animation</var> with the <var>auto-rewind</var> flag set to true.</p>
+     <p>If the steps to <a data-link-type="dfn" href="#play-an-animation" id="ref-for-play-an-animation-3">play an animation</a> throw an exception, restore the
+original <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-32">animation playback rate</a> by re-running the procedure to <a data-link-type="dfn" href="#silently-set-the-animation-playback-rate" id="ref-for-silently-set-the-animation-playback-rate-2">silently set the animation playback rate</a> with the original <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-33">animation playback rate</a>.</p>
    </ol>
    <h4 class="heading settled" data-level="3.5.19" id="play-states"><span class="secno">3.5.19. </span><span class="content">Play states</span><a class="self-link" href="#play-states"></a></h4>
    <p>An <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-26">animation</a> may be described as being in one of the following <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="play state" data-noexport="" id="play-state">play states</dfn> for each of which, a 
@@ -1742,7 +1745,7 @@ In this state the animation has no effect.</p>
       <p>The animation is waiting on some pending task to complete.</p>
      <dt data-md=""><a data-link-type="dfn" href="#running-play-state" id="ref-for-running-play-state-2">running</a>
      <dd data-md="">
-      <p>The animation has a resolved <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-45">current time</a> that changes on each <a data-link-type="dfn" href="#sampling" id="ref-for-sampling-4">sample</a> (provided the <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-32">animation playback rate</a> is not zero).</p>
+      <p>The animation has a resolved <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-45">current time</a> that changes on each <a data-link-type="dfn" href="#sampling" id="ref-for-sampling-4">sample</a> (provided the <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-34">animation playback rate</a> is not zero).</p>
      <dt data-md=""><a data-link-type="dfn" href="#paused-play-state" id="ref-for-paused-play-state-4">paused</a>
      <dd data-md="">
       <p>The animation has been suspended and the <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-46">current time</a> is no longer changing.</p>
@@ -1766,7 +1769,7 @@ condition from the following:</p>
      <dt data-md="">The <a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time-31">start time</a> of <var>animation</var> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved-60">unresolved</a>,
      <dd data-md="">
       <p>→ <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="paused play state" data-noexport="" id="paused-play-state">paused</dfn></p>
-     <dt data-md="">For <var>animation</var>, <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-33">animation playback rate</a> > 0 and <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-49">current time</a> ≥ <a data-link-type="dfn" href="#target-effect-end" id="ref-for-target-effect-end-14">target effect end</a>; or<br> <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-34">animation playback rate</a> &lt; 0 and <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-50">current time</a> ≤ 0,
+     <dt data-md="">For <var>animation</var>, <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-35">animation playback rate</a> > 0 and <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-49">current time</a> ≥ <a data-link-type="dfn" href="#target-effect-end" id="ref-for-target-effect-end-14">target effect end</a>; or<br> <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-36">animation playback rate</a> &lt; 0 and <a data-link-type="dfn" href="#current-time" id="ref-for-current-time-50">current time</a> ≤ 0,
      <dd data-md="">
       <p>→ <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="finished play state" data-noexport="" id="finished-play-state">finished</dfn></p>
      <dt data-md="">Otherwise,
@@ -1954,7 +1957,7 @@ definitions:</p>
     <dt data-md=""><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="animation-direction">animation direction</dfn>
     <dd data-md="">
      <p>‘backwards’ if the effect is <a data-link-type="dfn" href="#associated-with-an-animation" id="ref-for-associated-with-an-animation-4">associated with an
-animation</a> <em>and</em> the associated <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-41">animation</a>’s <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-35">playback rate</a> is less than zero;
+animation</a> <em>and</em> the associated <a data-link-type="dfn" href="#concept-animation" id="ref-for-concept-animation-41">animation</a>’s <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-37">playback rate</a> is less than zero;
 in all other cases, the <a data-link-type="dfn" href="#animation-direction" id="ref-for-animation-direction-1">animation direction</a> is
 ‘forwards’.</p>
     <dt data-md=""><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="before-active-boundary-time">before-active boundary time</dfn>
@@ -3349,7 +3352,7 @@ to the new value.</p>
 Setting this attribute follows the procedure to <a data-link-type="dfn" href="#set-the-current-time" id="ref-for-set-the-current-time-5">set the current time</a> of this object to the new value.</p>
      <dt data-md=""><dfn class="dfn-paneled idl-code" data-dfn-for="Animation" data-dfn-type="attribute" data-export="" id="dom-animation-playbackrate">playbackRate</dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-double">double</a></span>
      <dd data-md="">
-      <p>The <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-36">playback rate</a> of this
+      <p>The <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-38">playback rate</a> of this
 animation.
 Setting this attribute follows the procedure to <a data-link-type="dfn" href="#set-the-animation-playback-rate" id="ref-for-set-the-animation-playback-rate-1">set the animation
 playback rate</a> of this object to the new value.</p>
@@ -3387,21 +3390,21 @@ for this object.</p>
        <dl>
         <dt data-md="">DOMException of type <code>InvalidStateError</code>
         <dd data-md="">
-         <p>Raised if this animation’s <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-37">playback
-rate</a> is zero, or if this animation’s <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-38">playback rate</a> is > zero and the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-9">end time</a> of this animation’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-28">target effect</a> is infinity.</p>
+         <p>Raised if this animation’s <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-39">playback
+rate</a> is zero, or if this animation’s <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-40">playback rate</a> is > zero and the <a data-link-type="dfn" href="#end-time" id="ref-for-end-time-9">end time</a> of this animation’s <a data-link-type="dfn" href="#target-effect" id="ref-for-target-effect-28">target effect</a> is infinity.</p>
        </dl>
       </div>
      <dt data-md=""><dfn class="dfn-paneled idl-code" data-dfn-for="Animation" data-dfn-type="method" data-export="" data-lt="play()" id="dom-animation-play">void play()</dfn>
      <dd data-md="">
       <p>Unpauses the animation and rewinds if it has finished playing using
-the procedure to <a data-link-type="dfn" href="#play-an-animation" id="ref-for-play-an-animation-3">play an animation</a> for this object
+the procedure to <a data-link-type="dfn" href="#play-an-animation" id="ref-for-play-an-animation-4">play an animation</a> for this object
 with the <var>auto-rewind</var> flag set to true.</p>
      <dt data-md=""><dfn class="dfn-paneled idl-code" data-dfn-for="Animation" data-dfn-type="method" data-export="" data-lt="pause()" id="dom-animation-pause">void pause()</dfn>
      <dd data-md="">
       <p>Suspends the playback of this animation by running the procedure to <a data-link-type="dfn" href="#pause-an-animation" id="ref-for-pause-an-animation-1">pause an animation</a> for this object.</p>
      <dt data-md=""><dfn class="dfn-paneled idl-code" data-dfn-for="Animation" data-dfn-type="method" data-export="" data-lt="reverse()" id="dom-animation-reverse">void reverse()</dfn>
      <dd data-md="">
-      <p>Inverts the <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-39">playback rate</a> of
+      <p>Inverts the <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate-41">playback rate</a> of
 this animation and plays it using the <a data-link-type="dfn" href="#reverse-an-animation" id="ref-for-reverse-an-animation-1">reverse an animation</a> procedure
 for this object.
 As with <a class="idl-code" data-link-type="method" href="#dom-animation-play" id="ref-for-dom-animation-play-2">play()</a>, this
@@ -4691,7 +4694,7 @@ the <a data-link-type="dfn" href="#default-document-timeline" id="ref-for-defaul
        <li data-md="">
         <p>Assign the value of the <code>id</code> member of <var>options</var> to <var>animation</var>’s <code class="idl"><a data-link-type="idl" href="#dom-animation-id" id="ref-for-dom-animation-id-2">id</a></code> attribute.</p>
        <li data-md="">
-        <p>Run the procedure to <a data-link-type="dfn" href="#play-an-animation" id="ref-for-play-an-animation-4">play an animation</a> for <var>animation</var> with the <var>auto-rewind</var> flag set to true.</p>
+        <p>Run the procedure to <a data-link-type="dfn" href="#play-an-animation" id="ref-for-play-an-animation-5">play an animation</a> for <var>animation</var> with the <var>auto-rewind</var> flag set to true.</p>
        <li data-md="">
         <p>Return <var>animation</var>.</p>
       </ol>
@@ -4971,6 +4974,9 @@ animations.</p>
     <li data-md="">
      <p>Adjusted the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state" id="ref-for-update-an-animations-finished-state-11">update an animation’s finished state</a> to
 accommodate timelines that change direction.</p>
+    <li data-md="">
+     <p>Clarified behavior of the procedure to <a data-link-type="dfn" href="#reverse-an-animation" id="ref-for-reverse-an-animation-2">reverse an animation</a> when
+playing the animation causes an exception to be thrown.</p>
     <li data-md="">
      <p>Dropped keyframe spacing, distance calculation, and retention of invalid
 keyframe property values.</p>
@@ -6270,9 +6276,9 @@ states</a>
    <b><a href="#play-an-animation">#play-an-animation</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-play-an-animation-1">3.5.11. Pausing an animation</a>
-    <li><a href="#ref-for-play-an-animation-2">3.5.18. Reversing an animation</a>
-    <li><a href="#ref-for-play-an-animation-3">5.4. The Animation interface</a>
-    <li><a href="#ref-for-play-an-animation-4">5.14. The Animatable interface</a>
+    <li><a href="#ref-for-play-an-animation-2">3.5.18. Reversing an animation</a> <a href="#ref-for-play-an-animation-3">(2)</a>
+    <li><a href="#ref-for-play-an-animation-4">5.4. The Animation interface</a>
+    <li><a href="#ref-for-play-an-animation-5">5.14. The Animatable interface</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="pending-play-task">
@@ -6388,11 +6394,11 @@ states</a>
     <li><a href="#ref-for-animation-playback-rate-22">3.5.15. Finishing an animation</a> <a href="#ref-for-animation-playback-rate-23">(2)</a> <a href="#ref-for-animation-playback-rate-24">(3)</a> <a href="#ref-for-animation-playback-rate-25">(4)</a>
     <li><a href="#ref-for-animation-playback-rate-26">3.5.17. Speed control</a> <a href="#ref-for-animation-playback-rate-27">(2)</a>
     <li><a href="#ref-for-animation-playback-rate-28">3.5.17.1. Updating the playback rate of an animation</a> <a href="#ref-for-animation-playback-rate-29">(2)</a> <a href="#ref-for-animation-playback-rate-30">(3)</a>
-    <li><a href="#ref-for-animation-playback-rate-31">3.5.18. Reversing an animation</a>
-    <li><a href="#ref-for-animation-playback-rate-32">3.5.19. Play states</a> <a href="#ref-for-animation-playback-rate-33">(2)</a> <a href="#ref-for-animation-playback-rate-34">(3)</a>
-    <li><a href="#ref-for-animation-playback-rate-35">3.6.5. Animation effect phases and
+    <li><a href="#ref-for-animation-playback-rate-31">3.5.18. Reversing an animation</a> <a href="#ref-for-animation-playback-rate-32">(2)</a> <a href="#ref-for-animation-playback-rate-33">(3)</a>
+    <li><a href="#ref-for-animation-playback-rate-34">3.5.19. Play states</a> <a href="#ref-for-animation-playback-rate-35">(2)</a> <a href="#ref-for-animation-playback-rate-36">(3)</a>
+    <li><a href="#ref-for-animation-playback-rate-37">3.6.5. Animation effect phases and
 states</a>
-    <li><a href="#ref-for-animation-playback-rate-36">5.4. The Animation interface</a> <a href="#ref-for-animation-playback-rate-37">(2)</a> <a href="#ref-for-animation-playback-rate-38">(3)</a> <a href="#ref-for-animation-playback-rate-39">(4)</a>
+    <li><a href="#ref-for-animation-playback-rate-38">5.4. The Animation interface</a> <a href="#ref-for-animation-playback-rate-39">(2)</a> <a href="#ref-for-animation-playback-rate-40">(3)</a> <a href="#ref-for-animation-playback-rate-41">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="set-the-animation-playback-rate">
@@ -6404,13 +6410,14 @@ states</a>
   <aside class="dfn-panel" data-for="silently-set-the-animation-playback-rate">
    <b><a href="#silently-set-the-animation-playback-rate">#silently-set-the-animation-playback-rate</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-silently-set-the-animation-playback-rate-1">3.5.18. Reversing an animation</a>
+    <li><a href="#ref-for-silently-set-the-animation-playback-rate-1">3.5.18. Reversing an animation</a> <a href="#ref-for-silently-set-the-animation-playback-rate-2">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="reverse-an-animation">
    <b><a href="#reverse-an-animation">#reverse-an-animation</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-reverse-an-animation-1">5.4. The Animation interface</a>
+    <li><a href="#ref-for-reverse-an-animation-2">10. Changes since last publication</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="play-state">
