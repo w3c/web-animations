@@ -8,9 +8,9 @@ function error_exit
 
 echo "Installing bikeshed dependencies..."
 sudo apt-get install python2.7 python-dev libxslt1-dev libxml2-dev || error_exit "Error installing Python and dependencies"
-sudo pip install lxml || error_exit "Error installing pip libxml"
-sudo pip install lxml --upgrade || error_exit "Error upgrading libxml"
-sudo pip install pygments || error_exit "Error installing Pygments"
+pip install lxml || error_exit "Error installing pip libxml"
+pip install lxml --upgrade || error_exit "Error upgrading libxml"
+pip install pygments || error_exit "Error installing Pygments"
 
 cd ..
 
