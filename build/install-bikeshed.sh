@@ -17,6 +17,6 @@ cd ..
 echo "Cloning and installing bikeshed..."
 git clone https://github.com/tabatkins/bikeshed.git bikeshed || error_exit "Error cloning bikeshed"
 
-sudo pip install --editable bikeshed || error_exit "Error installing bikeshed"
+pip install --editable bikeshed || error_exit "Error installing bikeshed"
 
 bikeshed/bikeshed.py update || error_exit "Error updating bikeshed"
