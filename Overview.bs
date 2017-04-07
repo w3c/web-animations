@@ -77,6 +77,7 @@ urlPrefix: http://www.ecma-international.org/ecma-262/6.0/#sec-; type: dfn; spec
     text: [[Get]]; url: ordinary-object-internal-methods-and-internal-slots-get-p-receiver
 urlPrefix: https://html.spec.whatwg.org/multipage/browsers.html; type: dfn; spec: html
     text: active document
+    text: document associated with a window; url: concept-document-window
     text: an entry with persisted user state
     text: browsing context
     text: session history entry
@@ -592,7 +593,7 @@ when its <a>time value</a> is <a>unresolved</a>.
 <h4 id="document-timelines">Document timelines</h4>
 
 A <dfn>document timeline</dfn> is a type of <a>timeline</a> that is associated
-with a document.
+with a {{Document}}.
 
 The <a>time values</a> of a <a>document timeline</a> are calculated
 as a fixed offset from the <a>global clock</a> such that the <a>zero
@@ -603,13 +604,13 @@ signed delta known as the <dfn>origin time</dfn>.
 Prior to establishing the <code>navigationStart</code> moment, the <a>document
 timeline</a> is <a lt="inactive timeline">inactive</a>.
 
-A <a>document timeline</a> that is associated with a document which is not
+A <a>document timeline</a> that is associated with a {{Document}} which is not
 an <a>active document</a> is also considered to be
 <a lt="inactive timeline">inactive</a>.
 
 <h4 id="the-documents-default-timeline">The default document timeline</h4>
 
-Each <a>document</a> has a <a>document timeline</a> called the <dfn>default
+Each {{Document}} has a <a>document timeline</a> called the <dfn>default
 document timeline</dfn>.
 The <a>default document timeline</a> is unique to each document and persists for
 the lifetime of the document including calls to <a>document.open()</a> [[!HTML]].
@@ -2581,9 +2582,8 @@ Note: While the time spaces themselves are not bounded, Web
 
 In addition to these time spaces we can also refer to the
 <em>document time space</em> which is time space of the <a>time
-values</a> of the <a>default document timeline</a> of the <a
-href="http://www.w3.org/TR/html5/browsers.html#active-document">active
-document</a>.
+values</a> of the <a>default document timeline</a> of the
+{{Document}} of the <a>current global object</a>
 
 </div>
 
@@ -4728,7 +4728,7 @@ interface AnimationTimeline {
 <h3 id="the-documenttimeline-interface">The <code>DocumentTimeline</code> interface</h3>
 
 <a>Document timelines</a>, including the <a>default document
-timeline</a> are represented in the Web Animations API by the
+timeline</a>, are represented in the Web Animations API by the
 {{DocumentTimeline}} interface.
 
 <pre class="idl">
@@ -4748,7 +4748,7 @@ interface DocumentTimeline : AnimationTimeline {
     milliseconds relative to <a
     href="http://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart">
     <code>navigationStart</code></a> moment [[!NAVIGATION-TIMING]] of
-    the <a>active document</a> for the current <a>browsing context</a>.
+    the document with which the timeline is associated.
 
 </div>
 
@@ -4756,8 +4756,10 @@ interface DocumentTimeline : AnimationTimeline {
 
 :   <dfn constructor for=DocumentTimeline
     lt="DocumentTimeline(options)">DocumentTimeline (options)</dfn>
-::  Creates a new {{DocumentTimeline}} object associated with the <a>active
-    document</a> of the current <a>browsing context</a>.
+::  Creates a new {{DocumentTimeline}}.
+    The {{Document}} with which the timeline is associated is the
+    {{Document}} <a lt="document associated with a window">associated</a>
+    with the {{Window}} that is the <a>current global object</a>.
 
     <div class='parameters'>
 
@@ -4811,8 +4813,9 @@ interface Animation : EventTarget {
     2.  Run the procedure to <a>set the timeline of an animation</a> on
         <var>animation</var> passing <var>timeline</var> as the <var>new
         timeline</var> or, if a <var>timeline</var> argument is not provided,
-        passing the <a>default document timeline</a> of the <a>active
-        document</a>.
+        passing the <a>default document timeline</a> of the {{Document}}
+        <a lt="document associated with a window">associated</a> with the
+        {{Window}} that is the <a>current global object</a>.
     3.  Run the procedure to <a>set the target effect of an animation</a> on
         <var>animation</var> passing <var>source</var> as the <var>new
         effect</var>.
@@ -4830,7 +4833,8 @@ interface Animation : EventTarget {
     ::  An optional value which, if provided, specifies the <a>timeline</a>
         with which to associate the newly-created <a>animation</a>.
         If not provided, the <a>default document timeline</a> of the
-        <a>active document</a> is used.
+        {{Document}} <a lt="document associated with a window">associated</a>
+        with the {{Window}} that is the <a>current global object</a> is used.
 
     </div>
 
