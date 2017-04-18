@@ -5892,7 +5892,7 @@ Mutable <a>keyframe effects</a> are represented by the
 {{KeyframeEffect}} interface.
 
 <pre class='idl'>
-[Constructor (Animatable? target,
+[Constructor ((Element or CSSPseudoElement)? target,
               object? keyframes,
               optional (unrestricted double or KeyframeEffectOptions) options),
  Constructor (KeyframeEffectReadOnly source)]
@@ -5903,7 +5903,7 @@ interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
     sequence&lt;object&gt; getKeyframes ();
 };
 
-[Constructor (Animatable? target,
+[Constructor ((Element or CSSPseudoElement)? target,
               object? keyframes,
               optional (unrestricted double or KeyframeEffectOptions) options),
  Constructor (KeyframeEffectReadOnly source)]
@@ -6972,7 +6972,8 @@ interface SharedKeyframeList {
 {{EffectCallback}} callback function.
 
 <pre class='idl'>
-callback EffectCallback = void (double? progress, Animatable currentTarget,
+callback EffectCallback = void (double? progress,
+                                (Element or CSSPseudoElement) currentTarget,
                                 Animation animation);
 </pre>
 
@@ -6987,7 +6988,7 @@ associated is <a lt="sampling">sampled</a>.
     When this is <code>null</code>, the function SHOULD
     remove the effect.
 
-:   Animatable currentTarget
+:   (Element or CSSPseudoElement) currentTarget
 ::  The <a>target element</a> on which this callback is expected
     to operate.
 
@@ -7481,6 +7482,12 @@ The following changes have been made since the <a
 *   Added special handling to allow animating the 'offset' property from the
     programming interface using <code>cssOffset</code> to avoid conflict with
     the attribute name used to specify keyframe offsets.
+*   Changed the type of the {{KeyframeEffect/KeyframeEffect(target, keyframes,
+    options)/target}} argument to the
+    {{KeyframeEffect}} and {{KeyframeEffectReadOnly}} constructors from
+    <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code>
+    (<a href="https://github.com/w3c/web-animations/issues/186"
+      >#186</a>).
 
 <!-- @endif -->
 
