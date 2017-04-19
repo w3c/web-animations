@@ -5897,9 +5897,9 @@ Mutable <a>keyframe effects</a> are represented by the
               optional (unrestricted double or KeyframeEffectOptions) options),
  Constructor (KeyframeEffectReadOnly source)]
 interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
-    readonly attribute Animatable?                 target;
-    readonly attribute IterationCompositeOperation iterationComposite;
-    readonly attribute CompositeOperation          composite;
+    readonly attribute (Element or CSSPseudoElement)? target;
+    readonly attribute IterationCompositeOperation    iterationComposite;
+    readonly attribute CompositeOperation             composite;
     sequence&lt;object&gt; getKeyframes ();
 };
 
@@ -5908,9 +5908,9 @@ interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
               optional (unrestricted double or KeyframeEffectOptions) options),
  Constructor (KeyframeEffectReadOnly source)]
 interface KeyframeEffect : KeyframeEffectReadOnly {
-    inherit attribute Animatable?                 target;
-    inherit attribute IterationCompositeOperation iterationComposite;
-    inherit attribute CompositeOperation          composite;
+    inherit attribute (Element or CSSPseudoElement)? target;
+    inherit attribute IterationCompositeOperation    iterationComposite;
+    inherit attribute CompositeOperation             composite;
     void setKeyframes (object? keyframes);
 };
 <!-- @ifdef INCLUDE_GROUPS -->
@@ -5998,7 +5998,7 @@ KeyframeEffect implements AnimationEffectMutable;
         for="KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, keyframes, options)"
         lt="target"></dfn><dfn argument
         for="KeyframeEffect/KeyframeEffect(target, keyframes, options)"
-        lt="target">Animatable? target</dfn>
+        lt="target">(Element or CSSPeudoElement)? target</dfn>
     ::  The <a>target element</a> or target pseudo-element.
         This may be <code>null</code> for animations that do not target
         a specific element.
@@ -7482,10 +7482,12 @@ The following changes have been made since the <a
 *   Added special handling to allow animating the 'offset' property from the
     programming interface using <code>cssOffset</code> to avoid conflict with
     the attribute name used to specify keyframe offsets.
-*   Changed the type of the {{KeyframeEffect/KeyframeEffect(target, keyframes,
-    options)/target}} argument to the
-    {{KeyframeEffect}} and {{KeyframeEffectReadOnly}} constructors from
-    <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code>
+*   Changed the type of the
+    {{KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, keyframes,
+    options)/target}} argument to the {{KeyframeEffect}} and
+    {{KeyframeEffectReadOnly}} constructors,
+    and the {{KeyframeEffectReadOnly/target}} member of these same interfaces,
+    from <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code>
     (<a href="https://github.com/w3c/web-animations/issues/186"
       >#186</a>).
 
