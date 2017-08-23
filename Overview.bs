@@ -4667,6 +4667,7 @@ represented by the value <code>null</code>.
 {{AnimationTimeline}} interface.
 
 <pre class="idl">
+[Exposed=Window]
 interface AnimationTimeline {
     readonly attribute double? currentTime;
 <!-- @if LEVEL=2 -->
@@ -4736,7 +4737,8 @@ dictionary DocumentTimelineOptions {
   DOMHighResTimeStamp originTime = 0;
 };
 
-[Constructor (optional DocumentTimelineOptions options)]
+[Exposed=Window,
+ Constructor (optional DocumentTimelineOptions options)]
 interface DocumentTimeline : AnimationTimeline {
 };
 </pre>
@@ -4781,7 +4783,8 @@ interface DocumentTimeline : AnimationTimeline {
 API by the {{Animation}} interface.
 
 <pre class='idl'>
-[Constructor (optional AnimationEffectReadOnly? effect = null,
+[Exposed=Window,
+ Constructor (optional AnimationEffectReadOnly? effect = null,
               optional AnimationTimeline? timeline)]
 interface Animation : EventTarget {
              attribute DOMString                id;
@@ -4954,6 +4957,7 @@ interface.
 <!-- @endif -->
 
 <pre class='idl'>
+[Exposed=Window]
 interface AnimationEffectReadOnly {
     readonly attribute AnimationEffectTimingReadOnly timing;
     ComputedTimingProperties getComputedTiming();
@@ -5107,6 +5111,7 @@ simply as removing the animation from its animation?
 Issue: This interface needs a constructor.
 
 <pre class="idl">
+[Exposed=Window]
 interface AnimationEffectTimingReadOnly {
     readonly attribute double                             delay;
     readonly attribute double                             endDelay;
@@ -5261,6 +5266,7 @@ of a mutable <a>animation effect</a> such as <!-- @ifdef INCLUDE_GROUPS -->
 Issue: This interface needs a constructor.
 
 <pre class='idl'>
+[Exposed=Window]
 interface AnimationEffectTiming : AnimationEffectTimingReadOnly {
     inherit attribute double                             delay;
     inherit attribute double                             endDelay;
@@ -5556,7 +5562,8 @@ Mutable <a>group effects</a> are represented by the {{GroupEffect}}
 interface.
 
 <pre class='idl'>
-[Constructor (sequence<AnimationEffectReadOnly>? children,
+[Exposed=Window,
+ Constructor (sequence<AnimationEffectReadOnly>? children,
               optional (unrestricted double or AnimationEffectTimingProperties) timing)]
 interface GroupEffectReadOnly : AnimationEffectReadOnly {
     readonly attribute AnimationNodeList      children;
@@ -5571,7 +5578,8 @@ interface GroupEffectMutable {
   void append (AnimationEffectReadOnly... effects);
 };
 
-[Constructor (sequence<AnimationEffectReadOnly>? children,
+[Exposed=Window,
+ Constructor (sequence<AnimationEffectReadOnly>? children,
               optional (unrestricted double or AnimationEffectTimingProperties) timing)]
 interface GroupEffect : GroupEffectReadOnly {
 };
@@ -5814,6 +5822,7 @@ are accessed via a <code>children</code> member.
 </p>
 
 <pre class='idl'>
+[Exposed=Window]
 interface AnimationNodeList {
     readonly attribute unsigned long length;
     getter AnimationEffectReadOnly? item (unsigned long index);
@@ -5847,13 +5856,15 @@ Mutable <a>sequence effects</a> are represented by the {{SequenceEffect}}
 interface.
 
 <pre class='idl'>
-[Constructor (sequence<AnimationEffectReadOnly>? children,
+[Exposed=Window,
+ Constructor (sequence<AnimationEffectReadOnly>? children,
               optional (unrestricted double or AnimationEffectTimingProperties) timing)]
 interface SequenceEffectReadOnly : GroupEffectReadOnly {
     SequenceEffect clone ();
 };
 
-[Constructor (sequence<AnimationEffectReadOnly>? children,
+[Exposed=Window,
+ Constructor (sequence<AnimationEffectReadOnly>? children,
               optional (unrestricted double or AnimationEffectTimingProperties) timing)]
 interface SequenceEffect : SequenceEffectReadOnly {
 };
@@ -5893,7 +5904,8 @@ Mutable <a>keyframe effects</a> are represented by the
 {{KeyframeEffect}} interface.
 
 <pre class='idl'>
-[Constructor ((Element or CSSPseudoElement)? target,
+[Exposed=Window,
+ Constructor ((Element or CSSPseudoElement)? target,
               object? keyframes,
               optional (unrestricted double or KeyframeEffectOptions) options),
  Constructor (KeyframeEffectReadOnly source)]
@@ -5904,7 +5916,8 @@ interface KeyframeEffectReadOnly : AnimationEffectReadOnly {
     sequence&lt;object&gt; getKeyframes ();
 };
 
-[Constructor ((Element or CSSPseudoElement)? target,
+[Exposed=Window,
+ Constructor ((Element or CSSPseudoElement)? target,
               object? keyframes,
               optional (unrestricted double or KeyframeEffectOptions) options),
  Constructor (KeyframeEffectReadOnly source)]
@@ -6943,7 +6956,8 @@ var player2 = element2.animate(keyframes, { duration: 1000, delay: 1000 });
 </div>
 
 <pre class='idl'>
-[Constructor (object? keyframes)]
+[Exposed=Window,
+ Constructor (object? keyframes)]
 interface SharedKeyframeList {
 };
 </pre>
@@ -7210,7 +7224,8 @@ CSSPseudoElement implements Animatable;
 interface.
 
 <pre class='idl'>
-[Constructor (DOMString type, optional AnimationPlaybackEventInit eventInitDict)]
+[Exposed=Window,
+ Constructor (DOMString type, optional AnimationPlaybackEventInit eventInitDict)]
 interface AnimationPlaybackEvent : Event {
     readonly attribute double? currentTime;
     readonly attribute double? timelineTime;
