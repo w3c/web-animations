@@ -6466,40 +6466,47 @@ property may specify a single animation value or an array of animation values.
 The first array-form is the canonical form and is the form returned by the
 {{KeyframeEffectReadOnly/getKeyframes()}} method.
 
-<a>Keyframe offsets</a> and <a>keyframe-specific composite operations</a> can
-only be specified using the array-form as illustrated below:
+<a>Keyframe offsets</a> can be specified using either form as illustrated below:
 
 <div class='example'>
 <pre class='lang-javascript'>
 // The keyframes without offsets will automatically have offsets computed
 // as 0 for the first keyframe, 0.65 for the middle keyframe, and 1 for the
-// final keyframe
+// final keyframe.
 elem.animate([ { color: 'blue' },
                { color: 'green', offset: 0.5 },
                { color: 'red' },
                { color: 'yellow', offset: 0.8 },
                { color: 'pink' } ], 2000);
 
-// An SVG-style to-animation
-elem.animate([ { left: '0px', composite: 'add' },
-               { left: '200px' } ], 2000);
+// The following produces the same result. Note that it is not necessary to
+// specify the last value: it will automatically be treated as 'null' and then
+// the automatic assignment will apply as with the previous case.
+elem.animate({ color: [ 'blue', 'green', 'red', 'yellow', 'pink' ],
+               offset: [ null, 0.5, null, 0.8 ] }, 2000);
 </pre>
 </div>
 
-<a>Timing functions</a> may be specified in either form. The array-form allows
-specifying different <a>timing functions</a> for each <a>keyframe</a> whilst
-the object-form allows specifying a <a>timing function</a> that will be applied
-to all keyframes.
+Likewise <a>timing functions</a> and <a>keyframe-specific composite
+operations</a> may be specified in either form. The array-form allows
+specifying different values for each <a>keyframe</a> whilst for the object-form,
+the list of values will be repeated as needed until each keyframe has been
+assigned a value.
 
 <div class='example'>
 <pre class='lang-javascript'>
-// Each keyframe can have a different timing function.
-// The timing function specified for the last keyframe is not used.
+// Since timing functions apply _between_ keyframes, even if we specify a
+// a timing function on the last keyframe it will be ignored.
 elem.animate([ { color: 'blue', easing: 'ease-in' },
                { color: 'green', easing: 'ease-out' },
                { color: 'yellow' } ], 2000);
 
-// Each keyframe will have a timing function of 'ease-in-out'
+// The following produces the same result.
+elem.animate({ color: [ 'blue', 'green', 'yellow' ],
+               easing: [ 'ease-in', 'ease-out' ] }, 2000);
+
+// The repeating behavior makes assigning the same value to all keyframes
+// simple:
 elem.animate({ color: [ 'blue', 'green', 'yellow' ],
                easing: 'ease-in-out' }, 2000);
 </pre>
@@ -6513,8 +6520,23 @@ using a {{KeyframeEffectOptions}} object (or {{KeyframeAnimationOptions}}
 object when using the {{Animatable/animate()}} method of the {{Animatable}}
 interface).
 
-The type of this argument cannot be expressed in WebIDL since it relies on
-a partially-open dictionary type.
+In the following example, the two statements produce different results.
+
+<div class='example'>
+<pre class='lang-javascript'>
+// Here, 'ease-in-out' is applied between each color value.
+elem.animate({ color: [ 'blue', 'green', 'yellow' ],
+               easing: 'ease-in-out' }, 2000);
+
+// However, in this case, 'ease-in-out' is applied across the whole span
+// of the animation, that is from 'blue' to 'yellow'.
+elem.animate({ color: [ 'blue', 'green', 'yellow' ] },
+             { duration: 2000, easing: 'ease-in-out' });
+</pre>
+</div>
+
+The type of the <code>keyframes</code> argument cannot be expressed in WebIDL
+since it relies on a partially-open dictionary type.
 
 Conceptually, the type of this argument is equivalent to the following
 WebIDL-like definition:
@@ -6531,16 +6553,17 @@ dictionary Keyframe {
 dictionary PropertyIndexedKeyframes {
     // ... property-value and property-valuelist pairs ...
     // i.e. (DOMString or sequence&amp;lt;DOMString&amp;gt;) propertyName
-    DOMString           easing = "linear";
+    (double or sequence&lt;double&gt;)                         offset;
+    (DOMString or sequence&lt;DOMString&gt;)                   easing;
+    (CompositeOperation or sequence&lt;CompositeOperation&gt;) composite;
 };
 
-typedef (sequence&lt;Keyframe&gt; or
-         PropertyIndexedKeyframes) KeyframeArgument;
+typedef (sequence&lt;Keyframe&gt; or PropertyIndexedKeyframes) KeyframeArgument;
 </pre>
 
 The meaning and allowed values of each argument is as follows:
 
-:   <dfn id="dom-keyframe-offset">offset</dfn> (<code>Keyframe</code> only)
+:   <dfn id="dom-keyframe-offset">offset</dfn>
 ::  The <a>keyframe offset</a> of the <a>keyframe</a> specified as
     a number between 0.0 and 1.0 inclusive or <code>null</code>.
 
@@ -6562,7 +6585,6 @@ The meaning and allowed values of each argument is as follows:
     of the {{AnimationEffectTiming}} interface.
 
 :   <dfn id="dom-keyframe-composite">composite</dfn>
-    (<code>Keyframe</code> only)
 ::  The <a>keyframe-specific composite operation</a> used to combine the values
     specified in this keyframe with the <a>underlying value</a>.
 
@@ -6618,8 +6640,9 @@ otherwise, using the following procedure:
 
         <pre class='idl'>
         dictionary BasePropertyIndexedKeyframe {
-            DOMString          easing = "linear";
-            CompositeOperation composite;
+            (double or sequence&lt;double&gt;)                         offset;
+            (DOMString or sequence&lt;DOMString&gt;)                   easing;
+            (CompositeOperation or sequence&lt;CompositeOperation&gt;) composite;
         };
         </pre>
 
@@ -6740,42 +6763,32 @@ keyframes using the following procedure:
                 passing <var>nextItem</var> as the <var>keyframe input</var>
                 and with the <var>allow lists</var> flag set to false.
 
-        1.  If <var>processed keyframes</var> is not <a>loosely sorted by
-            offset</a>, <a>throw</a> a <span
-            class=exceptionname>TypeError</span> and abort these steps.
-        1.  If there exist any <a>keyframe</a> in <var>processed keyframes</var>
-            whose <a>keyframe offset</a> is non-null and less
-            than zero or greater than one, <a>throw</a> a
-            <span class=exceptionname>TypeError</span> and abort these steps.
-
     :   Otherwise,
     ::  1.  Let <var>property-indexed keyframe</var> be the result of
             running the procedure to <a>process a keyframe-like object</a>
             passing <var>object</var> as the <var>keyframe input</var>
             and with the <var>allow lists</var> flag set to true.
 
-        1.  Let <var>easing</var> be the value of the
-            &ldquo;easing&rdquo; member of <var>property-indexed keyframe</var>.
-
         1.  For each member, <var>m</var>, in <var>property-indexed
             keyframe</var>, perform the following steps:
 
             1.  Let <var>property name</var> be the key for <var>m</var>.
-            1.  If <var>property name</var> is &ldquo;composite&rdquo; or
-                &ldquo;easing&rdquo; skip the remaining steps in this loop
-                and continue from the next member in <var>property-indexed
-                keyframe</var> after <var>m</var>.
+
+            1.  If <var>property name</var> is &ldquo;composite&rdquo;, or
+                &ldquo;easing&rdquo;, or &ldquo;offset&rdquo;, skip the
+                remaining steps in this loop and continue from the next member
+                in <var>property-indexed keyframe</var> after <var>m</var>.
+
             1.  Let <var>property values</var> be the value for <var>m</var>.
+
             1.  Let <var>property keyframes</var> be an empty sequence of
                 <a>keyframes</a>.
+
             1.  For each value, <var>v</var>, in <var>property values</var>
                 perform the following steps:
 
                 1.  Let <var>k</var> be a new <a>keyframe</a> with a null
                     <a>keyframe offset</a>.
-
-                1.  Let <var>k</var> have a property, &ldquo;easing&rdquo;
-                    with the value of <var>easing</var>.
 
                 1.  Add the property-value pair, <var>property name</var>
                     &rarr; <var>v</var>, to <var>k</var>.
@@ -6794,7 +6807,101 @@ keyframes using the following procedure:
         1.  Merge adjacent <a>keyframes</a> in <var>processed keyframes</var>
             when they have equal <a>computed keyframe offsets</a>.
 
+        1.  Let <var>offsets</var> be a sequence of <code>double</code> values
+            assigned based on the type of the &ldquo;offset&rdquo; member
+            of the <var>property-indexed keyframe</var> as follows:
+
+            <div class="switch">
+
+            :   <code>sequence&lt;double&gt;</code>,
+            ::  The value of &ldquo;offset&rdquo; as-is.
+
+            :   <code>double</code>,
+            ::  A single-valued sequence containing the value of
+                &ldquo;offset&rdquo;,
+
+            :   Otherwise,
+            ::  An empty sequence.
+
+        1.  Assign each value in <var>offsets</var> to the <a>keyframe
+            offset</a> of the <a>keyframe</a> with corresponding position in
+            <var>property keyframes</var> until the end of either sequence is
+            reached.
+
+        1.  Let <var>easings</var> be a sequence of <code>DOMString</code> values
+            assigned based on the type of the &ldquo;easing&rdquo; member
+            of the <var>property-indexed keyframe</var> as follows:
+
+            <div class="switch">
+
+            :   <code>sequence&lt;DOMString&gt;</code>,
+            ::  The value of &ldquo;easing&rdquo; as-is.
+
+            :   <code>DOMString</code>,
+            ::  A single-valued sequence containing the value of
+                &ldquo;offset&rdquo;,
+
+            :   Otherwise,
+            ::  A single-valued sequence containing the value
+                <code>linear</code>.
+
+        1.  Let <var>easings</var> be a sequence of <code>DOMString</code>
+            objects assigned from the &ldquo;easing&rdquo; member of the
+            <var>property-indexed keyframes</var> in an analogous manner to
+            <var>offsets</var> such that a single <code>DOMString</code> is
+            converted into a single-valued sequence, and Undefined value is
+            converted into an empty sequence.
+
+        1.  If <var>easings</var> has fewer items than <var>property
+            keyframes</var> repeat the elements in <var>easings</var>
+            successively starting from the beginning of the list until
+            <var>easings</var> has as many items as <var>property
+            keyframes</var>.
+
+            <div class=example>
+            For example, if <var>property-indexed keyframes</var> has
+            five items, and <var>easings</var> is the sequence <code>ease-in,
+            ease-out</code>, <var>easings</var> would be repeated to become
+            <code>ease-in, ease-out, ease-in, ease-out, ease-in</code>.
+            </div>
+
+        1.  Assign each value in <var>easings</var> to a property named
+            &ldquo;easing&rdquo; on the <a>keyframe</a> with the corresponding
+            position in <var>property keyframes</var> until the end of
+            <var>property keyframes</var> is reached.
+
+        1.  If the &ldquo;composite&rdquo; member of the <var>property-indexed
+            keyframe</var> is not undefined and is not an empty sequence:
+
+            1.  Let <var>composite modes</var> be a sequence of <a>composite
+                operations</a> assigned from the &ldquo;composite&rdquo; member
+                of <var>property-indexed keyframe</var>.
+                If that member is a single <a>composite operation</a>, let
+                <var>composite modes</var> be a single-valued sequence
+                containing that <a>composite operation</a>.
+
+            1.  As with <var>easings</var>, if <var>composite modes</var>
+                has fewer items than <var>property keyframes</var> repeat the
+                elements in <var>composite modes</var> successively starting
+                from the beginning of the list until <var>composite modes</var>
+                has as many items as <var>property keyframes</var>.
+
+            1.  Assign each value in <var>composite modes</var> to the
+                <a>keyframe-specific composite operation</a> on the
+                <a>keyframe</a> with the corresponding position in <var>property
+                keyframes</var> until the end of <var>property keyframes</var>
+                is reached.
+
     </div>
+
+1.  If <var>processed keyframes</var> is not <a>loosely sorted by
+    offset</a>, <a>throw</a> a <span
+    class=exceptionname>TypeError</span> and abort these steps.
+
+1.  If there exist any <a>keyframe</a> in <var>processed keyframes</var>
+    whose <a>keyframe offset</a> is non-null and less
+    than zero or greater than one, <a>throw</a> a
+    <span class=exceptionname>TypeError</span> and abort these steps.
 
 1.  For each <var>frame</var> in <var>processed keyframes</var>, perform the
     following steps:
@@ -7438,6 +7545,9 @@ The following changes have been made since the <a
 *   Added special handling to allow animating the 'offset' property from the
     programming interface using <code>cssOffset</code> to avoid conflict with
     the attribute name used to specify keyframe offsets.
+*   Updated the procedure to <a>process a keyframes argument</a> to allow
+    specifying <code>offset</code>, <code>composite</code> and mulitple
+    <code>easing</code> values.
 *   Changed the type of the
     {{KeyframeEffectReadOnly/KeyframeEffectReadOnly(target, keyframes,
     options)/target}} argument to the {{KeyframeEffect}} and
