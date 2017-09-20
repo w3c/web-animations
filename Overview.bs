@@ -6039,9 +6039,6 @@ KeyframeEffect implements AnimationEffectMutable;
         *    <a>iteration composite operation</a>, and
         *    <a>composite operation</a>.
 
-        Issue: If <var>source</var> is using a {{SharedKeyframeList}} should
-        we continue to share it?
-
     1.  Set <var>effect</var>'s {{AnimationEffectReadOnly/timing}} member
         to a new {{AnimationEffectTimingReadOnly}} object
         created in the <a lt="execution contexts">current realm</a> (that is,
@@ -6431,7 +6428,6 @@ The following methods all accept a set of keyframes as an argument:
 *   the {{KeyframeEffect(target, keyframes, options)}} constructor,
 *   the {{KeyframeEffect/setKeyframes()}} method on the {{KeyframeEffect}}
     interface,
-*   the {{SharedKeyframeList()}} constructor, and
 *   the {{Animatable/animate()}} method of the {{Animatable}} interface.
 
 This argument may be specified in the one of two forms as illustrated below.
@@ -6538,8 +6534,7 @@ dictionary PropertyIndexedKeyframes {
 };
 
 typedef (sequence&lt;Keyframe&gt; or
-         PropertyIndexedKeyframes or
-         SharedKeyframeList) KeyframeArgument;
+         PropertyIndexedKeyframes) KeyframeArgument;
 </pre>
 
 The meaning and allowed values of each argument is as follows:
@@ -6711,13 +6706,10 @@ otherwise, using the following procedure:
 1.  Return <var>keyframe output</var>.
 
 The procedure to <dfn>process a keyframes argument</dfn> takes a nullable
-ECMAScript object, <var>object</var>, as input and returns either a sequence of
-keyframes or a {{SharedKeyframeList}} object using the following procedure:
+ECMAScript object, <var>object</var>, as input and returns a sequence of
+keyframes using the following procedure:
 
 1.  If <var>object</var> is null, return an empty sequence of keyframes.
-
-1.  If <var>object</var> is a <a>platform object</a> that implements
-    {{SharedKeyframeList}}, return <var>object</var>.
 
 1.  Let <var>processed keyframes</var> be an empty sequence of <a>keyframes</a>.
 
@@ -6918,54 +6910,6 @@ enum CompositeOperation {"replace", "add", "accumulate"};
     the <a>animation effect</a> is <a
     lt="animation accumulation">accumulated</a> on to the
     <a>underlying value</a>.
-
-<h3 id="the-sharedkeyframelist-interface">The <code>SharedKeyframeList</code> interface</h3>
-
-The {{SharedKeyframeList}} interface represents a sequence of <a>keyframes</a>
-that can be shared between {{KeyframeEffect}} objects.
-
-<div class="informative-bg"><em>This section is non-normative</em>
-
-By using {{SharedKeyframeList}} objects, multiple {{KeyframeEffect}} objects
-can re-use the same <a>keyframes</a> without paying the cost of parsing them
-multiple times.
-
-For example:
-<div class="example"><pre class="lang-javascript">
-var keyframes = new SharedKeyframeList([
- { left: '100px', backgroundColor: 'red' },
- { left: '200px', backgroundColor: 'green', offset: 0.4 },
- { left: '400px', backgroundColor: 'blue' } ]);
-var player1 = element1.animate(keyframes, 1000);
-var player2 = element2.animate(keyframes, { duration: 1000, delay: 1000 });
-</pre></div>
-
-</div>
-
-<pre class='idl'>
-[Exposed=Window,
- Constructor (object? keyframes)]
-interface SharedKeyframeList {
-};
-</pre>
-
-<div class='constructors'>
-
-:   <dfn constructor for=SharedKeyframeList lt="SharedKeyframeList(keyframes)">
-    SharedKeyframeList(keyframes)</dfn>
-::  Creates a new {{SharedKeyframeList}} object.
-
-    <div class='parameters'>
-
-    :   <dfn argument for="SharedKeyframeList/SharedKeyframeList(keyframes)"
-        lt="keyframes">keyframes</dfn>
-    ::  The keyframes to be shared. This argument is processed using the
-        procedure defined in <a href="#processing-a-keyframes-argument"
-        section></a>.
-
-    </div>
-
-</div>
 
 <!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
 <h3 id="the-effectcallback-callback-function">The <code>EffectCallback</code> callback function</h3>
@@ -7495,6 +7439,7 @@ The following changes have been made since the <a
     from <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code>
     (<a href="https://github.com/w3c/web-animations/issues/186"
       >#186</a>).
+*   Dropped the <code>SharedKeyframeList</code> interface.
 
 <!-- @endif -->
 
