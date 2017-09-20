@@ -6,10 +6,10 @@ function error_exit
   exit 1
 }
 
-grunt build || error_exit "Error building spec"
+./node_modules/.bin/grunt build || error_exit "Error building spec"
 
 if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
-  grunt publish || error_exit "Error publishing spec"
+  ./node_modules/.bin/grunt publish || error_exit "Error publishing spec"
 
   git config --global user.name "$COMMIT_USER (via Travis CI)"
   git config --global user.email "$COMMIT_EMAIL"
@@ -17,5 +17,5 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; th
   export COMMIT_MESSAGE=$(echo -e "$TRAVIS_COMMIT_MSG\n\nGenerated from:\n";
                           git log $TRAVIS_COMMIT_RANGE)
 
-  grunt upload || "Error uploading to gh-pages branch"
+  ./node_modules/.bin/grunt upload || "Error uploading to gh-pages branch"
 fi
