@@ -6816,16 +6816,19 @@ keyframes using the following procedure:
         {{AnimationEffectTimingReadOnly/easing}} property of the
         {{AnimationEffectTimingReadOnly}} interface.
 
-        If parsing the &ldquo;easing&rdquo; property fails, let the <a>timing
-        function</a> of <var>frame</var> be &ldquo;linear&rdquo;.
-
-        User agents that provide support for diagnosing errors in content
-        SHOULD produce an appropriate warning highlighting the unrecognized
-        <a>timing function</a> in this case.
+        If parsing the &ldquo;easing&rdquo; property fails, <a>throw</a> a
+        <span class=exceptionname>TypeError</span> and abort this procedure.
 
         Note: Using the CSS parser in both of the above steps implies that CSS
         comments and escaping are allowed but are not retained when the value
         is successfully parsed.
+
+        Note: In the case where the &ldquo;easing&rdquo; property fails to
+        parse, it is important that the <span
+        class=exceptionname>TypeError</span> is thrown <em>after</em> all
+        reading the properties from <var>object</var> since failing to do so
+        would be observable and will not match the behavior if partially
+        open-ended dictionaries are later supported in WebIDL.
 
 <h4 id="the-keyframeeffectoptions-dictionary">The <code>KeyframeEffectOptions</code> dictionary</h4>
 
