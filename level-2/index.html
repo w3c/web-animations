@@ -6,7 +6,7 @@
   <meta content="UD" name="w3c-status">
   <meta content="Bikeshed version 459c2a65222f1973d4f1846a767ec88e8a5dae3e" name="generator">
   <link href="https://www.w3.org/TR/web-animations-1/" rel="canonical">
-  <meta content="96428aeec066912e8348f1b6cd9bfdf9e47d3ae3" name="document-revision">
+  <meta content="d696468777c12a13bc7c46aa1a72c358e8da15fc" name="document-revision">
 <style>/* style-md-lists */
 
 /* This is a weird hack for me not yet following the commonmark spec
@@ -3044,7 +3044,7 @@ For example, the filter list values "blur(2)" and
 may produce "blur(5)".</p>
      </div>
    </ul>
-   <p>The above procedures apply to CSS <a data-link-type="dfn" href="https://drafts.csswg.org/css-cascade-3/#computed-value" id="ref-for-computed-value">computed
+   <p>The above procedures apply to CSS <a data-link-type="dfn" href="https://drafts.csswg.org/css-cascade-4/#computed-value" id="ref-for-computed-value">computed
 property values</a> (see <a href="#calculating-computed-keyframes">§4.4.2 Calculating computed keyframes</a>). As a result, it
 is not necessary to define, for example,  how to add a <a class="production css" data-link-type="type" href="https://drafts.csswg.org/css-values-3/#length-value" id="ref-for-length-value" title="Expands to: em | vb | ch | cm | vh | vi | vw | ex | in | ic | pt | px | lh | pc | rem | rlh | vmax | advance measure | vmin | mm | cap | q">&lt;length></a> value of
 "15pt" with "5em" since such values will be resolved to pixel values before
@@ -3245,7 +3245,7 @@ If no <a data-link-type="dfn" href="#keyframe-specific-composite-operation" id="
 a <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe⑥">keyframe</a>, the <a data-link-type="dfn" href="#composite-operation" id="ref-for-composite-operation①">composite operation</a> specified for the <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect⑤">keyframe effect</a> as a whole is used for values specified in that keyframe.</p>
    <h4 class="heading settled" data-level="4.4.2" id="calculating-computed-keyframes"><span class="secno">4.4.2. </span><span class="content">Calculating computed keyframes</span><a class="self-link" href="#calculating-computed-keyframes"></a></h4>
    <p>Before calculating the <a data-link-type="dfn" href="#effect-value" id="ref-for-effect-value①">effect value</a> of a <a data-link-type="dfn" href="#keyframe-effect" id="ref-for-keyframe-effect⑥">keyframe effect</a>,
-the property values specified on its <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe⑦">keyframes</a> are resolved to <a data-link-type="dfn" href="https://drafts.csswg.org/css-cascade-3/#computed-value" id="ref-for-computed-value①">computed values</a>, and the offset to use for any keyframes with a null <a data-link-type="dfn" href="#keyframe-offset" id="ref-for-keyframe-offset②">keyframe offset</a> is computed. The result of resolving these values is
+the property values specified on its <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe⑦">keyframes</a> are resolved to <a data-link-type="dfn" href="https://drafts.csswg.org/css-cascade-4/#computed-value" id="ref-for-computed-value①">computed values</a>, and the offset to use for any keyframes with a null <a data-link-type="dfn" href="#keyframe-offset" id="ref-for-keyframe-offset②">keyframe offset</a> is computed. The result of resolving these values is
 a set of <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="computed-keyframes">computed keyframes</dfn>.</p>
    <p>The calculated <a data-link-type="dfn" href="#keyframe-offset" id="ref-for-keyframe-offset③">keyframe offsets</a> of a set of <a data-link-type="dfn" href="#keyframe" id="ref-for-keyframe⑧">keyframe</a> that
 includes suitable values for each null <a data-link-type="dfn" href="#keyframe-offset" id="ref-for-keyframe-offset④">keyframe offset</a> are referred
@@ -5569,13 +5569,15 @@ property value.</p>
        <p>Let the <a data-link-type="dfn" href="https://drafts.csswg.org/css-timing-1/#timing-function" id="ref-for-timing-function②⓪">timing function</a> of <var>frame</var> be the result of
 parsing the “easing” property on <var>frame</var> using the
 CSS syntax defined for the <code class="idl"><a data-link-type="idl" href="#dom-animationeffecttimingreadonly-easing" id="ref-for-dom-animationeffecttimingreadonly-easing②">easing</a></code> property of the <code class="idl"><a data-link-type="idl" href="#animationeffecttimingreadonly" id="ref-for-animationeffecttimingreadonly②④">AnimationEffectTimingReadOnly</a></code> interface.</p>
-       <p>If parsing the “easing” property fails, let the <a data-link-type="dfn" href="https://drafts.csswg.org/css-timing-1/#timing-function" id="ref-for-timing-function②①">timing
-function</a> of <var>frame</var> be “linear”.</p>
-       <p>User agents that provide support for diagnosing errors in content
-SHOULD produce an appropriate warning highlighting the unrecognized <a data-link-type="dfn" href="https://drafts.csswg.org/css-timing-1/#timing-function" id="ref-for-timing-function②②">timing function</a> in this case.</p>
+       <p>If parsing the “easing” property fails, <a data-link-type="dfn" href="https://heycam.github.io/webidl/#dfn-throw" id="ref-for-dfn-throw②⓪">throw</a> a <span class="exceptionname">TypeError</span> and abort this procedure.</p>
        <p class="note" role="note"><span>Note:</span> Using the CSS parser in both of the above steps implies that CSS
 comments and escaping are allowed but are not retained when the value
 is successfully parsed.</p>
+       <p class="note" role="note"><span>Note:</span> In the case where the “easing” property fails to
+parse, it is important that the <span class="exceptionname">TypeError</span> is thrown <em>after</em> all
+reading the properties from <var>object</var> since failing to do so
+would be observable and will not match the behavior if partially
+open-ended dictionaries are later supported in WebIDL.</p>
      </ol>
    </ol>
    <h4 class="heading settled" data-level="5.13.4" id="the-keyframeeffectoptions-dictionary"><span class="secno">5.13.4. </span><span class="content">The <code>KeyframeEffectOptions</code> dictionary</span><a class="self-link" href="#the-keyframeeffectoptions-dictionary"></a></h4>
@@ -6497,9 +6499,9 @@ animations.</p>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
-    <a data-link-type="biblio">[css-cascade-3]</a> defines the following terms:
+    <a data-link-type="biblio">[css-cascade-4]</a> defines the following terms:
     <ul>
-     <li><a href="https://drafts.csswg.org/css-cascade-3/#computed-value">computed value</a>
+     <li><a href="https://drafts.csswg.org/css-cascade-4/#computed-value">computed value</a>
     </ul>
    <li>
     <a data-link-type="biblio">[css-position-3]</a> defines the following terms:
@@ -6664,6 +6666,8 @@ animations.</p>
   <dl>
    <dt id="biblio-css-cascade-3">[CSS-CASCADE-3]
    <dd>Elika Etemad; Tab Atkins Jr.. <a href="https://www.w3.org/TR/css-cascade-3/">CSS Cascading and Inheritance Level 3</a>. URL: <a href="https://www.w3.org/TR/css-cascade-3/">https://www.w3.org/TR/css-cascade-3/</a>
+   <dt id="biblio-css-cascade-4">[CSS-CASCADE-4]
+   <dd>Elika Etemad; Tab Atkins Jr.. <a href="https://www.w3.org/TR/css-cascade-4/">CSS Cascading and Inheritance Level 4</a>. URL: <a href="https://www.w3.org/TR/css-cascade-4/">https://www.w3.org/TR/css-cascade-4/</a>
    <dt id="biblio-css-position-3">[CSS-POSITION-3]
    <dd>Rossen Atanassov; Arron Eicholz. <a href="https://www.w3.org/TR/css-position-3/">CSS Positioned Layout Module Level 3</a>. URL: <a href="https://www.w3.org/TR/css-position-3/">https://www.w3.org/TR/css-position-3/</a>
    <dt id="biblio-css-properties-values-api-1">[CSS-PROPERTIES-VALUES-API-1]
