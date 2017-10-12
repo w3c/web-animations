@@ -3028,10 +3028,12 @@ applied to the effect, and is calculated as follows:
 1.  If <em>all</em> of the following conditions are true,
 
     * the <var>simple iteration progress</var> calculated above is zero,
-    * the animation effect is in the <a>after phase</a>, <em>and</em>
-    * <a>iteration count</a> is <em>not</em> equal to zero, <em>and</em>
-    * <em>either</em> the <a>active time</a> is <em>not</em> zero <em>or</em>
-        the <a>iteration duration</a> is zero.
+        <em>and</em>
+    * the animation effect is in the <a>active phase</a> <em>or</em> the
+        <a>after phase</a>, <em>and</em>
+    * the <a>active time</a> is equal to the <a>active duration</a>,
+        <em>and</em>
+    * the <a>iteration count</a> is <em>not</em> equal to zero.
 
     let the <var>simple iteration progress</var> be 1.0.
 
@@ -3042,15 +3044,9 @@ applied to the effect, and is calculated as follows:
       holding the endpoint of the final iteration rather than the start of the
       next iteration.
 
-      The final two conditions prevent this from applying when we never played
-      any iterations of the animation to begin with because either (a) the
-      <a>iteration count</a> was zero, or (b) the playback range of the
-      <a>active interval</a> was clipped to zero using a negative <a>end
-      delay</a>.
-      In detecting if the <a>active interval</a>'s playback range was clipped
-      to zero, we check for a zero <a>active time</a> in the after phase, but
-      if the <a>iteration duration</a> was zero to begin with then we say that
-      the animation was <em>not</em> clipped.
+      The final condition prevents this from applying when we never played
+      any iterations of the animation to begin with because the
+      <a>iteration count</a> was zero.
 
     </div>
 
@@ -7431,6 +7427,12 @@ The following changes have been made since the <a
     accommodate timelines that change direction.
 *   Clarified behavior of the procedure to <a>reverse an animation</a> when
     playing the animation causes an exception to be thrown.
+*   In the procedure to calculate the <a>simple iteration progress</a>, made
+    a negative end delay not trigger the behavior where the end of the last
+    iteration is used instead of the beginning of the next iteration.
+    Also fixed a bug where this behavior would fail to apply when playing in
+    reverse.
+    (<a href="https://github.com/w3c/web-animations/issues/201">#201</a>).
 *   Dropped keyframe spacing, distance calculation, and retention of invalid
     keyframe property values.
 *   Added special handling to allow animating the 'offset' property from the
@@ -7442,8 +7444,7 @@ The following changes have been made since the <a
     {{KeyframeEffectReadOnly}} constructors,
     and the {{KeyframeEffectReadOnly/target}} member of these same interfaces,
     from <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code>
-    (<a href="https://github.com/w3c/web-animations/issues/186"
-      >#186</a>).
+    (<a href="https://github.com/w3c/web-animations/issues/186">#186</a>).
 *   Dropped the <code>SharedKeyframeList</code> interface.
 
 <!-- @endif -->
