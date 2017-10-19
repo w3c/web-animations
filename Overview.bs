@@ -52,6 +52,7 @@ Link Defaults: css-transforms (property) transform
 <pre class="anchors">
 urlPrefix: https://heycam.github.io/webidl/#dfn-; type: dfn; spec: webidl
     text: platform object
+    text: nullable; url: nullable-type
     text: throw
     text: thrown; url: throw
     text: convert ecmascript to idl value
@@ -6553,9 +6554,9 @@ dictionary Keyframe {
 dictionary PropertyIndexedKeyframes {
     // ... property-value and property-valuelist pairs ...
     // i.e. (DOMString or sequence&amp;lt;DOMString&amp;gt;) propertyName
-    (double? or sequence&lt;double?&gt;)                       offset;
-    (DOMString or sequence&lt;DOMString&gt;)                   easing;
-    (CompositeOperation or sequence&lt;CompositeOperation&gt;) composite;
+    (double? or sequence&lt;double?&gt;)                       offset = [];
+    (DOMString or sequence&lt;DOMString&gt;)                   easing = [];
+    (CompositeOperation or sequence&lt;CompositeOperation&gt;) composite = [];
 };
 
 typedef (sequence&lt;Keyframe&gt; or PropertyIndexedKeyframes) KeyframeArgument;
@@ -6640,9 +6641,9 @@ otherwise, using the following procedure:
 
         <pre class='idl'>
         dictionary BasePropertyIndexedKeyframe {
-            (double? or sequence&lt;double?&gt;)                       offset;
-            (DOMString or sequence&lt;DOMString&gt;)                   easing;
-            (CompositeOperation or sequence&lt;CompositeOperation&gt;) composite;
+            (double? or sequence&lt;double?&gt;)                       offset = [];
+            (DOMString or sequence&lt;DOMString&gt;)                   easing = [];
+            (CompositeOperation or sequence&lt;CompositeOperation&gt;) composite = [];
         };
         </pre>
 
@@ -6807,29 +6808,30 @@ keyframes using the following procedure:
         1.  Merge adjacent <a>keyframes</a> in <var>processed keyframes</var>
             when they have equal <a>computed keyframe offsets</a>.
 
-        1.  Let <var>offsets</var> be a sequence of <code>double</code> values
-            assigned based on the type of the &ldquo;offset&rdquo; member
-            of the <var>property-indexed keyframe</var> as follows:
+        1.  Let <var>offsets</var> be a sequence of <a>nullable</a>
+            <code>double</code> values assigned based on the type of the
+            &ldquo;offset&rdquo; member of the <var>property-indexed
+            keyframe</var> as follows:
 
             <div class="switch">
 
-            :   <code>sequence&lt;double&gt;</code>,
+            :   <code>sequence&lt;double?&gt;</code>,
             ::  The value of &ldquo;offset&rdquo; as-is.
 
-            :   <code>double</code>,
-            ::  A single-valued sequence containing the value of
-                &ldquo;offset&rdquo;,
+            :   <code>double?</code>,
+            ::  A sequence of length one with the value of &ldquo;offset&rdquo;
+                as its single item, i.e.
+                &laquo;&nbsp;<code>offset</code>&nbsp;&raquo;,
 
-            :   Otherwise,
-            ::  An empty sequence.
+            </div>
 
         1.  Assign each value in <var>offsets</var> to the <a>keyframe
             offset</a> of the <a>keyframe</a> with corresponding position in
             <var>property keyframes</var> until the end of either sequence is
             reached.
 
-        1.  Let <var>easings</var> be a sequence of <code>DOMString</code> values
-            assigned based on the type of the &ldquo;easing&rdquo; member
+        1.  Let <var>easings</var> be a sequence of <code>DOMString</code>
+            values assigned based on the type of the &ldquo;easing&rdquo; member
             of the <var>property-indexed keyframe</var> as follows:
 
             <div class="switch">
@@ -6838,19 +6840,15 @@ keyframes using the following procedure:
             ::  The value of &ldquo;easing&rdquo; as-is.
 
             :   <code>DOMString</code>,
-            ::  A single-valued sequence containing the value of
-                &ldquo;offset&rdquo;,
+            ::  A sequence of length one with the value of &ldquo;easing&rdquo;
+                as its single item, i.e.
+                &laquo;&nbsp;<code>easing</code>&nbsp;&raquo;,
 
-            :   Otherwise,
-            ::  A single-valued sequence containing the value
-                <code>linear</code>.
+            </div>
 
-        1.  Let <var>easings</var> be a sequence of <code>DOMString</code>
-            objects assigned from the &ldquo;easing&rdquo; member of the
-            <var>property-indexed keyframes</var> in an analogous manner to
-            <var>offsets</var> such that a single <code>DOMString</code> is
-            converted into a single-valued sequence, and an undefined value is
-            converted into an empty sequence.
+        1.  If <var>easings</var> is an empty sequence, let it be a sequence
+            of length one containing the single value &ldquo;linear&rdquo;, i.e.
+            &laquo;&nbsp;"linear"&nbsp;&raquo;.
 
         1.  If <var>easings</var> has fewer items than <var>property
             keyframes</var>, repeat the elements in <var>easings</var>
@@ -6859,10 +6857,12 @@ keyframes using the following procedure:
             keyframes</var>.
 
             <div class=example>
-            For example, if <var>property-indexed keyframes</var> has
-            five items, and <var>easings</var> is the sequence <code>ease-in,
-            ease-out</code>, <var>easings</var> would be repeated to become
-            <code>ease-in, ease-out, ease-in, ease-out, ease-in</code>.
+            For example, if <var>property-indexed keyframe</var> has
+            five items, and <var>easings</var> is the sequence
+            &laquo;&nbsp;"ease-in", "ease-out"&nbsp;&raquo;,
+            <var>easings</var> would be repeated to become
+            &laquo;&nbsp;"ease-in", "ease-out", "ease-in", "ease-out",
+            "ease-in"&nbsp;&raquo;.
             </div>
 
         1.  If <var>easings</var> has more items than <var>property
@@ -6875,17 +6875,17 @@ keyframes using the following procedure:
             <var>property keyframes</var> is reached.
 
         1.  If the &ldquo;composite&rdquo; member of the <var>property-indexed
-            keyframe</var> is not undefined and is not an empty sequence:
+            keyframe</var> is <em>not</em> an empty sequence:
 
             1.  Let <var>composite modes</var> be a sequence of <a>composite
                 operations</a> assigned from the &ldquo;composite&rdquo; member
                 of <var>property-indexed keyframe</var>.
                 If that member is a single <a>composite operation</a>, let
-                <var>composite modes</var> be a single-valued sequence
-                containing that <a>composite operation</a>.
+                <var>composite modes</var> be a sequence of length one, with
+                the value of the &ldquo;composite&rdquo; as its single item.
 
             1.  As with <var>easings</var>, if <var>composite modes</var>
-                has fewer items than <var>property keyframes</var> repeat the
+                has fewer items than <var>property keyframes</var>, repeat the
                 elements in <var>composite modes</var> successively starting
                 from the beginning of the list until <var>composite modes</var>
                 has as many items as <var>property keyframes</var>.
