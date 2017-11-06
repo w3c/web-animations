@@ -1039,8 +1039,9 @@ The <a>current ready promise</a> is initially a resolved <a>Promise</a> created
 using the procedure to <a>create a new resolved Promise</a>.
 
 The object is replaced with a new <a>Promise object</a> every time the animation
-enters the <a>pending play state</a> as well as when the animation is
-canceled (see [[#canceling-an-animation-section]]).
+queues a <a>pending play task</a> or a <a>pending pause task</a> when it
+previously did not have a pending task, or when the animation is canceled (see
+[[#canceling-an-animation-section]]).
 
 <div class="note">
 
@@ -1051,10 +1052,9 @@ canceled (see [[#canceling-an-animation-section]]).
     For example, in the following code fragment, the state of the animation
     will be <a lt="running play state">running</a> when the
     <a>current ready promise</a> is resolved.
-    This is because the animation does not leave the <a>pending play state</a>
-    in between the calls to <code>pause</code> and
-    <code>play</code> and hence the <a>current ready promise</a> does
-    not change.
+    This is because the <code>play</code> operation occurs while a <a>pending
+    play task</a> is still queued and hence the <a>current ready promise</a>
+    is re-used.
 
     <div class='example'><pre class='lang-javascript'>
 animation.pause();
@@ -1176,8 +1176,7 @@ as CSS Animations [[CSS3-ANIMATIONS]].
         <dfn>pending play task</dfn>.
 
         A user agent MAY execute the above task immediately (if it
-        determines <var>animation</var> is immediately <a>ready</a>) thereby
-        bypassing the <a>pending play state</a> altogether.
+        determines <var>animation</var> is immediately <a>ready</a>).
 
 1.  Run the procedure to <a>update an animation's finished state</a> for
     <var>animation</var> with the <var>did seek</var> flag set to false, and
@@ -1249,8 +1248,8 @@ follows:
         rate</a></code>.
 
         Note: The <a>hold time</a> might be already set if the animation
-        is <a lt="finished play state">finished</a>, or if the animation is
-        <a lt="pending play state">pending</a>, waiting to begin playback.
+        is <a lt="finished play state">finished</a>, or if the animation
+        has a <a>pending play task</a>.
         In either case we want to preserve the <a>hold time</a> as we
         enter the <a lt="paused play state">paused</a> state.
 
@@ -1691,8 +1690,8 @@ The procedure to <dfn>reverse an animation</dfn> of <a>animation</a>
     <div class="annotation">
         This must be done silently or else we may end up resolving
         the <a>current ready promise</a> when we do the compensatory
-        seek despite the fact that we are most likely not exiting the
-        <a>pending play state</a>.
+        seek despite the fact that we will most likely still have a
+        pending task queued at the end of the operation.
     </div>
 3.  Run the steps to <a>play an animation</a> for <var>animation</var>
     with the <var>auto-rewind</var> flag set to true.
@@ -1711,11 +1710,8 @@ non-normative description is also provided:
 <div class=informative-bg>
 
 :   <a lt="idle play state">idle</a>
-::  The <a>current time</a> of the animation is <a>unresolved</a> and
-    there are no pending tasks.
+::  The <a>current time</a> of the animation is <a>unresolved</a>.
     In this state the animation has no effect.
-:   <a lt="pending play state">pending</a>
-::  The animation is waiting on some pending task to complete.
 :   <a lt="running play state">running</a>
 ::  The animation has a resolved <a>current time</a> that changes on each
     <a>sample</a> (provided the <a>animation playback rate</a> is not zero).
@@ -1734,9 +1730,6 @@ condition from the following:
 
 <div class="switch">
 
-:   <var>animation</var> has a <a>pending play task</a> or a
-    <a>pending pause task</a>,
-::  &rarr; <dfn lt="pending play state">pending</dfn>
 :   The <a>current time</a> of <var>animation</var> is
     <a>unresolved</a>,
 ::  &rarr; <dfn lt="idle play state">idle</dfn>
@@ -4790,6 +4783,7 @@ interface Animation : EventTarget {
              attribute double?                  currentTime;
              attribute double                   playbackRate;
     readonly attribute AnimationPlayState       playState;
+    readonly attribute boolean                  pending;
     readonly attribute Promise&lt;Animation&gt;       ready;
     readonly attribute Promise&lt;Animation&gt;       finished;
              attribute EventHandler             onfinish;
@@ -4868,6 +4862,9 @@ interface Animation : EventTarget {
     playback rate</a> of this object to the new value.
 :   <dfn attribute for=Animation>playState</dfn>
 ::  The <a>play state</a> of this animation.
+:   <dfn attribute for=Animation>pending</dfn>
+::  Returns true if this animation has a <a>pending play task</a> or
+    a <a>pending pause task</a>.
 :   <dfn attribute for=Animation>ready</dfn>
 ::  Returns the <a>current ready promise</a> for this object.
 :   <dfn attribute for=Animation>finished</dfn>
@@ -4920,13 +4917,11 @@ interface Animation : EventTarget {
 <h4 id="the-animationplaystate-enumeration">The <code>AnimationPlayState</code> enumeration</h4>
 
 <pre class='idl'>
-enum AnimationPlayState { "idle", "pending", "running", "paused", "finished" };
+enum AnimationPlayState { "idle", "running", "paused", "finished" };
 </pre>
 
 :   <code>idle</code>
 ::  Corresponds to the <a>idle play state</a>.
-:   <code>pending</code>
-::  Corresponds to the <a>pending play state</a>.
 :   <code>running</code>
 ::  Corresponds to the <a>running play state</a>.
 :   <code>paused</code>
@@ -6133,7 +6128,7 @@ KeyframeEffect implements AnimationEffectMutable;
 
     // However, 'animation-*' properties still affect the /Animation/
     elem.style.animationPlayState = 'paused';
-    console.log(animation.playState); // "pending" (waiting to pause)
+    console.log(animation.playState); // "paused"
 
     // Likewise:
     elem.style.animation = '';
@@ -7559,6 +7554,8 @@ The following changes have been made since the <a
     accommodate timelines that change direction.
 *   Clarified behavior of the procedure to <a>reverse an animation</a> when
     playing the animation causes an exception to be thrown.
+*   Removed the &ldquo;pending&rdquo; play state and added the
+    {{Animation/pending}} member to the {{Animation}} interface.
 *   In the procedure to calculate the <a>simple iteration progress</a>, made
     a negative end delay not trigger the behavior where the end of the last
     iteration is used instead of the beginning of the next iteration.
