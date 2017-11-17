@@ -4,9 +4,9 @@
   <title>Web Animations</title>
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <meta content="ED" name="w3c-status">
-  <meta content="Bikeshed version 0d6a1c7475b7bb2485f411c7e73d9990fd0cfef5" name="generator">
+  <meta content="Bikeshed version b43bcf8d18510de03d8b56c5e878eea93e955427" name="generator">
   <link href="https://www.w3.org/TR/web-animations-1/" rel="canonical">
-  <meta content="aa3fd4a8bfd3df44bb61bc767f70a57a3bd78946" name="document-revision">
+  <meta content="90b5c3ae9077eb2c7961b0a9a08f520beeee9433" name="document-revision">
 <style>/* style-md-lists */
 
 /* This is a weird hack for me not yet following the commonmark spec
@@ -256,7 +256,7 @@ pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1>Web Animations</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2017-10-22">22 October 2017</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2017-11-17">17 November 2017</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1223,16 +1223,16 @@ record</a> for the promise, passing <code>undefined</code> as <var>thisArgument<
 The <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise④">current ready promise</a> is initially a resolved <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects" id="ref-for-sec-promise-objects①">Promise</a> created
 using the procedure to <a data-link-type="dfn" href="#create-a-new-resolved-promise" id="ref-for-create-a-new-resolved-promise①">create a new resolved Promise</a>.</p>
    <p>The object is replaced with a new <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects" id="ref-for-sec-promise-objects②">Promise object</a> every time the animation
-enters the <a data-link-type="dfn" href="#pending-play-state" id="ref-for-pending-play-state">pending play state</a> as well as when the animation is
-canceled (see <a href="#canceling-an-animation-section">§3.5.16 Canceling an animation</a>).</p>
+queues a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task④">pending play task</a> or a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task⑥">pending pause task</a> when it
+previously did not have a pending task, or when the animation is canceled (see <a href="#canceling-an-animation-section">§3.5.16 Canceling an animation</a>).</p>
    <div class="note" role="note">
     <p>Note that since the same object is used for both pending play and
     pending pause requests, authors are advised to check the state of the
     animation when the <a data-link-type="dfn" href="http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects" id="ref-for-sec-promise-objects③">Promise object</a> is resolved.</p>
     <p>For example, in the following code fragment, the state of the animation
     will be <a data-link-type="dfn" href="#running-play-state" id="ref-for-running-play-state">running</a> when the <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise⑤">current ready promise</a> is resolved.
-    This is because the animation does not leave the <a data-link-type="dfn" href="#pending-play-state" id="ref-for-pending-play-state①">pending play state</a> in between the calls to <code>pause</code> and <code>play</code> and hence the <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise⑥">current ready promise</a> does
-    not change.</p>
+    This is because the <code>play</code> operation occurs while a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task⑤">pending
+    play task</a> is still queued and hence the <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise⑥">current ready promise</a> is re-used.</p>
     <div class="example" id="example-20e821a6">
      <a class="self-link" href="#example-20e821a6"></a>
 <pre class="lang-javascript highlight">animation<span class="p">.</span>pause<span class="p">();</span>
@@ -1251,7 +1251,7 @@ that build on this model but do not require the rewinding behavior, such
 as CSS Animations <a data-link-type="biblio" href="#biblio-css3-animations">[CSS3-ANIMATIONS]</a>.</p>
    <ol>
     <li data-md="">
-     <p>Let <var>aborted pause</var> be a boolean flag that is true if <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task⑥">pending pause task</a>, and false otherwise.</p>
+     <p>Let <var>aborted pause</var> be a boolean flag that is true if <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task⑦">pending pause task</a>, and false otherwise.</p>
     <li data-md="">
      <p>Let <var>has pending ready promise</var> be a boolean flag that is
 initially false.</p>
@@ -1295,7 +1295,7 @@ effect end</a>.</p>
       </dl>
      </div>
     <li data-md="">
-     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task④">pending play task</a> or a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task⑦">pending pause task</a>,</p>
+     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task⑥">pending play task</a> or a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task⑧">pending pause task</a>,</p>
      <ol>
       <li data-md="">
        <p>Cancel that task.</p>
@@ -1349,8 +1349,7 @@ and the <var>synchronously notify</var> flag set to false.</p>
     effect</a> will resolve its <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise⑨">current ready promise</a> before its <a data-link-type="dfn" href="#current-finished-promise" id="ref-for-current-finished-promise">current finished promise</a>. </div>
        <p>So long as the above task is scheduled but has yet to run, <var>animation</var> is described as having a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="pending-play-task">pending play task</dfn>.</p>
        <p>A user agent MAY execute the above task immediately (if it
-determines <var>animation</var> is immediately <a data-link-type="dfn" href="#ready" id="ref-for-ready⑤">ready</a>) thereby
-bypassing the <a data-link-type="dfn" href="#pending-play-state" id="ref-for-pending-play-state②">pending play state</a> altogether.</p>
+determines <var>animation</var> is immediately <a data-link-type="dfn" href="#ready" id="ref-for-ready⑤">ready</a>).</p>
      </ol>
     <li data-md="">
      <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state" id="ref-for-update-an-animations-finished-state⑤">update an animation’s finished state</a> for <var>animation</var> with the <var>did seek</var> flag set to false, and
@@ -1367,7 +1366,7 @@ reflects the state drawn by the animation process.</p>
 follows:</p>
    <ol>
     <li data-md="">
-     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task⑧">pending pause task</a>, abort these steps.</p>
+     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task⑨">pending pause task</a>, abort these steps.</p>
     <li data-md="">
      <p>If the <a data-link-type="dfn" href="#play-state" id="ref-for-play-state">play state</a> of <var>animation</var> is <a data-link-type="dfn" href="#paused-play-state" id="ref-for-paused-play-state">paused</a>, abort these steps.</p>
     <li data-md="">
@@ -1390,7 +1389,7 @@ perform the steps according to the first matching condition from below:</p>
      <p>Let <var>has pending ready promise</var> be a boolean flag that is
 initially false.</p>
     <li data-md="">
-     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task⑤">pending play task</a>, cancel that task
+     <p>If <var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task⑦">pending play task</a>, cancel that task
 and let <var>has pending ready promise</var> be true.</p>
     <li data-md="">
      <p>If <var>has pending ready promise</var> is false,
@@ -1412,7 +1411,8 @@ let <var>animation</var>’s <a data-link-type="dfn" href="#hold-time" id="ref-f
 time</a>) × <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate①②">playback
 rate</a></code>.</p>
        <p class="note" role="note"><span>Note:</span> The <a data-link-type="dfn" href="#hold-time" id="ref-for-hold-time②⑤">hold time</a> might be already set if the animation
-is <a data-link-type="dfn" href="#finished-play-state" id="ref-for-finished-play-state①">finished</a>, or if the animation is <a data-link-type="dfn" href="#pending-play-state" id="ref-for-pending-play-state③">pending</a>, waiting to begin playback.
+is <a data-link-type="dfn" href="#finished-play-state" id="ref-for-finished-play-state①">finished</a>, or if the animation
+has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task⑧">pending play task</a>.
 In either case we want to preserve the <a data-link-type="dfn" href="#hold-time" id="ref-for-hold-time②⑥">hold time</a> as we
 enter the <a data-link-type="dfn" href="#paused-play-state" id="ref-for-paused-play-state①">paused</a> state.</p>
       <li data-md="">
@@ -1425,7 +1425,7 @@ ready promise</a> with <var>animation</var>.</p>
 and the <var>synchronously notify</var> flag set to false.</p>
      </ol>
      <p>So long as the above task is scheduled but has yet to run, <var>animation</var> is described as having a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport="" id="pending-pause-task">pending pause task</dfn>.
-While the task is running, however, <var>animation</var> does <em>not</em> have a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task⑨">pending pause task</a>.</p>
+While the task is running, however, <var>animation</var> does <em>not</em> have a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task①⓪">pending pause task</a>.</p>
     <li data-md="">
      <p>Run the procedure to <a data-link-type="dfn" href="#update-an-animations-finished-state" id="ref-for-update-an-animations-finished-state⑦">update an animation’s finished state</a> for <var>animation</var> with the <var>did seek</var> flag set to false,
 and the <var>synchronously notify</var> flag set to false.</p>
@@ -1512,7 +1512,7 @@ even when its timeline progresses in the opposite direction.</p>
       <li data-md="">
        <p><var>animation</var>’s <a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time②⑤">start time</a> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved④③">resolved</a>, <em>and</em></p>
       <li data-md="">
-       <p><var>animation</var> does <em>not</em> have a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task⑥">pending play task</a> or a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task①⓪">pending pause task</a>,</p>
+       <p><var>animation</var> does <em>not</em> have a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task⑨">pending play task</a> or a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task①①">pending pause task</a>,</p>
      </ul>
      <p>then update <var>animation</var>’s <a data-link-type="dfn" href="#hold-time" id="ref-for-hold-time②⑧">hold time</a> based on the first
 matching condition for <var>animation</var> from below, if any:</p>
@@ -1647,19 +1647,19 @@ abort these steps.</p>
 rate</a>)</code> where <var>timeline time</var> is the current <a data-link-type="dfn" href="#time-value" id="ref-for-time-value③①">time
 value</a> of the associated <a data-link-type="dfn" href="#timeline" id="ref-for-timeline②⑨">timeline</a>.</p>
     <li data-md="">
-     <p>If there is a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task①①">pending pause task</a> and <a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time②⑨">start time</a> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved④⑨">resolved</a>,</p>
+     <p>If there is a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task①②">pending pause task</a> and <a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time②⑨">start time</a> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved④⑨">resolved</a>,</p>
      <ol>
       <li data-md="">
        <p>Let the <a data-link-type="dfn" href="#hold-time" id="ref-for-hold-time③⑧">hold time</a> be <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved⑤⓪">unresolved</a>.</p>
        <div class="note" role="note">Typically the <a data-link-type="dfn" href="#hold-time" id="ref-for-hold-time③⑨">hold time</a> will already be
 unresolved except in the case when the animation was previously <a data-link-type="dfn" href="#idle-play-state" id="ref-for-idle-play-state①">idle</a>.</div>
       <li data-md="">
-       <p>Cancel the <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task①②">pending pause task</a>.</p>
+       <p>Cancel the <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task①③">pending pause task</a>.</p>
       <li data-md="">
        <p><a data-link-type="dfn" href="#resolve-a-promise" id="ref-for-resolve-a-promise⑤">Resolve</a> the <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise①③">current ready promise</a> of <var>animation</var> with <var>animation</var>.</p>
      </ol>
     <li data-md="">
-     <p>If there is a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task⑦">pending play task</a> and <a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time③⓪">start time</a> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved⑤①">resolved</a>,
+     <p>If there is a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task①⓪">pending play task</a> and <a data-link-type="dfn" href="#animation-start-time" id="ref-for-animation-start-time③⓪">start time</a> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved⑤①">resolved</a>,
 cancel that task and <a data-link-type="dfn" href="#resolve-a-promise" id="ref-for-resolve-a-promise⑥">resolve</a> the <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise①④">current
 ready promise</a> of <var>animation</var> with <var>animation</var>.</p>
     <li data-md="">
@@ -1730,7 +1730,8 @@ abort these steps.</p>
      <p><a data-link-type="dfn" href="#silently-set-the-animation-playback-rate" id="ref-for-silently-set-the-animation-playback-rate">Silently set the animation playback rate</a> of <var>animation</var> to <code>−<a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate③⓪">animation playback rate</a></code>.</p>
      <div class="annotation"> This must be done silently or else we may end up resolving
     the <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise①⑤">current ready promise</a> when we do the compensatory
-    seek despite the fact that we are most likely not exiting the <a data-link-type="dfn" href="#pending-play-state" id="ref-for-pending-play-state④">pending play state</a>. </div>
+    seek despite the fact that we will most likely still have a
+    pending task queued at the end of the operation. </div>
     <li data-md="">
      <p>Run the steps to <a data-link-type="dfn" href="#play-an-animation" id="ref-for-play-an-animation①">play an animation</a> for <var>animation</var> with the <var>auto-rewind</var> flag set to true.</p>
      <p>If the steps to <a data-link-type="dfn" href="#play-an-animation" id="ref-for-play-an-animation②">play an animation</a> throw an exception, restore the
@@ -1743,12 +1744,8 @@ non-normative description is also provided:</p>
     <dl>
      <dt data-md=""><a data-link-type="dfn" href="#idle-play-state" id="ref-for-idle-play-state④">idle</a>
      <dd data-md="">
-      <p>The <a data-link-type="dfn" href="#current-time" id="ref-for-current-time④③">current time</a> of the animation is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved⑤⑦">unresolved</a> and
-there are no pending tasks.
+      <p>The <a data-link-type="dfn" href="#current-time" id="ref-for-current-time④③">current time</a> of the animation is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved⑤⑦">unresolved</a>.
 In this state the animation has no effect.</p>
-     <dt data-md=""><a data-link-type="dfn" href="#pending-play-state" id="ref-for-pending-play-state⑤">pending</a>
-     <dd data-md="">
-      <p>The animation is waiting on some pending task to complete.</p>
      <dt data-md=""><a data-link-type="dfn" href="#running-play-state" id="ref-for-running-play-state①">running</a>
      <dd data-md="">
       <p>The animation has a resolved <a data-link-type="dfn" href="#current-time" id="ref-for-current-time④④">current time</a> that changes on each <a data-link-type="dfn" href="#sampling" id="ref-for-sampling③">sample</a> (provided the <a data-link-type="dfn" href="#animation-playback-rate" id="ref-for-animation-playback-rate③③">animation playback rate</a> is not zero).</p>
@@ -1766,9 +1763,6 @@ moment is the state corresponding to the <em>first</em> matching
 condition from the following:</p>
    <div class="switch">
     <dl>
-     <dt data-md=""><var>animation</var> has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task⑧">pending play task</a> or a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task①③">pending pause task</a>,
-     <dd data-md="">
-      <p>→ <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="pending play state" data-noexport="" id="pending-play-state">pending</dfn></p>
      <dt data-md="">The <a data-link-type="dfn" href="#current-time" id="ref-for-current-time④⑦">current time</a> of <var>animation</var> is <a data-link-type="dfn" href="#unresolved" id="ref-for-unresolved⑤⑧">unresolved</a>,
      <dd data-md="">
       <p>→ <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="idle play state" data-noexport="" id="idle-play-state">idle</dfn></p>
@@ -3285,6 +3279,7 @@ API by the <code class="idl"><a data-link-type="idl" href="#animation" id="ref-f
              <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double③"><span class="kt">double</span></a>?                  <a class="nv idl-code" data-link-type="attribute" data-type="double?" href="#dom-animation-currenttime" id="ref-for-dom-animation-currenttime">currentTime</a>;
              <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double④"><span class="kt">double</span></a>                   <a class="nv idl-code" data-link-type="attribute" data-type="double" href="#dom-animation-playbackrate" id="ref-for-dom-animation-playbackrate">playbackRate</a>;
     <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#enumdef-animationplaystate" id="ref-for-enumdef-animationplaystate">AnimationPlayState</a>       <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="AnimationPlayState" href="#dom-animation-playstate" id="ref-for-dom-animation-playstate">playState</a>;
+    <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean"><span class="kt">boolean</span></a>                  <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="boolean" href="#dom-animation-pending" id="ref-for-dom-animation-pending">pending</a>;
     <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">Promise</span>&lt;<a class="n" data-link-type="idl-name" href="#animation" id="ref-for-animation①">Animation</a>>       <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Promise<Animation>" href="#dom-animation-ready" id="ref-for-dom-animation-ready">ready</a>;
     <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">Promise</span>&lt;<a class="n" data-link-type="idl-name" href="#animation" id="ref-for-animation②">Animation</a>>       <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Promise<Animation>" href="#dom-animation-finished" id="ref-for-dom-animation-finished">finished</a>;
              <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler" id="ref-for-eventhandler">EventHandler</a>             <a class="nv idl-code" data-link-type="attribute" data-type="EventHandler" href="#dom-animation-onfinish" id="ref-for-dom-animation-onfinish">onfinish</a>;
@@ -3361,6 +3356,10 @@ playback rate</a> of this object to the new value.</p>
      <dt data-md=""><dfn class="dfn-paneled idl-code" data-dfn-for="Animation" data-dfn-type="attribute" data-export="" id="dom-animation-playstate"><code>playState</code></dfn>, <span> of type <a data-link-type="idl-name" href="#enumdef-animationplaystate" id="ref-for-enumdef-animationplaystate①">AnimationPlayState</a>, readonly</span>
      <dd data-md="">
       <p>The <a data-link-type="dfn" href="#play-state" id="ref-for-play-state⑥">play state</a> of this animation.</p>
+     <dt data-md=""><dfn class="dfn-paneled idl-code" data-dfn-for="Animation" data-dfn-type="attribute" data-export="" id="dom-animation-pending"><code>pending</code></dfn>, <span> of type <a data-link-type="idl-name" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①">boolean</a>, readonly</span>
+     <dd data-md="">
+      <p>Returns true if this animation has a <a data-link-type="dfn" href="#pending-play-task" id="ref-for-pending-play-task①①">pending play task</a> or
+a <a data-link-type="dfn" href="#pending-pause-task" id="ref-for-pending-pause-task①④">pending pause task</a>.</p>
      <dt data-md=""><dfn class="dfn-paneled idl-code" data-dfn-for="Animation" data-dfn-type="attribute" data-export="" id="dom-animation-ready"><code>ready</code></dfn>, <span> of type Promise&lt;<a data-link-type="idl-name" href="#animation" id="ref-for-animation⑤">Animation</a>>, readonly</span>
      <dd data-md="">
       <p>Returns the <a data-link-type="dfn" href="#current-ready-promise" id="ref-for-current-ready-promise①⑥">current ready promise</a> for this object.</p>
@@ -3414,15 +3413,12 @@ effect</a>.</p>
     </dl>
    </div>
    <h4 class="heading settled" data-level="5.4.1" id="the-animationplaystate-enumeration"><span class="secno">5.4.1. </span><span class="content">The <code>AnimationPlayState</code> enumeration</span><a class="self-link" href="#the-animationplaystate-enumeration"></a></h4>
-<pre class="idl highlight def"><span class="kt">enum</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="enum" data-export="" id="enumdef-animationplaystate"><code>AnimationPlayState</code></dfn> { <dfn class="s idl-code" data-dfn-for="AnimationPlayState" data-dfn-type="enum-value" data-export="" data-lt="&quot;idle&quot;|idle" id="dom-animationplaystate-idle"><code>"idle"</code><a class="self-link" href="#dom-animationplaystate-idle"></a></dfn>, <dfn class="s idl-code" data-dfn-for="AnimationPlayState" data-dfn-type="enum-value" data-export="" data-lt="&quot;pending&quot;|pending" id="dom-animationplaystate-pending"><code>"pending"</code><a class="self-link" href="#dom-animationplaystate-pending"></a></dfn>, <dfn class="s idl-code" data-dfn-for="AnimationPlayState" data-dfn-type="enum-value" data-export="" data-lt="&quot;running&quot;|running" id="dom-animationplaystate-running"><code>"running"</code><a class="self-link" href="#dom-animationplaystate-running"></a></dfn>, <dfn class="s idl-code" data-dfn-for="AnimationPlayState" data-dfn-type="enum-value" data-export="" data-lt="&quot;paused&quot;|paused" id="dom-animationplaystate-paused"><code>"paused"</code><a class="self-link" href="#dom-animationplaystate-paused"></a></dfn>, <dfn class="s idl-code" data-dfn-for="AnimationPlayState" data-dfn-type="enum-value" data-export="" data-lt="&quot;finished&quot;|finished" id="dom-animationplaystate-finished"><code>"finished"</code><a class="self-link" href="#dom-animationplaystate-finished"></a></dfn> };
+<pre class="idl highlight def"><span class="kt">enum</span> <dfn class="nv dfn-paneled idl-code" data-dfn-type="enum" data-export="" id="enumdef-animationplaystate"><code>AnimationPlayState</code></dfn> { <dfn class="s idl-code" data-dfn-for="AnimationPlayState" data-dfn-type="enum-value" data-export="" data-lt="&quot;idle&quot;|idle" id="dom-animationplaystate-idle"><code>"idle"</code><a class="self-link" href="#dom-animationplaystate-idle"></a></dfn>, <dfn class="s idl-code" data-dfn-for="AnimationPlayState" data-dfn-type="enum-value" data-export="" data-lt="&quot;running&quot;|running" id="dom-animationplaystate-running"><code>"running"</code><a class="self-link" href="#dom-animationplaystate-running"></a></dfn>, <dfn class="s idl-code" data-dfn-for="AnimationPlayState" data-dfn-type="enum-value" data-export="" data-lt="&quot;paused&quot;|paused" id="dom-animationplaystate-paused"><code>"paused"</code><a class="self-link" href="#dom-animationplaystate-paused"></a></dfn>, <dfn class="s idl-code" data-dfn-for="AnimationPlayState" data-dfn-type="enum-value" data-export="" data-lt="&quot;finished&quot;|finished" id="dom-animationplaystate-finished"><code>"finished"</code><a class="self-link" href="#dom-animationplaystate-finished"></a></dfn> };
 </pre>
    <dl>
     <dt data-md=""><code>idle</code>
     <dd data-md="">
      <p>Corresponds to the <a data-link-type="dfn" href="#idle-play-state" id="ref-for-idle-play-state⑦">idle play state</a>.</p>
-    <dt data-md=""><code>pending</code>
-    <dd data-md="">
-     <p>Corresponds to the <a data-link-type="dfn" href="#pending-play-state" id="ref-for-pending-play-state⑥">pending play state</a>.</p>
     <dt data-md=""><code>running</code>
     <dd data-md="">
      <p>Corresponds to the <a data-link-type="dfn" href="#running-play-state" id="ref-for-running-play-state②">running play state</a>.</p>
@@ -3938,8 +3934,8 @@ rather than a new <code class="idl"><a data-link-type="idl" href="#keyframeeffec
        <p>This constructor is provided so that authors can take the animations
 generated by declarative markup, which are returned in a read-only format,
 and produce a mutable copy.</p>
-       <div class="example" id="example-3d030ce0">
-        <a class="self-link" href="#example-3d030ce0"></a> 
+       <div class="example" id="example-bc7c07dd">
+        <a class="self-link" href="#example-bc7c07dd"></a> 
         <p>For example, it is possible to define an animation using CSS and
 subsequently replace its <a data-link-type="dfn" href="#animation-effect" id="ref-for-animation-effect⑨①">animation effect</a> as follows:</p>
 <pre class="lang-javascript highlight"><span class="c1">// Create and get a CSSAnimation</span>
@@ -3963,7 +3959,7 @@ console<span class="p">.</span>log<span class="p">(</span>animation<span class="
 <span class="c1"></span>
 <span class="c1">// However, 'animation-*' properties still affect the /Animation/</span>
 <span class="c1"></span>elem<span class="p">.</span>style<span class="p">.</span>animationPlayState <span class="o">=</span> <span class="s1">'paused'</span><span class="p">;</span>
-console<span class="p">.</span>log<span class="p">(</span>animation<span class="p">.</span>playState<span class="p">);</span> <span class="c1">// "pending" (waiting to pause)</span>
+console<span class="p">.</span>log<span class="p">(</span>animation<span class="p">.</span>playState<span class="p">);</span> <span class="c1">// "paused"</span>
 <span class="c1"></span>
 <span class="c1">// Likewise:</span>
 <span class="c1"></span>elem<span class="p">.</span>style<span class="p">.</span>animation <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
@@ -5045,6 +5041,8 @@ accommodate timelines that change direction.</p>
      <p>Clarified behavior of the procedure to <a data-link-type="dfn" href="#reverse-an-animation" id="ref-for-reverse-an-animation①">reverse an animation</a> when
 playing the animation causes an exception to be thrown.</p>
     <li data-md="">
+     <p>Removed the “pending” play state and added the <code class="idl"><a data-link-type="idl" href="#dom-animation-pending" id="ref-for-dom-animation-pending①">pending</a></code> member to the <code class="idl"><a data-link-type="idl" href="#animation" id="ref-for-animation①⑦">Animation</a></code> interface.</p>
+    <li data-md="">
      <p>In the procedure to calculate the <a data-link-type="dfn" href="#simple-iteration-progress" id="ref-for-simple-iteration-progress⑦">simple iteration progress</a>, made
 a negative end delay not trigger the behavior where the end of the last
 iteration is used instead of the beginning of the next iteration.
@@ -5376,8 +5374,8 @@ from <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code> (<a
    <li><a href="#dom-computedtimingproperties-localtime">localTime</a><span>, in §5.9</span>
    <li><a href="#loosely-sorted-by-offset">loosely sorted by offset</a><span>, in §4.4.1</span>
    <li><a href="#neutral-value-for-composition">neutral value for composition</a><span>, in §4.4.3</span>
-   <li><a href="#dom-fillmode-none">none</a><span>, in §5.9.1</span>
    <li><a href="#dom-fillmode-none">"none"</a><span>, in §5.9.1</span>
+   <li><a href="#dom-fillmode-none">none</a><span>, in §5.9.1</span>
    <li><a href="#dom-playbackdirection-normal">"normal"</a><span>, in §5.9.2</span>
    <li><a href="#dom-playbackdirection-normal">normal</a><span>, in §5.9.2</span>
    <li><a href="#not-additive">not additive</a><span>, in §4.3</span>
@@ -5401,10 +5399,8 @@ from <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code> (<a
    <li><a href="#dom-animationplaystate-paused">"paused"</a><span>, in §5.4.1</span>
    <li><a href="#dom-animationplaystate-paused">paused</a><span>, in §5.4.1</span>
    <li><a href="#paused-play-state">paused play state</a><span>, in §3.5.19</span>
-   <li><a href="#dom-animationplaystate-pending">pending</a><span>, in §5.4.1</span>
-   <li><a href="#dom-animationplaystate-pending">"pending"</a><span>, in §5.4.1</span>
+   <li><a href="#dom-animation-pending">pending</a><span>, in §5.4</span>
    <li><a href="#pending-pause-task">pending pause task</a><span>, in §3.5.11</span>
-   <li><a href="#pending-play-state">pending play state</a><span>, in §3.5.19</span>
    <li><a href="#pending-play-task">pending play task</a><span>, in §3.5.10</span>
    <li><a href="#dom-animation-play">play()</a><span>, in §5.4</span>
    <li><a href="#play-an-animation">play an animation</a><span>, in §3.5.10</span>
@@ -5494,6 +5490,18 @@ from <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code> (<a
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
+    <a data-link-type="biblio">[css-backgrounds-3]</a> defines the following terms:
+    <ul>
+     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-bottom-width">border-bottom-width</a>
+     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-color">border-color</a>
+     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-left-width">border-left-width</a>
+     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-right-width">border-right-width</a>
+     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-top">border-top</a>
+     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-top-color">border-top-color</a>
+     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-top-width">border-top-width</a>
+     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-width">border-width</a>
+    </ul>
+   <li>
     <a data-link-type="biblio">[css-cascade-4]</a> defines the following terms:
     <ul>
      <li><a href="https://drafts.csswg.org/css-cascade-4/#computed-value">computed value</a>
@@ -5543,18 +5551,6 @@ from <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code> (<a
     <a data-link-type="biblio">[CSS3-ANIMATIONS]</a> defines the following terms:
     <ul>
      <li><a href="https://drafts.csswg.org/css-animations-1/#propdef-animation-name">animation-name</a>
-    </ul>
-   <li>
-    <a data-link-type="biblio">[css3-background]</a> defines the following terms:
-    <ul>
-     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-bottom-width">border-bottom-width</a>
-     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-color">border-color</a>
-     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-left-width">border-left-width</a>
-     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-right-width">border-right-width</a>
-     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-top">border-top</a>
-     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-top-color">border-top-color</a>
-     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-top-width">border-top-width</a>
-     <li><a href="https://drafts.csswg.org/css-backgrounds-3/#propdef-border-width">border-width</a>
     </ul>
    <li>
     <a data-link-type="biblio">[CSS3-TRANSFORMS]</a> defines the following terms:
@@ -5644,6 +5640,7 @@ from <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code> (<a
      <li><a href="https://heycam.github.io/webidl/#Exposed">Exposed</a>
      <li><a href="https://heycam.github.io/webidl/#NoInterfaceObject">NoInterfaceObject</a>
      <li><a href="https://heycam.github.io/webidl/#EnforceRange">[enforcerange]</a>
+     <li><a href="https://heycam.github.io/webidl/#idl-boolean">boolean</a>
      <li><a href="https://heycam.github.io/webidl/#dfn-convert-ecmascript-to-idl-value">convert ecmascript to idl value</a>
      <li><a href="https://heycam.github.io/webidl/#DOMString-to-es">domstring to es</a>
      <li><a href="https://heycam.github.io/webidl/#idl-double">double</a>
@@ -5659,6 +5656,8 @@ from <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code> (<a
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
   <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
   <dl>
+   <dt id="biblio-css-backgrounds-3">[CSS-BACKGROUNDS-3]
+   <dd>Bert Bos; Elika Etemad; Brad Kemper. <a href="https://www.w3.org/TR/css-backgrounds-3/">CSS Backgrounds and Borders Module Level 3</a>. 17 October 2017. CR. URL: <a href="https://www.w3.org/TR/css-backgrounds-3/">https://www.w3.org/TR/css-backgrounds-3/</a>
    <dt id="biblio-css-cascade-3">[CSS-CASCADE-3]
    <dd>Elika Etemad; Tab Atkins Jr.. <a href="https://www.w3.org/TR/css-cascade-3/">CSS Cascading and Inheritance Level 3</a>. 19 May 2016. CR. URL: <a href="https://www.w3.org/TR/css-cascade-3/">https://www.w3.org/TR/css-cascade-3/</a>
    <dt id="biblio-css-cascade-4">[CSS-CASCADE-4]
@@ -5666,7 +5665,7 @@ from <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code> (<a
    <dt id="biblio-css-position-3">[CSS-POSITION-3]
    <dd>Rossen Atanassov; Arron Eicholz. <a href="https://www.w3.org/TR/css-position-3/">CSS Positioned Layout Module Level 3</a>. 17 May 2016. WD. URL: <a href="https://www.w3.org/TR/css-position-3/">https://www.w3.org/TR/css-position-3/</a>
    <dt id="biblio-css-properties-values-api-1">[CSS-PROPERTIES-VALUES-API-1]
-   <dd>Tab Atkins Jr.; et al. <a href="https://www.w3.org/TR/css-properties-values-api-1/">CSS Properties and Values API Level 1</a>. 7 June 2016. WD. URL: <a href="https://www.w3.org/TR/css-properties-values-api-1/">https://www.w3.org/TR/css-properties-values-api-1/</a>
+   <dd>Tab Atkins Jr.; et al. <a href="https://www.w3.org/TR/css-properties-values-api-1/">CSS Properties and Values API Level 1</a>. 9 November 2017. WD. URL: <a href="https://www.w3.org/TR/css-properties-values-api-1/">https://www.w3.org/TR/css-properties-values-api-1/</a>
    <dt id="biblio-css-pseudo-4">[CSS-PSEUDO-4]
    <dd>Daniel Glazman; Elika Etemad; Alan Stearns. <a href="https://www.w3.org/TR/css-pseudo-4/">CSS Pseudo-Elements Module Level 4</a>. 7 June 2016. WD. URL: <a href="https://www.w3.org/TR/css-pseudo-4/">https://www.w3.org/TR/css-pseudo-4/</a>
    <dt id="biblio-css-timing">[CSS-TIMING]
@@ -5681,8 +5680,6 @@ from <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code> (<a
    <dd>Bert Bos. <a href="https://www.w3.org/TR/CSS22/">Cascading Style Sheets Level 2 Revision 2 (CSS 2.2) Specification</a>. 12 April 2016. WD. URL: <a href="https://www.w3.org/TR/CSS22/">https://www.w3.org/TR/CSS22/</a>
    <dt id="biblio-css3-animations">[CSS3-ANIMATIONS]
    <dd>Dean Jackson; et al. <a href="https://www.w3.org/TR/css3-animations/">CSS Animations</a>. 19 February 2013. WD. URL: <a href="https://www.w3.org/TR/css3-animations/">https://www.w3.org/TR/css3-animations/</a>
-   <dt id="biblio-css3-background">[CSS3-BACKGROUND]
-   <dd>Bert Bos; Elika Etemad; Brad Kemper. <a href="https://www.w3.org/TR/css3-background/">CSS Backgrounds and Borders Module Level 3</a>. 9 September 2014. CR. URL: <a href="https://www.w3.org/TR/css3-background/">https://www.w3.org/TR/css3-background/</a>
    <dt id="biblio-css3-transforms">[CSS3-TRANSFORMS]
    <dd>Simon Fraser; et al. <a href="https://www.w3.org/TR/css-transforms-1/">CSS Transforms Module Level 1</a>. 26 November 2013. WD. URL: <a href="https://www.w3.org/TR/css-transforms-1/">https://www.w3.org/TR/css-transforms-1/</a>
    <dt id="biblio-css3val">[CSS3VAL]
@@ -5751,7 +5748,8 @@ from <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code> (<a
              <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double③①⓪"><span class="kt">double</span></a>?                  <a class="nv idl-code" data-link-type="attribute" data-type="double?" href="#dom-animation-currenttime" id="ref-for-dom-animation-currenttime①">currentTime</a>;
              <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-double" id="ref-for-idl-double④③"><span class="kt">double</span></a>                   <a class="nv idl-code" data-link-type="attribute" data-type="double" href="#dom-animation-playbackrate" id="ref-for-dom-animation-playbackrate①">playbackRate</a>;
     <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="#enumdef-animationplaystate" id="ref-for-enumdef-animationplaystate②">AnimationPlayState</a>       <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="AnimationPlayState" href="#dom-animation-playstate" id="ref-for-dom-animation-playstate①">playState</a>;
-    <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">Promise</span>&lt;<a class="n" data-link-type="idl-name" href="#animation" id="ref-for-animation①⑦">Animation</a>>       <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Promise<Animation>" href="#dom-animation-ready" id="ref-for-dom-animation-ready①">ready</a>;
+    <span class="kt">readonly</span> <span class="kt">attribute</span> <a class="n idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean②"><span class="kt">boolean</span></a>                  <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="boolean" href="#dom-animation-pending" id="ref-for-dom-animation-pending②">pending</a>;
+    <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">Promise</span>&lt;<a class="n" data-link-type="idl-name" href="#animation" id="ref-for-animation①⑧">Animation</a>>       <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Promise<Animation>" href="#dom-animation-ready" id="ref-for-dom-animation-ready①">ready</a>;
     <span class="kt">readonly</span> <span class="kt">attribute</span> <span class="kt">Promise</span>&lt;<a class="n" data-link-type="idl-name" href="#animation" id="ref-for-animation②①">Animation</a>>       <a class="nv idl-code" data-link-type="attribute" data-readonly="" data-type="Promise<Animation>" href="#dom-animation-finished" id="ref-for-dom-animation-finished①">finished</a>;
              <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler" id="ref-for-eventhandler④">EventHandler</a>             <a class="nv idl-code" data-link-type="attribute" data-type="EventHandler" href="#dom-animation-onfinish" id="ref-for-dom-animation-onfinish①">onfinish</a>;
              <span class="kt">attribute</span> <a class="n" data-link-type="idl-name" href="https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler" id="ref-for-eventhandler①①">EventHandler</a>             <a class="nv idl-code" data-link-type="attribute" data-type="EventHandler" href="#dom-animation-oncancel" id="ref-for-dom-animation-oncancel①">oncancel</a>;
@@ -5762,7 +5760,7 @@ from <code>Animatable?</code> to <code>(Element or CSSPseudoElement)?</code> (<a
     <span class="kt">void</span> <a class="nv idl-code" data-link-type="method" href="#dom-animation-reverse" id="ref-for-dom-animation-reverse①">reverse</a> ();
 };
 
-<span class="kt">enum</span> <a class="nv" href="#enumdef-animationplaystate"><code>AnimationPlayState</code></a> { <a class="s" href="#dom-animationplaystate-idle"><code>"idle"</code></a>, <a class="s" href="#dom-animationplaystate-pending"><code>"pending"</code></a>, <a class="s" href="#dom-animationplaystate-running"><code>"running"</code></a>, <a class="s" href="#dom-animationplaystate-paused"><code>"paused"</code></a>, <a class="s" href="#dom-animationplaystate-finished"><code>"finished"</code></a> };
+<span class="kt">enum</span> <a class="nv" href="#enumdef-animationplaystate"><code>AnimationPlayState</code></a> { <a class="s" href="#dom-animationplaystate-idle"><code>"idle"</code></a>, <a class="s" href="#dom-animationplaystate-running"><code>"running"</code></a>, <a class="s" href="#dom-animationplaystate-paused"><code>"paused"</code></a>, <a class="s" href="#dom-animationplaystate-finished"><code>"finished"</code></a> };
 
 [<a class="nv idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed③①">Exposed</a>=<span class="n">Window</span>]
 <span class="kt">interface</span> <a class="nv" href="#animationeffectreadonly"><code>AnimationEffectReadOnly</code></a> {
@@ -6373,11 +6371,12 @@ states</a>
     <li><a href="#ref-for-pending-play-task">3.5.3. Setting the target effect of an
   animation</a> <a href="#ref-for-pending-play-task①">(2)</a> <a href="#ref-for-pending-play-task②">(3)</a>
     <li><a href="#ref-for-pending-play-task③">3.5.6. Setting the start time of an animation</a>
-    <li><a href="#ref-for-pending-play-task④">3.5.10. Playing an animation</a>
-    <li><a href="#ref-for-pending-play-task⑤">3.5.11. Pausing an animation</a>
-    <li><a href="#ref-for-pending-play-task⑥">3.5.14. Updating the finished state</a>
-    <li><a href="#ref-for-pending-play-task⑦">3.5.15. Finishing an animation</a>
-    <li><a href="#ref-for-pending-play-task⑧">3.5.19. Play states</a>
+    <li><a href="#ref-for-pending-play-task④">3.5.9. The current ready promise</a> <a href="#ref-for-pending-play-task⑤">(2)</a>
+    <li><a href="#ref-for-pending-play-task⑥">3.5.10. Playing an animation</a>
+    <li><a href="#ref-for-pending-play-task⑦">3.5.11. Pausing an animation</a> <a href="#ref-for-pending-play-task⑧">(2)</a>
+    <li><a href="#ref-for-pending-play-task⑨">3.5.14. Updating the finished state</a>
+    <li><a href="#ref-for-pending-play-task①⓪">3.5.15. Finishing an animation</a>
+    <li><a href="#ref-for-pending-play-task①①">5.4. The Animation interface</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="pause-an-animation">
@@ -6393,11 +6392,12 @@ states</a>
   animation</a> <a href="#ref-for-pending-pause-task①">(2)</a> <a href="#ref-for-pending-pause-task②">(3)</a>
     <li><a href="#ref-for-pending-pause-task③">3.5.5. Setting the current time of an animation</a> <a href="#ref-for-pending-pause-task④">(2)</a>
     <li><a href="#ref-for-pending-pause-task⑤">3.5.6. Setting the start time of an animation</a>
-    <li><a href="#ref-for-pending-pause-task⑥">3.5.10. Playing an animation</a> <a href="#ref-for-pending-pause-task⑦">(2)</a>
-    <li><a href="#ref-for-pending-pause-task⑧">3.5.11. Pausing an animation</a> <a href="#ref-for-pending-pause-task⑨">(2)</a>
-    <li><a href="#ref-for-pending-pause-task①⓪">3.5.14. Updating the finished state</a>
-    <li><a href="#ref-for-pending-pause-task①①">3.5.15. Finishing an animation</a> <a href="#ref-for-pending-pause-task①②">(2)</a>
-    <li><a href="#ref-for-pending-pause-task①③">3.5.19. Play states</a>
+    <li><a href="#ref-for-pending-pause-task⑥">3.5.9. The current ready promise</a>
+    <li><a href="#ref-for-pending-pause-task⑦">3.5.10. Playing an animation</a> <a href="#ref-for-pending-pause-task⑧">(2)</a>
+    <li><a href="#ref-for-pending-pause-task⑨">3.5.11. Pausing an animation</a> <a href="#ref-for-pending-pause-task①⓪">(2)</a>
+    <li><a href="#ref-for-pending-pause-task①①">3.5.14. Updating the finished state</a>
+    <li><a href="#ref-for-pending-pause-task①②">3.5.15. Finishing an animation</a> <a href="#ref-for-pending-pause-task①③">(2)</a>
+    <li><a href="#ref-for-pending-pause-task①④">5.4. The Animation interface</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="current-finished-promise">
@@ -6515,17 +6515,6 @@ states</a>
     <li><a href="#ref-for-play-state④">3.5.17. Speed control</a>
     <li><a href="#ref-for-play-state⑤">3.5.19. Play states</a>
     <li><a href="#ref-for-play-state⑥">5.4. The Animation interface</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="pending-play-state">
-   <b><a href="#pending-play-state">#pending-play-state</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-pending-play-state">3.5.9. The current ready promise</a> <a href="#ref-for-pending-play-state①">(2)</a>
-    <li><a href="#ref-for-pending-play-state②">3.5.10. Playing an animation</a>
-    <li><a href="#ref-for-pending-play-state③">3.5.11. Pausing an animation</a>
-    <li><a href="#ref-for-pending-play-state④">3.5.18. Reversing an animation</a>
-    <li><a href="#ref-for-pending-play-state⑤">3.5.19. Play states</a>
-    <li><a href="#ref-for-pending-play-state⑥">5.4.1. The AnimationPlayState enumeration</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="idle-play-state">
@@ -7386,6 +7375,7 @@ argument</a> <a href="#ref-for-composite-operation①⑦">(2)</a> <a href="#ref-
     <li><a href="#ref-for-animation⑧">5.13. The Animatable interface</a> <a href="#ref-for-animation⑨">(2)</a> <a href="#ref-for-animation①⓪">(3)</a> <a href="#ref-for-animation①①">(4)</a> <a href="#ref-for-animation①②">(5)</a>
     <li><a href="#ref-for-animation①③">5.14. Extensions to the Document interface</a> <a href="#ref-for-animation①④">(2)</a>
     <li><a href="#ref-for-animation①⑤">5.18. Model liveness</a> <a href="#ref-for-animation①⑥">(2)</a>
+    <li><a href="#ref-for-animation①⑦">10. Changes since last publication</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-animation-animation">
@@ -7449,6 +7439,13 @@ argument</a> <a href="#ref-for-composite-operation①⑦">(2)</a> <a href="#ref-
    <b><a href="#dom-animation-playstate">#dom-animation-playstate</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-animation-playstate">5.4. The Animation interface</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-animation-pending">
+   <b><a href="#dom-animation-pending">#dom-animation-pending</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-animation-pending">5.4. The Animation interface</a>
+    <li><a href="#ref-for-dom-animation-pending①">10. Changes since last publication</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-animation-ready">
