@@ -1711,7 +1711,8 @@ non-normative description is also provided:
 <div class=informative-bg>
 
 :   <a lt="idle play state">idle</a>
-::  The <a>current time</a> of the animation is <a>unresolved</a>.
+::  The <a>current time</a> of the animation is <a>unresolved</a> and
+    there are no pending tasks.
     In this state the animation has no effect.
 :   <a lt="running play state">running</a>
 ::  The animation has a resolved <a>current time</a> that changes on each
@@ -1731,17 +1732,24 @@ condition from the following:
 
 <div class="switch">
 
-:   The <a>current time</a> of <var>animation</var> is
-    <a>unresolved</a>,
+:   <em>All</em> of the following conditions are true:
+    *   The <a>current time</a> of <var>animation</var> is <a>unresolved</a>,
+        <em>and</em>
+    *   <var>animation</var> does <em>not</em> have <em>either</em>
+        a <a>pending play task</a> <em>or</em> a <a>pending pause task</a>,
 ::  &rarr; <dfn lt="idle play state">idle</dfn>
-:   The <a lt="animation start time">start time</a> of <var>animation</var> is
-    <a>unresolved</a>,
+:   <em>Either</em> of the following conditions are true:
+    *   <var>animation</var> has a <a>pending pause task</a>, <em>or</em>
+    *   <em>both</em> the <a lt="animation start time">start time</a> of
+        <var>animation</var> is <a>unresolved</a> <em>and</em> it does
+        <em>not</em> have a <a>pending play task</a>,
 ::  &rarr; <dfn lt="paused play state">paused</dfn>
-:   For <var>animation</var>,
-    <a>animation playback rate</a> &gt; 0 and
-    <a>current time</a> &ge; <a>target effect end</a>; or<br>
-    <a>animation playback rate</a> &lt; 0 and
-    <a>current time</a> &le; 0,
+:   For <var>animation</var>, <a>current time</a> is <a>resolved</a> and
+    <em>either</em> of the following conditions are true:
+    *   <a>animation playback rate</a> &gt; 0 and
+        <a>current time</a> &ge; <a>target effect end</a>; <em>or</em>
+    *   <a>animation playback rate</a> &lt; 0 and
+        <a>current time</a> &le; 0,
 ::  &rarr; <dfn lt="finished play state">finished</dfn>
 :   Otherwise,
 ::  &rarr; <dfn lt="running play state">running</dfn>
