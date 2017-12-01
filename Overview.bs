@@ -95,8 +95,7 @@ urlPrefix: https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.htm
     text: animation frame callbacks; url: animation-frames
     text: run the animation frame callbacks
 urlPrefix: https://dom.spec.whatwg.org/; type: dfn; spec: dom
-    text: fire; url: concept-event-fire
-    text: create; url: concept-event-create
+    text: create an event; url: concept-event-create
     text: dispatch; url: concept-event-dispatch
 urlPrefix: https://html.spec.whatwg.org/multipage/embedded-content.html; type: dfn; spec: html
     text: media element
@@ -615,8 +614,8 @@ a {{Document}} |doc| at timestamp |now|, run these steps:
      a <code>animationstart</code> and <code>animationend</code> event and the
      order of these events should be preserved.
 
-1.   [=Dispatch=] each of the events in |events to dispatch| using the order
-     established in the previous step.
+1.   [=Dispatch=] each of the events in |events to dispatch| at their
+     corresponding target using the order established in the previous step.
 
 It is often convenient to describe each time this procedure is invoked as
 establishing a new <dfn export>animation frame</dfn>.
@@ -692,6 +691,11 @@ provides playback control.
 Both of these associations are optional and configurable such that
 an <a>animation</a> may have no associated <a>target effect</a> or
 <a>timeline</a> at a given moment.
+
+An [=animation's=] <dfn>document for timing</dfn> is the {{Document}} with which
+its [=timeline=] is <a lt="timeline associated with a document">associated</a>.
+If an animation is not associated with a timeline, or its timeline is not
+associated with a document, then it has no [=document for timing=].
 
 An <a>animation</a>'s <dfn lt="animation start time">start time</dfn> is the
 <a>time value</a> of its <a>timeline</a> when its <a>target effect</a>
@@ -1380,7 +1384,7 @@ time</a> of the animation's <a>target effect</a>.
 If the animation has no <a>target effect</a>, the <a>target effect
 end</a> is zero.
 
-An animation with a negative <a lt="animation playback rate">playback
+For an animation with a negative <a lt="animation playback rate">playback
 rate</a>, the <a>current time</a> continues to decrease until it
 reaches zero.
 
@@ -1488,13 +1492,21 @@ follows:
         1.  <a lt="resolve a promise">Resolve</a> <var>animation</var>'s
             <a>current finished promise</a> object with
             <var>animation</var>.
-        1.  <a>Queue a task</a> to <a>fire</a> a <a>finish event</a>
-            at <var>animation</var>.
-            The task source for this task is the <a>DOM manipulation task
-            source</a>.
-            <!-- XXX: This needs to be rewritten to create the event and then
-            dispatch it. And we should drop the reference to 'fire' in the set
-            of links at the top. -->
+        1.  <a lt="create an event">Create</a> an {{AnimationPlaybackEvent}},
+            |finishEvent|.
+        1.  Set |finishEvent|'s {{Event/type}} attribute to <a lt="finish
+            event">finish</a>.
+        1.  Set |finishEvent|'s {{AnimationPlaybackEvent/currentTime}} and
+            {{AnimationPlaybackEvent/timelineTime}} to the [=event current
+            time=] and [=event timeline time=] respectively.
+        1.  If |animation| has a [=document for timing=], then append
+            |finishEvent| to its [=document for timing=]'s [=pending animation
+            event queue=] along with its target, |animation|.
+
+            Otherwise, [=queue a task=] to [=dispatch=] |finishEvent| at
+            |animation|.
+            The task source for this task is the [=DOM manipulation task
+            source=].
     1.  If <var>synchronously notify</var> is true, cancel any queued
         microtask to run the <a>finish notification steps</a> for this
         <var>animation</var>, and run the <a>finish notification
@@ -1629,16 +1641,27 @@ as follows:
         with a DOMException named "AbortError".
     1.  Let <a>current finished promise</a> be a new (pending) <a>Promise</a>
         object.
-    1.  If <var>animation</var> is <em>not</em>
-        <a lt="idle play state">idle</a>, <a>queue a task</a> to <a>fire</a>
-        a <a>cancel event</a> at <var>animation</var>.
-        The task source for this task is the <a>DOM manipulation task
-        source</a>.
+    1.  <a lt="create an event">Create</a> an {{AnimationPlaybackEvent}},
+        |cancelEvent|.
+    1.  Set |cancelEvent|'s {{Event/type}} attribute to <a lt="cancel
+        event">cancel</a>.
+    1.  Set |cancelEvent|'s {{AnimationPlaybackEvent/currentTime}} to
+        <code class=esvalue>null</code>.
+    1.  Set |cancelEvent|'s {{AnimationPlaybackEvent/timelineTime}} to
+        the <a lt="timeline current time">current time</a> of |animation|'s
+        [=timeline=].
+        If |animation| is not associated with a timeline, or is associated with
+        an [=inactive timeline=], set |cancelEvent|'s
+        {{AnimationPlaybackEvent/timelineTime}} to <code
+        class=esvalue>null</code>.
+    1.  If |animation| has a [=document for timing=], then append
+        |cancelEvent| to its [=document for timing=]'s [=pending animation
+        event queue=] along with its target, |animation|.
 
-        The <a>event current time</a> for the dispatched <a>cancel event</a> is
-        <a>unresolved</a> and the <a>event timeline time</a> is the current
-        <a>time value</a> of the <a>timeline</a> associated with
-        <a>animation</a> at the moment the task is queued.
+        Otherwise, [=queue a task=] to [=dispatch=] |cancelEvent| at
+        |animation|.
+        The task source for this task is the [=DOM manipulation task
+        source=].
 
 1.  Make <var>animation</var>'s <a>hold time</a> <a>unresolved</a>.
 1.  Make <var>animation</var>'s <a lt="animation start time">start time</a>
@@ -1827,7 +1850,8 @@ events=].
 <!-- XXX: See if there are now biblio references for transitions and animations
           that don't use CSS3 -->
 
-Each {{Document}} maintains a <dfn>pending animation event queue</dfn>.
+Each {{Document}} maintains a <dfn>pending animation event queue</dfn> that
+stores [=animation events=] along with their corresponding event targets.
 
 <!-- XXX: Reference this from CSS Animations Level 2 and CSS Transitions
           Level 2? -->
@@ -2637,7 +2661,7 @@ Note: While the time spaces themselves are not bounded, Web
 In addition to these time spaces we can also refer to the
 <em>document time space</em> which is time space of the <a>time
 values</a> of the <a>default document timeline</a> of the
-{{Document}} of the <a>current global object</a>
+{{Document}} of the <a>current global object</a>.
 
 </div>
 
