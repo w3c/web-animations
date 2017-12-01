@@ -544,6 +544,11 @@ a document's load event.
 A <a>timeline</a> is considered to be <dfn lt="inactive timeline">inactive</dfn>
 when its <a>time value</a> is <a>unresolved</a>.
 
+Specific types of [=timelines=] may define a procedure to <dfn lt="timeline time
+to origin-relative time" export>convert a timeline time to an
+origin-relative time</dfn> for [=time value=] |time, so that the [=time
+values=] produced by wallclock-based timelines can be compared.
+
 A <a>timeline</a> may be <dfn lt="timeline associated with
 a document">associated with a document</dfn>.
 
@@ -582,23 +587,13 @@ a {{Document}} |doc| at timestamp |now|, run these steps:
 1.   Perform a stable sort of the [=animation events=] in |events to dispatch|
      as follows:
 
-     1.   For each event, let the <dfn>relative scheduled time</dfn> be
-          a delta in wallclock milliseconds from |now| to the the moment when
-          the event would have been queued were this procedure called at an
-          infinitely high frequency.
-
-          Note: It is expected that specifications that define [=animation
-          events=] will also provide a more precise means of calculating the
-          [=relative scheduled time=] for each type of event.
-
-          <!-- XXX: Define this for our events and then in CSS Animations
-          2 / CSS Transitions 2 -->
-
-     1.   Sort the events by their [=relative scheduled time=] such that events
+     1.   Sort the events by their [=scheduled event time=] such that events
           that were scheduled to occur earlier, sort before events scheduled to
-          occur later.
+          occur later and events whose scheduled event time is
+          [=unresolved=] sort before events with a <a lt=unresolved>resolved</a>
+          scheduled event time.
 
-     1.   Within events with equal [=relative scheduled times=], sort by their
+     1.   Within events with equal [=scheduled event times=], sort by their
           [=composite order=].
 
      Note: The purpose of sorting events is to ensure that, as best possible,
@@ -606,7 +601,7 @@ a {{Document}} |doc| at timestamp |now|, run these steps:
      rates, events are dispatched in a consistent order.
 
      Note: The requirement for the sort to be a stable sort is because sometimes
-     events may be queued with the same scheduled time. For example, a CSS
+     events may be queued with the same scheduled event time. For example, a CSS
      animation with a duration of zero, may dispatch both
      a <code>animationstart</code> and <code>animationend</code> event and the
      order of these events should be preserved.
@@ -641,6 +636,11 @@ a [=document timeline=] is <a lt="inactive timeline">inactive</a>.
 A <a>document timeline</a> that is associated with a {{Document}} which is not
 an <a>active document</a> is also considered to be
 <a lt="inactive timeline">inactive</a>.
+
+To <a lt="timeline time to origin-relative time">convert a timeline
+time, |timeline time|, to an origin-relative time</a> for a document timeline,
+|timeline|, return the sum of the |timeline time| and |timeline|'s [=origin
+time=]. If |timeline| is inactive, return an [=unresolved=] [=time value=].
 
 <h4 id="the-documents-default-timeline">The default document timeline</h4>
 
@@ -1493,12 +1493,21 @@ follows:
             |finishEvent|.
         1.  Set |finishEvent|'s {{Event/type}} attribute to <a lt="finish
             event">finish</a>.
-        1.  Set |finishEvent|'s {{AnimationPlaybackEvent/currentTime}} and
-            {{AnimationPlaybackEvent/timelineTime}} to the [=event current
-            time=] and [=event timeline time=] respectively.
+        1.  Set |finishEvent|'s {{AnimationPlaybackEvent/currentTime}} attribute
+            to the [=current time=] of |animation|.
+        1.  Set |finishEvent|'s {{AnimationPlaybackEvent/timelineTime}}
+            attribute to the <a lt="timeline current time">current time</a>
+            of the [=timeline=] with which |animation| is associated.
+            If |animation| is not associated with a timeline, or the timeline
+            is <a lt="inactive timeline">inactive</a>, let
+            {{AnimationPlaybackEvent/timelineTime}} be
+            <code class=esvalue>null</code>.
         1.  If |animation| has a [=document for timing=], then append
             |finishEvent| to its [=document for timing=]'s [=pending animation
             event queue=] along with its target, |animation|.
+            For the [=scheduled event time=], use the result of <a lt="animation
+            time to origin-relative time">converting</a>
+            |animation|'s [=target effect end=] to an origin-relative time.
 
             Otherwise, [=queue a task=] to [=dispatch=] |finishEvent| at
             |animation|.
@@ -1644,16 +1653,24 @@ as follows:
         event">cancel</a>.
     1.  Set |cancelEvent|'s {{AnimationPlaybackEvent/currentTime}} to
         <code class=esvalue>null</code>.
+    1.  Let |timeline time| be the <a lt="timeline current time">current
+        time</a> of the [=timeline=] with which |animation| is associated.
+        If |animation| is not associated with an <a lt="inactive
+        timeline">active timeline</a>, let |timeline time| be n
+        [=unresolved=] [=time value=].
     1.  Set |cancelEvent|'s {{AnimationPlaybackEvent/timelineTime}} to
-        the <a lt="timeline current time">current time</a> of |animation|'s
-        [=timeline=].
-        If |animation| is not associated with a timeline, or is associated with
-        an [=inactive timeline=], set |cancelEvent|'s
-        {{AnimationPlaybackEvent/timelineTime}} to <code
-        class=esvalue>null</code>.
+        |timeline time|. If |timeline time| is [=unresolved=], set it to
+        <code class=esvalue>null</code>.
     1.  If |animation| has a [=document for timing=], then append
         |cancelEvent| to its [=document for timing=]'s [=pending animation
         event queue=] along with its target, |animation|.
+        If |animation| is associated with an <a lt="inactive timeline">active
+        timeline</a> that defines a procedure to <a lt="timeline time to
+        origin-relative time">convert timeline times to origin-relative
+        time</a>, let the [=scheduled event time=] be the result of applying
+        that procedure to |timeline time|.
+        Otherwise, the [scheduled event time=] is an [=unresolved=] [=time
+        value=].
 
         Otherwise, [=queue a task=] to [=dispatch=] |cancelEvent| at
         |animation|.
@@ -1846,10 +1863,67 @@ Future specifications may extend this set with further types of [=animation
 events=].
 
 Each {{Document}} maintains a <dfn>pending animation event queue</dfn> that
-stores [=animation events=] along with their corresponding event targets.
+stores [=animation events=] along with their corresponding event targets and
+<dfn>scheduled event time</dfn>.
+The [=scheduled event time=] is a [=time value=] relative to the [=time origin=]
+representing when the event would ideally have been dispatched were animations
+updated at an infinitely high frequency.
+It is used by the procedure to [=update animations and send events=] to sort
+queued [=animation events=] chronologically.
+Note that this value may be [=unresolved=] if, for example, the [=animation=]'s
+[=timeline=] produces values that are unrelated to the [=time origin=] (e.g.
+a timeline that tracks scroll-position) or if the [=timeline=] is <a
+lt="inactive timeline">inactive</a>.
 
-<!-- XXX: Reference this from CSS Animations Level 2 and CSS Transitions
-          Level 2? -->
+<h5 id="sorting-animation-events">Sorting animation events</h5>
+
+The following definitions are provided to assist with sorting queued events.
+
+To <dfn lt="animation time to timeline time">convert an animation time to
+timeline time</a> a [=time value=], |time|, that is relative to the [=start
+time=] of an animation, |animation|, perform the following steps:
+
+1.   If |time| is [=unresolved=], return |time|.
+
+1.   If |time| is infinity, return an [=unresolved=] [=time value=].
+
+1.   If |animation|'s <a lt="animation playback rate">playback rate</a> is zero,
+     return an [=unresolved=] [=time value=].
+
+1.   If |animation|'s [=start time=] is [=unresolved=],
+     return an [=unresolved=] [=time value=].
+
+1.   Return the result of calculating:
+     <code>|time| &times; (1 / |playback rate|) + |start time|</code>
+     (where |playback rate| and |start time| are the <a lt="animation playback
+     rate">playback rate</a> and [=start time=] of |animation|, respectively).
+
+To <dfn lt="animation time to origin-relative time">convert a timeline time to
+an origin-relative time</dfn> a [=time value=], |time|, that is expressed in the
+same scale as the [=time values=] of a [=timeline=], |timeline|, perform the
+following steps:
+
+1.   Let |timeline time| be the result of <a lt="animation time to timeline
+     time">converting</a> |time| from an animation time to a timeline time.
+
+1.   If |timeline time| is [=unresolved=],
+     return |time|.
+
+1.   If |animation| is not associated with a [=timeline=],
+     return an [=unresolved=] time value.
+
+1.   If |animation| is associated with an [=inactive timeline=],
+     return an [=unresolved=] time value.
+
+1.   If there is no procedure to <a lt="timeline time to origin-relative
+     time">convert a timeline time to an origin-relative time</a> for the
+     timeline associated with |animation|,
+     return an [=unresolved=] [=time value=].
+
+1.   Return the result of <a lt="timeline time to origin-relative
+     time">converting</a> |timeline time| to an origin-relative time using
+     the procedure defined for the [=timeline=] associated with |animation|.
+
 
 <h5 id="animation-playback-events-section">Animation playback events</h5>
 
