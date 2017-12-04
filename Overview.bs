@@ -91,6 +91,8 @@ urlPrefix: https://html.spec.whatwg.org/multipage/webappapis.html; type: dfn; sp
     text: event loop processing model
     text: document.open(); url: dom-document-open
     text: relevant Realm; url: concept-relevant-realm
+urlPrefix: https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html.html; type: dfn; spec: html
+    text: animation frame callbacks; url: animation-frames
 urlPrefix: https://html.spec.whatwg.org/multipage/infrastructure.html; type: dfn; spec: html
     text: fire; url: concept-event-fire
 urlPrefix: https://html.spec.whatwg.org/multipage/embedded-content.html; type: dfn; spec: html
@@ -195,7 +197,7 @@ document.getAnimations().forEach(
 
 :   Creating animations from script
 ::  While it is possible to use ECMAScript to perform animation using
-    <code>requestAnimationFrame</code> [[ANIMATION-TIMING]],
+    <code>requestAnimationFrame</code> [[!HTML]],
     such animations behave differently to declarative animation in terms of
     how they are represented in the CSS cascade and the performance
     optimizations that are possible such as performing the animation on a
@@ -308,8 +310,8 @@ It is intended that by defining SVG's animation features in terms of
 the Web Animations model, the dependency between SVG and SMIL
 Animation can be removed.
 
-As with Timing control for script-based animations (commonly referred
-to as &ldquo;requestAnimationFrame&rdquo;) [[ANIMATION-TIMING]],
+As with <a>animation frame callbacks</a> (commonly referred
+to as &ldquo;requestAnimationFrame&rdquo;) [[HTML]],
 the programming interface component of this specification allows
 animations to be created from script.
 The animations created using the interface defined in this
@@ -320,9 +322,9 @@ Using this interface it is possible to create animations
 from script in a simpler and more performant manner.
 
 The time values used within the programming interface
-correspond with those used in Timing control for script-based
-animations [[ANIMATION-TIMING]] and their execution order is defined
-such that the two interfaces can be used simultaneously without conflict.
+correspond with those used in <a>animation frame callbacks</a> [[HTML]]
+and their execution order is defined such that the two interfaces can be used
+simultaneously without conflict.
 
 The programming interface component of this specification makes
 some additions to interfaces defined in HTML [[!HTML]].
@@ -7446,8 +7448,7 @@ alert(b - a); // Displays 0</pre>
 :   The time passed to a <code>requestAnimationFrame</code> callback
     will be equal to <code>document.timeline.currentTime</code>
 
-::  For user agent that support Timing control for script-based
-    animations [[ANIMATION-TIMING]],
+::  For user agent that support <a>animation frame callbacks</a> [[HTML]],
     HTML's <a>event loop processing model</a> defines that animations are
     updated prior to running animation frame callbacks.
 
@@ -7463,9 +7464,9 @@ alert(b - a); // Displays 0</pre>
 
     <div class="example">
     <pre class="lang-javascript">
-window.requestAnimationFrame(function(sampleTime) {
-  // Displays &lsquo;0&rsquo;
-  alert(sampleTime - document.timeline.currentTime);
+window.requestAnimationFrame(function(now) {
+  // Displays 0
+  alert(now - document.timeline.currentTime);
 });</pre>
     </div>
 
