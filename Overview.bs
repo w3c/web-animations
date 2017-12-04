@@ -429,9 +429,8 @@ This gives the model the following properties:
 :   Direction-agnostic
 ::  Since the sequence of inputs is insignificant, the model is
     directionless.
-    This means that the model can be updated in reverse or even in
-    a backwards and forwards pattern without requiring any specialized
-    handling.
+    This means that the model can be updated to an arbitrary moment
+    without requiring any specialized handling.
 :   Constant-time seeking
 ::  Since each input is independent of the previous input, the
     processing required to perform a seek operation, even far into the
@@ -466,10 +465,9 @@ the stateless qualities described above.
 
 <h4 id="hierarchical">Hierarchical</h4>
 
-The other characteristic feature of the Web Animations timing model is
-that time is inherited.
-Time begins with a monotonically increasing time source and cascades
-down a number of steps to each animation.
+The other characteristic feature of the timing model is that time is inherited.
+Time begins at a timeline and cascades down a number of steps to each
+animation effect.
 At each step, time may be shifted backwards and forwards, scaled,
 reversed, paused, and repeated.
 
@@ -485,7 +483,6 @@ reversed, paused, and repeated.
   <figcaption>
     A hierarchy of timing nodes.
     Each node in the tree derives its time from its parent node.
-    At the root of the tree is the global clock.
   </figcaption>
 </figure>
 
@@ -506,12 +503,12 @@ animations.
 
 </div>
 
-<h3 id="timing-model-concepts">Timing model concepts</h3>
+<h3 id="time-value-section">Time values</h3>
 
-In Web Animations, timing is based on a hierarchy of time relationships
-between timing nodes.
+Timing is based on a hierarchy of time relationships between timing nodes.
 Parent nodes provide timing information to their child nodes in the form
 of <a>time values</a>.
+
 A <dfn>time value</dfn> is a real number which nominally represents
 a number of milliseconds from some moment.
 The connection between <a>time values</a> and wall-clock milliseconds
@@ -519,39 +516,13 @@ may be obscured by any number of transformations applied to the value as
 it passes through the time hierarchy.
 
 <p class="annotation">
-In the future we may have timelines that are based on UI gestures in
-which case the connection between time values and milliseconds will be
-weakened even further.
+In the future there may be timelines that are based on scroll position
+or UI gestures in which case the connection between time values and
+milliseconds will be weakened even further.
 </p>
 
 A <a>time value</a> may also be <dfn>unresolved</dfn> if, for example,
 a timing node is not in a state to produce a <a>time value</a>.
-
-<h3 id="the-global-clock">The global clock</h3>
-
-At the root of the Web Animations timing hierarchy is the <a>global
-clock</a>.
-
-The <dfn>global clock</dfn> is a source of monotonically increasing
-<a>time values</a> unaffected by adjustments to the system clock.
-The <a>time values</a> produced by the <a>global clock</a> represent
-wall-clock milliseconds from an unspecified historical moment.
-Because the zero time of the <a>global clock</a> is not specified,
-the absolute values of the <a>time values</a> produced by the <a>global
-clock</a> are not significant, only their rate of change.
-
-Note: The <a>global clock</a> is not exposed in the <a
-    href="#programming-interface">programming interface</a> and nor is it
-    expected to be exposed by markup.
-    As a result, the moment from which <a>global clock</a> <a>time values</a>
-    are measured, that is, the zero time of the clock, is
-    implementation-dependent.
-    One user agent may measure the number of milliseconds since the user
-    agent was loaded whilst another may use the time when the device was
-    started.
-    Both approaches are acceptable and produce no observable difference
-    in the output of the model.
-
 
 <h3 id="timelines">Timelines</h3>
 
