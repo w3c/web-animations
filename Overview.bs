@@ -94,8 +94,6 @@ urlPrefix: https://html.spec.whatwg.org/multipage/webappapis.html; type: dfn; sp
 urlPrefix: https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html.html; type: dfn; spec: html
     text: animation frame callbacks; url: animation-frames
     text: run the animation frame callbacks
-urlPrefix: https://html.spec.whatwg.org/multipage/infrastructure.html; type: dfn; spec: html
-    text: fire; url: concept-event-fire
 urlPrefix: https://html.spec.whatwg.org/multipage/embedded-content.html; type: dfn; spec: html
     text: media element
 urlPrefix: https://w3c.github.io/hr-time/; spec: highres-time
@@ -683,6 +681,11 @@ provides playback control.
 Both of these associations are optional and configurable such that
 an <a>animation</a> may have no associated <a>target effect</a> or
 <a>timeline</a> at a given moment.
+
+An [=animation's=] <dfn>document for timing</dfn> is the {{Document}} with which
+its [=timeline=] is <a lt="timeline associated with a document">associated</a>.
+If an animation is not associated with a timeline, or its timeline is not
+associated with a document, then it has no [=document for timing=].
 
 An <a>animation</a>'s <dfn lt="animation start time">start time</dfn> is the
 <a>time value</a> of its <a>timeline</a> when its <a>target effect</a>
@@ -1479,10 +1482,30 @@ follows:
         1.  <a lt="resolve a promise">Resolve</a> <var>animation</var>'s
             <a>current finished promise</a> object with
             <var>animation</var>.
-        1.  <a>Queue a task</a> to <a>fire</a> a <a>finish event</a>
-            at <var>animation</var>.
-            The task source for this task is the <a>DOM manipulation task
-            source</a>.
+        1.  <a lt="create an event">Create</a> an {{AnimationPlaybackEvent}},
+            |finishEvent|.
+        1.  Set |finishEvent|'s {{Event/type}} attribute to <a lt="finish
+            event">finish</a>.
+        1.  Set |finishEvent|'s {{AnimationPlaybackEvent/currentTime}} attribute
+            to the [=current time=] of |animation|.
+        1.  Set |finishEvent|'s {{AnimationPlaybackEvent/timelineTime}}
+            attribute to the <a lt="timeline current time">current time</a>
+            of the [=timeline=] with which |animation| is associated.
+            If |animation| is not associated with a timeline, or the timeline
+            is <a lt="inactive timeline">inactive</a>, let
+            {{AnimationPlaybackEvent/timelineTime}} be
+            <code class=esvalue>null</code>.
+        1.  If |animation| has a [=document for timing=], then append
+            |finishEvent| to its [=document for timing=]'s [=pending animation
+            event queue=] along with its target, |animation|.
+            For the [=scheduled event time=], use the result of <a lt="animation
+            time to origin-relative time">converting</a>
+            |animation|'s [=target effect end=] to an origin-relative time.
+
+            Otherwise, [=queue a task=] to [=dispatch=] |finishEvent| at
+            |animation|.
+            The task source for this task is the [=DOM manipulation task
+            source=].
     1.  If <var>synchronously notify</var> is true, cancel any queued
         microtask to run the <a>finish notification steps</a> for this
         <var>animation</var>, and run the <a>finish notification
@@ -1617,16 +1640,35 @@ as follows:
         with a DOMException named "AbortError".
     1.  Let <a>current finished promise</a> be a new (pending) <a>Promise</a>
         object.
-    1.  If <var>animation</var> is <em>not</em>
-        <a lt="idle play state">idle</a>, <a>queue a task</a> to <a>fire</a>
-        a <a>cancel event</a> at <var>animation</var>.
-        The task source for this task is the <a>DOM manipulation task
-        source</a>.
+    1.  <a lt="create an event">Create</a> an {{AnimationPlaybackEvent}},
+        |cancelEvent|.
+    1.  Set |cancelEvent|'s {{Event/type}} attribute to <a lt="cancel
+        event">cancel</a>.
+    1.  Set |cancelEvent|'s {{AnimationPlaybackEvent/currentTime}} to
+        <code class=esvalue>null</code>.
+    1.  Let |timeline time| be the <a lt="timeline current time">current
+        time</a> of the [=timeline=] with which |animation| is associated.
+        If |animation| is not associated with an <a lt="inactive
+        timeline">active timeline</a>, let |timeline time| be n
+        [=unresolved=] [=time value=].
+    1.  Set |cancelEvent|'s {{AnimationPlaybackEvent/timelineTime}} to
+        |timeline time|. If |timeline time| is [=unresolved=], set it to
+        <code class=esvalue>null</code>.
+    1.  If |animation| has a [=document for timing=], then append
+        |cancelEvent| to its [=document for timing=]'s [=pending animation
+        event queue=] along with its target, |animation|.
+        If |animation| is associated with an <a lt="inactive timeline">active
+        timeline</a> that defines a procedure to <a lt="timeline time to
+        origin-relative time">convert timeline times to origin-relative
+        time</a>, let the [=scheduled event time=] be the result of applying
+        that procedure to |timeline time|.
+        Otherwise, the [scheduled event time=] is an [=unresolved=] [=time
+        value=].
 
-        The <a>event current time</a> for the dispatched <a>cancel event</a> is
-        <a>unresolved</a> and the <a>event timeline time</a> is the current
-        <a>time value</a> of the <a>timeline</a> associated with
-        <a>animation</a> at the moment the task is queued.
+        Otherwise, [=queue a task=] to [=dispatch=] |cancelEvent| at
+        |animation|.
+        The task source for this task is the [=DOM manipulation task
+        source=].
 
 1.  Make <var>animation</var>'s <a>hold time</a> <a>unresolved</a>.
 1.  Make <var>animation</var>'s <a lt="animation start time">start time</a>
@@ -1893,23 +1935,6 @@ is absent or has no observable result.
 ::  Queued whenever an animation enters the <a>idle play state</a> from
     another state. Creating a new <a>animation</a> that is initially
     idle does <em>not</em> generate a new <a>cancel event</a>.
-
-<h5 id="animation-event-parameters">Event parameters</h5>
-
-<a>Animation events</a> have an associated <a>event current time</a> and
-<a>event timeline time</a>.
-
-The <dfn>event current time</dfn> is the <a>current time</a> of the
-<a>animation</a> that generated the event at the moment the event is queued.
-This will be <a>unresolved</a> if the <a>animation</a> was <a
-lt="idle play state">idle</a> at the time the event was generated.
-
-The <dfn>event timeline time</dfn> is the time value of the <a>timeline</a> with
-which the <a>animation</a> that generated the event is associated at the moment
-the event is queued.
-This will be <a>unresolved</a> if the <a>animation</a> was not associated with
-a <a>timeline</a> at the time the event was generated or if the associated
-<a>timeline</a> was <a lt="inactive timeline">inactive</a>.
 
 <h3 id="animation-effects">Animation effects</h3>
 
@@ -7414,18 +7439,26 @@ dictionary AnimationPlaybackEventInit : EventInit {
 <div class="attributes">
 
 :   <dfn attribute for=AnimationPlaybackEvent>currentTime</dfn>
-::  The <a>event current time</a>.
+::  The [=current time=] of the [=animation=] that generated the event at the
+    moment the event as queued.
+    This will be <code class=esvalue>null</code> if the [=animation=] was <a
+    lt="idle play state">idle</a> at the time the event was generated.
 :   <dfn attribute for=AnimationPlaybackEvent>timelineTime</dfn>
-::  The <a>event timeline time</a>.
+::  The [=time value=] of the [=timeline=] with which the [=animation=] that
+    generated the event is associated at the moment the event was queued.
+    This will be <code class=esvalue>null</code> if the [=animation=] was not
+    associated with an <a lt="inactive timeline">active timeline</a> at the
+    time the event was queued.
 
 </div>
 
 <div class="members">
 
 :   <dfn dict-member for=AnimationPlaybackEventInit>currentTime</dfn>
-::  The <a>event current time</a>.
+::  See the description of the {{AnimationPlaybackEvent/currentTime}} attribute.
 :   <dfn dict-member for=AnimationPlaybackEventInit>timelineTime</dfn>
-::  The <a>event timeline time</a>.
+::  See the description of the {{AnimationPlaybackEvent/timelineTime}}
+    attribute.
 
 </div>
 
