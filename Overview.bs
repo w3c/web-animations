@@ -93,6 +93,7 @@ urlPrefix: https://html.spec.whatwg.org/multipage/webappapis.html; type: dfn; sp
     text: relevant Realm; url: concept-relevant-realm
 urlPrefix: https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html.html; type: dfn; spec: html
     text: animation frame callbacks; url: animation-frames
+    text: run the animation frame callbacks
 urlPrefix: https://html.spec.whatwg.org/multipage/infrastructure.html; type: dfn; spec: html
     text: fire; url: concept-event-fire
 urlPrefix: https://html.spec.whatwg.org/multipage/embedded-content.html; type: dfn; spec: html
@@ -100,7 +101,9 @@ urlPrefix: https://html.spec.whatwg.org/multipage/embedded-content.html; type: d
 urlPrefix: https://w3c.github.io/hr-time/; spec: highres-time
     text: time origin; type: dfn
     text: DOMHighResTimeStamp; type: interface
-urlPrefix: https://dom.spec.whatwg.org/; type: dfn; spec: dom-ls
+urlPrefix: https://dom.spec.whatwg.org/; type: dfn; spec: dom
+    text: create an event; url: concept-event-create
+    text: dispatch; url: concept-event-dispatch
     text: constructing events
     text: node document; url: concept-node-document
 url: https://html.spec.whatwg.org/#document; type: interface; text: Document; spec: html
@@ -419,14 +422,14 @@ This gives the model the following properties:
 
 :   Frame-rate independent
 ::  Since the output is independent of previous inputs, the rate at
-    which the model is sampled will not affect its progress.
+    which the model is updated will not affect its progress.
     Provided the input times are proportional to the progress of
     real-world time, animations will progress at an identical rate
     regardless of the capabilities of the device running them.
 :   Direction-agnostic
 ::  Since the sequence of inputs is insignificant, the model is
     directionless.
-    This means that the model can be sampled in reverse or even in
+    This means that the model can be updated in reverse or even in
     a backwards and forwards pattern without requiring any specialized
     handling.
 :   Constant-time seeking
@@ -454,11 +457,11 @@ and consistent with HTML.
 As a result, the model can only truly be described as stateless
 <em>in the absence of dynamic changes to its timing properties</em>.
 
-Finally, each time the model is sampled, it can be considered to
+Finally, each time the model is updated, it can be considered to
 establish a temporary state.
 While this temporary state affects the values returned from the <a
 href="#programming-interface" section>programming interface</a>, it has no
-influence on the subsequent samples and hence does not conflict with
+influence on the subsequent updates and hence does not conflict with
 the stateless qualities described above.
 
 <h4 id="hierarchical">Hierarchical</h4>
@@ -524,24 +527,6 @@ weakened even further.
 A <a>time value</a> may also be <dfn>unresolved</dfn> if, for example,
 a timing node is not in a state to produce a <a>time value</a>.
 
-Periodically, the user agent will update the timing model in a process called
-<dfn>sampling</dfn>.
-On each <dfn lt='single-sample'>sample</dfn> the
-<a>time values</a> of each timing node are updated.
-
-Further requirements on the frequency and sequencing of <a>sampling</a>
-are specified by HTML's <a>event loop processing model</a> [[!HTML]].
-
-Note: HTML currently refers to a &ldquo;<a
-  href="https://html.spec.whatwg.org/multipage/webappapis.html#run-css-animations-and-send-events">run
-  CSS animations and send events</a>&rdquo; operation but this should be
-understood to include sampling <em>all</em> animations covered by this
-specification, not only CSS animations.
-Furthermore, the <span class=param>now</span> parameter passed to this
-operation is ignored in this specification since we define a more general
-model that supports timelines whose time origin is not relative to
-<code>navigationStart</code>.
-
 <h3 id="the-global-clock">The global clock</h3>
 
 At the root of the Web Animations timing hierarchy is the <a>global
@@ -573,34 +558,14 @@ Note: The <a>global clock</a> is not exposed in the <a
 A <dfn>timeline</dfn> provides a source of <a>time values</a> for the
 purpose of synchronization.
 
-Typically, a <a>timeline</a> is tied to the <a>global clock</a> such
-that its absolute time is calculated as a fixed offset from the time of
-the <a>global clock</a>.
-This offset is established by designating some moment as the timeline's
-<dfn>zero time</dfn> and recording the <a>time value</a> of the
-<a>global clock</a> at that moment.
-At subsequent moments, the <a>time value</a> of the timeline is
-calculated as the difference between the current <a>time value</a> of
-the <a>global clock</a> and the value recorded as the <a>zero time</a>.
-
-On each <a lt=single-sample>sample</a>, the <a>time value</a> of the
-<a>global clock</a> at the beginning of the sample is recorded and this
-recorded value is used as the time value of the global clock until the
-next sample.
-
 At any given moment, a [=timeline=] has a single current [=time value=] known
 simply as the timeline's <dfn lt="timeline current time">current time</dfn>.
 
-Note: We anticipate that other types of timelines may be introduced
-  in the future that are not tied to the global clock.
-  For example, a timeline whose time values are related to the progress of
-  a scroll container or UI gesture.
-
-Since a <a>timeline</a> may be defined relative to a moment that has yet
-to occur, it may not always be able to return a meaningful <a>time
-value</a>, but only an <a>unresolved</a> time value.
-A <a>timeline</a> is considered to be
-<dfn lt="inactive timeline">inactive</dfn>
+A <a>timeline</a> may not always be able to return a meaningful <a>time
+value</a>, but only an <a>unresolved</a> time value. For example, it may
+be defined relative to a moment that has yet to occur, such as the firing of
+a document's load event.
+A <a>timeline</a> is considered to be <dfn lt="inactive timeline">inactive</dfn>
 when its <a>time value</a> is <a>unresolved</a>.
 
 Specific types of [=timelines=] may define a procedure to <dfn lt="timeline time
@@ -608,23 +573,98 @@ to origin-relative time" export>convert a timeline time to an
 origin-relative time</dfn> for [=time value=] |time|, so that the [=time
 values=] produced by wallclock-based timelines can be compared.
 
+A <a>timeline</a> may be <dfn lt="timeline associated with
+a document">associated with a document</dfn>.
+
+When asked to <dfn export>update animations and send events</dfn> for
+a {{Document}} |doc| at timestamp |now|, run these steps:
+
+1.   Update the <a lt="timeline current time">current time</a> of all
+     timelines <a lt="timeline associated with a document">associated with
+     |doc|</a> passing |now| as the timestamp.
+
+     <div class="note">
+
+     Due to the hierarchical nature of the timing model, updating the
+     <a lt="timeline current time">current time</a> of a [=timeline=] also
+     involves:
+
+     *    Updating the [=current time=] of any [=animations=] associated with
+          the timeline.
+     *    Running the [=update an animation's finished state=] procedure for any
+          animations whose [=current time=] has been updated.
+     *    Queueing [=animation events=] for any such animations.
+
+     </div>
+
+1.   [=Perform a microtask checkpoint=].
+
+     Note: This is to ensure that any microtasks queued up as a result of
+     resolving or rejecting Promise objects as part of updating timelines in the
+     previous step, run their callbacks prior to dispatching animation events.
+
+1.   Let |events to dispatch| be a copy of |doc|'s [=pending animation event
+     queue=].
+
+1.   Clear |doc|'s [=pending animation event queue=].
+
+1.   Perform a stable sort of the [=animation events=] in |events to dispatch|
+     as follows:
+
+     1.   Sort the events by their [=scheduled event time=] such that events
+          that were scheduled to occur earlier, sort before events scheduled to
+          occur later and events whose scheduled event time is
+          [=unresolved=] sort before events with a <a lt=unresolved>resolved</a>
+          scheduled event time.
+
+     1.   Within events with equal [=scheduled event times=], sort by their
+          [=composite order=].
+
+     Note: The purpose of sorting events is to ensure that, as best possible,
+     even on devices with differing capabilities and hence different frame
+     rates, events are dispatched in a consistent order.
+
+     Note: The requirement for the sort to be a stable sort is because sometimes
+     events may be queued with the same scheduled event time. For example, a CSS
+     animation with a duration of zero, may dispatch both
+     a <code>animationstart</code> and <code>animationend</code> event and the
+     order of these events should be preserved.
+
+1.   [=Dispatch=] each of the events in |events to dispatch| at their
+     corresponding target using the order established in the previous step.
+
+It is often convenient to describe each time this procedure is invoked as
+establishing a new <dfn export>animation frame</dfn>.
+Changes to the timing properties of [=animations=] or [=animation effects=], or
+the addition and removal of the objects may cause the output of the timing or
+animation model to change, but these operations in themselves do not create
+a new [=animation frame=], rather they merely update the current <a>animation
+frame</a>.
+
 <h4 id="document-timelines">Document timelines</h4>
 
-A <dfn>document timeline</dfn> is a type of <a>timeline</a> that is associated
-with a {{Document}}.
+A <dfn>document timeline</dfn> is a type of <a>timeline</a> that is <a
+lt="timeline associated with a document">associated
+with a document</a> and whose <a lt="timeline current time">current time</a>
+is calculated as a fixed offset from the |now| timestamp provided each time the
+[=update animations and send events=] procedure is run.
+This fixed offset is referred to as the document timeline's <dfn>origin
+time</dfn>.
 
-The <a>time values</a> of a <a>document timeline</a> are calculated
-as a fixed offset from the <a>global clock</a> such that the <a>zero
-time</a> corresponds to the <a
-href="https://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart">
-<code>navigationStart</code></a> moment [[!NAVIGATION-TIMING]] plus a
-signed delta known as the <dfn>origin time</dfn>.
-Prior to establishing the <code>navigationStart</code> moment, the <a>document
-timeline</a> is <a lt="inactive timeline">inactive</a>.
+Issue: There must be a better term than &ldquo;origin time&rdquo;&mdash;
+       it's too similar to &ldquo;time origin&rdquo;.
+
+Prior to establishing the [=time origin=] for its associated document,
+a [=document timeline=] is <a lt="inactive timeline">inactive</a>.
 
 A <a>document timeline</a> that is associated with a {{Document}} which is not
 an <a>active document</a> is also considered to be
 <a lt="inactive timeline">inactive</a>.
+
+To <a lt="timeline time to origin-relative time">convert a timeline
+time, |timeline time|, to an origin-relative time</a> for a document timeline,
+|timeline|, return the sum of the |timeline time| and |timeline|'s [=origin
+time=]. If |timeline| is inactive, return an [=unresolved=] [=time value=].
 
 <h4 id="the-documents-default-timeline">The default document timeline</h4>
 
@@ -637,20 +677,17 @@ The <a>default document timeline</a> has an <a>origin time</a> of zero.
 
 <div class="informative-bg"><em>This section is non-normative</em>
 
-Since the <a>document timelines</a> are tied to the <a>global
-clock</a> by a fixed offset, <a>time values</a> reported by
-<a>document timelines</a> increase monotonically.
-Furthermore, since no scaling is applied, these <a>time values</a>
-are proportional to wall-clock milliseconds.
+Since no scaling is applied to the |now| timestamp values provided
+to [=document timelines=], the <a>time values</a> it produces will be
+proportional to wall-clock milliseconds.
 
-Since the <a>time values</a> of the <a>default document timeline</a> are
-relative to the <code>navigationStart</code> time,
-<code>document.timeline.currentTime</code> will roughly correspond to
-<a href="https://www.w3.org/TR/hr-time/#dom-performance-now">
-<code>Performance.now()</code></a>
-[[HR-TIME]] with the exception that
-<code>document.timeline.currentTime</code> does not change within
-a <a>sample</a>.
+Furthermore, since the <a>time values</a> of the <a>default document
+timeline</a> have a zero offset from the [=time origin=],
+<code>document.timeline.currentTime</code> will roughly correspond to <a
+href="https://www.w3.org/TR/hr-time/#dom-performance-now">
+<code>Performance.now()</code></a> [[HR-TIME]] with the exception that
+<code>document.timeline.currentTime</code> does not change in between calls
+to the [=update animations and send events=] procedure.
 
 </div>
 
@@ -1172,7 +1209,7 @@ as CSS Animations [[CSS-ANIMATIONS-1]].
                     as-is.
 
 <!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
-    1.  Issue: We should queue a task here for sampling custom effects.
+    1.  Issue: We should queue a task here for updating custom effects.
         (This should happen before we resolve the ready promise.)
 <!-- @endif -->
     1.  <a lt="resolve a Promise">Resolve</a> <var>animation</var>'s <a>current
@@ -1273,7 +1310,7 @@ follows:
     1.  Make <var>animation</var>'s <a lt="animation start time">start time</a>
         unresolved.
 <!-- @ifdef INCLUDE_CUSTOM_EFFECTS -->
-    1.  Issue: We should queue a task here for sampling custom effects
+    1.  Issue: We should queue a task here for updating custom effects
         with the final current time.
         (This should happen before we resolve the ready promise).
 <!-- @endif -->
@@ -1373,9 +1410,8 @@ is said to be <a lt="finished play state">finished</a>.
 
 The crossing of this boundary is checked on each modification to the
 animation object using the procedure to <a>update an animation's finished
-state</a> defined below. This procedure is also run on each <a>sample</a>
-and each time the timing properties of the <a>target effect</a> associated
-with an <a>animation</a> are updated. In both cases the <var>did seek</var>
+state</a> defined below. This procedure is also run as part of the [=update
+animations and send events=] procedure. In both cases the <var>did seek</var>
 flag, defined below, is set to false.
 
 For each animation, the user agent maintains a <dfn>previous current
@@ -1732,7 +1768,8 @@ non-normative description is also provided:
     In this state the animation has no effect.
 :   <a lt="running play state">running</a>
 ::  The animation has a resolved <a>current time</a> that changes on each
-    <a>sample</a> (provided the <a>animation playback rate</a> is not zero).
+    <a>animation frame</a> (provided the <a>animation playback rate</a> is not
+    zero).
 :   <a lt="paused play state">paused</a>
 ::  The animation has been suspended and the <a>current time</a>
     is no longer changing.
@@ -1811,6 +1848,8 @@ stores [=animation events=] along with their corresponding event targets and
 The [=scheduled event time=] is a [=time value=] relative to the [=time origin=]
 representing when the event would ideally have been dispatched were animations
 updated at an infinitely high frequency.
+It is used by the procedure to [=update animations and send events=] to sort
+queued [=animation events=] chronologically.
 Note that this value may be [=unresolved=] if, for example, the [=animation=]'s
 [=timeline=] produces values that are unrelated to the [=time origin=] (e.g.
 a timeline that tracks scroll-position) or if the [=timeline=] is <a
@@ -2250,7 +2289,7 @@ The phases are as follows:
 In addition to these phases, an <a>animation effect</a> may also be
 described as being in one of several overlapping <em>states</em>.
 These states are only established for the duration of a single
-sample and are primarily a convenience for describing stative parts
+[=animation frame=] and are primarily a convenience for describing stative parts
 of the model.
 
 These states and their useage within the model are summarized as
@@ -2258,7 +2297,7 @@ follows:
 
 :   <a>in play</a>
 ::  Corresponds to an <a>animation effect</a> whose <a>active time</a>
-    is changing on each sample.
+    is changing on each frame.
 <!-- @ifdef INCLUDE_GROUPS -->
     This occurs when the <a>animation effect</a> <em>and all its
     ancestors</em> are in the <a>active phase</a>.
@@ -4413,8 +4452,8 @@ by one or more <a>keyframe effects</a> is an <dfn>effect
 stack</dfn> that establishes the relative composite order of the <a>keyframe
 effects</a>.
 
-The relative composite order of any two <a>keyframe effects</a>,
-<var>A</var> and <var>B</var>, within an <a>effect stack</a> is
+The relative <dfn export>composite order</dfn> of any two <a>keyframe
+effects</a>, <var>A</var> and <var>B</var>, within an <a>effect stack</a> is
 established by comparing their properties as follows:
 
 1.  Let the <dfn>associated animation of an animation effect</dfn>
@@ -4584,7 +4623,7 @@ phase</a>.
 
 Issue: This whole feature needs to be revisited. The current thinking is that
        rather than having custom effects, we should simply have an
-       <code>onsample</code> callback on each <a>animation effect</a>.  That
+       <code>onupdate</code> callback on each <a>animation effect</a>.  That
        would allow, for example, augmenting an existing effect with a function
        that performs logging or triggers additional actions at certain times.
        With the current arrangement, doing this would require adding a parent
@@ -4631,15 +4670,19 @@ additional programming.
 </div>
 
 A <dfn>custom effect</dfn> is an author-defined programming callback
-that is passed timing information when <a>sampling</a> is performed.
+that is passed timing information as part of the [=update animations and send
+events=] procedure.
 
-<h4 id="sampling-custom-effects">Sampling custom effects</h4>
+Issue: It needs to be called whenever timing properties are updated too, right?
+
+<h4 id="updating-custom-effects">Sampling custom effects</h4>
 
 <a>Custom effects</a> are called for each referencing <a>animation effect</a>
-when a <a lt='single-sample'>sample</a> is performed based on the 
-following criteria.
+when the [=update animations and send events=] procedure is performed
+(henceforth referred to simple as an <em>update</em>) based on
+the following criteria.
 
-1.  If, on the previous sample, the <a>animation effect</a>
+1.  If, on the previous update, the <a>animation effect</a>
     referencing the <a>custom effect</a>:
 
     *   was <a>in effect</a>, and
@@ -4647,7 +4690,7 @@ following criteria.
     *   had a different <a>target element</a>
 
     Call the callback passing an <a>unresolved</a> <a>iteration progress</a>
-    and the <a>target element</a> from the previous sample as parameters to
+    and the <a>target element</a> from the previous update as parameters to
     the callback.
 2.  Call the callback for the current <a>target element</a> based on
     the first matching condition from the following:
@@ -4656,7 +4699,7 @@ following criteria.
 
     :   If the <a>animation effect</a> referencing the custom
         effect is not <a>in effect</a> but was <a>in effect</a> in the previous
-        sample,
+        update,
     ::  Call the callback passing an <a>unresolved</a> <a>iteration progress</a>
         and the current <a>target element</a> as parameters to the callback.
     :   Otherwise, if the <a>animation effect</a> referencing
@@ -4664,10 +4707,9 @@ following criteria.
     ::
 
         *   <strong>is <a>in effect</a>, and</strong>
-        *   <strong>was not <a>in effect</a> in the previous 
-            <a lt='single-sample'>sample</a>, or
-              was <a>in effect</a> but with a different <a>iteration
-              progress</a> or <a>current iteration</a>,</strong>
+        *   <strong>was not <a>in effect</a> in the previous update, or
+            was <a>in effect</a> but with a different <a>iteration
+            progress</a> or <a>current iteration</a>,</strong>
 
     ::  Call the callback passing with the referencing
         <a>animation effect</a>'s current <a>iteration
@@ -4689,7 +4731,7 @@ Some alternatives under consideration:
 *   Additional calling conditions could be defined to accommodate
     zero-width custom effects. For example, it could be required
     that the callback be called if (given infinite precision) there
-    was a time between the previous and current sample times that
+    was a time between the previous and current update times that
     aligned with the custom effect.
 *   Instead of adding special calling conditions to custom effects,
     a new type of animation effect, Trigger, could be introduced. The
@@ -4831,11 +4873,8 @@ interface DocumentTimeline : AnimationTimeline {
 <div class='members'>
 
 :   <dfn dict-member for=DocumentTimelineOptions>originTime</dfn>
-::  The <a>zero time</a> for the timeline specified as a real number of
-    milliseconds relative to <a
-    href="https://www.w3.org/TR/navigation-timing/#dom-performancetiming-navigationstart">
-    <code>navigationStart</code></a> moment [[!NAVIGATION-TIMING]] of
-    the document with which the timeline is associated.
+::  The <a>origin time</a> for the timeline specified as a real number of
+    milliseconds relative to the [=time origin=].
 
 </div>
 
@@ -5063,7 +5102,7 @@ interface AnimationEffectMutable {
 </pre>
 
 <div class="annotation">
-In future, we may expose <code>any sample (double? progress,
+In future, we may expose <code>any onupdate (double? progress,
 double currentIteration, Animatable? target, any
 underlyingValue)</code> so that the animation effects can be driven
 apart from the timing model.
@@ -7149,7 +7188,7 @@ callback EffectCallback = void (double? progress,
 
 An {{EffectCallback}} is called each time an {{KeyframeEffectReadOnly}} object
 with which it is
-associated is <a lt="sampling">sampled</a>.
+associated is updated.
 
 <div class="parameters">
 
@@ -7168,7 +7207,7 @@ associated is <a lt="sampling">sampled</a>.
     <code><var>animation</var>.target</code>.
 
     If the <a>target element</a> of <var>animation</var>
-    is changed between samples, this method will be
+    is changed between updates, this method will be
     called once with a null <var>progress</var> and the
     previous <a>target element</a> as the
     <var>currentTarget</var>, then again with the current
@@ -7180,7 +7219,7 @@ associated is <a lt="sampling">sampled</a>.
     </div>
 
 :   Animation animation
-::  The {{Animation}} object that is being sampled.
+::  The {{Animation}} object that is being updated.
 
 </div>
 <!-- @endif -->
@@ -7474,7 +7513,7 @@ alert(window.getComputedStyle(elem).opacity); // Displays &lsquo;0&rsquo;</pre>
 
 ::  For example, in the following code, the callback function will
     not be called until <em>after</em> the script block has
-    completed during regular <a>sampling</a>.
+    completed during regular updating.
 
     <div class="example">
     <pre class="lang-javascript">
@@ -7516,9 +7555,10 @@ elem.animate([ { opacity: 1 }, { opacity: 0 } ], 500);</pre>
 :   The value returned by the <code>currentTime</code> attribute of
     a <a>document timeline</a> will not change within a task
 
-::  Due to the requirement on <a>timelines</a> to store the <a>time value</a>
-    of the <a>global clock</a> at the start of a <a>sample</a>
-    (see [[#timelines]]), querying the <code>currentTime</code> twice within
+::  Due to the requirement on <a>timelines</a> to update their <a
+    lt="timeline current time">current time</a> each time the
+    [=update animations and send events=] procedure is run,
+    querying the <code>currentTime</code> twice within
     a long block of code that is executed in the same script block
     will return the same value as shown in the following example.
 
@@ -7533,19 +7573,13 @@ alert(b - a); // Displays 0</pre>
 :   The time passed to a <code>requestAnimationFrame</code> callback
     will be equal to <code>document.timeline.currentTime</code>
 
-::  For user agent that support <a>animation frame callbacks</a> [[HTML]],
-    HTML's <a>event loop processing model</a> defines that animations are
-    updated prior to running animation frame callbacks.
-
-    Furthermore, the time passed to such callbacks is the stored value of
-    the <code>Performance</code> object's <code>now()</code> method
-    as recorded at the beginning of the <a>sample</a>.
-
-    Since both <code>performance.now()</code> and <a>time values</a> from the
-    <a>default document timeline</a> are measured from the
-    <code>navigationStart</code> moment, and since both <a>timelines</a>
-    and animation frame callbacks use the time recorded at the start of the
-    <a>sample</a>, they should be equivalent.
+::  Since HTML's <a>event loop processing model</a> defines that the procedure
+    to [=update animations and send events=] is performed prior to
+    <a lt="run the animation frame callbacks">running animation frame
+    callbacks</a>, and since the time passed to such callbacks is the same
+    |now| timestamp is passed to both procedures, the <a lt="timeline current
+    time">current time</a> of a the <a>default document timeline</a> should
+    match the time passed to <code>requestAnimationFrame</code>.
 
     <div class="example">
     <pre class="lang-javascript">
@@ -7588,7 +7622,7 @@ when the referencing document is unloaded and traversed,
 are encouraged to apply consistent handling to documents containing Web
 Animations content.
 If provided, this behavior SHOULD be achieved by adjusting the <a>time
-values</a> of any <a>timelines</a> bound to the <a>global clock</a>.
+values</a> of any <a>timelines</a> that track wallclock time.
 
 Issue: Is this at odds with those <a>time values</a> being relative to
     <code>navigationStart</code> and with <code>requestAnimationFrame</code>
