@@ -1,6 +1,5 @@
-Web Animations [![IRC chat](https://goo.gl/6nCIks)](http://irc.w3.org/?channels=webanimations)
-==============
+This repository has been merged into [csswg-drafts](https://github.com/w3c/csswg-drafts)
+===========================
 
-The repository of the editor's draft of the Web Animations specification.
-
-View the HTML version at: http://w3c.github.io/web-animations/
+Please visit https://github.com/w3c/csswg-drafts/tree/master/web-animations-1
+instead.
